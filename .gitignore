@@ -1,0 +1,54 @@
+# ---------------
+# General windows
+# ---------------
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# ---------------
+# Sublime text
+# ---------------
+
+# Thanks to https://github.com/github/gitignore/blob/master/Global/SublimeText.gitignore
+
+# Cache files for Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# Workspace files
+*.sublime-workspace
+
+# Project files
+# *.sublime-project
+
+# ----------------
+# Project-specific
+# ----------------
+
+#Reference documentation (+doxygen docs)
+docs/
+
+#Small helper projects/utilities/drafts
+misc/
+
+#Object files
+build/*.*
+build/test/*.*
+build/examples/*.*
