@@ -30,102 +30,107 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("METAR"),
 		{metaf::ReportPart::HEADER},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::METAR)
+		metaf::FixedGroup(metaf::FixedGroup::Type::METAR)
 	},
 	{
 		std::string("SPECI"),
 		{metaf::ReportPart::HEADER},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::SPECI)
+		metaf::FixedGroup(metaf::FixedGroup::Type::SPECI)
 	},
 	{
 		std::string("TAF"),
 		{metaf::ReportPart::HEADER},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::TAF)
+		metaf::FixedGroup(metaf::FixedGroup::Type::TAF)
 	},
 	{
 		std::string("AMD"),
 		{metaf::ReportPart::HEADER},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AMD)
+		metaf::FixedGroup(metaf::FixedGroup::Type::AMD)
 	},
 	{
 		std::string("NIL"),
 		{metaf::ReportPart::HEADER, metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NIL)
+		metaf::FixedGroup(metaf::FixedGroup::Type::NIL)
 	},
 	{
 		std::string("CNL"),
 		{metaf::ReportPart::HEADER, metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CNL)
+		metaf::FixedGroup(metaf::FixedGroup::Type::CNL)
 	},
 	{
 		std::string("COR"),
 		{metaf::ReportPart::HEADER, metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::COR)
+		metaf::FixedGroup(metaf::FixedGroup::Type::COR)
 	},
 	{
 		std::string("AUTO"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AUTO)
+		metaf::FixedGroup(metaf::FixedGroup::Type::AUTO)
 	},
 	{
 		std::string("CLR"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CLR)
+		metaf::FixedGroup(metaf::FixedGroup::Type::CLR)
 	},
 	{
 		std::string("NCD"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NCD)
+		metaf::FixedGroup(metaf::FixedGroup::Type::NCD)
 	},
 	{
 		std::string("NOSIG"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NOSIG)
+		metaf::FixedGroup(metaf::FixedGroup::Type::NOSIG)
 	},
 	{
 		std::string("SNOCLO"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AIRPORT_SNOCLO)
+		metaf::FixedGroup(metaf::FixedGroup::Type::AIRPORT_SNOCLO)
 	},
 	{
 		std::string("R/SNOCLO"),
 		{metaf::ReportPart::METAR},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AIRPORT_SNOCLO)
+		metaf::FixedGroup(metaf::FixedGroup::Type::AIRPORT_SNOCLO)
 	},
 	{
 		std::string("CAVOK"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CAVOK)
+		metaf::FixedGroup(metaf::FixedGroup::Type::CAVOK)
 	},
 	{
 		std::string("NSC"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NSC)
+		metaf::FixedGroup(metaf::FixedGroup::Type::NSC)
 	},
 	{
 		std::string("NSW"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NSW)
+		metaf::FixedGroup(metaf::FixedGroup::Type::NSW)
 	},
 	{
 		std::string("TEMPO"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::TEMPO)
+		metaf::FixedGroup(metaf::FixedGroup::Type::TEMPO)
 	},
 	{
 		std::string("BECMG"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::BECMG)
+		metaf::FixedGroup(metaf::FixedGroup::Type::BECMG)
 	},
 	{
 		std::string("INTER"),
 		{metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::INTER)
+		metaf::FixedGroup(metaf::FixedGroup::Type::INTER)
 	},
 	{
 		std::string("RMK"),
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::ImmutableGroup(metaf::ImmutableGroup::Type::RMK)
+		metaf::FixedGroup(metaf::FixedGroup::Type::RMK)
+	},
+	{
+		std::string("SKC"),
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::FixedGroup(metaf::FixedGroup::Type::SKC)
 	},
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -233,47 +238,46 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("18005G10KT"),	//direction 180 (South), speed 5 knots, gusts 10 knots
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::WindGroup::Unit::KNOTS, 5, 10),
+		metaf::WindGroup(180, metaf::SpeedUnit::KNOTS, 5, 10),
 	},
 	{
 		std::string("18005G10MPS"),	//direction 180 (South), speed 5 m/s, gusts 10 m/s
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::WindGroup::Unit::METERS_PER_SECOND, 5, 10),
+		metaf::WindGroup(180, metaf::SpeedUnit::METERS_PER_SECOND, 5, 10),
 	},
 	{
 		std::string("18005G10KMH"),	//direction 180 (South), speed 5 km/h, gusts 10 km/h
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::WindGroup::Unit::KILOMETERS_PER_HOUR, 5, 10),
+		metaf::WindGroup(180, metaf::SpeedUnit::KILOMETERS_PER_HOUR, 5, 10),
 	},
 	{
 		std::string("08063G112KT"),	//direction 80 (East), speed 63 knots, gusts 112 knots
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(80, metaf::WindGroup::Unit::KNOTS, 63, 112),
+		metaf::WindGroup(80, metaf::SpeedUnit::KNOTS, 63, 112),
 	},
 	{
 		std::string("080100G150KT"),//direction 80 (East), speed 100 knots, gusts 150 knots
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(80, metaf::WindGroup::Unit::KNOTS, 100, 150),
+		metaf::WindGroup(80, metaf::SpeedUnit::KNOTS, 100, 150),
 	},
 	{
 		std::string("18005KT"),	//direction 180 (South), speed 5 knots, no gusts
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::WindGroup::Unit::KNOTS, 5),
+		metaf::WindGroup(180, metaf::SpeedUnit::KNOTS, 5),
 	},
 	{
 		std::string("VRB15G25KT"),	//variable direction, speed 15 knots, gusts 25 knots
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeVariableDirection(metaf::WindGroup::Unit::KNOTS, 15, 25),
+		metaf::WindGroup::makeVariableDirection(metaf::SpeedUnit::KNOTS, 15, 25),
 	},
 	{
 		std::string("VRB06KT"),	//variable direction, speed 6 knots no gusts
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeVariableDirection(metaf::WindGroup::Unit::KNOTS, 6),
-	},
-	{
+		metaf::WindGroup::makeVariableDirection(metaf::SpeedUnit::KNOTS, 6),
+	},	{
 		std::string("/////KT"),	//direction and speed not reported
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(metaf::WindGroup::Unit::KNOTS),
+		metaf::WindGroup(metaf::SpeedUnit::KNOTS),
 	},
 	{
 		std::string("18005G10KKT"),	//unit can only be KT, MPS, or KMH
@@ -309,17 +313,17 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("WS020/05065KT"),	//wind shear at 2000 feet: wind 50 degrees & 65 knots
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::WindShearGroup::SpeedUnit::KNOTS),
+		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::KNOTS),
 	},
 	{
 		std::string("WS020/05065MPS"),	//wind shear at 2000 feet: wind 50 degrees & 65 m/s
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::WindShearGroup::SpeedUnit::METERS_PER_SECOND),
+		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::METERS_PER_SECOND),
 	},
 	{
 		std::string("WS020/05065KMH"),	//wind shear at 2000 feet: wind 50 degrees & 65 km/h
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::WindShearGroup::SpeedUnit::KILOMETERS_PER_HOUR),
+		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::KILOMETERS_PER_HOUR),
 	},
 	{
 		std::string("WS020/05165KT"),	//direction's last digit must be zero
@@ -1123,74 +1127,74 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R05/1100"), //Runway 05 visual range 1100 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(5, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			1100, metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(5),
+			1100, metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R05L/1100"), //Runway 05LEFT visual range 1100 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(5, metaf::RunwayVisualRangeGroup::Designator::LEFT,
-			1100, metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(5, metaf::Runway::Designator::LEFT),
+			1100, metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R05C/1100"), //Runway 05CENTER visual range 1100 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(5, metaf::RunwayVisualRangeGroup::Designator::CENTER,
-			1100, metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(5, metaf::Runway::Designator::CENTER),
+			1100, metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R05R/1100"), //Runway 05RIGHT visual range 1100 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(5, metaf::RunwayVisualRangeGroup::Designator::RIGHT,
-			1100, metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(5, metaf::Runway::Designator::RIGHT),
+			1100, metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R04/P2000"), //Runway 04 visual range more than 2000 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(4, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			2000, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(4),
+			2000, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
 	},
 	{
 		std::string("R21/M0200"), //Runway 04 visual range less than 200 meters
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(21, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			200, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(21),
+			200, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN),
 	},
 	{
 		std::string("R11/4500FT"), //Runway 11 visual range 4500 feet
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(11, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			4500, metaf::RunwayVisualRangeGroup::Unit::FEET),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(11),
+			4500, metaf::DistanceUnit::FEET),
 	},
 	{
 		std::string("R11/P6000FT"), //Runway 11 visual range more than 6000 feet
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(11, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(11),
+			6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
 	},
 	{
 		std::string("R12/M0400FT"), //Runway 12 visual range less than 400 feet
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(12, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			400, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(12),
+			400, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN),
 	},
 	{
 		std::string("R35/5500FT/D"), //Runway 35 visual range 5500 feet and trend is downward
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(35, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			5500, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(35),
+			5500, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::DOWNWARD),
 	},
 	{
 		std::string("R02/5000FT/N"), //Runway 02 visual range 5000 feet and trend is neutral
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(2, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			5000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(2),
+			5000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
@@ -1198,8 +1202,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R12/P6000FT/U"), //Runway 12 visual range more than 6000 feet 
 		//and trend is upward
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(12, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(12),
+			6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
 	},
@@ -1207,8 +1211,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R14/P1500N"), //Runway 14 visual range more than 1500 meters 
 		//and trend is neutral
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(14, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			1500, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(14),
+			1500, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
@@ -1216,8 +1220,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R17/0250V0450N"), //Runway 17 visual range from 250 to 450 meters 
 		//and trend is neutral
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(17, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			250, 450, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(17),
+			250, 450, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
@@ -1226,8 +1230,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R34L/M0050VP2000U"), //Runway 34LEFT visual range from less than 
 		//50 meters to more than 2000 meters and trend is upward
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::LEFT,
-			50, 2000, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34, metaf::Runway::Designator::LEFT),
+			50, 2000, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
@@ -1236,8 +1240,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16L/0450VP2000U"), //Runway 16LEFT visual range from 450 meters to more 
 		//than 2000 meters and trend is upward
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(16, metaf::RunwayVisualRangeGroup::Designator::LEFT,
-			450, 2000, metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(16, metaf::Runway::Designator::LEFT),
+			450, 2000, metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
@@ -1245,8 +1249,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R07/2000V4500FT"), //Runway 07 visual range from 2000 to 4500 feet
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(07, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			2000, 4500, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(7),
+			2000, 4500, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE),
 	},
@@ -1254,8 +1258,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R30/5000VP6000FT/U"), //Runway 30 visual range from 5000 feet to more 
 		//than 6000 feet and trend is upward
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(30, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			5000, 6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(30),
+			5000, 6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
@@ -1264,16 +1268,16 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R08/6000FT/"), //Runway 08 visual range 6000 feet (followed by 
 		//trailing slash but no trend specified)
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(8, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(8),
+			6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE),
 	},
 	{
 		std::string("R25/2800VP6000FT/"), //Runway 25 visual range from 2800 feet to more
 		//than 6000 feet (followed by trailing slash but no trend specified)
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(25, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			2800, 6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(25),
+			2800, 6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
 	},
@@ -1281,52 +1285,52 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R06R/////"), //Runway 06RIGHT visual range not reported (but the 
 		//distance unit is meters)
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(6, metaf::RunwayVisualRangeGroup::Designator::RIGHT,
-			metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(6, metaf::Runway::Designator::RIGHT),
+			metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R34/////N"), //Runway 34 visual range not reported (but the distance 
 		//unit is meters) and trend is neutral
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			metaf::RunwayVisualRangeGroup::Unit::METERS,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			metaf::DistanceUnit::METERS,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{
 		std::string("R34/////FT"), //Runway 34 visual range not reported (but the distance 
 		//unit is feet)
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			metaf::RunwayVisualRangeGroup::Unit::FEET),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			metaf::DistanceUnit::FEET),
 	},
 	{
 		std::string("R34/////FT/N"), //Runway 34 visual range not reported (but the distance 
 		//unit is feet) and trend is neutral
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{
 		std::string("R06R//////"), //Runway 06RIGHT visual range not reported (but the 
 		//distance unit is meters) and trend is not reported
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(6, metaf::RunwayVisualRangeGroup::Designator::RIGHT,
-			metaf::RunwayVisualRangeGroup::Unit::METERS),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(6, metaf::Runway::Designator::RIGHT),
+			metaf::DistanceUnit::METERS),
 	},
 	{
 		std::string("R34/////FT//"), //Runway 34 visual range not reported (but the distance 
 		//unit is feet) and trend is not reported
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			metaf::RunwayVisualRangeGroup::Unit::FEET),
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			metaf::DistanceUnit::FEET),
 	},
 	{
 		std::string("R34/6000FTN"), //Runway 34 visual range is 6000 feet and trend is 
 		//neutral, with slash before trend being omitted
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			6000, metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			6000, metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Modifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
@@ -1334,8 +1338,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R34/////FTN"), //Runway 34 visual range not reported (but the distance 
 		//unit is feet) and trend is neutral, with slash before trend being omitted
 		{metaf::ReportPart::METAR},
-		metaf::RunwayVisualRangeGroup(34, metaf::RunwayVisualRangeGroup::Designator::NONE,
-			metaf::RunwayVisualRangeGroup::Unit::FEET,
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 
@@ -1345,7 +1349,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16R/290155"), //Runway 16RIGHT state: wet and water patches, more than
 		//50% contaminated, deposits depth 1mm, friction coefficient 0.55
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+		metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1356,7 +1360,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16R//90155"), //Runway 16RIGHT state: not reported, more than
 		//50% contaminated, deposits depth 1mm, friction coefficient 0.55
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+		metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1367,7 +1371,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16R/2/0155"), //Runway 16RIGHT state: wet and water patches, 
 		//contamination extent not reported, deposits depth 1mm, friction coefficient 0.55
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+		metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1378,7 +1382,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16R/29//55"), //Runway 16RIGHT state: wet and water patches, more than
 		//50% contaminated, deposits depth not reported, friction coefficient 0.55
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+		metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1389,7 +1393,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R16R/2901//"), //Runway 16RIGHT state: wet and water patches, more than
 		//50% contaminated, deposits depth 1mm, friction coefficient not reported
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+		metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1399,7 +1403,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R33///////"), //Runway 33 state: not reported
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(33, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(33),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1409,18 +1413,18 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R21/SNOCLO"), //Runway 16RIGHT state: closed due to snow accumulation
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup::makeSnoclo(21, metaf::RunwayStateGroup::Designator::NONE),
+		metaf::RunwayStateGroup::makeSnoclo(metaf::Runway(21)),
 	},
 	{
 		std::string("R88/CLRD70"), //All runways state: cleared, friction coefficient 0.70
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup::makeClrd(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup::makeClrd(metaf::Runway(88),
 			metaf::RunwayStateGroup::SurfaceFriction(0.70)),
 	},
 	{
 		std::string("R88/0/////"), //All runways state: clear and dry
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1430,7 +1434,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/1/////"), //All runways state: damp
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::DAMP, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1440,7 +1444,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/2/////"), //All runways state: wet and water patches
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1450,7 +1454,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/3/////"), //All runways state: rime and frost covered
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::RIME_AND_FROST_COVERED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1460,7 +1464,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/4/////"), //All runways state: dry snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::DRY_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1470,7 +1474,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/5/////"), //All runways state: wet snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1480,7 +1484,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/6/////"), //All runways state: slush
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::SLUSH, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1490,7 +1494,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/7/////"), //All runways state: ice
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::ICE, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1500,7 +1504,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/8/////"), //All runways state: compacted or rolled snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::COMPACTED_OR_ROLLED_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1510,7 +1514,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/9/////"), //All runways state: frozen ruts or ridges
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::FROZEN_RUTS_OR_RIDGES, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1521,7 +1525,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R88//1////"), //All runways state: contamination less than 10 
 		//percent of runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::LESS_THAN_10_PERCENT,
@@ -1532,7 +1536,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R88//2////"), //All runways state: contamination from 11 to 25 
 		//percent of runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::FROM_11_TO_25_PERCENT,
@@ -1543,7 +1547,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R88//5////"), //All runways state: contamination from 26 to 50 
 		//percent or runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::FROM_26_TO_50_PERCENT,
@@ -1554,7 +1558,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		std::string("R88//9////"), //All runways state: contamination of more than 51 
 		//percent or runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1564,7 +1568,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///90//"), //All runways state: deposits depth 90 mm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1574,7 +1578,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///92//"), //All runways state: deposits depth 10 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1584,7 +1588,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///93//"), //All runways state: deposits depth 15 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1594,7 +1598,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///94//"), //All runways state: deposits depth 20 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1604,7 +1608,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///95//"), //All runways state: deposits depth 25 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1614,7 +1618,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///96//"), //All runways state: deposits depth 30 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1624,7 +1628,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///97//"), //All runways state: deposits depth 10 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1634,7 +1638,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///98//"), //All runways state: deposits depth 40 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1644,7 +1648,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88///99//"), //All runways state: runway not operational
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1654,7 +1658,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////91"), //All runways state: braking action poor
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1665,7 +1669,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////92"), //All runways state: braking action medium poor
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1676,7 +1680,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////93"), //All runways state: braking action medium
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1687,7 +1691,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////94"), //All runways state: braking action medium good
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1698,7 +1702,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////95"), //All runways state: braking action good
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1709,7 +1713,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("R88/////99"), //All runways state: surface friction unreliable
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(88, metaf::RunwayStateGroup::Designator::NONE,
+		metaf::RunwayStateGroup(metaf::Runway(88),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,

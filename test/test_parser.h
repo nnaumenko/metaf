@@ -25,7 +25,7 @@ namespace test {
 		void testRealData(const std::vector<test::MetarTafRealData> &realTestData, bool taf);
 	};
 
-	struct CheckParserPerformance {
+	class CheckParserPerformance {
 	public:
 		 void run(const std::vector<MetarTafRealData> &testData);
 	};

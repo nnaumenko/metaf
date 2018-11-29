@@ -14,9 +14,10 @@ namespace test {
 	public:
 		void run();
 	private:
+		void testRunway();
 		void testGroup();
 		void testPlainTextGroup();
-		void testImmutableGroup();
+		void testFixedGroup();
 		void testLocationGroup();
 		void testReportTimeGroup();
 		void testTimeSpanGroup();

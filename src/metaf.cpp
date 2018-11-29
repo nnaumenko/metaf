@@ -19,23 +19,23 @@ using namespace metaf;
 ///////////////////////////////////////////////////////////////////////////////
 
 SyntaxGroup metaf::getSyntaxGroup(const Group & group) {
-	if (auto immutableGroup = std::get_if<ImmutableGroup>(&group)) {
-		switch (immutableGroup->type) {
-			case ImmutableGroup::Type::METAR:
+	if (auto fixedGroup = std::get_if<FixedGroup>(&group)) {
+		switch (fixedGroup->type) {
+			case FixedGroup::Type::METAR:
 			return(SyntaxGroup::METAR);
-			case ImmutableGroup::Type::SPECI:
+			case FixedGroup::Type::SPECI:
 			return(SyntaxGroup::SPECI);
-			case ImmutableGroup::Type::TAF:
+			case FixedGroup::Type::TAF:
 			return(SyntaxGroup::TAF);
-			case ImmutableGroup::Type::COR:
+			case FixedGroup::Type::COR:
 			return(SyntaxGroup::COR);
-			case ImmutableGroup::Type::AMD:
+			case FixedGroup::Type::AMD:
 			return(SyntaxGroup::AMD);
-			case ImmutableGroup::Type::NIL:
+			case FixedGroup::Type::NIL:
 			return(SyntaxGroup::NIL);
-			case ImmutableGroup::Type::CNL:
+			case FixedGroup::Type::CNL:
 			return(SyntaxGroup::CNL);
-			case ImmutableGroup::Type::RMK:
+			case FixedGroup::Type::RMK:
 			return(SyntaxGroup::RMK);
 			default:
 			return(SyntaxGroup::OTHER);
@@ -54,8 +54,8 @@ void GroupVisitor::visit(const Group & group) {
 		this->visitPlainTextGroup(get<PlainTextGroup>(group));
 		return;
 	}
-	if (holds_alternative<ImmutableGroup>(group)) {
-		this->visitImmutableGroup(get<ImmutableGroup>(group));
+	if (holds_alternative<FixedGroup>(group)) {
+		this->visitFixedGroup(get<FixedGroup>(group));
 		return;
 	}
 	if (holds_alternative<LocationGroup>(group)) {
@@ -153,6 +153,33 @@ void GroupVisitor::visit(const vector<Group> & groups) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+Runway::Runway(unsigned int n, Designator d) : 
+	number(n), designator(d) {}
+
+Runway::Designator Runway::designatorFromChar(char c) {
+	switch (c) {
+		case 'R': return(Designator::RIGHT);
+		case 'C': return(Designator::CENTER);
+		case 'L': return(Designator::LEFT);
+		case '\0':
+		case ' ': return(Designator::NONE);
+		default:  return(Designator::UNKNOWN);
+	}
+}
+
+Runway::Designator Runway::designatorFromString(const string & s) {
+	static const auto designatorLength = 1;
+	if (!s.length()) return(Designator::NONE);
+	if (s.length() != designatorLength) return(Designator::UNKNOWN);
+	return(designatorFromChar(s[0]));
+}
+
+bool metaf::operator ==(const Runway & lhs, const Runway & rhs) {
+	return (lhs.number == rhs.number && lhs.designator == rhs.designator);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 PlainTextGroup::PlainTextGroup(std::string text) {
 	strncpy(this->text, text.c_str(), textMaxLength);
 	this->text[PlainTextGroup::textMaxLength] = '\0';
@@ -171,13 +198,13 @@ bool metaf::operator ==(const PlainTextGroup & lhs, const PlainTextGroup & rhs) 
 
 ///////////////////////////////////////////////////////////////////////////////
 
-struct ImmutableGroup::GroupData{
+struct FixedGroup::GroupData{
 	Type type;
 	ReportPart reportPart;
 	std::string str;
 };
 
-const std::vector<struct ImmutableGroup::GroupData> ImmutableGroup::group_data = {
+const std::vector<struct FixedGroup::GroupData> FixedGroup::group_data = {
 	{Type::METAR, ReportPart::HEADER, std::string("METAR")},
 
 	{Type::SPECI, ReportPart::HEADER, std::string("SPECI")},
@@ -227,13 +254,17 @@ const std::vector<struct ImmutableGroup::GroupData> ImmutableGroup::group_data =
 	{Type::INTER, ReportPart::TAF, std::string("INTER")},
 
 	{Type::RMK, ReportPart::METAR, std::string("RMK")},
-	{Type::RMK, ReportPart::TAF, std::string("RMK")}
+	{Type::RMK, ReportPart::TAF, std::string("RMK")},
+
+	{Type::SKC, ReportPart::METAR, std::string("SKC")},
+	{Type::SKC, ReportPart::TAF, std::string("SKC")},
+
 };
 
 
-ImmutableGroup::ImmutableGroup(ImmutableGroup::Type t) : type(t) {}
+FixedGroup::FixedGroup(FixedGroup::Type t) : type(t) {}
 
-bool ImmutableGroup::parse(const string & group, ReportPart reportPart){
+bool FixedGroup::parse(const string & group, ReportPart reportPart){
 	for (const auto & data : group_data) {
 		if (data.reportPart != reportPart) continue;
 		if (data.str == group) {
@@ -244,7 +275,7 @@ bool ImmutableGroup::parse(const string & group, ReportPart reportPart){
 	return(false);
 }
 
-bool metaf::operator ==(const ImmutableGroup & lhs, const ImmutableGroup & rhs){
+bool metaf::operator ==(const FixedGroup & lhs, const FixedGroup & rhs){
 	return(lhs.type == rhs.type);
 }
 
@@ -397,11 +428,11 @@ bool metaf::operator ==(const ProbabilityGroup & lhs, const ProbabilityGroup & r
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WindGroup::WindGroup(Unit u) : 
+WindGroup::WindGroup(SpeedUnit u) : 
 	directionReported(false), speedReported(false), gustSpeedReported(false), unit(u) {}
 
 WindGroup::WindGroup(unsigned int dir, 
-	Unit u, 
+	SpeedUnit u, 
 	unsigned int s, 
 	unsigned int gs) :
 		direction(dir),
@@ -413,7 +444,7 @@ WindGroup::WindGroup(unsigned int dir,
 		gustSpeedReported(gs), 
 		unit(u) {}
 
-WindGroup WindGroup::makeVariableDirection (Unit unit, 
+WindGroup WindGroup::makeVariableDirection (SpeedUnit unit, 
 		unsigned int speed, 
 		unsigned int gustSpeed)
 {
@@ -469,10 +500,10 @@ bool WindGroup::parse(const string & group, ReportPart reportPart) {
 		gustSpeed = static_cast<unsigned int>(stoi(match.str(matchGustSpeed)));
 		gustSpeedReported = true;
 	}
-	unit = Unit::UNKNOWN;
-	if (match.length(matchKt)) unit = Unit::KNOTS;
-	if (match.length(matchKmh)) unit = Unit::KILOMETERS_PER_HOUR;
-	if (match.length(matchMps)) unit = Unit::METERS_PER_SECOND;
+	unit = SpeedUnit::UNKNOWN;
+	if (match.length(matchKt)) unit = SpeedUnit::KNOTS;
+	if (match.length(matchKmh)) unit = SpeedUnit::KILOMETERS_PER_HOUR;
+	if (match.length(matchMps)) unit = SpeedUnit::METERS_PER_SECOND;
 	return(true);
 }
 
@@ -560,7 +591,7 @@ bool metaf::operator ==(const WindShearGroup & lhs, const WindShearGroup & rhs){
 VisibilityGroup VisibilityGroup::makeVisibilityMeters(Direction direction) {
 	VisibilityGroup group;
 	group.direction = direction;
-	group.unit = VisibilityGroup::Unit::METERS;
+	group.unit = DistanceUnit::METERS;
 	return(group);
 }
 
@@ -570,7 +601,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMeters(unsigned int visibility,
 	VisibilityGroup group;
 	group.reported = true;
 	group.direction = direction;
-	group.unit = VisibilityGroup::Unit::METERS;
+	group.unit = DistanceUnit::METERS;
 	group.integer = visibility;
 	return(group);
 }
@@ -578,7 +609,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMeters(unsigned int visibility,
 VisibilityGroup VisibilityGroup::makeVisibilityMiles() {
 	VisibilityGroup group;
 	group.direction = VisibilityGroup::Direction::NONE;
-	group.unit = VisibilityGroup::Unit::STATUTE_MILES;
+	group.unit = DistanceUnit::STATUTE_MILES;
 	return(group);
 }
 
@@ -589,7 +620,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMiles(unsigned int integer,
 {
 	VisibilityGroup group;
 	group.direction = VisibilityGroup::Direction::NONE;
-	group.unit = VisibilityGroup::Unit::STATUTE_MILES;
+	group.unit = DistanceUnit::STATUTE_MILES;
 	group.reported = true;
 	group.integer = integer;
 	group.numerator = numerator;
@@ -601,7 +632,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMiles(unsigned int integer,
 VisibilityGroup VisibilityGroup::makeVisibilityMilesIncomplete(unsigned int integer) {
 	VisibilityGroup group;
 	group.direction = VisibilityGroup::Direction::NONE;
-	group.unit = VisibilityGroup::Unit::STATUTE_MILES;
+	group.unit = DistanceUnit::STATUTE_MILES;
 	group.reported = true;
 	group.incompleteInteger = true;
 	group.integer = integer;
@@ -640,19 +671,19 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 	integer = 0;
 	numerator = 0;
 	denominator = 0;
-	unit = Unit::UNKNOWN;
+	unit = DistanceUnit::UNKNOWN;
 	direction = Direction::UNKNOWN;
 	reported = false;
 	lessThan = false;
 	incompleteInteger = false;
 	if (match.length(matchVisNr)) {
 		direction = Direction::NONE;
-		unit = Unit::METERS;
-		if (match.length(matchVisNrSm)) unit = Unit::STATUTE_MILES;
+		unit = DistanceUnit::METERS;
+		if (match.length(matchVisNrSm)) unit = DistanceUnit::STATUTE_MILES;
 		return(true);
 	}
 	if (match.length(matchVisMeters)) {
-		unit = Unit::METERS;
+		unit = DistanceUnit::METERS;
 		integer = static_cast<unsigned int>(stoi(match.str(matchVisMeters)));
 		direction = Direction::NONE;
 		if (match.length(matchNDV)) direction = Direction::NDV;
@@ -669,7 +700,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 	}
 	if (match.length(matchIncompleteInt)) {
 		integer = static_cast<unsigned int>(stoi(match.str(matchIncompleteInt)));
-		unit = Unit::STATUTE_MILES;
+		unit = DistanceUnit::STATUTE_MILES;
 		direction = Direction::NONE;
 		incompleteInteger = true;
 		reported = true;
@@ -678,7 +709,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 	if (match.length(matchFractionNumOrInt)) {
 		if (match.length(matchFractionM)) lessThan = true;
 		integer = static_cast<unsigned int>(stoi(match.str(matchFractionNumOrInt)));
-		unit = Unit::STATUTE_MILES;
+		unit = DistanceUnit::STATUTE_MILES;
 		direction = Direction::NONE;
 		if (match.length(matchFractionDen)) {
 			denominator = static_cast<unsigned int>(stoi(match.str(matchFractionDen)));
@@ -696,14 +727,14 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 }
 
 bool VisibilityGroup::isValid() const {
-	if (unit == Unit::METERS) {
+	if (unit == DistanceUnit::METERS) {
 		if (!reported) return(true);
 		if (direction == Direction::UNKNOWN) return(false);
 		if (incompleteInteger || lessThan) return(false);
 		if (!integer || numerator || denominator) return(false);
 		return(true);
 	}
-	if (unit == Unit::STATUTE_MILES) {
+	if (unit == DistanceUnit::STATUTE_MILES) {
 		if (!reported) return(true);
 		bool fraction = numerator && denominator;
 		if ((numerator && !denominator) || (!numerator && denominator)) return(false);
@@ -808,7 +839,7 @@ bool metaf::operator ==(const CloudGroup & lhs, const CloudGroup & rhs){
 	if (lhs.amount != rhs.amount || 
 		lhs.type != rhs.type ||
 		lhs.heightReported != rhs.heightReported ||
-		lhs.unit != rhs.unit) return(false);
+		lhs.heightUnit != rhs.heightUnit) return(false);
 	if (lhs.heightReported && (lhs.height != rhs.height)) return(false);
 	return(true);
 }
@@ -912,6 +943,14 @@ bool WeatherGroup::parse(const string & group, ReportPart reportPart) {
 		}
 	}
 	return(true);
+}
+
+vector<WeatherGroup::Weather> WeatherGroup::weatherToVector() const {
+	vector<Weather> result;
+	for (auto i=0; i<weatherSize; i++) {
+		result.push_back(weather[i]);
+	}
+	return(result);
 }
 
 WeatherGroup::Modifier WeatherGroup::modifierFromString(const string & str){
@@ -1118,97 +1157,78 @@ bool metaf::operator ==(const PressureGroup & lhs, const PressureGroup & rhs){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunwayVisualRangeGroup::RunwayVisualRangeGroup(unsigned int rNo, 
-	Designator d, 
-	Unit u,
+RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r,
+	DistanceUnit u,
 	Trend t) : 
-		runwayNumber(rNo), 
-		runwayDesignator(d), 
-		visibilityReported(false), 
+		runway(r), 
+		visRangeReported(false), 
 		unit(u),
 		trend(t) {}
 
-RunwayVisualRangeGroup::RunwayVisualRangeGroup(unsigned int rNo, 
-	Designator d, 
+RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r, 
 	unsigned int vis, 
-	Unit u,
+	DistanceUnit u,
 	Modifier m,
 	Trend t) :
-		runwayNumber(rNo),
-		runwayDesignator(d),
-		visibility(vis),
+		runway(r),
+		visRange(vis),
 		visModifier(m),
-		visibilityReported(true),
-		varVisibilityReported(false),
+		visRangeReported(true),
+		varVisRangeReported(false),
 		unit(u),
 		trend(t) {}
 
-RunwayVisualRangeGroup::RunwayVisualRangeGroup(unsigned int rNo,
-	Designator d,
+RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r,
 	unsigned int minVis,
 	unsigned int maxVis,
-	Unit u,
+	DistanceUnit u,
 	Modifier minVisMod,
 	Modifier maxVisMod,
 	Trend t) :
-		runwayNumber(rNo),
-		runwayDesignator(d),
-		visibility(minVis),
+		runway(r),
+		visRange(minVis),
 		visModifier(minVisMod),
-		varVisibility(maxVis),
+		varVisRange(maxVis),
 		varVisModifier(maxVisMod),
-		visibilityReported(true),
-		varVisibilityReported(true),
+		visRangeReported(true),
+		varVisRangeReported(true),
 		unit(u),
 		trend(t) {}
 
 bool RunwayVisualRangeGroup::parse(const string & group, ReportPart reportPart) {
-	static const regex runwayVisibilityRegex("R(\\d\\d)([RCL])?/"
+	static const regex runwayVisualRangeRegex("R(\\d\\d)([RCL])?/"
 		"(?:[PM]?(////)|([PM])?(\\d\\d\\d\\d)(?:V([PM])?(\\d\\d\\d\\d))?)"
 		"(FT/?)?([UND/])?");
 	static const auto expectedMatchGroups = 10;
 	static const auto matchRunwayNo = 1;
 	static const auto matchDesignator = 2;
-	static const auto matchNotReportedVisibility = 3;
+	static const auto matchNotReportedVisRange = 3;
 	static const auto matchVisModifier = 4;
-	static const auto matchVisibility = 5;
+	static const auto matchVisRange = 5;
 	static const auto matchMaxVisModifier = 6;
-	static const auto matchMaxVisibility = 7;
+	static const auto matchMaxVisRange = 7;
 	static const auto matchUnit = 8;
 	static const auto matchTrend = 9;
 	smatch match;
 	if (reportPart!=ReportPart::METAR) return(false);
-	if (!regex_match(group, match, runwayVisibilityRegex)) return(false);
+	if (!regex_match(group, match, runwayVisualRangeRegex)) return(false);
 	if (match.size() != expectedMatchGroups) return(false);
-	runwayNumber = static_cast<unsigned int>(stoi(match.str(matchRunwayNo)));
-	runwayDesignator = runwayDesignatorFromString(match.str(matchDesignator));
+	runway = Runway (static_cast<unsigned int>(stoi(match.str(matchRunwayNo))),
+		Runway::designatorFromString(match.str(matchDesignator)));
 	unit = unitFromString(match.str(matchUnit));
 	trend = trendFromString(match.str(matchTrend));
-	visibilityReported = false;
-	if (match.length(matchNotReportedVisibility)) return(true);
-	visibilityReported = true;
+	visRangeReported = false;
+	if (match.length(matchNotReportedVisRange)) return(true);
+	visRangeReported = true;
 	visModifier = modifierFromString(match.str(matchVisModifier));
-	visibility = static_cast<unsigned int>(stoi(match.str(matchVisibility)));
-	varVisibilityReported = false;
-	if (match.length(matchMaxVisibility)) {
+	visRange = static_cast<unsigned int>(stoi(match.str(matchVisRange)));
+	varVisRangeReported = false;
+	if (match.length(matchMaxVisRange)) {
 		varVisModifier = modifierFromString(match.str(matchMaxVisModifier));
-		varVisibility = static_cast<unsigned int>(stoi(match.str(matchMaxVisibility)));
-		varVisibilityReported = true;
+		varVisRange = static_cast<unsigned int>(stoi(match.str(matchMaxVisRange)));
+		varVisRangeReported = true;
 	}
 	return(true);
-}
-
-RunwayVisualRangeGroup::Designator RunwayVisualRangeGroup::runwayDesignatorFromString(
-	const string & str)
-{
-	static const auto left = "L";
-	static const auto right = "R";
-	static const auto center = "C";
-	if (!str.length()) return(Designator::NONE);
-	if (str == left) return(Designator::LEFT);
-	if (str == right) return(Designator::RIGHT);
-	if (str == center) return(Designator::CENTER);
-	return(Designator::UNKNOWN);
 }
 
 RunwayVisualRangeGroup::Modifier RunwayVisualRangeGroup::modifierFromString(
@@ -1222,14 +1242,14 @@ RunwayVisualRangeGroup::Modifier RunwayVisualRangeGroup::modifierFromString(
 	return(Modifier::UNKNOWN);
 }
 
-RunwayVisualRangeGroup::Unit RunwayVisualRangeGroup::unitFromString(
+DistanceUnit RunwayVisualRangeGroup::unitFromString(
 	const string & str)
 {
 	static const auto unitFeet1 = "FT";
 	static const auto unitFeet2 = "FT/";
-	if (!str.length()) return(Unit::METERS);
-	if (str == unitFeet1 || str == unitFeet2) return(Unit::FEET);
-	return(Unit::UNKNOWN);
+	if (!str.length()) return(DistanceUnit::METERS);
+	if (str == unitFeet1 || str == unitFeet2) return(DistanceUnit::FEET);
+	return(DistanceUnit::UNKNOWN);
 }
 
 RunwayVisualRangeGroup::Trend RunwayVisualRangeGroup::trendFromString(
@@ -1249,55 +1269,45 @@ RunwayVisualRangeGroup::Trend RunwayVisualRangeGroup::trendFromString(
 bool metaf::operator ==(const RunwayVisualRangeGroup & lhs, 
 	const RunwayVisualRangeGroup & rhs)
 {
-	if (lhs.runwayNumber != rhs.runwayNumber || 
-		lhs.runwayDesignator != rhs.runwayDesignator ||
-		lhs.unit != rhs.unit ||
+	if (!(lhs.runway == rhs.runway)) return(false);
+	if (lhs.unit != rhs.unit ||
 		lhs.trend != rhs.trend ||
-		lhs.visibilityReported != rhs.visibilityReported) return(false);
-	if (!lhs.visibilityReported) return(true);
-	if (lhs.visibility != rhs.visibility ||
+		lhs.visRangeReported != rhs.visRangeReported) return(false);
+	if (!lhs.visRangeReported) return(true);
+	if (lhs.visRange != rhs.visRange ||
 		lhs.visModifier != rhs.visModifier ||
-		lhs.varVisibilityReported != rhs.varVisibilityReported) return(false);
-	if (!lhs.varVisibilityReported) return(true);
-	if (lhs.varVisibility != rhs.varVisibility ||
+		lhs.varVisRangeReported != rhs.varVisRangeReported) return(false);
+	if (!lhs.varVisRangeReported) return(true);
+	if (lhs.varVisRange != rhs.varVisRange ||
 		lhs.varVisModifier != rhs.varVisModifier) return(false);
 	return(true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RunwayStateGroup::RunwayStateGroup(unsigned int rNo,
-	Designator rd,
+RunwayStateGroup::RunwayStateGroup(const Runway & r,
 	Status s,
 	Deposits d,
 	Extent e,
 	DepositDepth dd,
 	SurfaceFriction sf) :
-		runwayNumber(rNo),
-		runwayDesignator(rd),
+		runway(r),
 		status(s),
 		deposits(d),
 		contaminationExtent(e),
 		depositDepth (std::move(dd)),
 		surfaceFriction (std::move(sf)) {}
 
-RunwayStateGroup RunwayStateGroup::makeSnoclo(unsigned int runwayNo,
-	Designator designator)
-{
+RunwayStateGroup RunwayStateGroup::makeSnoclo(const Runway & r) {
 	RunwayStateGroup group;
-	group.runwayNumber = runwayNo;
-	group.runwayDesignator = designator;
+	group.runway = Runway(r);
 	group.status = RunwayStateGroup::Status::SNOCLO;
 	return(group);
 }
 
-RunwayStateGroup RunwayStateGroup::makeClrd(unsigned int runwayNo,
-	Designator designator,
-	SurfaceFriction sf)
-{
+RunwayStateGroup RunwayStateGroup::makeClrd(const Runway & r, SurfaceFriction sf) {
 	RunwayStateGroup group;
-	group.runwayNumber = runwayNo;
-	group.runwayDesignator = designator;
+	group.runway = Runway(r);
 	group.status = RunwayStateGroup::Status::CLRD;
 	group.surfaceFriction = std::move(sf);
 	return(group);
@@ -1324,8 +1334,8 @@ bool RunwayStateGroup::parse(const string & group, ReportPart reportPart) {
 	if (reportPart!=ReportPart::METAR) return(false);
 	if (!regex_match(group, match, runwayStateRegex)) return(false);
 	if (match.size() != expectedMatchGroups) return(false);
-	runwayNumber = static_cast<unsigned int>(stoi(match.str(matchRunwayNo)));
-	runwayDesignator = runwayDesignatorFromString(match.str(matchDesignator));
+	runway = Runway (static_cast<unsigned int>(stoi(match.str(matchRunwayNo))),
+		Runway::designatorFromString(match.str(matchDesignator)));
 	status = Status::NONE;
 	if (match.length(matchSnoclo)) status = Status::SNOCLO;
 	if (match.length(matchClrd)) status = Status::CLRD;
@@ -1334,17 +1344,6 @@ bool RunwayStateGroup::parse(const string & group, ReportPart reportPart) {
 	depositDepth = DepositDepth(match.str(matchDepositDepth));
 	surfaceFriction = SurfaceFriction(match.str(matchSurfaceFriction));
 	return(true);
-}
-
-RunwayStateGroup::Designator RunwayStateGroup::runwayDesignatorFromString(const string & str) {
-	static const auto left = "L";
-	static const auto right = "R";
-	static const auto center = "C";
-	if (!str.length()) return(Designator::NONE);
-	if (str == left) return(Designator::LEFT);
-	if (str == right) return(Designator::RIGHT);
-	if (str == center) return(Designator::CENTER);
-	return(Designator::UNKNOWN);
 }
 
 RunwayStateGroup::Deposits RunwayStateGroup::depositsFromString(const string & str) {
@@ -1364,9 +1363,8 @@ RunwayStateGroup::Extent RunwayStateGroup::extentFromString(const string & str){
 }
 
 bool metaf::operator ==(const RunwayStateGroup & lhs, const RunwayStateGroup & rhs){
-	if (lhs.runwayNumber != rhs.runwayNumber || 
-		lhs.runwayDesignator != rhs.runwayDesignator ||
-		lhs.status != rhs.status) return(false);
+	if (!(lhs.runway == rhs.runway)) return(false);
+	if (lhs.status != rhs.status) return(false);
 	if (lhs.status != RunwayStateGroup::Status::NONE) return(true);
 	return(lhs.deposits == rhs.deposits &&
 		lhs.contaminationExtent == rhs.contaminationExtent &&
@@ -1738,20 +1736,32 @@ bool Parser::parse(const string & metarTafString) {
 	while (iter!=sregex_token_iterator() && !reportEnd && state!=State::ERROR) {
 		static const char reportEndChar = '=';
 		string groupString = *iter;
+
 		if (groupString.back() == reportEndChar) {
 			reportEnd = true;
 			groupString.pop_back();
 		}
+
 		if (groupString.length()) {
 			Group group;
+
 			do {
 				group = GroupParser::parse(groupString, reportPartFromState(state));
 				state = transition(state, getSyntaxGroup(group));
 			} while(state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
-			result.push_back(group);
+			
+			const bool groupMerged = result.size() ? 
+				std::visit([](auto&& previousGroup, auto && currentGroup) -> bool {
+					return (previousGroup.nextGroup(currentGroup));
+				}, result.back(), group) : 
+				false;
+
+			if (!groupMerged) result.push_back(group);
 		}
+
 		iter++;
 	}
+
 	state = finalTransition(state);
 	return(error == Error::NONE);
 }

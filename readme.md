@@ -25,6 +25,7 @@ This program is compiled to Webassembly using [Emscripten](http://emscripten.org
 ### Main program
 
 Main program is compiled as follows (no practical use yet in current version):
+
     emmake make release
 
 ### Unit tests

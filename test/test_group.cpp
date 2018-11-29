@@ -11,9 +11,10 @@
 #include <type_traits>
 
 void test::TestGroup::run() {
+	testRunway();
 	testGroup();
 	testPlainTextGroup();
-	testImmutableGroup();
+	testFixedGroup();
 	testLocationGroup();
 	testReportTimeGroup();
 	testTimeSpanGroup();
@@ -46,6 +47,83 @@ void test::TestGroup::testGroup() {
 		//Confirm that the group occupies a continuous memory region
 		//The point is to simplify passing Group between wasm and js
 		TEST_ASSERT(std::is_standard_layout<metaf::Group>::value);
+	}
+	TEST_END();
+}
+
+void test::TestGroup::testRunway() {
+	TEST_BEGIN();
+	{
+		//Confirm that default Runway structs are equal
+		const metaf::Runway r1;
+		const metaf::Runway r2;
+		TEST_ASSERT(r1 == r2);
+	}
+	{
+		//Confirm that Runway structs initialised with the same data are equal
+		metaf::Runway r1;
+		r1.number = 21;
+		r1.designator = metaf::Runway::Designator::LEFT;
+		metaf::Runway r2;
+		r2.number = 21;
+		r2.designator = metaf::Runway::Designator::LEFT;
+		TEST_ASSERT(r1 == r2);
+	}
+	{
+		//Confirm that Runway structs initialised with the different data are not equal
+		metaf::Runway r;
+		r.number = 21;
+		r.designator = metaf::Runway::Designator::LEFT;
+		metaf::Runway r1(r);
+		r1.number = 22;
+		metaf::Runway r2(r);
+		r2.designator = metaf::Runway::Designator::NONE;
+		TEST_ASSERT(!(r == r1));
+		TEST_ASSERT(!(r == r2));
+	}
+	{
+		//Confirm that constructor initialises the Runway struct with correct data
+		const metaf::Runway r(25, metaf::Runway::Designator::NONE);
+		metaf::Runway r1;
+		r1.number = 25;
+		r1.designator = metaf::Runway::Designator::NONE;
+		TEST_ASSERT(r == r1);
+	}
+	{
+		//Confirm that designatorFromChar correctly decodes a runway designator
+		TEST_ASSERT(metaf::Runway::designatorFromChar('R') == 
+			metaf::Runway::Designator::RIGHT);
+		TEST_ASSERT(metaf::Runway::designatorFromChar('C') == 
+			metaf::Runway::Designator::CENTER);
+		TEST_ASSERT(metaf::Runway::designatorFromChar('L') == 
+			metaf::Runway::Designator::LEFT);
+		TEST_ASSERT(metaf::Runway::designatorFromChar(' ') == 
+			metaf::Runway::Designator::NONE);
+		TEST_ASSERT(metaf::Runway::designatorFromChar('\0') == 
+			metaf::Runway::Designator::NONE);
+		TEST_ASSERT(metaf::Runway::designatorFromChar('M') == 
+			metaf::Runway::Designator::UNKNOWN);
+		TEST_ASSERT(metaf::Runway::designatorFromChar('5') == 
+			metaf::Runway::Designator::UNKNOWN);
+	}
+	{
+		//Confirm that designatorFromString correctly decodes a runway designator
+		TEST_ASSERT(metaf::Runway::designatorFromString("R") == 
+			metaf::Runway::Designator::RIGHT);
+		TEST_ASSERT(metaf::Runway::designatorFromString("C") == 
+			metaf::Runway::Designator::CENTER);
+		TEST_ASSERT(metaf::Runway::designatorFromString("L") == 
+			metaf::Runway::Designator::LEFT);
+		TEST_ASSERT(metaf::Runway::designatorFromString(" ") == 
+			metaf::Runway::Designator::NONE);
+		TEST_ASSERT(metaf::Runway::designatorFromString("\0") == 
+			metaf::Runway::Designator::NONE);
+		TEST_ASSERT(metaf::Runway::designatorFromString("") == 
+			metaf::Runway::Designator::NONE);
+		TEST_ASSERT(metaf::Runway::designatorFromString("X") == 
+			metaf::Runway::Designator::UNKNOWN);
+		TEST_ASSERT(metaf::Runway::designatorFromString("RR") == 
+			metaf::Runway::Designator::UNKNOWN);
 	}
 	TEST_END();
 }
@@ -88,36 +166,36 @@ void test::TestGroup::testPlainTextGroup() {
 	TEST_END();
 }
 
-void test::TestGroup::testImmutableGroup() {
+void test::TestGroup::testFixedGroup() {
 	TEST_BEGIN();
 	{
 		//Confirm that default groups are equal
-		const metaf::ImmutableGroup group1;
-		const metaf::ImmutableGroup group2;
+		const metaf::FixedGroup group1;
+		const metaf::FixedGroup group2;
 		TEST_ASSERT(group1 == group2);
 	}
 	{
 		//Confirm that groups holding the same type are equal 
-		static const auto type = metaf::ImmutableGroup::Type::SPECI;
-		metaf::ImmutableGroup group1;
-		metaf::ImmutableGroup group2;
+		static const auto type = metaf::FixedGroup::Type::SPECI;
+		metaf::FixedGroup group1;
+		metaf::FixedGroup group2;
 		group1.type = type;
 		group2.type = type;
 		TEST_ASSERT(group1 == group2);
 	}
 	{
 		//Confirm that groups holding the different type are not equal 
-		metaf::ImmutableGroup group;
-		group.type = metaf::ImmutableGroup::Type::METAR;
-		metaf::ImmutableGroup group1(group);
-		group1.type = metaf::ImmutableGroup::Type::SPECI;
+		metaf::FixedGroup group;
+		group.type = metaf::FixedGroup::Type::METAR;
+		metaf::FixedGroup group1(group);
+		group1.type = metaf::FixedGroup::Type::SPECI;
 		TEST_ASSERT(!(group == group1));
 	}
 	{
 		//Confirm that constructor initialises the group with correct type
-		static const auto type = metaf::ImmutableGroup::Type::METAR;
-		const metaf::ImmutableGroup group(type);
-		metaf::ImmutableGroup group1;
+		static const auto type = metaf::FixedGroup::Type::METAR;
+		const metaf::FixedGroup group(type);
+		metaf::FixedGroup group1;
 		group1.type = type;
 		TEST_ASSERT(group == group1);
 	}
@@ -206,7 +284,7 @@ void test::TestGroup::testReportTimeGroup() {
 		static const auto day = 29;
 		static const auto hour = 23;
 		static const auto minute = 55;
-		metaf::ReportTimeGroup group(day, hour, minute);
+		const metaf::ReportTimeGroup group(day, hour, minute);
 		metaf::ReportTimeGroup group1;
 		group1.day = day;
 		group1.hour = hour;
@@ -451,7 +529,7 @@ void test::TestGroup::testWindGroup() {
 		static const auto speedReported = true;
 		static const auto gustSpeed = 20;
 		static const auto gustSpeedReported = true;
-		static const auto unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		static const auto unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1;
 		metaf::WindGroup group2;
 		group1.direction = direction;
@@ -480,7 +558,7 @@ void test::TestGroup::testWindGroup() {
 		group.speedReported = true;
 		group.gustSpeed = 20;
 		group.gustSpeedReported = true;
-		group.unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1(group);
 		group1.direction = 180;
 		TEST_ASSERT(group == group1);
@@ -494,7 +572,7 @@ void test::TestGroup::testWindGroup() {
 		group.speedReported = true;
 		group.gustSpeed = 20;
 		group.gustSpeedReported = true;
-		group.unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1(group);
 		group1.direction = 180;
 		TEST_ASSERT(group == group1);
@@ -508,7 +586,7 @@ void test::TestGroup::testWindGroup() {
 		group.speedReported = false;
 		group.gustSpeed = 20;
 		group.gustSpeedReported = true;
-		group.unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1(group);
 		group1.speed = 20;
 		TEST_ASSERT(group == group1);
@@ -522,7 +600,7 @@ void test::TestGroup::testWindGroup() {
 		group.speedReported = true;
 		group.gustSpeed = 20;
 		group.gustSpeedReported = false;
-		group.unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1(group);
 		group1.gustSpeed = 30;
 		TEST_ASSERT(group == group1);
@@ -538,7 +616,7 @@ void test::TestGroup::testWindGroup() {
 		group.speedReported = true;
 		group.gustSpeed = 20;
 		group.gustSpeedReported = true;
-		group.unit = metaf::WindGroup::Unit::METERS_PER_SECOND;
+		group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
 		metaf::WindGroup group1(group);
 		group1.direction = 240;
 		metaf::WindGroup group2(group);
@@ -554,7 +632,7 @@ void test::TestGroup::testWindGroup() {
 		metaf::WindGroup group7(group);
 		group7.gustSpeedReported = false;
 		metaf::WindGroup group8(group);
-		group8.unit = metaf::WindGroup::Unit::KNOTS;
+		group8.unit = metaf::SpeedUnit::KNOTS;
 		TEST_ASSERT(!(group == group1));
 		TEST_ASSERT(!(group == group2));
 		TEST_ASSERT(!(group == group3));
@@ -566,7 +644,7 @@ void test::TestGroup::testWindGroup() {
 	}
 	{
 		//Confirm that 'not reported' constructor initialises the group with correct data
-		static const auto unit = metaf::WindGroup::Unit::KNOTS;
+		static const auto unit = metaf::SpeedUnit::KNOTS;
 		const metaf::WindGroup group(unit);
 		metaf::WindGroup group1;
 		group1.unit = unit;
@@ -575,7 +653,7 @@ void test::TestGroup::testWindGroup() {
 	{
 		//Confirm that 'reported' constructor initialises the group with correct data
 		static const auto direction = 240;
-		static const auto unit = metaf::WindGroup::Unit::KNOTS;
+		static const auto unit = metaf::SpeedUnit::KNOTS;
 		static const auto speed = 5;
 		static const auto gustSpeed = 12;
 		const metaf::WindGroup group(direction, unit, speed, gustSpeed);
@@ -592,13 +670,13 @@ void test::TestGroup::testWindGroup() {
 	{
 		//Confirm that 'makeVariableDirection' named constructor initialises the group 
 		//with correct data
-		static const auto unit = metaf::WindGroup::Unit::KNOTS;
+		static const auto unit = metaf::SpeedUnit::KNOTS;
 		static const auto speed = 5;
 		static const auto gustSpeed = 12;
 		const metaf::WindGroup group = 
 			metaf::WindGroup::makeVariableDirection(unit, speed, gustSpeed);
 		metaf::WindGroup group1;
-		group1.unit = metaf::WindGroup::Unit::KNOTS;
+		group1.unit = metaf::SpeedUnit::KNOTS;
 		group1.speed = speed;
 		group1.gustSpeed = gustSpeed;
 		group1.directionReported = true;
@@ -668,7 +746,7 @@ void test::TestGroup::testWindShearGroup() {
 		static const auto direction = 240;
 		static const auto height = 4000;
 		static const auto speed = 20;
-		static const auto speedUnit = metaf::WindShearGroup::SpeedUnit::KNOTS;
+		static const auto speedUnit = metaf::SpeedUnit::KNOTS;
 		metaf::WindShearGroup group1;
 		metaf::WindShearGroup group2;
 		group1.direction = direction;
@@ -687,7 +765,7 @@ void test::TestGroup::testWindShearGroup() {
 		group.direction = 240;
 		group.height = 4000;
 		group.speed = 20;
-		group.speedUnit = metaf::WindShearGroup::SpeedUnit::KNOTS;
+		group.speedUnit = metaf::SpeedUnit::KNOTS;
 		metaf::WindShearGroup group1(group);
 		group1.direction = 180;
 		metaf::WindShearGroup group2(group);
@@ -695,7 +773,7 @@ void test::TestGroup::testWindShearGroup() {
 		metaf::WindShearGroup group3(group);
 		group3.speed = 22;
 		metaf::WindShearGroup group4(group);
-		group4.speedUnit = metaf::WindShearGroup::SpeedUnit::METERS_PER_SECOND;
+		group4.speedUnit = metaf::SpeedUnit::METERS_PER_SECOND;
 		TEST_ASSERT(!(group == group1));
 		TEST_ASSERT(!(group == group2));
 		TEST_ASSERT(!(group == group3));
@@ -706,7 +784,7 @@ void test::TestGroup::testWindShearGroup() {
 		static const auto direction = 240;
 		static const auto height = 4000;
 		static const auto speed = 20;
-		static const auto speedUnit = metaf::WindShearGroup::SpeedUnit::KNOTS;
+		static const auto speedUnit = metaf::SpeedUnit::KNOTS;
 		const metaf::WindShearGroup group(height, direction, speed, speedUnit);
 		metaf::WindShearGroup group1;
 		group1.height = height;
@@ -727,7 +805,7 @@ void test::TestGroup::testVisibilityGroup() {
 	}
 	{
 		//Confirm that groups holding the same value are equal 
-		static const auto unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		static const auto unit = metaf::DistanceUnit::STATUTE_MILES;
 		static const auto direction = metaf::VisibilityGroup::Direction::NONE;
 		static const auto integer = 1;
 		static const auto numerator = 3;
@@ -754,7 +832,7 @@ void test::TestGroup::testVisibilityGroup() {
 		//the following fields do NOT affect the comparison result:
 		//incompleteInteger, lessThan, integer, numerator, denominator
 		metaf::VisibilityGroup group;
-		group.unit = metaf::VisibilityGroup::Unit::METERS;
+		group.unit = metaf::DistanceUnit::METERS;
 		group.direction = metaf::VisibilityGroup::Direction::NDV;
 		metaf::VisibilityGroup group1(group);
 		group1.incompleteInteger = true;
@@ -776,10 +854,10 @@ void test::TestGroup::testVisibilityGroup() {
 		//Confirm that if visibility is not reported, unit and direction DO affect 
 		//the comparison result
 		metaf::VisibilityGroup group;
-		group.unit = metaf::VisibilityGroup::Unit::METERS;
+		group.unit = metaf::DistanceUnit::METERS;
 		group.direction = metaf::VisibilityGroup::Direction::NDV;
 		metaf::VisibilityGroup group1(group);
-		group1.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group1.unit = metaf::DistanceUnit::STATUTE_MILES;
 		metaf::VisibilityGroup group2(group);
 		group2.direction = metaf::VisibilityGroup::Direction::NONE;
 		TEST_ASSERT(!(group == group1));
@@ -789,7 +867,7 @@ void test::TestGroup::testVisibilityGroup() {
 		//Confirm that if visibility is reported but incomplete, lessThan, numerator, 
 		//and denominator do NOT affect the comparison results
 		metaf::VisibilityGroup group;
-		group.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group.unit = metaf::DistanceUnit::STATUTE_MILES;
 		group.direction = metaf::VisibilityGroup::Direction::NONE;
 		group.reported = true;
 		group.integer = 1;
@@ -808,7 +886,7 @@ void test::TestGroup::testVisibilityGroup() {
 		//Confirm that if visibility is reported but incomplete, integer DOES affect
 		//the comparison result
 		metaf::VisibilityGroup group;
-		group.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group.unit = metaf::DistanceUnit::STATUTE_MILES;
 		group.direction = metaf::VisibilityGroup::Direction::NONE;
 		group.reported = true;
 		group.integer = 1;
@@ -820,14 +898,14 @@ void test::TestGroup::testVisibilityGroup() {
 	{
 		//Confirm that if visibility is reported and complete, all fields affect comparison result
 		metaf::VisibilityGroup group;
-		group.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group.unit = metaf::DistanceUnit::STATUTE_MILES;
 		group.direction = metaf::VisibilityGroup::Direction::NONE;
 		group.reported = true;
 		group.integer = 1;
 		group.numerator = 3;
 		group.denominator = 4;
 		metaf::VisibilityGroup group1(group);
-		group1.unit = metaf::VisibilityGroup::Unit::METERS;
+		group1.unit = metaf::DistanceUnit::METERS;
 		metaf::VisibilityGroup group2(group);
 		group2.direction = metaf::VisibilityGroup::Direction::NW;
 		metaf::VisibilityGroup group3(group);
@@ -858,7 +936,7 @@ void test::TestGroup::testVisibilityGroup() {
 		const metaf::VisibilityGroup group = 
 			metaf::VisibilityGroup::makeVisibilityMeters(direction);
 		metaf::VisibilityGroup group1;
-		group1.unit = metaf::VisibilityGroup::Unit::METERS;
+		group1.unit = metaf::DistanceUnit::METERS;
 		group1.reported = false;
 		group1.direction = direction;
 		TEST_ASSERT(group == group1);
@@ -871,7 +949,7 @@ void test::TestGroup::testVisibilityGroup() {
 		const metaf::VisibilityGroup group = 
 			metaf::VisibilityGroup::makeVisibilityMeters(visibility, direction);
 		metaf::VisibilityGroup group1;
-		group1.unit = metaf::VisibilityGroup::Unit::METERS;
+		group1.unit = metaf::DistanceUnit::METERS;
 		group1.reported = true;
 		group1.integer = visibility;
 		group1.direction = direction;
@@ -884,7 +962,7 @@ void test::TestGroup::testVisibilityGroup() {
 		metaf::VisibilityGroup group1;
 		group1.reported = false;
 		group1.direction = metaf::VisibilityGroup::Direction::NONE;
-		group1.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group1.unit = metaf::DistanceUnit::STATUTE_MILES;
 		TEST_ASSERT(group == group1);
 	}
 	{
@@ -901,7 +979,7 @@ void test::TestGroup::testVisibilityGroup() {
 			lessThan);
 		metaf::VisibilityGroup group1;
 		group1.direction = metaf::VisibilityGroup::Direction::NONE;
-		group1.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group1.unit = metaf::DistanceUnit::STATUTE_MILES;
 		group1.reported = true;
 		group1.integer = integer;
 		group1.numerator = numerator;
@@ -917,7 +995,7 @@ void test::TestGroup::testVisibilityGroup() {
 			metaf::VisibilityGroup::makeVisibilityMilesIncomplete(integer);
 		metaf::VisibilityGroup group1;
 		group1.direction = metaf::VisibilityGroup::Direction::NONE;
-		group1.unit = metaf::VisibilityGroup::Unit::STATUTE_MILES;
+		group1.unit = metaf::DistanceUnit::STATUTE_MILES;
 		group1.reported = true;
 		group1.integer = integer;
 		group1.incompleteInteger = true;
@@ -1286,6 +1364,22 @@ void test::TestGroup::testWeatherGroup() {
 		group1.weather[0] = metaf::WeatherGroup::Weather::NOT_REPORTED;
 		TEST_ASSERT(group == group1);
 	}
+	{
+		//Confirm that toVector() returns the correct data
+		static const auto modifier = metaf::WeatherGroup::Modifier::VICINITY;
+		const std::vector<metaf::WeatherGroup::Weather> weather = {
+			metaf::WeatherGroup::Weather::SHOWERS,
+			metaf::WeatherGroup::Weather::RAIN,
+			metaf::WeatherGroup::Weather::SNOW,
+		};
+		const metaf::WeatherGroup group(modifier, weather);
+		TEST_ASSERT(group.weatherToVector() == weather);
+	}
+	{
+		//Confirm that if no weather is specified, toVector returns an empty vector
+		const metaf::WeatherGroup group;
+		TEST_ASSERT(!group.weatherToVector().size());
+	}
 	TEST_END();
 }
 
@@ -1530,36 +1624,33 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 	}
 	{
 		//Confirm that groups holding the same values are equal
-		static const auto runwayNumber = 22;
-		static const auto designator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		static const auto visibility = 4500;
+		static const auto runway = metaf::Runway(22);
+		static const auto visRange = 4500;
 		static const auto visModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		static const auto varVisibility = 6500;
+		static const auto varVisRange = 6500;
 		static const auto varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		static const auto visibilityReported = true;
-		static const auto varVisibilityReported = true;
-		static const auto unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		static const auto visRangeReported = true;
+		static const auto varVisRangeReported = true;
+		static const auto unit = metaf::DistanceUnit::METERS;
 		static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
 		metaf::RunwayVisualRangeGroup group1;
 		metaf::RunwayVisualRangeGroup group2;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
-		group1.visibility = visibility;
+		group1.runway = runway;
+		group1.visRange = visRange;
 		group1.visModifier = visModifier;
-		group1.varVisibility = varVisibility;
+		group1.varVisRange = varVisRange;
 		group1.varVisModifier = varVisModifier;
-		group1.visibilityReported = visibilityReported;
-		group1.varVisibilityReported = varVisibilityReported;
+		group1.visRangeReported = visRangeReported;
+		group1.varVisRangeReported = varVisRangeReported;
 		group1.unit = unit;
 		group1.trend = trend;
-		group2.runwayNumber = runwayNumber;
-		group2.runwayDesignator = designator;
-		group2.visibility = visibility;
+		group2.runway = runway;
+		group2.visRange = visRange;
 		group2.visModifier = visModifier;
-		group2.varVisibility = varVisibility;
+		group2.varVisRange = varVisRange;
 		group2.varVisModifier = varVisModifier;
-		group2.visibilityReported = visibilityReported;
-		group2.varVisibilityReported = varVisibilityReported;
+		group2.visRangeReported = visRangeReported;
+		group2.varVisRangeReported = varVisRangeReported;
 		group2.unit = unit;
 		group2.trend = trend;
 		TEST_ASSERT(group1 == group2);
@@ -1569,26 +1660,25 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 		//variable visibility & modifier, and variable visibility reported flag do not 
 		//affect the comparison result
 		metaf::RunwayVisualRangeGroup group;
-		group.runwayNumber = 22;
-		group.runwayDesignator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		group.unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		group.runway = metaf::Runway(22);
+		group.unit = metaf::DistanceUnit::METERS;
 		group.trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
-		group.visibilityReported = false;
-		group.visibility = 4500;
+		group.visRangeReported = false;
+		group.visRange = 4500;
 		group.visModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.varVisibility = 6500;
+		group.varVisRange = 6500;
 		group.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.varVisibilityReported = true;
+		group.varVisRangeReported = true;
 		metaf::RunwayVisualRangeGroup group1(group);
-		group1.visibility = 4600;
+		group1.visRange = 4600;
 		metaf::RunwayVisualRangeGroup group2(group);
 		group2.visModifier = metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN;
 		metaf::RunwayVisualRangeGroup group3(group);
-		group3.varVisibility = 6600;
+		group3.varVisRange = 6600;
 		metaf::RunwayVisualRangeGroup group4(group);
 		group4.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN;
 		metaf::RunwayVisualRangeGroup group5(group);
-		group5.varVisibilityReported = false;
+		group5.varVisRangeReported = false;
 		TEST_ASSERT(group == group1);
 		TEST_ASSERT(group == group2);
 		TEST_ASSERT(group == group3);
@@ -1599,19 +1689,18 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 		//Confirm that if variable visibility is not reported, then variable visibility 
 		//value and modifier do not affect the comparison result
 		metaf::RunwayVisualRangeGroup group;
-		group.runwayNumber = 22;
-		group.runwayDesignator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		group.unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
-		group.visibilityReported = true;
-		group.visibility = 4500;
+		group.runway = metaf::Runway(22);
+		group.unit = metaf::DistanceUnit::METERS;
+		group.visRangeReported = true;
+		group.visRange = 4500;
 		group.visModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.varVisibilityReported = false;
-		group.varVisibility = 6500;
+		group.varVisRangeReported = false;
+		group.varVisRange = 6500;
 		group.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		group.unit = metaf::DistanceUnit::METERS;
 		group.trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
 		metaf::RunwayVisualRangeGroup group1(group);
-		group1.varVisibility = 6500;
+		group1.varVisRange = 6500;
 		metaf::RunwayVisualRangeGroup group2(group);
 		group2.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN;
 		TEST_ASSERT(group == group1);
@@ -1620,34 +1709,33 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 	{
 		//Confirm that groups holding different values are not equal
 		metaf::RunwayVisualRangeGroup group;
-		group.runwayNumber = 22;
-		group.runwayDesignator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		group.visibility = 4500;
+		group.runway = metaf::Runway(22);
+		group.visRange = 4500;
 		group.visModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.varVisibility = 6500;
+		group.varVisRange = 6500;
 		group.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		group.visibilityReported = true;
-		group.varVisibilityReported = true;
-		group.unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		group.visRangeReported = true;
+		group.varVisRangeReported = true;
+		group.unit = metaf::DistanceUnit::METERS;
 		group.trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
 		metaf::RunwayVisualRangeGroup group1(group);
-		group1.runwayNumber = 21;
+		group1.runway = metaf::Runway(21);
 		metaf::RunwayVisualRangeGroup group2(group);
-		group2.runwayDesignator = metaf::RunwayVisualRangeGroup::Designator::CENTER;
+		group.runway = metaf::Runway(22, metaf::Runway::Designator::CENTER);
 		metaf::RunwayVisualRangeGroup group3(group);
-		group3.visibility = 4600;
+		group3.visRange = 4600;
 		metaf::RunwayVisualRangeGroup group4(group);
 		group4.visModifier = metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN;
 		metaf::RunwayVisualRangeGroup group5(group);
-		group5.varVisibility = 6600;
+		group5.varVisRange = 6600;
 		metaf::RunwayVisualRangeGroup group6(group);
 		group6.varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN;
 		metaf::RunwayVisualRangeGroup group7(group);
-		group7.visibilityReported = false;
+		group7.visRangeReported = false;
 		metaf::RunwayVisualRangeGroup group8(group);
-		group8.varVisibilityReported = false;
+		group8.varVisRangeReported = false;
 		metaf::RunwayVisualRangeGroup group9(group);
-		group9.unit = metaf::RunwayVisualRangeGroup::Unit::FEET;
+		group9.unit = metaf::DistanceUnit::FEET;
 		metaf::RunwayVisualRangeGroup group10(group);
 		group10.trend = metaf::RunwayVisualRangeGroup::Trend::DOWNWARD;
 		TEST_ASSERT(!(group == group1));
@@ -1664,14 +1752,12 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 	{
 		//Confirm that 'not reported' constructor initialises the 
 		//group with correct data
-		static const auto runwayNumber = 22;
-		static const auto designator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		static const auto unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		static const auto runway = metaf::Runway(22);
+		static const auto unit = metaf::DistanceUnit::METERS;
 		static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
-		metaf::RunwayVisualRangeGroup group(runwayNumber, designator, unit, trend);
+		metaf::RunwayVisualRangeGroup group(runway, unit, trend);
 		metaf::RunwayVisualRangeGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
+		group1.runway = runway;
 		group1.unit = unit;
 		group1.trend = trend;
 		TEST_ASSERT(group == group1);
@@ -1679,23 +1765,20 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 	{
 		//Confirm that 'single visibility value' constructor initialises
 		//the group with correct data
-		static const auto runwayNumber = 22;
-		static const auto designator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		static const auto visibility = 6500;
+		static const auto runway = metaf::Runway(22);
+		static const auto visRange = 6500;
 		static const auto modifier = metaf::RunwayVisualRangeGroup::Modifier::NONE;
-		static const auto unit = metaf::RunwayVisualRangeGroup::Unit::METERS;
+		static const auto unit = metaf::DistanceUnit::METERS;
 		static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
-		metaf::RunwayVisualRangeGroup group(runwayNumber, 
-			designator, 
-			visibility, 
+		metaf::RunwayVisualRangeGroup group(runway, 
+			visRange, 
 			unit, 
 			modifier,
 			trend);
 		metaf::RunwayVisualRangeGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
-		group1.visibility = visibility;
-		group1.visibilityReported = true;
+		group1.runway = runway;
+		group1.visRange = visRange;
+		group1.visRangeReported = true;
 		group1.visModifier = modifier;
 		group1.unit = unit;
 		group1.trend = trend;
@@ -1704,30 +1787,27 @@ void test::TestGroup::testRunwayVisualRangeGroup() {
 	{
 		//Confirm that 'min/max visibility' constructor initialises the 
 		//group with correct data
-		static const auto runwayNumber = 22;
-		static const auto designator = metaf::RunwayVisualRangeGroup::Designator::NONE;
-		static const auto visibility = 4500;
+		static const auto runway = metaf::Runway(22);
+		static const auto visRange = 4500;
 		static const auto modifier = metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN;
-		static const auto varVisibility = 6500;
+		static const auto varVisRange = 6500;
 		static const auto varVisModifier = metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN;
-		static const auto unit = metaf::RunwayVisualRangeGroup::Unit::FEET;
+		static const auto unit = metaf::DistanceUnit::FEET;
 		static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
-		metaf::RunwayVisualRangeGroup group(runwayNumber, 
-			designator, 
-			visibility, 
-			varVisibility,
+		metaf::RunwayVisualRangeGroup group(runway, 
+			visRange, 
+			varVisRange,
 			unit, 
 			modifier,
 			varVisModifier,
 			trend);
 		metaf::RunwayVisualRangeGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
-		group1.visibility = visibility;
-		group1.visibilityReported = true;
+		group1.runway = runway;
+		group1.visRange = visRange;
+		group1.visRangeReported = true;
 		group1.visModifier = modifier;
-		group1.varVisibility = varVisibility;
-		group1.varVisibilityReported = true;
+		group1.varVisRange = varVisRange;
+		group1.varVisRangeReported = true;
 		group1.varVisModifier = varVisModifier;
 		group1.unit = unit;
 		group1.trend = trend;
@@ -1748,8 +1828,7 @@ void test::TestGroup::testRunwayStateGroup() {
 	}
 	{
 		//Confirm that groups holding the same value are equal
-		static const auto runwayNumber = 22;
-		static const auto designator = metaf::RunwayStateGroup::Designator::NONE;
+		static const auto runway = metaf::Runway(22);
 		static const auto status = metaf::RunwayStateGroup::Status::NONE;
 		static const auto deposits = metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES;
 		static const auto contaminationExtent = metaf::RunwayStateGroup::Extent::FROM_11_TO_25_PERCENT;
@@ -1757,15 +1836,13 @@ void test::TestGroup::testRunwayStateGroup() {
 		static const metaf::RunwayStateGroup::SurfaceFriction sf(0.65);
 		metaf::RunwayStateGroup group1;
 		metaf::RunwayStateGroup group2;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
+		group1.runway = runway;
 		group1.status = status;
 		group1.deposits = deposits;
 		group1.contaminationExtent = contaminationExtent;
 		group1.depositDepth = dd;
 		group1.surfaceFriction = sf;
-		group2.runwayNumber = runwayNumber;
-		group2.runwayDesignator = designator;
+		group2.runway = runway;
 		group2.status = status;
 		group2.deposits = deposits;
 		group2.contaminationExtent = contaminationExtent;
@@ -1778,17 +1855,16 @@ void test::TestGroup::testRunwayStateGroup() {
 		static const metaf::RunwayStateGroup::DepositDepth dd(1);
 		static const metaf::RunwayStateGroup::SurfaceFriction sf(0.65);
 		metaf::RunwayStateGroup group;
-		group.runwayNumber = 22;
-		group.runwayDesignator = metaf::RunwayStateGroup::Designator::NONE;
+		group.runway = metaf::Runway(22);
 		group.status = metaf::RunwayStateGroup::Status::NONE;
 		group.deposits = metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES;
 		group.contaminationExtent = metaf::RunwayStateGroup::Extent::FROM_11_TO_25_PERCENT;
 		group.depositDepth = dd;
 		group.surfaceFriction = sf;
 		metaf::RunwayStateGroup group1(group);
-		group1.runwayNumber = 21;
+		group1.runway = metaf::Runway(22);
 		metaf::RunwayStateGroup group2(group);
-		group2.runwayDesignator = metaf::RunwayStateGroup::Designator::CENTER;
+		group2.runway = metaf::Runway(22, metaf::Runway::Designator::CENTER);
 		metaf::RunwayStateGroup group3(group);
 		group3.status = metaf::RunwayStateGroup::Status::SNOCLO;
 		metaf::RunwayStateGroup group4(group);
@@ -1802,8 +1878,7 @@ void test::TestGroup::testRunwayStateGroup() {
 	}
 	{
 		//Confirm that constructor initialises the group with correct data
-		static const auto runwayNumber = 21;
-		static const auto designator = metaf::RunwayStateGroup::Designator::CENTER;
+		static const auto runway = metaf::Runway(21, metaf::Runway::Designator::CENTER);
 		static const auto status = metaf::RunwayStateGroup::Status::NONE;
 		static const auto deposits = metaf::RunwayStateGroup::Deposits::DRY_SNOW;
 		static const auto extent = metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT;
@@ -1811,16 +1886,14 @@ void test::TestGroup::testRunwayStateGroup() {
 		static const auto sfBrakingAction = 
 			metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::POOR;
 		const metaf::RunwayStateGroup group(
-			runwayNumber,
-			designator,
+			runway,
 			status,
 			deposits,
 			extent,
 			metaf::RunwayStateGroup::DepositDepth(ddDepth),
 			metaf::RunwayStateGroup::SurfaceFriction(sfBrakingAction));
 		metaf::RunwayStateGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
+		group1.runway = runway;
 		group1.status = status;
 		group1.deposits = deposits;
 		group1.contaminationExtent = extent;
@@ -1833,28 +1906,21 @@ void test::TestGroup::testRunwayStateGroup() {
 	}
 	{
 		//Confirm that makeSnoclo initialises the group with correct data
-		static const auto runwayNumber = 21;
-		static const auto designator = metaf::RunwayStateGroup::Designator::CENTER;
-		const metaf::RunwayStateGroup group = 
-			metaf::RunwayStateGroup::makeSnoclo(runwayNumber, designator);
+		static const auto runway = metaf::Runway(21, metaf::Runway::Designator::CENTER);
+		const metaf::RunwayStateGroup group = metaf::RunwayStateGroup::makeSnoclo(runway);
 		metaf::RunwayStateGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
+		group1.runway = runway;
 		group1.status = metaf::RunwayStateGroup::Status::SNOCLO;
 		TEST_ASSERT(group == group1);
 	}
 	{
 		//Confirm that makeClrd initialises the group with correct data
-		static const auto runwayNumber = 21;
-		static const auto designator = metaf::RunwayStateGroup::Designator::CENTER;
+		static const auto runway = metaf::Runway(21, metaf::Runway::Designator::CENTER);
 		static const auto surfaceFriction = 0.67;
-		const metaf::RunwayStateGroup group = metaf::RunwayStateGroup::makeClrd(
-			runwayNumber,
-			designator,
+		const metaf::RunwayStateGroup group = metaf::RunwayStateGroup::makeClrd(runway,
 			metaf::RunwayStateGroup::SurfaceFriction(surfaceFriction));
 		metaf::RunwayStateGroup group1;
-		group1.runwayNumber = runwayNumber;
-		group1.runwayDesignator = designator;
+		group1.runway = runway;
 		group1.status = metaf::RunwayStateGroup::Status::CLRD;
 		TEST_ASSERT(group == group1);
 	}
@@ -2346,59 +2412,59 @@ void test::TestGroup::testColourCodeGroup() {
 void test::TestGroup::testGetSyntaxGroup(){
 	TEST_BEGIN();
 	{
-		//Confirm that passing ImmutableGroup of Type::METAF to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::METAF to getSyntaxGroup()
 		//results in SyntaxGroup::METAR
 		const metaf::Group 
-			group = metaf::ImmutableGroup(metaf::ImmutableGroup::Type::METAR);
+			group = metaf::FixedGroup(metaf::FixedGroup::Type::METAR);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::METAR);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::SPECI to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::SPECI to getSyntaxGroup()
 		//results in SyntaxGroup::SPECI
 		const metaf::Group 
-			group = metaf::ImmutableGroup(metaf::ImmutableGroup::Type::SPECI);
+			group = metaf::FixedGroup(metaf::FixedGroup::Type::SPECI);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::SPECI);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::TAF to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::TAF to getSyntaxGroup()
 		//results in SyntaxGroup::TAF
 		const metaf::Group 
-			group = metaf::ImmutableGroup(metaf::ImmutableGroup::Type::TAF);
+			group = metaf::FixedGroup(metaf::FixedGroup::Type::TAF);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::TAF);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::COR to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::COR to getSyntaxGroup()
 		//results in SyntaxGroup::COR
 		const metaf::Group group = 
-			metaf::ImmutableGroup(metaf::ImmutableGroup::Type::COR);
+			metaf::FixedGroup(metaf::FixedGroup::Type::COR);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::COR);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::AMD to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::AMD to getSyntaxGroup()
 		//results in SyntaxGroup::AMD
 		const metaf::Group group = 
-			metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AMD);
+			metaf::FixedGroup(metaf::FixedGroup::Type::AMD);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::AMD);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::NIL to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::NIL to getSyntaxGroup()
 		//results in SyntaxGroup::NIL
 		const metaf::Group group = 
-			metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NIL);
+			metaf::FixedGroup(metaf::FixedGroup::Type::NIL);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::NIL);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::CNL to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::CNL to getSyntaxGroup()
 		//results in SyntaxGroup::CNL
 		const metaf::Group group = 
-			metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CNL);
+			metaf::FixedGroup(metaf::FixedGroup::Type::CNL);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::CNL);
 	}
 	{
-		//Confirm that passing ImmutableGroup of Type::RMK to getSyntaxGroup()
+		//Confirm that passing FixedGroup of Type::RMK to getSyntaxGroup()
 		//results in SyntaxGroup::RMK
 		const metaf::Group group = 
-			metaf::ImmutableGroup(metaf::ImmutableGroup::Type::RMK);
+			metaf::FixedGroup(metaf::FixedGroup::Type::RMK);
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::RMK);
 	}
 	{
@@ -2420,7 +2486,7 @@ void test::TestGroup::testGetSyntaxGroup(){
 		TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::TIME_SPAN);
 	}
 	{
-		//Confirm that passing ImmutableGroup of the following types to getSyntaxGroup()
+		//Confirm that passing FixedGroup of the following types to getSyntaxGroup()
 		//results in SyntaxGroup::OTHER
 		// - AUTO
 		// - CLR
@@ -2435,57 +2501,57 @@ void test::TestGroup::testGetSyntaxGroup(){
 		// - INTER
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AUTO);
+				metaf::FixedGroup(metaf::FixedGroup::Type::AUTO);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CLR);
+				metaf::FixedGroup(metaf::FixedGroup::Type::CLR);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NCD);
+				metaf::FixedGroup(metaf::FixedGroup::Type::NCD);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NOSIG);
+				metaf::FixedGroup(metaf::FixedGroup::Type::NOSIG);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::AIRPORT_SNOCLO);
+				metaf::FixedGroup(metaf::FixedGroup::Type::AIRPORT_SNOCLO);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::CAVOK);
+				metaf::FixedGroup(metaf::FixedGroup::Type::CAVOK);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NSC);
+				metaf::FixedGroup(metaf::FixedGroup::Type::NSC);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::NSW);
+				metaf::FixedGroup(metaf::FixedGroup::Type::NSW);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::TEMPO);
+				metaf::FixedGroup(metaf::FixedGroup::Type::TEMPO);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::BECMG);
+				metaf::FixedGroup(metaf::FixedGroup::Type::BECMG);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::ImmutableGroup(metaf::ImmutableGroup::Type::INTER);
+				metaf::FixedGroup(metaf::FixedGroup::Type::INTER);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 	}
@@ -2526,7 +2592,7 @@ void test::TestGroup::testGetSyntaxGroup(){
 		}
 		{
 			const metaf::Group group = 
-				metaf::WindGroup(240, metaf::WindGroup::Unit::KNOTS, 2, 7);
+				metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 2, 7);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
@@ -2535,7 +2601,7 @@ void test::TestGroup::testGetSyntaxGroup(){
 		}
 		{
 			const metaf::Group group = 
-				metaf::WindShearGroup(2200, 30, 45, metaf::WindShearGroup::SpeedUnit::KNOTS);
+				metaf::WindShearGroup(2200, 30, 45, metaf::SpeedUnit::KNOTS);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
@@ -2574,15 +2640,14 @@ void test::TestGroup::testGetSyntaxGroup(){
 		}
 		{
 			const metaf::Group group = 
-				metaf::RunwayVisualRangeGroup(5, 
-					metaf::RunwayVisualRangeGroup::Designator::NONE,
+				metaf::RunwayVisualRangeGroup(metaf::Runway(5), 
 					1500, 
-					metaf::RunwayVisualRangeGroup::Unit::METERS);
+					metaf::DistanceUnit::METERS);
 			TEST_ASSERT(metaf::getSyntaxGroup(group) == metaf::SyntaxGroup::OTHER);
 		}
 		{
 			const metaf::Group group = 
-				metaf::RunwayStateGroup(16, metaf::RunwayStateGroup::Designator::RIGHT,
+				metaf::RunwayStateGroup(metaf::Runway(16, metaf::Runway::Designator::RIGHT),
 					metaf::RunwayStateGroup::Status::NONE, 
 					metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 					metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
