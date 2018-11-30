@@ -22,7 +22,10 @@ void test::TestParser::run(const std::vector<test::MetarTafSyntaxTestData> &synt
 	} catch (...) {
 		exceptionThrown = true;
 	}
+	testResetResult();
+	TEST_BEGIN();
 	TEST_ASSERT(!exceptionThrown);
+	TEST_END();
 }
 
 void test::TestParser::testSyntax(const std::vector<test::MetarTafSyntaxTestData> &syntaxTestData){
@@ -60,6 +63,18 @@ void test::TestParser::testRealData(const std::vector<test::MetarTafRealData> &t
 	}
 	TEST_END();
 }
+
+void test::TestParser::testResetResult() {
+	TEST_BEGIN();
+	metaf::Parser parser;
+	TEST_ASSERT(parser.parse("METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU"));
+	TEST_ASSERT(parser.getResult().size());
+	parser.resetResult();
+	TEST_ASSERT(!parser.getResult().size());
+	TEST_ASSERT(!parser.getResult().capacity());//Can be implementation-defined?
+	TEST_END();
+}
+
 
 void test::CheckParserPerformance::run(
 	const std::vector<test::MetarTafRealData> &testData)

@@ -1704,6 +1704,7 @@ bool metaf::operator ==(const ColourCodeGroup & lhs, const ColourCodeGroup & rhs
 ///////////////////////////////////////////////////////////////////////////////
 
 Group GroupParser::parse (const string & group, ReportPart reportPart) {
+	// Start cycling through types within Group variant
 	return(ParseGroupHelper<0, variant_alternative_t<0, Group>>::parse(group, reportPart));
 }
 
@@ -1713,6 +1714,7 @@ Group GroupParser::ParseGroupHelper<I, T>::parse(const string & group, ReportPar
 		T temporaryGroup;
 		if (temporaryGroup.parse(group, reportPart)) return(temporaryGroup);
 	}
+	// Pick next type within Group variant and repeat recursively
 	return(ParseGroupHelper<I+1, variant_alternative_t<I+1, Group>>::parse(group, reportPart));
 }
 
@@ -1722,10 +1724,15 @@ Group GroupParser::ParseGroupHelper<GroupParser::groups_total-1, T>::parse(const
 		T temporaryGroup;
 		if (temporaryGroup.parse(group, reportPart)) return(temporaryGroup);
 	}
+	// At this point no type within Group variant was able to recognise the 
+	// group string.
+	// In this case the group is stored as Plain text
 	PlainTextGroup plainTextGroup;
 	plainTextGroup.parse(group, reportPart);
 	return(plainTextGroup);
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 bool Parser::parse(const string & metarTafString) {
 	static const regex delimiterRegex("\\s+");
@@ -1767,7 +1774,7 @@ bool Parser::parse(const string & metarTafString) {
 }
 
 void Parser::resetResult() {
-	result.clear();
+	vector<Group>().swap(result);
 	reportType = ReportType::UNKNOWN;
 	error = Error::NONE;
 }

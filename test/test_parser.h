@@ -23,6 +23,7 @@ namespace test {
 	private:
 		void testSyntax(const std::vector<test::MetarTafSyntaxTestData> &syntaxTestData);
 		void testRealData(const std::vector<test::MetarTafRealData> &realTestData, bool taf);
+		void testResetResult();
 	};
 
 	class CheckParserPerformance {
