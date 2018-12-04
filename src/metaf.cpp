@@ -49,110 +49,6 @@ SyntaxGroup metaf::getSyntaxGroup(const Group & group) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void GroupVisitor::visit(const Group & group) {
-	if (holds_alternative<PlainTextGroup>(group)) {
-		this->visitPlainTextGroup(get<PlainTextGroup>(group));
-		return;
-	}
-	if (holds_alternative<FixedGroup>(group)) {
-		this->visitFixedGroup(get<FixedGroup>(group));
-		return;
-	}
-	if (holds_alternative<LocationGroup>(group)) {
-		this->visitLocationGroup(get<LocationGroup>(group));
-		return;
-	}
-	if (holds_alternative<ReportTimeGroup>(group)) {
-		this->visitReportTimeGroup(get<ReportTimeGroup>(group));
-		return;
-	}
-	if (holds_alternative<TimeSpanGroup>(group)) {
-		this->visitTimeSpanGroup(get<TimeSpanGroup>(group));
-		return;
-	}
-	if (holds_alternative<TrendTimeGroup>(group)) {
-		this->visitTrendTimeGroup(get<TrendTimeGroup>(group));
-		return;
-	}
-	if (holds_alternative<ProbabilityGroup>(group)) {
-		this->visitProbabilityGroup(get<ProbabilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<WindGroup>(group)) {
-		this->visitWindGroup(get<WindGroup>(group));
-		return;
-	}
-	if (holds_alternative<VarWindGroup>(group)) {
-		this->visitVarWindGroup(get<VarWindGroup>(group));
-		return;
-	}
-	if (holds_alternative<WindShearGroup>(group)) {
-		this->visitWindShearGroup(get<WindShearGroup>(group));
-		return;
-	}
-	if (holds_alternative<VisibilityGroup>(group)) {
-		this->visitVisibilityGroup(get<VisibilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<CloudGroup>(group)) {
-		this->visitCloudGroup(get<CloudGroup>(group));
-		return;
-	}
-	if (holds_alternative<VerticalVisibilityGroup>(group)) {
-		this->visitVerticalVisibilityGroup(get<VerticalVisibilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<WeatherGroup>(group)) {
-		this->visitWeatherGroup(get<WeatherGroup>(group));
-		return;
-	}
-	if (holds_alternative<TemperatureGroup>(group)) {
-		this->visitTemperatureGroup(get<TemperatureGroup>(group));
-		return;
-	}
-	if (holds_alternative<MinMaxTemperatureGroup>(group)) {
-		this->visitMinMaxTemperatureGroup(get<MinMaxTemperatureGroup>(group));
-		return;
-	}
-	if (holds_alternative<PressureGroup>(group)) {
-		this->visitPressureGroup(get<PressureGroup>(group));
-		return;
-	}
-	if (holds_alternative<RunwayVisualRangeGroup>(group)) {
-		this->visitRunwayVisualRangeGroup(get<RunwayVisualRangeGroup>(group));
-		return;
-	}
-	if (holds_alternative<RunwayStateGroup>(group)) {
-		this->visitRunwayStateGroup(get<RunwayStateGroup>(group));
-		return;
-	}
-	if (holds_alternative<RainfallGroup>(group)) {
-		this->visitRainfallGroup(get<RainfallGroup>(group));
-		return;
-	}
-	if (holds_alternative<SeaSurfaceGroup>(group)) {
-		this->visitSeaSurfaceGroup(get<SeaSurfaceGroup>(group));
-		return;
-	}
-	if (holds_alternative<SeaWavesGroup>(group)) {
-		this->visitSeaWavesGroup(get<SeaWavesGroup>(group));
-		return;
-	}
-	if (holds_alternative<ColourCodeGroup>(group)) {
-		this->visitColourCodeGroup(get<ColourCodeGroup>(group));
-		return;
-	}
-	this->visitOther(group);
-}
-
-void GroupVisitor::visit(const vector<Group> & groups) {
-	for (const auto & group : groups) {
-		visit(group);
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 Runway::Runway(unsigned int n, Designator d) : 
 	number(n), designator(d) {}
 
@@ -198,10 +94,12 @@ bool metaf::operator ==(const PlainTextGroup & lhs, const PlainTextGroup & rhs) 
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/// A helper structure; when input string matches str and report part equals 
+/// ReportPart then type is used for FixedGroup::type.
 struct FixedGroup::GroupData{
-	Type type;
-	ReportPart reportPart;
-	std::string str;
+	Type type;				///< Group type
+	ReportPart reportPart;	///< Report part where group is allowed
+	std::string str;		///< Group text
 };
 
 const std::vector<struct FixedGroup::GroupData> FixedGroup::group_data = {
@@ -1928,5 +1826,109 @@ Parser::State Parser::finalTransition(State state) {
 
 		default:
 		return(parseError(Error::INTERNAL_PARSER_STATE));
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void GroupVisitor::visit(const Group & group) {
+	if (holds_alternative<PlainTextGroup>(group)) {
+		this->visitPlainTextGroup(get<PlainTextGroup>(group));
+		return;
+	}
+	if (holds_alternative<FixedGroup>(group)) {
+		this->visitFixedGroup(get<FixedGroup>(group));
+		return;
+	}
+	if (holds_alternative<LocationGroup>(group)) {
+		this->visitLocationGroup(get<LocationGroup>(group));
+		return;
+	}
+	if (holds_alternative<ReportTimeGroup>(group)) {
+		this->visitReportTimeGroup(get<ReportTimeGroup>(group));
+		return;
+	}
+	if (holds_alternative<TimeSpanGroup>(group)) {
+		this->visitTimeSpanGroup(get<TimeSpanGroup>(group));
+		return;
+	}
+	if (holds_alternative<TrendTimeGroup>(group)) {
+		this->visitTrendTimeGroup(get<TrendTimeGroup>(group));
+		return;
+	}
+	if (holds_alternative<ProbabilityGroup>(group)) {
+		this->visitProbabilityGroup(get<ProbabilityGroup>(group));
+		return;
+	}
+	if (holds_alternative<WindGroup>(group)) {
+		this->visitWindGroup(get<WindGroup>(group));
+		return;
+	}
+	if (holds_alternative<VarWindGroup>(group)) {
+		this->visitVarWindGroup(get<VarWindGroup>(group));
+		return;
+	}
+	if (holds_alternative<WindShearGroup>(group)) {
+		this->visitWindShearGroup(get<WindShearGroup>(group));
+		return;
+	}
+	if (holds_alternative<VisibilityGroup>(group)) {
+		this->visitVisibilityGroup(get<VisibilityGroup>(group));
+		return;
+	}
+	if (holds_alternative<CloudGroup>(group)) {
+		this->visitCloudGroup(get<CloudGroup>(group));
+		return;
+	}
+	if (holds_alternative<VerticalVisibilityGroup>(group)) {
+		this->visitVerticalVisibilityGroup(get<VerticalVisibilityGroup>(group));
+		return;
+	}
+	if (holds_alternative<WeatherGroup>(group)) {
+		this->visitWeatherGroup(get<WeatherGroup>(group));
+		return;
+	}
+	if (holds_alternative<TemperatureGroup>(group)) {
+		this->visitTemperatureGroup(get<TemperatureGroup>(group));
+		return;
+	}
+	if (holds_alternative<MinMaxTemperatureGroup>(group)) {
+		this->visitMinMaxTemperatureGroup(get<MinMaxTemperatureGroup>(group));
+		return;
+	}
+	if (holds_alternative<PressureGroup>(group)) {
+		this->visitPressureGroup(get<PressureGroup>(group));
+		return;
+	}
+	if (holds_alternative<RunwayVisualRangeGroup>(group)) {
+		this->visitRunwayVisualRangeGroup(get<RunwayVisualRangeGroup>(group));
+		return;
+	}
+	if (holds_alternative<RunwayStateGroup>(group)) {
+		this->visitRunwayStateGroup(get<RunwayStateGroup>(group));
+		return;
+	}
+	if (holds_alternative<RainfallGroup>(group)) {
+		this->visitRainfallGroup(get<RainfallGroup>(group));
+		return;
+	}
+	if (holds_alternative<SeaSurfaceGroup>(group)) {
+		this->visitSeaSurfaceGroup(get<SeaSurfaceGroup>(group));
+		return;
+	}
+	if (holds_alternative<SeaWavesGroup>(group)) {
+		this->visitSeaWavesGroup(get<SeaWavesGroup>(group));
+		return;
+	}
+	if (holds_alternative<ColourCodeGroup>(group)) {
+		this->visitColourCodeGroup(get<ColourCodeGroup>(group));
+		return;
+	}
+	this->visitOther(group);
+}
+
+void GroupVisitor::visit(const vector<Group> & groups) {
+	for (const auto & group : groups) {
+		visit(group);
 	}
 }

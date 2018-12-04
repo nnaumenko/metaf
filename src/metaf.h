@@ -5,6 +5,10 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
+/// @file 
+/// @brief METAR or TAF report parser, helpers and structs representing 
+/// parsed METAR or TAF groups.
+
 #ifndef METAR_H
 #define METAR_H
 
@@ -40,8 +44,10 @@ namespace metaf {
 	struct SeaWavesGroup;
 	struct ColourCodeGroup;
 
-	/// A variant type for all possible METAR and TAF groups; used by 
-	/// parser to return decoded report information.
+	/// @brief A variant type for all possible METAR and TAF groups.
+	/// @details Used by parser to return parsed group information.
+	/// @par Group is expected to include PlainTextGroup, otherwise 
+	/// GroupParser will not compile.
 	using Group = std::variant<
 		PlainTextGroup,
 		FixedGroup,
@@ -95,44 +101,9 @@ namespace metaf {
 
 	/// Returns SyntaxGroup classification of METAR or TAF group.
 	/// @param group A parsed METAR or TAF group to classify.
-	/// @retrn Corresponding SyntaxGroup or SyntaxGroup::OTHER if 
+	/// @return Corresponding SyntaxGroup or SyntaxGroup::OTHER if 
 	/// group is not important for report syntax.
 	SyntaxGroup getSyntaxGroup(const Group & group);
-
-	/// @brief Visitor is intended for further processing of METAR or TAF 
-	/// report information decoded by parser.
-	/// @details To reduce amount of boilerplate, inherit from GroupVisitor
-	/// and implement all individual virtual methods for each group type.
-	class GroupVisitor {
-	public:
-		void visit(const Group & group);
-		void visit(const std::vector<Group> & groups);
-	protected:
-		virtual void visitPlainTextGroup(const PlainTextGroup & group) = 0;
-		virtual void visitFixedGroup(const FixedGroup & group) = 0;
-		virtual void visitLocationGroup(const LocationGroup & group) = 0;
-		virtual void visitReportTimeGroup(const ReportTimeGroup & group) = 0;
-		virtual void visitTimeSpanGroup(const TimeSpanGroup & group) = 0;
-		virtual void visitTrendTimeGroup(const TrendTimeGroup & group) = 0;
-		virtual void visitProbabilityGroup(const ProbabilityGroup & group) = 0;
-		virtual void visitWindGroup(const WindGroup & group) = 0;
-		virtual void visitVarWindGroup(const VarWindGroup & group) = 0;
-		virtual void visitWindShearGroup(const WindShearGroup & group) = 0;
-		virtual void visitVisibilityGroup(const VisibilityGroup & group) = 0;
-		virtual void visitCloudGroup(const CloudGroup & group) = 0;
-		virtual void visitVerticalVisibilityGroup(const VerticalVisibilityGroup & group) = 0;
-		virtual void visitWeatherGroup(const WeatherGroup & group) = 0;
-		virtual void visitTemperatureGroup(const TemperatureGroup & group) = 0;
-		virtual void visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
-		virtual void visitPressureGroup(const PressureGroup & group) = 0;
-		virtual void visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
-		virtual void visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
-		virtual void visitRainfallGroup(const RainfallGroup & group) = 0;
-		virtual void visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
-		virtual void visitSeaWavesGroup(const SeaWavesGroup & group) = 0;
-		virtual void visitColourCodeGroup(const ColourCodeGroup & group) = 0;
-		virtual void visitOther(const Group & group) = 0;
-	};
 
 	/// @brief Base class for structs within Group variant.
 	/// @details GroupBase provides infrastructure for structs which
@@ -215,7 +186,7 @@ namespace metaf {
 		/// @param number Runway number
 		/// @param designator Runway designator, default is NONE
 		Runway(unsigned int number, Designator designator = Designator::NONE);
-		/// @bried Decode runway designator from char
+		/// @brief Decode runway designator from char
 		/// @details R/L/C are treates as Right/Left/Center, space or 
 		/// null-terminator are treated as None, every other char is treated as
 		/// Unknown
@@ -648,6 +619,7 @@ namespace metaf {
 			LIGHT = 3,		///< Light (e.g. precipitation).
 			HEAVY = 4		///< Heavy (e.g. precipitation).
 		};
+		/// Obscuration, precipitation or other weather phenomena.
 		enum class Weather {
 			UNKNOWN = 30,
 			NOT_REPORTED = 31,
@@ -1200,7 +1172,7 @@ namespace metaf {
 
 	bool operator ==(const SeaWavesGroup & lhs, const SeaWavesGroup & rhs);
 
-	/// @brief Group: Airfild colour state.
+	/// @brief Group: Airfield colour state.
 	/// @details Encoded visibility and cloud height (UK navy & RAF only?). 
 	/// Code BLACK may indicate that airfield is closed due to reasons not 
 	/// related to visibility and ceiling (e.g. snow accumulation).
@@ -1347,7 +1319,7 @@ namespace metaf {
 		/// @return Vector of Group which contain complete report (if parsed
 		/// successfully) or part of the report (to the point where an error 
 		/// occurred).
-		const std::vector<Group> & getResult() { return(result); }
+		const std::vector<Group> & getResult() const { return(result); }
 		/// @brief Reset parsing result and free memory.
 		/// @details After calling this method, getResult() will return an 
 		/// empty vector, getReportType() will return 
@@ -1357,11 +1329,11 @@ namespace metaf {
 		/// Get report type autodetected during parsing.
 		/// @return Autodetected type of report (METAR or TAF or UNKNOWN if 
 		/// it was impossible to determine report type).
-		ReportType getReportType() { return(reportType); }
+		ReportType getReportType() const { return(reportType); }
 		/// Get error occurred during parsing.
 		/// @return Parsing error or metaf::Parser::Error::NONE if report was 
 		/// parsed successfully.
-		Error getError() { return(error); }
+		Error getError() const { return(error); }
 	private:
 		std::vector<Group> result;
 		ReportType reportType = ReportType::UNKNOWN;
@@ -1394,6 +1366,42 @@ namespace metaf {
 		State parseError(Error e) { error = e; return(State::ERROR); }
 		/// Derive metaf:ReportPart
 		static ReportPart reportPartFromState(State state);
+	};
+
+	/// @brief Visitor is intended for further processing of METAR or TAF 
+	/// report information decoded by parser.
+	/// @details To reduce amount of boilerplate, inherit from GroupVisitor
+	/// and implement all individual virtual methods for each group type.
+	/// @par 
+	class GroupVisitor {
+	public:
+		void visit(const Group & group);
+		void visit(const std::vector<Group> & groups);
+	protected:
+		virtual void visitPlainTextGroup(const PlainTextGroup & group) = 0;
+		virtual void visitFixedGroup(const FixedGroup & group) = 0;
+		virtual void visitLocationGroup(const LocationGroup & group) = 0;
+		virtual void visitReportTimeGroup(const ReportTimeGroup & group) = 0;
+		virtual void visitTimeSpanGroup(const TimeSpanGroup & group) = 0;
+		virtual void visitTrendTimeGroup(const TrendTimeGroup & group) = 0;
+		virtual void visitProbabilityGroup(const ProbabilityGroup & group) = 0;
+		virtual void visitWindGroup(const WindGroup & group) = 0;
+		virtual void visitVarWindGroup(const VarWindGroup & group) = 0;
+		virtual void visitWindShearGroup(const WindShearGroup & group) = 0;
+		virtual void visitVisibilityGroup(const VisibilityGroup & group) = 0;
+		virtual void visitCloudGroup(const CloudGroup & group) = 0;
+		virtual void visitVerticalVisibilityGroup(const VerticalVisibilityGroup & group) = 0;
+		virtual void visitWeatherGroup(const WeatherGroup & group) = 0;
+		virtual void visitTemperatureGroup(const TemperatureGroup & group) = 0;
+		virtual void visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
+		virtual void visitPressureGroup(const PressureGroup & group) = 0;
+		virtual void visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
+		virtual void visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
+		virtual void visitRainfallGroup(const RainfallGroup & group) = 0;
+		virtual void visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
+		virtual void visitSeaWavesGroup(const SeaWavesGroup & group) = 0;
+		virtual void visitColourCodeGroup(const ColourCodeGroup & group) = 0;
+		virtual void visitOther(const Group & group) = 0;
 	};
 
 }; //namespace metaf
