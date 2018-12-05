@@ -41,9 +41,10 @@ tests: $(OBJECTSSANSMAIN) $(TESTOBJECTS)
 
 .PHONY: examples
 examples: $(OBJECTSSANSMAIN)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/to_json.cpp \
+	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ $(EXAMPLEDIR)/to_json.cpp \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-	--shell-file examples/shellfiles/to_json_shell.html -o $(EXAMPLETARGETDIR)/to_json.html
+	--shell-file $(EXAMPLEDIR)/shellfiles/to_json_shell.html \
+	-o $(EXAMPLETARGETDIR)/to_json.html
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES)
 	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
@@ -55,4 +56,4 @@ $(TESTBUILDDIR)/%.o: $(TESTSRCDIR)/%.cpp $(INCLUDES) $(TESTINCLUDES)
 clean:
 	$(RM) $(BUILDDIR)/*.*
 	$(RM) $(TESTBUILDDIR)/*.*
-	$(RM) $(EXAMPLEBUILDDIR)/*.*	
+	$(RM) $(EXAMPLEBUILDDIR)/*.*

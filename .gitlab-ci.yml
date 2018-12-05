@@ -1,0 +1,10 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp -r bin/* public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
