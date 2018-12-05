@@ -394,7 +394,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("M1/8SM"),	//visibility less than 1/8 of statute mile
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::VisibilityGroup::makeVisibilityMiles(0, 1, 8, true),
+		metaf::VisibilityGroup::makeVisibilityMiles(0, 1, 8, metaf::ValueModifier::LESS_THAN),
 	},
 	{
 		std::string("11/2SM"),	//visibility 1 1/2 statute miles
@@ -514,112 +514,112 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("MIFG"), //shallow fog
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHALLOW,
 			metaf::WeatherGroup::Weather::FOG),
 	},
 	{
 		std::string("PRFG"), //partial fog
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::PARTIAL,
 			metaf::WeatherGroup::Weather::FOG),
 	},
 	{
 		std::string("BCFG"), //patches of fog
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::PATCHES,
 			metaf::WeatherGroup::Weather::FOG),
 	},
 	{
 		std::string("DRSA"), //low drifting sand
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::LOW_DRIFTING,
 			metaf::WeatherGroup::Weather::SAND),
 	},
 	{
 		std::string("DRDU"), //low drifting dust
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::LOW_DRIFTING,
 			metaf::WeatherGroup::Weather::DUST),
 	},
 	{
 		std::string("DRSN"), //low drifting snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::LOW_DRIFTING,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("BLDU"), //blowing dust
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::DUST),
 	},
 	{
 		std::string("BLSA"), //blowind sand
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::SAND),
 	},
 	{
 		std::string("BLSN"), //blowind snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("BLPY"), //blowind spray
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::SPRAY),
 	},
 	{
 		std::string("SHRA"), //rain showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("SHSN"), //snow showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("SHPL"), //ice pellets showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::ICE_PELLETS),
 	},
 	{
 		std::string("SHGS"), //small hail showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::SMALL_HAIL),
 	},
 	{
 		std::string("SHGR"), //hail showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::HAIL),
 	},
 	{
 		std::string("SHRAGS"), //hail & rain showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::SMALL_HAIL),
@@ -627,7 +627,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("SHRASN"), //rain & snow showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::SNOW),
@@ -635,48 +635,48 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("TS"), //thunderstorm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM),
 	},
 	{
 		std::string("TSRA"), //thunderstorm with rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("TSSN"), //thunderstorm with snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("TSPL"), //thunderstorm with ice pellets
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::ICE_PELLETS),
 	},
 	{
 		std::string("TSGS"), //thunderstorm with small hail
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::SMALL_HAIL),
 	},
 	{
 		std::string("TSGR"), //thunderstorm with hail
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::HAIL),
 	},
 	{
 		std::string("TSRAGR"), //thunderstorm with rain and hail
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::HAIL),
@@ -684,7 +684,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("TSSNGS"), //thunderstorm with snow and snow pellets (small hail)
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::SNOW,
 			metaf::WeatherGroup::Weather::SMALL_HAIL),
@@ -692,21 +692,21 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("FZFG"), //freezing fog
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::FREEZING,
 			metaf::WeatherGroup::Weather::FOG),
 	},
 	{
 		std::string("FZRA"), //freezing rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::FREEZING,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("FZRASN"), //freezing rain and snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::FREEZING,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::SNOW),
@@ -714,170 +714,170 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("FZDZ"), //freezing drizzle
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::FREEZING,
 			metaf::WeatherGroup::Weather::DRIZZLE),
 	},
 	{
 		std::string("DZ"), //drizzle
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DRIZZLE),
 	},
 	{
 		std::string("DZRA"), //drizzle and rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DRIZZLE,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("RA"), //rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("SN"), //snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("SG"), //snow grains
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SNOW_GRAINS),
 	},
 	{
 		std::string("IC"), //ice crystals
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::ICE_CRYSTALS),
 	},
 	{
 		std::string("UP"), //unknown precipitation
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::UNDETERMINED),
 	},
 	{
 		std::string("BR"), //mist
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::MIST),
 	},
 	{
 		std::string("FU"), //smoke
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SMOKE),
 	},
 	{
 		std::string("VA"), //volcanic ash
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::VOLCANIC_ASH),
 	},
 	{
 		std::string("DU"), //widespread dust
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DUST),
 	},
 	{
 		std::string("SA"), //widespread sand
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SAND),
 	},
 	{
 		std::string("HZ"), //haze
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::HAZE),
 	},
 	{
 		std::string("PO"), //dust whirls
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DUST_WHIRLS),
 	},
 	{
 		std::string("SQ"), //squalls
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SQUALLS),
 	},
 	{
 		std::string("FC"), //funnel cloud
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::FUNNEL_CLOUD),
 	},
 	{
 		std::string("DS"), //dust storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DUSTSTORM),
 	},
 	{
 		std::string("SS"), //sand storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::SANDSTORM),
 	},
 	{
 		std::string("DSSS"), //dust and sand storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::DUSTSTORM,
 			metaf::WeatherGroup::Weather::SANDSTORM),
 	},
 	{
 		std::string("-FZDZ"), //light freezing drizzle
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::FREEZING,
 			metaf::WeatherGroup::Weather::DRIZZLE),
 	},
 	{
 		std::string("-RA"), //light rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("-SN"), //light snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("-SHSG"), //light snow grains showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::SNOW_GRAINS),
 	},
 	{
 		std::string("-SHRA"), //light rain showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("-TSRA"), //thunderstorm with light rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("-SHRASN"), //light rain and snow showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::LIGHT,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::LIGHT,
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::SNOW),
@@ -885,39 +885,39 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("+DZ"), //heavy drizzle
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::DRIZZLE),
 	},
 	{
 		std::string("+RA"), //heavy rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("+SN"), //heavy snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("+SHRA"), //heavy rain showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("+TSRA"), //thunderstorm with heavy rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("+SHRASN"), //heavy rain and snow showers
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::SHOWERS,
 			metaf::WeatherGroup::Weather::RAIN,
 			metaf::WeatherGroup::Weather::SNOW),
@@ -925,121 +925,121 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	{
 		std::string("+FC"), //tornado or waterspout
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::FUNNEL_CLOUD),
 	},
 	{
 		std::string("+DS"), //heavy dust storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::DUSTSTORM),
 	},
 	{
 		std::string("+SS"), //heavy sand storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::SANDSTORM),
 	},
 	{
 		std::string("+DSSS"), //heavy dust and sand storm
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::HEAVY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
 			metaf::WeatherGroup::Weather::DUSTSTORM,
 			metaf::WeatherGroup::Weather::SANDSTORM),
 	},
 	{
 		std::string("VCTS"), //thunderstorm in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY,
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY,
 			metaf::WeatherGroup::Weather::THUNDERSTORM),
 	},
 	{
 		std::string("VCTSRA"), //thunderstorm with rain in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM,
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("VCFG"), //fog in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::FOG),
 	},
 	{
 		std::string("VCSH"), //showers in vicinity or distant precipitation
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::SHOWERS),
 	},
 	{
 		std::string("VCPO"), //dust whirls in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::DUST_WHIRLS),
 	},
 	{
 		std::string("VCBLDU"), //blowind dust in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::DUST),
 	},
 	{
 		std::string("VCBLSA"), //blowind sand in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::SAND),
 	},
 	{
 		std::string("VCBLSN"), //blowind snow in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::BLOWING,
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("VCDS"), //dust storm in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::DUSTSTORM),
 	},
 	{
 		std::string("VCSS"), //sand storm in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::SANDSTORM),
 	},
 	{
 		std::string("VCVA"), //volcanic ash in vicinity
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::VICINITY, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
 			metaf::WeatherGroup::Weather::VOLCANIC_ASH),
 	},
 	{
 		std::string("RESN"), //recent weather: snow
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::RECENT, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::RECENT, 
 			metaf::WeatherGroup::Weather::SNOW),
 	},
 	{
 		std::string("RETSRA"), //recent weather: thunderstorm and rain
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::RECENT, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::RECENT, 
 			metaf::WeatherGroup::Weather::THUNDERSTORM, 
 			metaf::WeatherGroup::Weather::RAIN),
 	},
 	{
 		std::string("//"), //weather not reported
 		{metaf::ReportPart::METAR},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 			metaf::WeatherGroup::Weather::NOT_REPORTED),
 	},
 	{
 		std::string("RE//"), //recent weather not reported
 		{metaf::ReportPart::METAR},
-		metaf::WeatherGroup(metaf::WeatherGroup::Modifier::RECENT, 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::RECENT, 
 			metaf::WeatherGroup::Weather::NOT_REPORTED),
 	},
 
@@ -1153,14 +1153,14 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(4),
 			2000, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
+			metaf::ValueModifier::MORE_THAN),
 	},
 	{
 		std::string("R21/M0200"), //Runway 04 visual range less than 200 meters
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(21),
 			200, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN),
+			metaf::ValueModifier::LESS_THAN),
 	},
 	{
 		std::string("R11/4500FT"), //Runway 11 visual range 4500 feet
@@ -1173,21 +1173,21 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(11),
 			6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
+			metaf::ValueModifier::MORE_THAN),
 	},
 	{
 		std::string("R12/M0400FT"), //Runway 12 visual range less than 400 feet
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(12),
 			400, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN),
+			metaf::ValueModifier::LESS_THAN),
 	},
 	{
 		std::string("R35/5500FT/D"), //Runway 35 visual range 5500 feet and trend is downward
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(35),
 			5500, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
+			metaf::ValueModifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::DOWNWARD),
 	},
 	{
@@ -1195,7 +1195,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(2),
 			5000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
+			metaf::ValueModifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{
@@ -1204,7 +1204,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(12),
 			6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
+			metaf::ValueModifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
 	},
 	{
@@ -1213,7 +1213,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(14),
 			1500, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
+			metaf::ValueModifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{
@@ -1222,8 +1222,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(17),
 			250, 450, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
+			metaf::ValueModifier::NONE,
+			metaf::ValueModifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{
@@ -1232,8 +1232,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(34, metaf::Runway::Designator::LEFT),
 			50, 2000, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
+			metaf::ValueModifier::LESS_THAN,
+			metaf::ValueModifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
 	},
 	{
@@ -1242,8 +1242,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(16, metaf::Runway::Designator::LEFT),
 			450, 2000, metaf::DistanceUnit::METERS,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
+			metaf::ValueModifier::NONE,
+			metaf::ValueModifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
 	},
 	{
@@ -1251,8 +1251,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(7),
 			2000, 4500, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE),
+			metaf::ValueModifier::NONE,
+			metaf::ValueModifier::NONE),
 	},
 	{
 		std::string("R30/5000VP6000FT/U"), //Runway 30 visual range from 5000 feet to more 
@@ -1260,8 +1260,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(30),
 			5000, 6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN,
+			metaf::ValueModifier::NONE,
+			metaf::ValueModifier::MORE_THAN,
 			metaf::RunwayVisualRangeGroup::Trend::UPWARD),
 	},
 	{
@@ -1270,7 +1270,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(8),
 			6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE),
+			metaf::ValueModifier::NONE),
 	},
 	{
 		std::string("R25/2800VP6000FT/"), //Runway 25 visual range from 2800 feet to more
@@ -1278,8 +1278,8 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(25),
 			2800, 6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
-			metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN),
+			metaf::ValueModifier::NONE,
+			metaf::ValueModifier::MORE_THAN),
 	},
 	{
 		std::string("R06R/////"), //Runway 06RIGHT visual range not reported (but the 
@@ -1331,7 +1331,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
 			6000, metaf::DistanceUnit::FEET,
-			metaf::RunwayVisualRangeGroup::Modifier::NONE,
+			metaf::ValueModifier::NONE,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
 	{

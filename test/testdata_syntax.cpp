@@ -416,7 +416,7 @@ const std::vector<test::MetarTafSyntaxTestData> test::syntaxDataSet = {
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
 			metaf::VisibilityGroup::makeVisibilityMeters(5000),
-			metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+			metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 				metaf::WeatherGroup::Weather::RAIN,
 				metaf::WeatherGroup::Weather::SNOW),
 			metaf::TemperatureGroup(01, 01),
@@ -819,7 +819,7 @@ const std::vector<test::MetarTafSyntaxTestData> test::syntaxDataSet = {
 			metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::FROM, 5, 3, 0),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::BROKEN, 10000),
 			metaf::VisibilityGroup::makeVisibilityMiles(3),
-			metaf::WeatherGroup(metaf::WeatherGroup::Modifier::NONE, 
+			metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 				metaf::WeatherGroup::Weather::RAIN),
 
 			metaf::FixedGroup(metaf::FixedGroup::Type::BECMG),

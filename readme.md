@@ -6,7 +6,7 @@
 
 This program is a Webassembly parser for [METAR](https://en.wikipedia.org/wiki/METAR) weather reports and [TAF](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) weather forecasts used in aviation.
 
-Parser detects weather report type (METAR or TAF), loosely verifies report syntax to detect malformed reports, reports syntax error (if any), and produces report data in form useable for practical applications (via visitor class).
+Parser detects weather report type (METAR or TAF), loosely verifies report syntax to detect malformed reports, reports syntax error (if any), and produces a vector of report data which can be used for practical applications (e.g. via visitor class).
 
 ### Project status
 
@@ -48,6 +48,7 @@ produces the following JSON (providing that "Formatted result" is checked):
         "reportReleaseTime": "22:50",
         "wind": {
           "direction": 80,
+          "cardinalDirection": "east",
           "speed": 8,
           "speedUnit": "knots"
         },
@@ -89,8 +90,8 @@ produces the following JSON (providing that "Formatted result" is checked):
           "plainText10": "SDG/HDG"
         }
       }
-    }
-    
+    } 
+
 ## Compiling and running
 
 This program is compiled to Webassembly using [Emscripten](http://emscripten.org/).
@@ -103,18 +104,22 @@ Main program is compiled as follows (no practical use yet in current version):
 
 ### Unit tests
 
-The unit tests are compiled as follows:
+The unit tests are compiled as follows: `emmake make tests`
 
-    emmake make tests
+The compiled version of tests can be run by opening file `bin/tests/main.html` with a browser.
 
-The compiled version of tests can be opened with a browser:
+See `test/readme.md` for details.
 
-    bin/tests/main.html
+### Examples
+
+The examples are compiled as follows: `emmake make examples`
+
+The compiled version of tests can be run by html files located in directory `bin/examples` with a browser.
+
+See `examples/readme.md` for details.
 
 ### Cleanup
 
-The cleanup is performed as follows:
+The cleanup is performed as follows: `emmake make clean`
 
-    emmake make clean
-
-This will delete object files both for tests and main program.
+This will delete object files for examples, tests and main program.

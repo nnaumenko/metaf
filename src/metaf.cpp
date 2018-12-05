@@ -494,13 +494,15 @@ VisibilityGroup VisibilityGroup::makeVisibilityMeters(Direction direction) {
 }
 
 VisibilityGroup VisibilityGroup::makeVisibilityMeters(unsigned int visibility, 
-	Direction direction)
+	Direction direction,
+	ValueModifier modifier)
 {
 	VisibilityGroup group;
 	group.reported = true;
 	group.direction = direction;
 	group.unit = DistanceUnit::METERS;
 	group.integer = visibility;
+	group.modifier = modifier;
 	return(group);
 }
 
@@ -514,7 +516,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMiles() {
 VisibilityGroup VisibilityGroup::makeVisibilityMiles(unsigned int integer, 
 	unsigned int numerator, 
 	unsigned int denominator,
-	bool lessThan)
+	ValueModifier modifier)
 {
 	VisibilityGroup group;
 	group.direction = VisibilityGroup::Direction::NONE;
@@ -523,7 +525,7 @@ VisibilityGroup VisibilityGroup::makeVisibilityMiles(unsigned int integer,
 	group.integer = integer;
 	group.numerator = numerator;
 	group.denominator = denominator;
-	group.lessThan = lessThan;
+	group.modifier = modifier;
 	return(group);
 }
 
@@ -572,7 +574,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 	unit = DistanceUnit::UNKNOWN;
 	direction = Direction::UNKNOWN;
 	reported = false;
-	lessThan = false;
+	modifier = ValueModifier::NONE;
 	incompleteInteger = false;
 	if (match.length(matchVisNr)) {
 		direction = Direction::NONE;
@@ -605,7 +607,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 		return(true);
 	}
 	if (match.length(matchFractionNumOrInt)) {
-		if (match.length(matchFractionM)) lessThan = true;
+		if (match.length(matchFractionM)) modifier = ValueModifier::LESS_THAN;
 		integer = static_cast<unsigned int>(stoi(match.str(matchFractionNumOrInt)));
 		unit = DistanceUnit::STATUTE_MILES;
 		direction = Direction::NONE;
@@ -628,15 +630,18 @@ bool VisibilityGroup::isValid() const {
 	if (unit == DistanceUnit::METERS) {
 		if (!reported) return(true);
 		if (direction == Direction::UNKNOWN) return(false);
-		if (incompleteInteger || lessThan) return(false);
+		if (modifier != ValueModifier::NONE) return(false);
+		if (incompleteInteger) return(false);
 		if (!integer || numerator || denominator) return(false);
 		return(true);
 	}
 	if (unit == DistanceUnit::STATUTE_MILES) {
 		if (!reported) return(true);
 		bool fraction = numerator && denominator;
+		if (modifier == ValueModifier::UNKNOWN) return(false);
 		if ((numerator && !denominator) || (!numerator && denominator)) return(false);
-		if (incompleteInteger && (lessThan || !integer || fraction)) return(false);
+		if (incompleteInteger && (!integer || fraction)) return(false);
+		if (incompleteInteger && modifier != ValueModifier::NONE) return(false);
 		return(true);
 	}
 	return(false);
@@ -661,7 +666,7 @@ bool VisibilityGroup::isIncompleteInteger() const {
 bool VisibilityGroup::isIncompleteFraction() const {
 	if (!reported || !isValid()) return(false);
 	return (
-		!lessThan && 
+		modifier == ValueModifier::NONE && 
 		!incompleteInteger && 
 		!integer &&
 		numerator && 
@@ -676,7 +681,7 @@ bool metaf::operator ==(const VisibilityGroup & lhs, const VisibilityGroup & rhs
 	if (lhs.incompleteInteger != rhs.incompleteInteger || 
 		lhs.integer != rhs.integer) return(false);
 	if (lhs.incompleteInteger) return(true);
-	if (lhs.lessThan != rhs.lessThan || 
+	if (lhs.modifier != rhs.modifier || 
 		lhs.numerator != rhs.numerator ||
 		lhs.denominator != rhs.denominator) return(false);
 	return(true);
@@ -776,22 +781,22 @@ bool metaf::operator ==(const VerticalVisibilityGroup & lhs, const VerticalVisib
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WeatherGroup::WeatherGroup(Modifier modifier, 
+WeatherGroup::WeatherGroup(Prefix prefix, 
 	const vector<Weather> & weather) 
 {
-	this->modifier = modifier;
+	this->prefix = prefix;
 	weatherSize = 0;
 	for (const auto w : weather) {
 		if (weatherSize < maxWeatherSize) this->weather[weatherSize++] = w;
 	}
 }
 
-WeatherGroup::WeatherGroup(Modifier modifier, 
+WeatherGroup::WeatherGroup(Prefix prefix, 
 	Weather weather1, 
 	Weather weather2, 
 	Weather weather3)
 {
-	this->modifier = modifier;
+	this->prefix = prefix;
 	weatherSize = 0;
 	weather[weatherSize++] = weather1;
 	if (weather2 != Weather::UNKNOWN) weather[weatherSize++] = weather2;
@@ -800,8 +805,8 @@ WeatherGroup::WeatherGroup(Modifier modifier,
 
 WeatherGroup WeatherGroup::makeNotReported(bool recent){
 	WeatherGroup group;
-	group.modifier = Modifier::NONE;
-	if (recent) group.modifier = Modifier::RECENT;
+	group.prefix = Prefix::NONE;
+	if (recent) group.prefix = Prefix::RECENT;
 	group.weather[0] = Weather::NOT_REPORTED;
 	group.weatherSize = 1;
 	return(group);
@@ -816,13 +821,13 @@ bool WeatherGroup::parse(const string & group, ReportPart reportPart) {
 		"BR|FG|FU|VA|DU|SA|HZ|PY|"
 		"PO|SQ|FC|SS|DS)+)"); // [BDFGHIMPRSTUV][ACGHILNOPQRSUYZ]
 	static const auto expectedMatchGroups = 3;
-	static const auto matchModifier = 1;
+	static const auto matchPrefix = 1;
 	static const auto matchWeather = 2;
 	smatch match;
 	if (regex_match(group, match, weatherNotReportedRegex)) {
 		if (reportPart != ReportPart::METAR) return(false);
 		if (match.size() != (expectedMatchGroupsNotReported)) return(false);
-		modifier = modifierFromString(match.str(matchModifier));
+		prefix = prefixFromString(match.str(matchPrefix));
 		weather[0] = Weather::NOT_REPORTED;
 		weatherSize = 1;
 		return(true);
@@ -831,7 +836,7 @@ bool WeatherGroup::parse(const string & group, ReportPart reportPart) {
 		reportPart != ReportPart::TAF) return(false);
 	if (!regex_match(group, match, weatherRegex)) return(false);
 	if (match.size() != expectedMatchGroups) return(false);
-	modifier = modifierFromString(match.str(matchModifier));
+	prefix = prefixFromString(match.str(matchPrefix));
 	weatherSize = 0;
 	static const auto weatherStrSize = 2;
 	for (auto i=0; i < match.length(matchWeather); i += weatherStrSize) {
@@ -851,17 +856,76 @@ vector<WeatherGroup::Weather> WeatherGroup::weatherToVector() const {
 	return(result);
 }
 
-WeatherGroup::Modifier WeatherGroup::modifierFromString(const string & str){
-	static const vector< pair<Modifier,string> > modifiers = {
-		{Modifier::RECENT, "RE"},
-		{Modifier::LIGHT, "-"},
-		{Modifier::HEAVY, "+"},
-		{Modifier::VICINITY, "VC"},
+bool WeatherGroup::isPrecipitation() const {
+	for (auto i=0; i<weatherSize; i++) {
+		switch (weather[i]) {
+			case metaf::WeatherGroup::Weather::DRIZZLE:
+			case metaf::WeatherGroup::Weather::RAIN:
+			case metaf::WeatherGroup::Weather::SNOW:
+			case metaf::WeatherGroup::Weather::SNOW_GRAINS:
+			case metaf::WeatherGroup::Weather::ICE_CRYSTALS:
+			case metaf::WeatherGroup::Weather::ICE_PELLETS:
+			case metaf::WeatherGroup::Weather::HAIL:
+			case metaf::WeatherGroup::Weather::SMALL_HAIL:
+			case metaf::WeatherGroup::Weather::UNDETERMINED:
+			return(true);
+
+			default:
+			break;
+		}
+	}
+	return(false);
+}
+
+bool WeatherGroup::isObscuration() const {
+	for (auto i=0; i<weatherSize; i++) {
+		switch (weather[i]) {
+			case metaf::WeatherGroup::Weather::MIST:
+			case metaf::WeatherGroup::Weather::FOG:
+			case metaf::WeatherGroup::Weather::SMOKE:
+			case metaf::WeatherGroup::Weather::VOLCANIC_ASH:
+			case metaf::WeatherGroup::Weather::DUST:
+			case metaf::WeatherGroup::Weather::SAND:
+			case metaf::WeatherGroup::Weather::HAZE:
+			case metaf::WeatherGroup::Weather::SPRAY:
+			return(true);
+
+			default:
+			break;
+		}
+	}
+	return(false);
+}
+
+bool WeatherGroup::isOtherPhenomena() const {
+	for (auto i=0; i<weatherSize; i++) {
+		switch (weather[i]) {
+			case metaf::WeatherGroup::Weather::DUST_WHIRLS:
+			case metaf::WeatherGroup::Weather::SQUALLS:
+			case metaf::WeatherGroup::Weather::FUNNEL_CLOUD:
+			case metaf::WeatherGroup::Weather::SANDSTORM:
+			case metaf::WeatherGroup::Weather::DUSTSTORM:
+			return(true);
+
+			default:
+			break;
+		}
+	}
+	return(false);
+}
+
+
+WeatherGroup::Prefix WeatherGroup::prefixFromString(const string & str){
+	static const vector< pair<Prefix,string> > modifiers = {
+		{Prefix::RECENT, "RE"},
+		{Prefix::LIGHT, "-"},
+		{Prefix::HEAVY, "+"},
+		{Prefix::VICINITY, "VC"},
 	};
-	if (!str.length()) return(Modifier::NONE);
+	if (!str.length()) return(Prefix::NONE);
 	for (const auto & m: modifiers)
-		if (get<string>(m) == str) return(get<Modifier>(m));
-	return(Modifier::UNKNOWN);
+		if (get<string>(m) == str) return(get<Prefix>(m));
+	return(Prefix::UNKNOWN);
 }
 
 WeatherGroup::Weather WeatherGroup::weatherFromString(const string & str){
@@ -905,7 +969,7 @@ WeatherGroup::Weather WeatherGroup::weatherFromString(const string & str){
 
 bool metaf::operator ==(const WeatherGroup & lhs, const WeatherGroup & rhs){
 	if (lhs.weatherSize != rhs.weatherSize ||
-		lhs.modifier != rhs.modifier) return(false);
+		lhs.prefix != rhs.prefix) return(false);
 	for (auto i=0; i<std::min<size_t>(lhs.weatherSize, WeatherGroup::maxWeatherSize); i++) {
 		if (lhs.weather[i] != rhs.weather[i]) return(false);
 	}
@@ -1066,7 +1130,7 @@ RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r,
 RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r, 
 	unsigned int vis, 
 	DistanceUnit u,
-	Modifier m,
+	ValueModifier m,
 	Trend t) :
 		runway(r),
 		visRange(vis),
@@ -1080,8 +1144,8 @@ RunwayVisualRangeGroup::RunwayVisualRangeGroup(const Runway & r,
 	unsigned int minVis,
 	unsigned int maxVis,
 	DistanceUnit u,
-	Modifier minVisMod,
-	Modifier maxVisMod,
+	ValueModifier minVisMod,
+	ValueModifier maxVisMod,
 	Trend t) :
 		runway(r),
 		visRange(minVis),
@@ -1129,15 +1193,15 @@ bool RunwayVisualRangeGroup::parse(const string & group, ReportPart reportPart) 
 	return(true);
 }
 
-RunwayVisualRangeGroup::Modifier RunwayVisualRangeGroup::modifierFromString(
+ValueModifier RunwayVisualRangeGroup::modifierFromString(
 	const string & str)
 {
 	static const auto lessThan = "M";
 	static const auto moreThan = "P";
-	if (!str.length()) return(Modifier::NONE);
-	if (str == lessThan) return(Modifier::LESS_THAN);
-	if (str == moreThan) return(Modifier::MORE_THAN);
-	return(Modifier::UNKNOWN);
+	if (!str.length()) return(ValueModifier::NONE);
+	if (str == lessThan) return(ValueModifier::LESS_THAN);
+	if (str == moreThan) return(ValueModifier::MORE_THAN);
+	return(ValueModifier::UNKNOWN);
 }
 
 DistanceUnit RunwayVisualRangeGroup::unitFromString(

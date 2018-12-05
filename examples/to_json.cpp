@@ -168,16 +168,16 @@ private:
 	static std::string temperatureUnitToString(metaf::TemperatureUnit unit);
 	static std::string runwayToString(metaf::Runway runway);
 	static std::string runwayDesignatorToString(metaf::Runway::Designator designator);
+	static std::string valueModifierToString(metaf::ValueModifier modifier);
 	static std::string timeOfDayToString(unsigned int hour, unsigned int minute);
 	static std::string trendTypeToString(metaf::TrendTimeGroup::Type type);
+	static std::string cardinalDirection(unsigned int directionDegrees);
 	static std::string visibilityDirectionToString(metaf::VisibilityGroup::Direction direction);
 	static std::string cloudAmountToString(metaf::CloudGroup::Amount amount);
 	static std::string cloudTypeToString(metaf::CloudGroup::Type type);
 	static std::string weatherToString(metaf::WeatherGroup::Weather weather);
-	static bool hasPrecipitation(const metaf::WeatherGroup & group);
 	static std::string temperaturePointToString(metaf::MinMaxTemperatureGroup::Point point);
 	static std::string pressureUnitToString(metaf::PressureGroup::Unit unit);
-	static std::string rvrModifierToString(metaf::RunwayVisualRangeGroup::Modifier modifier);
 	static std::string rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
 	static std::string runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
 	static std::string runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
@@ -379,6 +379,7 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 	}
 	if (group.directionReported && !group.directionVariable) {
 		json.valueInt("direction", group.direction);
+		json.valueStr("cardinalDirection", cardinalDirection(group.direction));
 	}
 	if (group.speedReported) json.valueInt("speed", group.speed);
 	if (group.gustSpeedReported) json.valueInt("gustSpeed", group.speed);
@@ -390,6 +391,8 @@ void GroupVisitorJson::visitVarWindGroup(const metaf::VarWindGroup & group) {
 	json.startObject("variableWindSector");
 	json.valueInt("directionLowRange", group.directionFrom);
 	json.valueInt("directionHighRange", group.directionTo);
+	json.valueStr("cardinalDirectionLowRange", cardinalDirection(group.directionFrom));
+	json.valueStr("cardinalDirectionHighRange", cardinalDirection(group.directionTo));
 	json.finish();
 }
 
@@ -398,6 +401,7 @@ void GroupVisitorJson::visitWindShearGroup(const metaf::WindShearGroup & group) 
 	json.valueInt("windShearHeight", group.height);
 	json.valueStr("heightUnit", distanceUnitToString(group.heightUnit));
 	json.valueInt("windDirection", group.direction);
+	json.valueStr("windCardinalDirection", cardinalDirection(group.direction));
 	json.valueInt("windSpeed", group.speed);
 	json.valueStr("speedUnit", speedUnitToString(group.speedUnit));
 	json.finish();
@@ -406,7 +410,9 @@ void GroupVisitorJson::visitWindShearGroup(const metaf::WindShearGroup & group) 
 void GroupVisitorJson::visitVisibilityGroup(const metaf::VisibilityGroup & group) {
 	json.startObject();
 	if (group.reported) {
-		if (group.lessThan) json.valueStr("visibilityModifier", "lessThan");
+		if (group.modifier != metaf::ValueModifier::NONE) {
+			json.valueStr("visibilityModifier", valueModifierToString(group.modifier));
+		}
 		if (group.incompleteInteger) json.valueBool("valueIncomplete", true);
 		if (!group.denominator || !group.numerator) {
 			json.valueInt("visibility", group.integer);
@@ -418,7 +424,7 @@ void GroupVisitorJson::visitVisibilityGroup(const metaf::VisibilityGroup & group
 	}
 	json.valueStr("visibilityUnit", distanceUnitToString(group.unit));
 	if (group.direction != metaf::VisibilityGroup::Direction::NONE) {
-		json.valueStr("direction", visibilityDirectionToString(group.direction));
+		json.valueStr("cardinalDirection", visibilityDirectionToString(group.direction));
 	}
 	json.finish();
 }
@@ -454,44 +460,44 @@ void GroupVisitorJson::visitVerticalVisibilityGroup(const metaf::VerticalVisibil
 
 void GroupVisitorJson::visitWeatherGroup(const metaf::WeatherGroup & group) {
 	json.startObject();
-	switch (group.modifier) {
-		case metaf::WeatherGroup::Modifier::UNKNOWN:
-		json.valueStr("modifier", "unknown");
+	std::string time("current");
+	std::string proximity("on site");
+	std::string intensity("");
+
+	switch (group.prefix) {
+		case metaf::WeatherGroup::Prefix::UNKNOWN:
+		json.valueStr("prefix", "unknown");
 		break;
 
-		case metaf::WeatherGroup::Modifier::RECENT:
-		case metaf::WeatherGroup::Modifier::VICINITY:	
-		case metaf::WeatherGroup::Modifier::LIGHT:
-		case metaf::WeatherGroup::Modifier::NONE:
-		case metaf::WeatherGroup::Modifier::HEAVY:
+		case metaf::WeatherGroup::Prefix::RECENT:
+		time = std::string("recent");
+		break;
+
+		case metaf::WeatherGroup::Prefix::VICINITY:	
+		proximity = std::string("in vicinity"); 
+		break;
+
+		case metaf::WeatherGroup::Prefix::LIGHT:
+		intensity = std::string("light");
+		break;
+
+		case metaf::WeatherGroup::Prefix::NONE:
+		if (group.isPrecipitation()) intensity = std::string("moderate");
+		break;
+
+		case metaf::WeatherGroup::Prefix::HEAVY:
+		intensity = std::string("heavy");
 		break;
 
 		default: 
-		json.valueStr("modifier", 
-			std::string("undefined: ") + std::to_string(static_cast<int>(group.modifier)));
+		json.valueStr("prefix", 
+			std::string("undefined: ") + std::to_string(static_cast<int>(group.prefix)));
 		break;
 	}
-	const bool modifierRecent = (group.modifier == metaf::WeatherGroup::Modifier::RECENT);
-	json.valueBool("recent", modifierRecent);
-	const bool modifierVicinity = (group.modifier == metaf::WeatherGroup::Modifier::VICINITY);
-	json.valueBool("inVicinity", modifierVicinity);
+	json.valueStr("weather", time);
+	json.valueStr("proximity", proximity);
+	if (!intensity.empty()) json.valueStr("intensity", intensity);
 	json.startArray("weatherPhenomena");
-	switch (group.modifier) {
-		case metaf::WeatherGroup::Modifier::LIGHT:
-		json.valueStr("light");
-		break;
-
-		case metaf::WeatherGroup::Modifier::NONE:
-		if (hasPrecipitation(group)) json.valueStr("moderate");
-		break;
-
-		case metaf::WeatherGroup::Modifier::HEAVY:
-		json.valueStr("heavy");
-		break;
-
-		default:
-		break;
-	}
 	int weatherArraySize = 0;
 	for (const auto w : group.weatherToVector()) {
 		if (w != metaf::WeatherGroup::Weather::NOT_REPORTED) {
@@ -530,13 +536,13 @@ void GroupVisitorJson::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRang
 	json.startObject();
 	json.valueStr("runway", runwayToString(group.runway));
 	if (group.visRangeReported && group.varVisRangeReported) {
-		json.valueStr("lowLimitModifier", rvrModifierToString(group.visModifier));
+		json.valueStr("lowLimitModifier", valueModifierToString(group.visModifier));
 		json.valueInt("lowLimitRange", group.visRange);
-		json.valueStr("highLimitModifier", rvrModifierToString(group.visModifier));
+		json.valueStr("highLimitModifier", valueModifierToString(group.visModifier));
 		json.valueInt("highLimitRange", group.visRange);
 	}
 	if (group.visRangeReported && !group.varVisRangeReported) {
-		json.valueStr("modifier", rvrModifierToString(group.visModifier));
+		json.valueStr("modifier", valueModifierToString(group.visModifier));
 		json.valueInt("range", group.visRange);
 	}
 	json.valueStr("unit", distanceUnitToString(group.unit));
@@ -892,6 +898,26 @@ std::string GroupVisitorJson::runwayDesignatorToString(metaf::Runway::Designator
 	}	
 }
 
+std::string GroupVisitorJson::valueModifierToString(metaf::ValueModifier modifier)
+{
+	switch(modifier) {
+		case metaf::ValueModifier::UNKNOWN:
+		return("unknown");
+
+		case metaf::ValueModifier::NONE:
+		return("none");
+
+		case metaf::ValueModifier::LESS_THAN:
+		return("lessThan");
+
+		case metaf::ValueModifier::MORE_THAN:
+		return("moreThan");
+
+		default:
+		return(std::string("undefined: ") + std::to_string(static_cast<int>(modifier)));
+	}
+}
+
 std::string GroupVisitorJson::timeOfDayToString(unsigned int hour, unsigned int minute) {
 	static const std::string hourMinuteSeparator(":");
 	static const size_t numberStrSize = 3; //Actually 2 digits + \0
@@ -922,6 +948,20 @@ std::string GroupVisitorJson::trendTypeToString(metaf::TrendTimeGroup::Type type
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(type)));
 	}
 }
+
+std::string GroupVisitorJson::cardinalDirection(unsigned int directionDegrees) {
+	if (directionDegrees >= 0 && directionDegrees <= 20) return("north");
+	if (directionDegrees >= 30 && directionDegrees <= 60) return("northeast");
+	if (directionDegrees >= 70 && directionDegrees <= 110) return("east");
+	if (directionDegrees >= 120 && directionDegrees <= 150) return("southeast");
+	if (directionDegrees >= 160 && directionDegrees <= 200) return("south");
+	if (directionDegrees >= 210 && directionDegrees <= 240) return("southwest");
+	if (directionDegrees >= 250 && directionDegrees <= 290) return("west");
+	if (directionDegrees >= 300 && directionDegrees <= 330) return("northwest");
+	if (directionDegrees >= 340 && directionDegrees <= 360) return("north");
+	return("undetermined: " + std::to_string(directionDegrees));
+}
+
 
 std::string GroupVisitorJson::visibilityDirectionToString(
 	metaf::VisibilityGroup::Direction direction)
@@ -1116,30 +1156,6 @@ std::string GroupVisitorJson::weatherToString(metaf::WeatherGroup::Weather weath
 	}
 }
 
-bool GroupVisitorJson::hasPrecipitation(const metaf::WeatherGroup & group){
-	bool precipitationFound = false;
-	for (const auto w : group.weatherToVector()) {
-		switch (w) {
-			case metaf::WeatherGroup::Weather::DRIZZLE:
-			case metaf::WeatherGroup::Weather::RAIN:
-			case metaf::WeatherGroup::Weather::SNOW:
-			case metaf::WeatherGroup::Weather::SNOW_GRAINS:
-			case metaf::WeatherGroup::Weather::ICE_CRYSTALS:
-			case metaf::WeatherGroup::Weather::ICE_PELLETS:
-			case metaf::WeatherGroup::Weather::HAIL:
-			case metaf::WeatherGroup::Weather::SMALL_HAIL:
-			case metaf::WeatherGroup::Weather::UNDETERMINED:
-			precipitationFound = true;
-			break;
-
-			default:
-			break;
-		}
-	}
-	return(precipitationFound);
-}	
-
-
 std::string GroupVisitorJson::temperaturePointToString(
 	metaf::MinMaxTemperatureGroup::Point point)
 {
@@ -1172,27 +1188,6 @@ std::string GroupVisitorJson::pressureUnitToString(metaf::PressureGroup::Unit un
 
 		default:
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(unit)));
-	}
-}
-
-std::string GroupVisitorJson::rvrModifierToString(
-	metaf::RunwayVisualRangeGroup::Modifier modifier)
-{
-	switch(modifier) {
-		case metaf::RunwayVisualRangeGroup::Modifier::UNKNOWN:
-		return("unknown");
-
-		case metaf::RunwayVisualRangeGroup::Modifier::NONE:
-		return("none");
-
-		case metaf::RunwayVisualRangeGroup::Modifier::LESS_THAN:
-		return("lessThan");
-
-		case metaf::RunwayVisualRangeGroup::Modifier::MORE_THAN:
-		return("moreThan");
-
-		default:
-		return(std::string("undefined: ") + std::to_string(static_cast<int>(modifier)));
 	}
 }
 

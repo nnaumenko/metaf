@@ -46,6 +46,7 @@ Result:
         "reportReleaseTime": "22:30",
         "wind": {
           "direction": 110,
+          "cardinalDirection": "east",
           "speed": 5,
           "speedUnit": "m/s"
         },
@@ -87,7 +88,6 @@ Result:
     }
     
 
-
 #### Sample data 2
 
 Input: 
@@ -95,7 +95,7 @@ Input:
     TAF AMD UKLL 041955Z 0419/0518 29006G12MPS 2100 BR BKN003 SCT025CB TX05/0419Z TN00/0518Z
       TEMPO 0419/0424 0700 -SHRA FG BKN002 BKN020CB
       BECMG 0500/0501 3000 BR SCT004 BKN007
-      TEMPO 0501/0518 1400 -SHRA BKN003 BKN020CB`
+      TEMPO 0501/0518 1400 -SHRA BKN003 BKN020CB
 
 Formatted result: `true`
 
@@ -116,6 +116,7 @@ Result:
         "applicableUntilTime": "18:00",
         "wind": {
           "direction": 290,
+          "cardinalDirection": "west",
           "speed": 6,
           "gustSpeed": 6,
           "speedUnit": "m/s"
@@ -128,8 +129,8 @@ Result:
         ],
         "weather": [
           {
-            "recent": false,
-            "inVicinity": false,
+            "weather": "current",
+            "proximity": "on site",
             "weatherPhenomena": [
               "mist"
             ]
@@ -176,17 +177,17 @@ Result:
             ],
             "weather": [
               {
-                "recent": false,
-                "inVicinity": false,
+                "weather": "current",
+                "proximity": "on site",
+                "intensity": "light",
                 "weatherPhenomena": [
-                  "light",
                   "showers",
                   "rain"
                 ]
               },
               {
-                "recent": false,
-                "inVicinity": false,
+                "weather": "current",
+                "proximity": "on site",
                 "weatherPhenomena": [
                   "fog"
                 ]
@@ -221,8 +222,8 @@ Result:
             ],
             "weather": [
               {
-                "recent": false,
-                "inVicinity": false,
+                "weather": "current",
+                "proximity": "on site",
                 "weatherPhenomena": [
                   "mist"
                 ]
@@ -257,10 +258,10 @@ Result:
             ],
             "weather": [
               {
-                "recent": false,
-                "inVicinity": false,
+                "weather": "current",
+                "proximity": "on site",
+                "intensity": "light",
                 "weatherPhenomena": [
-                  "light",
                   "showers",
                   "rain"
                 ]
@@ -283,5 +284,5 @@ Result:
           }
         ]
       }
-    }   
-
+    } 
+    

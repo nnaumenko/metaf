@@ -171,6 +171,13 @@ namespace metaf {
 		DEGREES_C = 0
 	};
 
+	enum class ValueModifier {
+		UNKNOWN = 30,
+		NONE = 0,
+		LESS_THAN = 1,
+		MORE_THAN = 2,
+	};
+
 	/// Runway identification
 	struct Runway {
 		/// Runway designator
@@ -498,9 +505,11 @@ namespace metaf {
 		/// @param visibility Visibility in meters.
 		/// @param direction Direction with which visibility is not reported 
 		/// (optional).
+		/// @param modifier Optional visibility modifier (less than / more than).
 		/// @return Initialised visibility group.
 		static VisibilityGroup makeVisibilityMeters(unsigned int visibility, 
-			Direction direction = Direction::NONE);
+			Direction direction = Direction::NONE,
+			ValueModifier modifier = ValueModifier::NONE);
 		/// Initialise group with non-reported visibility (but units are 
 		/// statute miles).
 		/// @return Initialised visibility group.
@@ -510,12 +519,12 @@ namespace metaf {
 		/// @param integer Integer part of visibility in statute miles.
 		/// @param numerator Numerator of visibility in statute miles.
 		/// @param denominator Denominator of visibility in statute miles.
-		/// @param lessThan True if visibility is less than specified value.
+		/// @param modifier Optional visibility modifier (less than / more than).
 		/// @return Initialised visibility group.
 		static VisibilityGroup makeVisibilityMiles(unsigned int integer, 
-			unsigned int numerator = 0, 
+			unsigned int numerator = 0,
 			unsigned int denominator = 0,
-			bool lessThan = false);
+			ValueModifier modifier = ValueModifier::NONE);
 		/// @brief Initialise group with incomplete visibility value in statute 
 		/// miles.
 		/// @details When visibility is specified with integer and fraction parts
@@ -533,14 +542,15 @@ namespace metaf {
 		/// Attempt to combine this group with the following group. See 
 		/// GroupBase::nextGroup for details.
 		bool nextGroup(const Group & nextGroup);
-		unsigned int integer = 0;		///< Integer part of visibility
-		unsigned int numerator = 0;		///< Numerator of fraction part of visibility
-		unsigned int denominator = 0;	///< Denominator of fraction part of visibility
-		DistanceUnit unit = DistanceUnit::UNKNOWN;///< Visibility measurement units
-		Direction direction = Direction::UNKNOWN;///< Direction with which visibility is reported
-		bool reported = false;	///< Is visibility value reported
-		bool lessThan = false;	///< Is visibility reported as "less than specified value"
-		bool incompleteInteger = false; ///< See makeVisibilityMilesIncomplete() for details
+		unsigned int integer = 0;		///< Integer part of visibility.
+		unsigned int numerator = 0;		///< Numerator of fraction part of visibility.
+		unsigned int denominator = 0;	///< Denominator of fraction part of visibility.
+		DistanceUnit unit = DistanceUnit::UNKNOWN;///< Visibility measurement units.
+		Direction direction = Direction::UNKNOWN;///< Direction with which visibility is reported.
+		bool reported = false;	///< Is visibility value reported.
+		///Optional visibility modifier (less than / more than).
+		ValueModifier modifier = ValueModifier::NONE;
+		bool incompleteInteger = false; ///< See makeVisibilityMilesIncomplete() for details.
 	private:
 		bool isIncompleteInteger() const;
 		bool isIncompleteFraction() const;
@@ -611,9 +621,9 @@ namespace metaf {
 	/// @details Reports obscuration, precipitation or other weather phenomena.
 	struct WeatherGroup : public GroupBase {
 		/// Intensity or proximity
-		enum class Modifier {
+		enum class Prefix {
 			UNKNOWN = 30,
-			NONE = 0,		///< No modifier with precipitation means "moderate".
+			NONE = 0,		///< No prefix with precipitation means "moderate".
 			RECENT = 1,		///< Recent weather is reported.
 			VICINITY = 2,	///< Weather phenomena in vicinity (up to 10 miles) is reported.
 			LIGHT = 3,		///< Light (e.g. precipitation).
@@ -697,20 +707,20 @@ namespace metaf {
 			DUSTSTORM = 29
 		};
 		WeatherGroup() = default;
-		/// Initialises weather group with modifier and vector of weather 
+		/// Initialises weather group with prefix and vector of weather 
 		/// phenomena.
-		/// @param modifier Intensity or proximity of weather phenomena.
+		/// @param prefix Intensity or proximity of weather phenomena.
 		/// @param weather Vector of obscurations, precipitation or weather 
 		/// phenomena. If more than maxWeatherSize are specified, only first
 		/// maxWeatherSize number of item are stored.
-		WeatherGroup(Modifier modifier, const std::vector<Weather> & weather);
-		/// Initialises weather group with modifier and up to three weather 
+		WeatherGroup(Prefix prefix, const std::vector<Weather> & weather);
+		/// Initialises weather group with prefix and up to three weather 
 		/// phenomena.
-		/// @param modifier Intensity or proximity of weather phenomena.
+		/// @param prefix Intensity or proximity of weather phenomena.
 		/// @param weather1 Obscurations, precipitation or weather phenomenon.
 		/// @param weather2 Optional weather phenomenon.
 		/// @param weather3 Optional weather phenomenon.
-		WeatherGroup(Modifier modifier, 
+		WeatherGroup(Prefix prefix, 
 			Weather weather1, 
 			Weather weather2 = Weather::UNKNOWN, 
 			Weather weather3 = Weather::UNKNOWN);
@@ -721,12 +731,18 @@ namespace metaf {
 		bool parse(const std::string & group, ReportPart reportPart);
 		/// Convert weather phenomena stored in group to vector.
 		std::vector<Weather> weatherToVector() const;
-		Modifier modifier = Modifier::UNKNOWN; ///< Intensity or proximity of weather phenomena.
+		/// Check if this group includes a precipitation
+		bool isPrecipitation() const;
+		/// Check if this group includes an obscuration
+		bool isObscuration() const;
+		/// Check if this group includes other weather phenomena
+		bool isOtherPhenomena() const;
+		Prefix prefix = Prefix::UNKNOWN; ///< Intensity or proximity of weather phenomena.
 		static const auto maxWeatherSize = 8; ///< Maximum number of stored weather phenomena.
 		Weather weather[maxWeatherSize] = {Weather::UNKNOWN}; ///< Stored weather phenomena.
 		size_t weatherSize = 0; ///< Number of stored weather phenomena.
 	private:
-		static Modifier modifierFromString(const std::string & str);
+		static Prefix prefixFromString(const std::string & str);
 		static Weather weatherFromString(const std::string & str);
 	};
 
@@ -824,13 +840,6 @@ namespace metaf {
 	/// that represents the horizontal distance a pilot may see down the
 	/// runway from the approach end.
 	struct RunwayVisualRangeGroup : public GroupBase {
-		/// Distance modifier ("none", "less than" or "more than").
-		enum class Modifier {
-			UNKNOWN = 30,
-			NONE = 0,
-			LESS_THAN = 1,
-			MORE_THAN = 2
-		};
 		/// RVR trend (upward, neutral or downward).
 		enum class Trend {
 			UNKNOWN = 30,
@@ -851,12 +860,12 @@ namespace metaf {
 		/// @param runway Runway RVR is reported for.
 		/// @param visRange Runway visual range value.
 		/// @param unit Distance measurement units.
-		/// @param modifier Optional distance modifier (less than / more than).
+		/// @param modifier Optional range modifier (less than / more than).
 		/// @param trend Optional RVR trend (upward, neutral or downward).
 		RunwayVisualRangeGroup(const Runway & runway,
 			unsigned int visRange, 
 			DistanceUnit unit,
-			Modifier modifier = Modifier::NONE,
+			ValueModifier modifier = ValueModifier::NONE,
 			Trend trend = Trend::NONE);
 		/// Initialise group with range of two RVR values ("from" and "to").
 		/// @param runway Runway RVR is reported for.
@@ -872,22 +881,24 @@ namespace metaf {
 			unsigned int minVisRange,
 			unsigned int maxVisRange,
 			DistanceUnit unit,
-			Modifier minVisModifier = Modifier::NONE,
-			Modifier maxVisModifier = Modifier::NONE,
+			ValueModifier minVisModifier = ValueModifier::NONE,
+			ValueModifier maxVisModifier = ValueModifier::NONE,
 			Trend trend = Trend::NONE);
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		Runway runway;	///> Runway RVR is reported for.
 		unsigned int visRange = 0; ///> RVR single or minimum value.
-		Modifier visModifier = Modifier::UNKNOWN; ///> RVR single or minimum value range modifier.
+		/// RVR single or minimum value range modifier.
+		ValueModifier visModifier = ValueModifier::UNKNOWN; 
 		unsigned int varVisRange = 0; ///> RVR maximum value (if reported).
-		Modifier varVisModifier = Modifier::UNKNOWN; ///> RVR maximum value range modifier (if reported).
+		/// RVR maximum value range modifier (if reported).
+		ValueModifier varVisModifier = ValueModifier::UNKNOWN; 
 		bool visRangeReported = false; 		///> Is RVR reported.
 		bool varVisRangeReported = false;	///> Is RVR min/max range reported.
 		DistanceUnit unit = DistanceUnit::UNKNOWN;	///> RVR distance units.
 		Trend trend = Trend::UNKNOWN;	///> RVR trend (if reported).
 	private:
-		static Modifier modifierFromString(const std::string & str);
+		static ValueModifier modifierFromString(const std::string & str);
 		static DistanceUnit unitFromString(const std::string & str);
 		static Trend trendFromString(const std::string & str);
 	};
