@@ -18,13 +18,15 @@ See file `metar_taf_to_json.cpp` for details.
 
 ### Running
 
-Example can be run by openening file `bin/examples/to_json.html` in browser.
+[Run this example at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+
+Example can also be run locally by openening file `bin/examples/to_json.html` in browser.
 
 Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and parsed report in JSON format is displayed in "Conversion result" text area. 
 
 Checking "Formatted result" displays JSON formatted for easier reading. Unchecking "Formatted result" displays minified JSON.
 
-The following sample data generally demonstrate conversion.
+The following sample data generally demonstrate conversion principle.
 
 #### Sample data 1
 

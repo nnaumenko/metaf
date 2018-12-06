@@ -1,6 +1,8 @@
 # Project tests
 
-This directory contains the project tests. 
+This directory contains the project tests.
+
+[Tests at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
 
 ## Test framework
 

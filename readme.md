@@ -1,10 +1,12 @@
 # Webassembly METAR and TAF parser
 
+[![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
+
 ## Introduction
 
 ### Purpose
 
-This program is a Webassembly parser for [METAR](https://en.wikipedia.org/wiki/METAR) weather reports and [TAF](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) weather forecasts used in aviation.
+This program is a Webassembly parser for [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
 
 Parser detects weather report type (METAR or TAF), loosely verifies report syntax to detect malformed reports, reports syntax error (if any), and produces a vector of report data which can be used for practical applications (e.g. via visitor class).
 
@@ -26,7 +28,9 @@ The current version of lexer relies extensively on regular expressions (std::reg
 
 ### Example 1: Converting METAR or TAF report to JSON
 
-To run this example open file `bin/examples/to_json.html` in a browser.
+[Run this example at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+
+To run this example locally, open file `bin/examples/to_json.html` in a browser.
 
 Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and parsed report in JSON format is displayed in "Conversion result" text area. 
 
@@ -104,9 +108,11 @@ Main program is compiled as follows (no practical use yet in current version):
 
 ### Unit tests
 
-The unit tests are compiled as follows: `emmake make tests`
+The unit tests are compiled as follows: `emmake make tests`.
 
-The compiled version of tests can be run by opening file `bin/tests/main.html` with a browser.
+[Tests at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
+
+The compiled version of tests can be run locally by opening file `bin/tests/main.html` with a browser.
 
 See `test/readme.md` for details.
 
@@ -114,7 +120,11 @@ See `test/readme.md` for details.
 
 The examples are compiled as follows: `emmake make examples`
 
-The compiled version of tests can be run by html files located in directory `bin/examples` with a browser.
+Run examples at Gitlab Pages:
+
+* [Convert METAR or TAF to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+
+The compiled version of examples can also be run locally by opening html files located in directory `bin/examples` with a browser.
 
 See `examples/readme.md` for details.
 
