@@ -215,6 +215,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const Runway & lhs, const Runway & rhs);
+	inline bool operator !=(const Runway & lhs, const Runway & rhs) {
+		return !(lhs == rhs);
+	}
 
 	/// @brief Group: Plain Text
 	/// @details When the group could not be recognised to conform
@@ -239,6 +242,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const PlainTextGroup & lhs, const PlainTextGroup & rhs);
+	inline bool operator !=(const PlainTextGroup & lhs, const PlainTextGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: fixed text.
 	/// @details This group represents a fixed text which never varies in 
@@ -281,6 +287,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const FixedGroup & lhs, const FixedGroup & rhs);
+	inline bool operator !=(const FixedGroup & lhs, const FixedGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: ICAO location.
 	/// @details ICAO location where report applies.
@@ -297,6 +306,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const LocationGroup & lhs, const LocationGroup & rhs);
+	inline bool operator !=(const LocationGroup & lhs, const LocationGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: Report time.
 	/// @details: Day and time when report was issued.
@@ -315,6 +327,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs);
+	inline bool operator !=(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: Time span.
 	/// @details: Time span when report or trend is applicable.
@@ -339,6 +354,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs);
+	inline bool operator !=(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: trend time.
 	/// @details Time when trend is applicable.
@@ -374,6 +392,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs);
+	inline bool operator !=(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: forecast probability.
 	/// @details Specifies forecast probability (30% or 40% only).
@@ -388,6 +409,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const ProbabilityGroup & lhs, const ProbabilityGroup & rhs);
+	inline bool operator !=(const ProbabilityGroup & lhs, const ProbabilityGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: wind.
 	/// @details Specifies wind speed, direction and gust speed.
@@ -430,6 +454,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const WindGroup & lhs, const WindGroup & rhs);
+	inline bool operator !=(const WindGroup & lhs, const WindGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: variable wind direction.
 	/// @details Specifies sector of direction when the wind is variable.
@@ -447,6 +474,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const VarWindGroup & lhs, const VarWindGroup & rhs);
+	inline bool operator !=(const VarWindGroup & lhs, const VarWindGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: wind shear group.
 	/// @details Reports wind shear at specified height.
@@ -475,6 +505,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const WindShearGroup & lhs, const WindShearGroup & rhs);
+	inline bool operator !=(const WindShearGroup & lhs, const WindShearGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: prevailing visibility.
 	/// @details Reports prevailing or directional visibility.
@@ -554,10 +587,12 @@ namespace metaf {
 	private:
 		bool isIncompleteInteger() const;
 		bool isIncompleteFraction() const;
-
 	};
 
 	bool operator ==(const VisibilityGroup & lhs, const VisibilityGroup & rhs);
+	inline bool operator !=(const VisibilityGroup & lhs, const VisibilityGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: cloud layer.
 	/// @details Reports height, amount (cover) and type of a cloud layer.
@@ -599,6 +634,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const CloudGroup & lhs, const CloudGroup & rhs);
+	inline bool operator !=(const CloudGroup & lhs, const CloudGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: vertical visibility.
 	/// @details When clouds are impossible to determine, e.g. due to fog or 
@@ -616,6 +654,11 @@ namespace metaf {
 	};
 
 	bool operator ==(const VerticalVisibilityGroup & lhs, const VerticalVisibilityGroup & rhs);
+	inline bool operator !=(const VerticalVisibilityGroup & lhs, 
+		const VerticalVisibilityGroup & rhs)
+	{
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: weather conditions.
 	/// @details Reports obscuration, precipitation or other weather phenomena.
@@ -737,8 +780,9 @@ namespace metaf {
 		bool isObscuration() const;
 		/// Check if this group includes other weather phenomena
 		bool isOtherPhenomena() const;
+		/// Maximum number of stored weather phenomena.
+		inline static const auto maxWeatherSize = 8; 
 		Prefix prefix = Prefix::UNKNOWN; ///< Intensity or proximity of weather phenomena.
-		static const auto maxWeatherSize = 8; ///< Maximum number of stored weather phenomena.
 		Weather weather[maxWeatherSize] = {Weather::UNKNOWN}; ///< Stored weather phenomena.
 		size_t weatherSize = 0; ///< Number of stored weather phenomena.
 	private:
@@ -747,6 +791,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const WeatherGroup & lhs, const WeatherGroup & rhs);
+	inline bool operator !=(const WeatherGroup & lhs, const WeatherGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: temperature and dew point.
 	/// @details Reports ambient air temperature and dew point.
@@ -770,6 +817,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const TemperatureGroup & lhs, const TemperatureGroup & rhs);
+	inline bool operator !=(const TemperatureGroup & lhs, const TemperatureGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: minimum or maximum temperature.
 	/// @details Minimum or maximum temperature forecast with specified time 
@@ -807,6 +857,11 @@ namespace metaf {
 	};
 
 	bool operator ==(const MinMaxTemperatureGroup & lhs, const MinMaxTemperatureGroup & rhs);
+	inline bool operator !=(const MinMaxTemperatureGroup & lhs, 
+		const MinMaxTemperatureGroup & rhs)
+	{
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: atmospheric pressure.
 	/// @details Reports current atmospheric pressure.
@@ -834,6 +889,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const PressureGroup & lhs, const PressureGroup & rhs);
+	inline bool operator !=(const PressureGroup & lhs, const PressureGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: runway visual range.
 	/// @details Runway visual range is an instrumentally-derived value 
@@ -904,6 +962,11 @@ namespace metaf {
 	};
 
 	bool operator ==(const RunwayVisualRangeGroup & lhs, const RunwayVisualRangeGroup & rhs);
+	inline bool operator !=(const RunwayVisualRangeGroup & lhs, 
+		const RunwayVisualRangeGroup & rhs)
+	{
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: runway state.
 	/// @details Runway state, deposits, extent of contamination, deposit 
@@ -1075,10 +1138,25 @@ namespace metaf {
 	};
 
 	bool operator ==(const RunwayStateGroup & lhs, const RunwayStateGroup & rhs);
+	inline bool operator !=(const RunwayStateGroup & lhs, const RunwayStateGroup & rhs) {
+	 return !(lhs == rhs);
+	}
+
 	bool operator ==(const RunwayStateGroup::DepositDepth & lhs, 
 		const RunwayStateGroup::DepositDepth & rhs);
+	inline bool operator !=(const RunwayStateGroup::DepositDepth & lhs, 
+		const RunwayStateGroup::DepositDepth & rhs)
+	{
+	 return !(lhs == rhs);
+	}
+
 	bool operator ==(const RunwayStateGroup::SurfaceFriction & lhs, 
 		const RunwayStateGroup::SurfaceFriction & rhs);
+	inline bool operator !=(const RunwayStateGroup::SurfaceFriction & lhs, 
+		const RunwayStateGroup::SurfaceFriction & rhs)
+	{
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: rainfall.
 	/// @details Actually measured rainfall for various periods (Australia only?).
@@ -1107,6 +1185,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const RainfallGroup & lhs, const RainfallGroup & rhs);
+	inline bool operator !=(const RainfallGroup & lhs, const RainfallGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: state of sea surface.
 	/// @details Temperature of sea surface and state of surface (oil platforms only?).
@@ -1148,6 +1229,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const SeaSurfaceGroup & lhs, const SeaSurfaceGroup & rhs);
+	inline bool operator !=(const SeaSurfaceGroup & lhs, const SeaSurfaceGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: sea temperature and wave height.
 	/// @details Temperature of sea surface and wave height (oil platforms only?).
@@ -1182,6 +1266,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const SeaWavesGroup & lhs, const SeaWavesGroup & rhs);
+	inline bool operator !=(const SeaWavesGroup & lhs, const SeaWavesGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Group: Airfield colour state.
 	/// @details Encoded visibility and cloud height (UK navy & RAF only?). 
@@ -1220,6 +1307,9 @@ namespace metaf {
 	};
 
 	bool operator ==(const ColourCodeGroup & lhs, const ColourCodeGroup & rhs);
+	inline bool operator !=(const ColourCodeGroup & lhs, const ColourCodeGroup & rhs) {
+	 return !(lhs == rhs);
+	}
 
 	/// @brief Attempts to parse all types within Group variant
 	/// @details Picks each individual type from Group variant, constructs an 

@@ -5,22 +5,23 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
+#include "gtest/gtest.h"
+
+
 #include "test.h"
 #include "testdata_group.h"
 #include "testdata_syntax.h"
 #include "testdata_real.h"
-#include "test_group.h"
 #include "test_group_parser.h"
 #include "test_parser.h"
 
 TEST_GLOBALS();
 
 int main(int argc, char ** argv) {
+	//using test.h
+	//TODO: convert to gtest and remove
 	TESTS_INIT();
-	{
-		test::TestGroup testGroup;
-		testGroup.run();
-	}
+	TEST_NOTE("Now running old tests");
 	{
 		test::TestGroupParser testGroupParser;
 		testGroupParser.run(test::groupDataSet);
@@ -34,4 +35,9 @@ int main(int argc, char ** argv) {
 		test::CheckParserPerformance parserPerformanceTester;
 		parserPerformanceTester.run(test::realDataSet);
 	}
+	TEST_NOTE("Now running gtest");
+
+	//using gtest
+	::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

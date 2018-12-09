@@ -3,7 +3,8 @@ CFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
 TEST_CFLAGS := 
-TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0
+TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 -I googletest/googletest/include \
+-I googletest/googletest/
 
 SRCEXT := cpp
 INCLUDEDIR := src
@@ -15,6 +16,9 @@ TARGET := bin/main.html
 TESTSRCDIR := test
 TESTBUILDDIR := build/test
 TESTTARGET := bin/test/main.html
+
+GTESTSRCDIR = googletest/googletest/src
+GTESTBUILDDIR := build/gtest
 
 EXAMPLEDIR := examples
 EXAMPLEBUILDDIR := build/examples
@@ -36,7 +40,7 @@ release: $(OBJECTS)
 
 .PHONY: tests
 tests: EMCCFLAGS += $(TEST_EMCCFLAGS)
-tests: $(OBJECTSSANSMAIN) $(TESTOBJECTS)
+tests: $(OBJECTSSANSMAIN) $(TESTOBJECTS) build/test/gtest_all.o
 	$(CC) $(CFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
 
 .PHONY: examples
@@ -50,6 +54,9 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES)
 	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
 $(TESTBUILDDIR)/%.o: $(TESTSRCDIR)/%.cpp $(INCLUDES) $(TESTINCLUDES)
+	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
+
+build/test/gtest_all.o: googletest/googletest/src/gtest-all.cc
 	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
 .PHONY: clean
