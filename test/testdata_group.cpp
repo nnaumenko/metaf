@@ -7,7 +7,7 @@
 
 #include "testdata_group.h"
 
-const test::GroupTestData::ReportParts test::GroupTestData::allReportParts = {
+const testdata::GroupTestData::ReportParts testdata::GroupTestData::allReportParts = {
 	metaf::ReportPart::UNKNOWN, 
 	metaf::ReportPart::HEADER,
 	metaf::ReportPart::METAR,
@@ -15,13 +15,13 @@ const test::GroupTestData::ReportParts test::GroupTestData::allReportParts = {
 	metaf::ReportPart::RMK
 };
 
-const std::vector<test::GroupTestData> test::groupDataSet = {
+const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 
 	///////////////////////////////////////////////////////////////////////////////
 
 	{
 		std::string("AAAAAAAA"),	//Generic plain text group
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("AAAAAAAA")
 	},
 
@@ -147,7 +147,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("2AAA"), //ICAO code cannot begin with a number
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("2AAA")
 	},
 
@@ -201,12 +201,12 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("FF051025"),	//type can only be FM, TL, and AT
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("FF051025"),
 	},
 	{
 		std::string("FF1025"),	//type can only be FM, TL, and AT
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("FF1025"),
 	},
 
@@ -224,12 +224,12 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("PROB35"),	//probability can be only 30% or 40%
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("PROB35"),
 	},
 	{
 		std::string("PROB20"),	//probability can be only 30% or 40%
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("PROB20"),
 	},
 
@@ -281,12 +281,12 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("18005G10KKT"),	//unit can only be KT, MPS, or KMH
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("18005G10KKT"),
 	},
 	{
 		std::string("18206KT"),	//direction's last digit must be zero
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("18206KT"),
 	},
 
@@ -299,12 +299,12 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("182V240"),	//direction's last digit must be zero
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("182V240"),
 	},
 	{
 		std::string("180V242"),	//direction's last digit must be zero
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("180V242"),
 	},
 
@@ -327,12 +327,12 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("WS020/05165KT"),	//direction's last digit must be zero
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("WS020/05165KT"),
 	},
 	{
 		std::string("WS020/05065KKT"),	//wind speed unit must be KT, MPS or KMH
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("WS020/05065KKT"),
 	},
 
@@ -418,7 +418,7 @@ const std::vector<test::GroupTestData> test::groupDataSet = {
 	},
 	{
 		std::string("3"),	//only 1 and 2 are accepted as incomplete integer part
-		test::GroupTestData::allReportParts,
+		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("3"),
 	},
 

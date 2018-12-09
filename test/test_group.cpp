@@ -6,8 +6,6 @@
 */
 
 #include "gtest/gtest.h"
-#include "test.h"
-#include "test_group.h"
 #include "metaf.h"
 #include <type_traits>
 

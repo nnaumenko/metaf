@@ -11,7 +11,7 @@
 #include <vector>
 #include "metaf.h"
 
-namespace test {
+namespace testdata {
 
 	struct GroupTestData {
 		using ReportParts = std::vector<metaf::ReportPart>;
@@ -23,6 +23,6 @@ namespace test {
 
 	extern const std::vector<GroupTestData> groupDataSet;
 
-}; // namespace test
+}; // namespace testData
 
 #endif // #ifndef TESTDATA_GROUP_H

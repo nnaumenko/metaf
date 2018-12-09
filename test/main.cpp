@@ -9,10 +9,8 @@
 
 
 #include "test.h"
-#include "testdata_group.h"
 #include "testdata_syntax.h"
 #include "testdata_real.h"
-#include "test_group_parser.h"
 #include "test_parser.h"
 
 TEST_GLOBALS();
@@ -22,10 +20,6 @@ int main(int argc, char ** argv) {
 	//TODO: convert to gtest and remove
 	TESTS_INIT();
 	TEST_NOTE("Now running old tests");
-	{
-		test::TestGroupParser testGroupParser;
-		testGroupParser.run(test::groupDataSet);
-	}
 	{
 		test::TestParser testParser;
 		testParser.run(test::syntaxDataSet, test::realDataSet);
