@@ -7,7 +7,7 @@
 
 #include "testdata_syntax.h"
 
-const std::vector<test::MetarTafSyntaxTestData> test::syntaxDataSet = {
+const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// empty reports

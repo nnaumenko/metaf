@@ -7,7 +7,7 @@
 
 #include "testdata_real.h"
 
-const std::vector<test::MetarTafRealData> test::realDataSet = {
+const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 
 	{
 		"OIII", "Tehran/Mehrabad Intl", {2014, 06, 02},

@@ -48,28 +48,35 @@ static std::string reportPartToString(metaf::ReportPart reportPart)
 // 3. Report part: the parsing of the group was simulated within this report 
 //    part. Used to identify situations where e.g. group should (or should not) 
 //    have worked within certain report part.
+// The group string along with report parts where the group is expected to be 
+// encountered, and corresponding struct representing the parsed group can be 
+// found in file testdata_group.cpp.
 TEST(GroupParser, ParseAllGroups) {
 	for (const auto & data : testdata::groupDataSet){
 		for (const auto reportPart : testdata::GroupTestData::allReportParts) {
-			const metaf::Group group = metaf::GroupParser::parse(data.source, reportPart);
-			const auto i = std::find(data.reportParts.begin(), 
-				data.reportParts.end(),
-				reportPart);
-			const bool groupShouldParseForThisReportPart = (i != data.reportParts.end());
-
-			if (groupShouldParseForThisReportPart) {
-				EXPECT_EQ(group, data.expectedResult) << "Additional test data:\n"
-					" Group did not parse as expected within this report part\n" <<
-					" Group String: " << data.source << "\n" <<
-					" Report Part: " << reportPartToString(reportPart);
-			}
-
-			if (!groupShouldParseForThisReportPart) {
-				EXPECT_NE(group, data.expectedResult) << "Additional test data:\n"
-					" Group was not expected to parse within this report part\n" <<
-					" Group String: " << data.source << "\n" <<
-					" Report part: " << reportPartToString(reportPart);
-			}
+			EXPECT_NO_THROW({
+				const metaf::Group group = metaf::GroupParser::parse(data.source, reportPart);
+				const auto i = std::find(data.reportParts.begin(), 
+					data.reportParts.end(),
+					reportPart);
+					const bool expectParseOK = (i != data.reportParts.end());
+					if (expectParseOK) {
+						EXPECT_EQ(group, data.expectedResult) << 
+							"Additional test data:" << std::endl <<
+							" Group did not parse as expected within this report part" << 
+							std::endl <<
+							" Group String: " << data.source << std::endl <<
+							" Report Part: " << reportPartToString(reportPart);
+					}
+					if (!expectParseOK) {
+						EXPECT_NE(group, data.expectedResult) << 
+							"Additional test data:" << std::endl <<
+							" Group was not expected to parse within this report part" << 
+							std::endl <<
+							" Group String: " << data.source << std::endl <<
+							" Report part: " << reportPartToString(reportPart);
+					}
+			});
 		}
 	}
 }

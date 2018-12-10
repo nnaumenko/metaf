@@ -12,7 +12,7 @@
 #include <string>
 #include "metaf.h"
 
-namespace test {
+namespace testdata {
 
 	struct MetarTafSyntaxTestData {
 		const char * report = "";

@@ -7,30 +7,7 @@
 
 #include "gtest/gtest.h"
 
-
-#include "test.h"
-#include "testdata_syntax.h"
-#include "testdata_real.h"
-#include "test_parser.h"
-
-TEST_GLOBALS();
-
 int main(int argc, char ** argv) {
-	//using test.h
-	//TODO: convert to gtest and remove
-	TESTS_INIT();
-	TEST_NOTE("Now running old tests");
-	{
-		test::TestParser testParser;
-		testParser.run(test::syntaxDataSet, test::realDataSet);
-	}
-	TESTS_SUMMARY();
-	{
-		test::CheckParserPerformance parserPerformanceTester;
-		parserPerformanceTester.run(test::realDataSet);
-	}
-	TEST_NOTE("Now running gtest");
-
 	//using gtest
 	::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

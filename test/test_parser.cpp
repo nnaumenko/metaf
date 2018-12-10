@@ -5,104 +5,89 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-#include "test.h"
-#include "test_parser.h"
-#include "metaf.h"
+#include "gtest/gtest.h"
+#include "testdata_syntax.h"
+#include "testdata_real.h"
 #include <chrono>
 #include <sstream>
 
-void test::TestParser::run(const std::vector<test::MetarTafSyntaxTestData> &syntaxTestData, 
-	const std::vector<test::MetarTafRealData> &realTestData)
-{
-	bool exceptionThrown = false;
-	try {
-		testSyntax(syntaxTestData);
-		testRealData(realTestData, false);
-		testRealData(realTestData, true);
-	} catch (...) {
-		exceptionThrown = true;
+// Confirm that parser is able to parse and identify valid METAR and TAF 
+// reports, and that parser is able to detect errors in malformed reports.
+TEST(Parser, SyntaxParsing) {
+	metaf::Parser parser;
+	for (const auto & data : testdata::syntaxDataSet) {
+		EXPECT_NO_THROW({ parser.parse(data.report); });
+		EXPECT_EQ(parser.getReportType(), data.expectedType) 
+			<< "Report: " << data.report;
+		EXPECT_EQ(parser.getError(), data.expectedError) 
+			<< "Report: " << data.report;
+		EXPECT_EQ(parser.getResult(), data.expectedResult) 
+			<< "Report: " << data.report;
 	}
-	testResetResult();
-	TEST_BEGIN();
-	TEST_ASSERT(!exceptionThrown);
-	TEST_END();
 }
 
-void test::TestParser::testSyntax(const std::vector<test::MetarTafSyntaxTestData> &syntaxTestData){
-	TEST_BEGIN();
+// Confirm that parser is able to parse real-life METAR reports and that 
+// real-life METAR reports' syntax is recognised by parser. 
+// If this test fails, a METAR report which failed the test is printed. This 
+// allows to identify individual report in testdata_real.cpp
+TEST(Parser, RealDataParsingMETAR) {
 	metaf::Parser parser;
-	for (const auto & data : syntaxTestData) {
-		parser.parse(data.report);
-		bool parseTypeOK = (parser.getReportType() == data.expectedType);
-		bool parseErrorOK = (parser.getError() == data.expectedError);
-		bool parseResultOK = (parser.getResult() == data.expectedResult);
-		TEST_ASSERT(parseTypeOK);
-		TEST_ASSERT(parseErrorOK);
-		TEST_ASSERT(parseResultOK);
-		if (!parseTypeOK || !parseErrorOK || !parseResultOK) TEST_NOTE(data.report);
+	for (const auto & data : testdata::realDataSet) {
+		if (strlen(data.metar)) {
+			bool parseResult;
+			EXPECT_NO_THROW({ parseResult = parser.parse(data.metar); });
+			EXPECT_TRUE(parseResult) <<
+				"Report: " << data.metar;
+			EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR) << 
+				"Report: " << data.metar;
+		}
 	}
-	TEST_END();
 }
 
-void test::TestParser::testRealData(const std::vector<test::MetarTafRealData> &testData, 
-	bool taf)
-{
-	TEST_BEGIN();
+// Confirm that parser is able to parse real-life TAF reports and that 
+// real-life TAF reports' syntax is recognised by parser. 
+// If this test fails, a TAF report which failed the test is printed. This 
+// allows to identify individual report in testdata_real.cpp
+TEST(Parser, RealDataParsingTAF) {
 	metaf::Parser parser;
-	for (const auto & data : testData) {
-		const std::string & testReport = taf ? data.taf : data.metar;
-		const auto expectedType = 
-			taf ? metaf::ReportType::TAF : metaf::ReportType::METAR;
-		const bool parseResult = !testReport.empty() ? 
-			parser.parse(testReport) : true;
-		const bool parseTypeOK = !testReport.empty() ? 
-			(parser.getReportType() == expectedType) : true;
-		TEST_ASSERT(parseResult);
-		TEST_ASSERT(parseTypeOK);
-		if (!parseResult || !parseTypeOK) TEST_NOTE(testReport.c_str());
+	for (const auto & data : testdata::realDataSet) {
+		if (strlen(data.taf)) {
+			bool parseResult;
+			EXPECT_NO_THROW({ parseResult = parser.parse(data.taf); });
+			EXPECT_TRUE(parseResult) <<
+				"Report: " << data.taf;
+			EXPECT_EQ(parser.getReportType(), metaf::ReportType::TAF) << 
+				"Report: " << data.taf;
+		}
 	}
-	TEST_END();
 }
 
-void test::TestParser::testResetResult() {
-	TEST_BEGIN();
+// Confirm that resetResult() resets parsing result vector, report type and 
+// error after successful parsing
+TEST(Parser, resetResult) {
 	metaf::Parser parser;
-	TEST_ASSERT(parser.parse("METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU"));
-	TEST_ASSERT(parser.getResult().size());
+	ASSERT_TRUE(parser.parse("METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU"));
+	ASSERT_NE(parser.getReportType(), metaf::ReportType::UNKNOWN);
+	ASSERT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	ASSERT_NE(parser.getResult().size(), 0);
 	parser.resetResult();
-	TEST_ASSERT(!parser.getResult().size());
-	TEST_ASSERT(!parser.getResult().capacity());//Can be implementation-defined?
-	TEST_END();
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::UNKNOWN);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	EXPECT_EQ(parser.getResult().size(), 0);
+	EXPECT_EQ(parser.getResult().capacity(), 0); //Can be implementation-defined?
 }
 
-
-void test::CheckParserPerformance::run(
-	const std::vector<test::MetarTafRealData> &testData)
-{
+// Confirm that resetResult() resets parsing result vector, report type and 
+// error after parsing error was generated
+TEST(Parser, resetResultError) {
 	metaf::Parser parser;
-	auto beginTime = std::chrono::system_clock::now();
-	auto reportCount = 0;
-	for (const auto & data : testData) {
-		if (data.metar[0]) {
-			parser.parse(data.metar);
-			reportCount++;
-		}
-		if (data.taf[0]) {
-			parser.parse(data.taf);
-			reportCount++;
-		}
-	}
-	auto endTime = std::chrono::system_clock::now();
-	auto parseTime = std::chrono::microseconds(endTime - beginTime);
-	auto averageReportTime = std::chrono::microseconds(parseTime / reportCount);
-	static const auto microsecondsPerSecond = 
-		std::chrono::microseconds(std::chrono::seconds(1)).count();
-	std::ostringstream result;
-	result << "Parser performance: ";
-	result << parseTime.count() << " microseconds, ";
-	result << reportCount << " reports, ";
-	result << averageReportTime.count() << " microseconds per report, ";
-	result << microsecondsPerSecond / averageReportTime.count();
-	result << " reports per second";
-	TEST_NOTE(result.str().c_str());
+	ASSERT_FALSE(parser.parse("METAR EGYP"));
+	ASSERT_NE(parser.getReportType(), metaf::ReportType::UNKNOWN);
+	ASSERT_NE(parser.getError(), metaf::Parser::Error::NONE);
+	ASSERT_NE(parser.getResult().size(), 0);
+	parser.resetResult();
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::UNKNOWN);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	EXPECT_EQ(parser.getResult().size(), 0);
+	EXPECT_EQ(parser.getResult().capacity(), 0); //Can be implementation-defined?
 }

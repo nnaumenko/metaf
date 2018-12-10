@@ -11,7 +11,7 @@
 #include <vector>
 #include "metaf.h"
 
-namespace test {
+namespace testdata {
 
 	struct MetarTafRealData {
 		const char * airportICAO = "";

@@ -6,25 +6,20 @@ This directory contains the project tests.
 
 ## Test framework
 
-The tests use a custom minimalistic framework inspired by [MinUnit](http://www.jera.com/techinfo/jtns/jtn002.html).
-
-The test framework is located in file `test.h`.
+The tests use Goole Test framework.
 
 ## Tests description
 
 ### Unit tests
 
-The following unit tests are included with the project:
+The following test cases are included:
 
-* Tests of individual METAR/TAF groups' parsing (see `class TestGroupParser` in files `test_group_parser.h` and `test_group_parser.cpp`).
-* Tests of groups' equality operator and constructors (see `class TestGroup` in files `test_group.h` and `test_group.cpp`).
-* Tests of parser's verification of METAR/TAF syntax, error detection, and ability to process real life examples of METAR/TAF without issues (see class TestParser in files `test_parser.h` and `test_parser.cpp`).
-
-### Performance tests
-
-The following performance tests are included with the project.
-
-* Parser performance check (see class CheckParserPerformance in files test_parser.h and test_parser.cpp). It parses real life examples of METAR and TAF reports and displays number of reports, total time, average time per report and number of reports processed per second.
+* Group: tests of Group variant functionality.
+* Runway: tests of struct Runway methods.
+* PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TimeSpanGroup, TrendTimeGroup, ProbabilityGroup, WindGroup, VarWindGroup, WindShearGroup, VisibilityGroup, CloudGroup, VerticalVisibilityGroup, WeatherGroup, TemperatureGroup, MinMaxTemperatureGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, RainfallGroup, SeaSurfaceGroup, SeaWavesGroup, ColourCodeGroup: tests of comparison operators, constructors, etc. for the structs representing individual METAR/TAF groups. The only exception is parse() method which is tested in GroupParser.
+* getSyntaxGroup: tests of function getSyntaxGroup which checks which syntax-critical group is represented by specified Group variant.
+* GroupParser tests parse() method of structs representing individual METAR/TAF groups. This is done by parsing mulptiple groups and simulating different report parts where they may and may not be encountered.
+* Parser test tests Parser class. It contains tests for METAR and TAF report syntax parsing, 
 
 ### Test data sets
 
