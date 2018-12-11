@@ -4,11 +4,29 @@ This directory contains the project tests.
 
 [Tests at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
 
-## Test framework
+## Building
 
-The tests use Goole Test framework.
+Build tests only:
 
-## Tests description
+    emmake make tests
+
+Build entire project:
+
+    emmake make
+
+Pre-built binary files are also included with this repo.
+
+## Running
+
+The compiled version of tests can be run by opening the file `bin/test/main.html` with in a browser.
+
+[Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
+
+## Description
+
+### Test framework
+
+The tests use [Google Test](https://github.com/abseil/googletest/) framework.
 
 ### Unit tests
 
@@ -29,18 +47,8 @@ The following test data are used for the testing. Each set of data is stored in 
 * Correct and malformed METAR and TAF reports along with expected autodetected report type and expected error in case of malformed report (see `testdata_syntax.h` and `testdata_syntax.cpp`).
 * Real life examples of METAR and TAF reports from different location, demonstrating a wide range of group formats and regional diffferences (see `testdata_real.h` and `testdata_real.cpp`).
 
-## Running the tests
-
-### Compiling and running
-
-The tests are compiled with command `emmake make tests`.
-
-The compiled version of tests can be run by opening the file `bin/tests/main.html` with in a browser.
-
 ### Test results
 
-Each test is reported either 'Passed' or 'FAILED'.
+The tests results are reported by Google Test framework.
 
-The failed tests are reported along with line, file and condition which caused test to fail.
-
-In some cases, e.g. when a test data set is processed in a loop, notes such as line and file do not provide sufficient information to identify a failure. In these cases additional note with raw input data or group content is also reported.
+Some tests batch-process large amount of data, in these cases when tests fails an additional relevant information is reported in order to identify which data caused tests to fail.

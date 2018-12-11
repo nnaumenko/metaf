@@ -2,52 +2,41 @@ CC := emcc
 CFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
-TEST_CFLAGS := 
-TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 -I googletest/googletest/include \
--I googletest/googletest/
+TEST_CFLAGS := -I googletest/googletest/include -I googletest/googletest/
+TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 
 
-SRCEXT := cpp
 INCLUDEDIR := src
-
 SRCDIR := src
 BUILDDIR := build
-TARGET := bin/main.html
 
 TESTSRCDIR := test
 TESTBUILDDIR := build/test
 TESTTARGET := bin/test/main.html
 
-GTESTSRCDIR = googletest/googletest/src
-GTESTBUILDDIR := build/gtest
-
-EXAMPLEDIR := examples
-EXAMPLEBUILDDIR := build/examples
 EXAMPLETARGETDIR := bin/examples
 
-SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+SOURCES := $(shell find $(SRCDIR) -type f -name *.cpp)
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
 INCLUDES := $(shell find $(INCLUDEDIR) -type f -name *.h)
 
-OBJECTSSANSMAIN := $(subst $(BUILDDIR)/main.o,,$(OBJECTS))
-
-TESTSOURCES := $(shell find $(TESTSRCDIR) -type f -name *.$(SRCEXT))
-TESTOBJECTS := $(patsubst $(TESTSRCDIR)/%,$(TESTBUILDDIR)/%,$(TESTSOURCES:.$(SRCEXT)=.o))
+TESTSOURCES := $(shell find $(TESTSRCDIR) -type f -name *.cpp)
+TESTOBJECTS := $(patsubst $(TESTSRCDIR)/%,$(TESTBUILDDIR)/%,$(TESTSOURCES:.cpp=.o))
 TESTINCLUDES := $(shell find $(TESTSRCDIR) -type f -name *.h)
 
-.PHONY: release
-release: $(OBJECTS)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TARGET)
+.PHONY: all
+all: tests examples clean
 
 .PHONY: tests
+tests: CFLAGS += $(TEST_CFLAGS)
 tests: EMCCFLAGS += $(TEST_EMCCFLAGS)
-tests: $(OBJECTSSANSMAIN) $(TESTOBJECTS) build/test/gtest_all.o
+tests: $(OBJECTS) $(TESTOBJECTS) build/test/gtest_all.o
 	$(CC) $(CFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
 
 .PHONY: examples
-examples: $(OBJECTSSANSMAIN)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ $(EXAMPLEDIR)/to_json.cpp \
+examples: $(OBJECTS)
+	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/to_json.cpp \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-	--shell-file $(EXAMPLEDIR)/shellfiles/to_json_shell.html \
+	--shell-file examples/shellfiles/to_json_shell.html \
 	-o $(EXAMPLETARGETDIR)/to_json.html
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES)
@@ -63,4 +52,3 @@ build/test/gtest_all.o: googletest/googletest/src/gtest-all.cc
 clean:
 	$(RM) $(BUILDDIR)/*.*
 	$(RM) $(TESTBUILDDIR)/*.*
-	$(RM) $(EXAMPLEBUILDDIR)/*.*
