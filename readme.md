@@ -1,4 +1,4 @@
-# Webassembly METAR and TAF parser
+# Modern c++ library for parsing METAR and TAF with focus on Webassembly
 
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
 
@@ -107,6 +107,10 @@ Build tests only:
 
     emmake make tests
 
+Build performance check only:
+
+    emmake make performance
+
 ### Running
 
 Open file `bin/index.html` in a www browser (Webassembly support required). 
@@ -115,9 +119,11 @@ Open file `bin/index.html` in a www browser (Webassembly support required).
 
 The page open in browser contains links to tests and examples.
 
-[More information on tests](tree/master/test).
+[More information on tests](tree/master/test/readme.md).
 
-[More information on examples](tree/master/examples).
+[More information on examples](tree/master/examples/readme.md).
+
+[More information on performance check](tree/master/performance/readme.md).
 
 ## Usage examples
 

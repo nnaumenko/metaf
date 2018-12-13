@@ -11,7 +11,6 @@
 
 #include "metaf.h"
 #include <sstream>
-//#include <iostream>
 #include <stack>
 #include <emscripten/emscripten.h>
 

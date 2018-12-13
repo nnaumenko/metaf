@@ -2,6 +2,8 @@
 
 This directory contains the examples of Metaf parser usage.
 
+[Example: convert METAR or TAF to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+
 ## Building
 
 Build examples only:
@@ -16,7 +18,7 @@ Pre-built binary files are also included with this repo.
 
 ## Description
 
-## Example 1: Parsing METAR or TAF report and generating JSON
+### Example 1: Parsing METAR or TAF report and generating JSON
 
 This example parses the METAR or TAF report and converts it to JSON.
 
@@ -26,7 +28,7 @@ Only minified JSON generation is possible. If "Formatted result" checkbox is set
 
 See file `metar_taf_to_json.cpp` for details.
 
-### Running
+#### Running
 
 Open file `bin/examples/to_json.html` in www browser (Webassembly support required).
 

@@ -2,7 +2,7 @@
 
 This directory contains the project tests.
 
-[Tests at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
+[Tests on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
 
 ## Building
 
@@ -18,7 +18,7 @@ Pre-built binary files are also included with this repo.
 
 ## Running
 
-The compiled version of tests can be run by opening the file `bin/test/main.html` with in a browser.
+The compiled version of tests can be run by opening the file `bin/test/main.html` in a www browser.
 
 [Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
 

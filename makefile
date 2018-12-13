@@ -1,8 +1,8 @@
 CC := emcc
-CFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
+CXXFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
-TEST_CFLAGS := -I googletest/googletest/include -I googletest/googletest/
+TEST_CXXFLAGS := -I googletest/googletest/include -I googletest/googletest/
 TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 
 
 INCLUDEDIR := src
@@ -24,31 +24,39 @@ TESTOBJECTS := $(patsubst $(TESTSRCDIR)/%,$(TESTBUILDDIR)/%,$(TESTSOURCES:.cpp=.
 TESTINCLUDES := $(shell find $(TESTSRCDIR) -type f -name *.h)
 
 .PHONY: all
-all: tests examples clean
+all: tests examples performance clean
 
 .PHONY: tests
-tests: CFLAGS += $(TEST_CFLAGS)
+tests: CXXFLAGS += $(TEST_CXXFLAGS)
 tests: EMCCFLAGS += $(TEST_EMCCFLAGS)
-tests: $(OBJECTS) $(TESTOBJECTS) build/test/gtest_all.o
-	$(CC) $(CFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
+tests: $(OBJECTS) $(TESTOBJECTS) $(TESTBUILDDIR)/gtest_all.o
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
 
 .PHONY: examples
 examples: $(OBJECTS)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/to_json.cpp \
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/to_json.cpp \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
 	--shell-file examples/shellfiles/to_json_shell.html \
 	-o $(EXAMPLETARGETDIR)/to_json.html
 
+.PHONY: performance
+performance: $(OBJECTS) $(TESTBUILDDIR)/testdata_real.o
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -I $(TESTSRCDIR) $^ \
+	performance/main.cpp -o bin/performance/check.html
+
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(INCLUDES)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
+	mkdir -p $(BUILDDIR)
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
 $(TESTBUILDDIR)/%.o: $(TESTSRCDIR)/%.cpp $(INCLUDES) $(TESTINCLUDES)
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
+	mkdir -p $(TESTBUILDDIR)
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
-build/test/gtest_all.o: googletest/googletest/src/gtest-all.cc
-	$(CC) $(CFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
+$(TESTBUILDDIR)/gtest_all.o: googletest/googletest/src/gtest-all.cc
+	mkdir -p $(TESTBUILDDIR)
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
 .PHONY: clean
 clean:
-	$(RM) $(BUILDDIR)/*.*
-	$(RM) $(TESTBUILDDIR)/*.*
+	rm --recursive --force $(TESTBUILDDIR)
+	rm --recursive --force $(BUILDDIR)
