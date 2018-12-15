@@ -182,7 +182,8 @@ produces the following JSON (providing that "Formatted result" is checked):
       }
     ],
     "airTemperature": -29,
-    "temperatureUnit": "centigrade",
+    "airTemperatureFreezing": true,
+    "airTemperatureUnit": "centigrade",
     "atmosphericPressure": 28,
     "atmosphericPressureUnit": "inHg",
     "remarks": {
@@ -199,7 +200,7 @@ produces the following JSON (providing that "Formatted result" is checked):
       "plainText10": "SDG/HDG"
     }
   }
-} 
+}
         </code>
     </pre>
 </details>

@@ -164,7 +164,7 @@ namespace metaf {
 		METERS_PER_SECOND = 1,
 		KILOMETERS_PER_HOUR = 2
 	};
-	
+
 	/// Temperature measurement units, used across groups
 	enum class TemperatureUnit {
 		UNKNOWN = 30,
@@ -216,6 +216,39 @@ namespace metaf {
 
 	bool operator ==(const Runway & lhs, const Runway & rhs);
 	inline bool operator !=(const Runway & lhs, const Runway & rhs) {
+		return !(lhs == rhs);
+	}
+
+	/// Temperature value used across several groups.
+	/// @details Temperature measurement unit is fixed at centigrade.
+	/// @par Modifier is to be ignored unless the temperature value is 
+	/// zero. When temperature is zero, modifier additionally specifies 
+	/// rounded value: LESS_THAN specifies range (-0,5 .. 0) corresponding 
+	/// to value M00 and means freezing temperatures, MORE_THAN specifies 
+	/// range [0 .. 0.5) corresponding to value 00 and means non-freezing 
+	/// temperature.
+	struct Temperature {
+		Temperature () = default;
+		/// Initialise temperature value
+		/// @param value Temperature value
+		/// @param modifier Ignored unless temperature is zero. If 
+		/// temperature is zero then belowZero field is initialised with
+		/// the value of this parameter.
+		Temperature (int value, ValueModifier modifier = ValueModifier::NONE);
+		/// Initialise temperature value
+		/// @param value Integer absolute (always positive) temperature value
+		/// @param minus Set to true if the temperature value is negative
+		Temperature (unsigned int value, bool minus);
+		int value = 0;				///< Temperature value
+		bool reported = false;		///< Is temperature value reported
+		/// Ignored unless temperature is zero; indicates below-zero or 
+		/// above-zero temperatures rounded to zero
+		ValueModifier modifier = ValueModifier::NONE;
+		static const TemperatureUnit unit = TemperatureUnit::DEGREES_C;
+	};
+
+	bool operator ==(const Temperature & lhs, const Temperature & rhs);
+	inline bool operator !=(const Temperature & lhs, const Temperature & rhs) {
 		return !(lhs == rhs);
 	}
 
@@ -799,21 +832,15 @@ namespace metaf {
 	/// @details Reports ambient air temperature and dew point.
 	struct TemperatureGroup : public GroupBase {
 		TemperatureGroup() = default;
-		/// Initialise group where only temperature is reported.
-		/// @param temperature Ambient air temperature.
-		TemperatureGroup(int temperature);
-		/// Initialise group where both temperature and dew point are reported.
+		/// Initialise group where both temperature and dew point are reported, 
+		/// with optional MORE_THAN or LESS_THAN modifier.
 		/// @param temperature Ambient air temperature.
 		/// @param dewPoint Dew point.
-		TemperatureGroup(int temperature, int dewPoint);
+		TemperatureGroup(Temperature airTemp, Temperature dewPoint = Temperature());
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
-		int temperature = 0;				///< Ambient air temperature.
-		bool temperatureReported = false;	///< Is ambient air temperature reported.
-		int dewPoint = 0; 					///< Dew point.
-		bool dewPointReported = false;		///< Is dew point reported.
-		/// Temperture measurement units.
-		static const TemperatureUnit unit = TemperatureUnit::DEGREES_C; 
+		Temperature airTemp;			///< Ambient air temperature.
+		Temperature dewPoint; 			///< Dew point.
 	};
 
 	bool operator ==(const TemperatureGroup & lhs, const TemperatureGroup & rhs);
@@ -836,24 +863,21 @@ namespace metaf {
 		/// @param temperature Minimum temperature expected.
 		/// @param day Day when specified temperature is expected.
 		/// @param hour Hour when specified temperature is expected.
-		static MinMaxTemperatureGroup makeMin(int temperature,
+		static MinMaxTemperatureGroup makeMin(Temperature temperature,
 			unsigned int day, 
 			unsigned int hour);
 		/// Initialise group with maximum temperature forecast.
-		/// @param temperature Maximum temperature expected.
-		/// @param day Day when specified temperature is expected.
+		/// @param temperature Maximum temperature expected.		/// @param day Day when specified temperature is expected.
 		/// @param hour Hour when specified temperature is expected.
-		static MinMaxTemperatureGroup makeMax(int temperature, 
+		static MinMaxTemperatureGroup makeMax(Temperature temperature, 
 			unsigned int day, 
 			unsigned int hour);
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		Point point = Point::UNKNOWN;	///< Temperature point (minimum or maximum)
-		int temperature = 0;			///< Temperature value (minimum or maximum)
+		Temperature temperature = Temperature(0); ///< Temperature value (minimum or maximum)
 		unsigned int day = 0;		///< Day when specified temperature is expected.
 		unsigned int hour = 0;		///< Hour when specified temperature is expected.
-		/// Temperture measurement units.
-		static const TemperatureUnit unit = TemperatureUnit::DEGREES_C;
 	};
 
 	bool operator ==(const MinMaxTemperatureGroup & lhs, const MinMaxTemperatureGroup & rhs);

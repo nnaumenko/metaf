@@ -1075,6 +1075,27 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		{metaf::ReportPart::METAR},
 		metaf::TemperatureGroup(),
 	},
+	{
+		std::string("00/M02"), //temperature between 0 and 0.5 centigrade, dew point -2 centigrade
+		{metaf::ReportPart::METAR},
+		metaf::TemperatureGroup(metaf::Temperature(0, metaf::ValueModifier::MORE_THAN), -2),
+	},
+	{
+		std::string("M00/M02"), //temperature between -0.5 and 0 centigrade, dew point -2 centigrade
+		{metaf::ReportPart::METAR},
+		metaf::TemperatureGroup(metaf::Temperature(0, metaf::ValueModifier::LESS_THAN), -2),
+	},
+	{
+		std::string("02/M00"), //temperature 2 centigrade, dew point between 0 and 0.5 centigrade
+		{metaf::ReportPart::METAR},
+		metaf::TemperatureGroup(2, metaf::Temperature(0, metaf::ValueModifier::LESS_THAN)),
+	},
+	{
+		std::string("02/00"), //temperature 2 centigrade, dew point between -0.5 and 0 centigrade
+		{metaf::ReportPart::METAR},
+		metaf::TemperatureGroup(2, metaf::Temperature(0, metaf::ValueModifier::MORE_THAN)),
+	},
+
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -1097,6 +1118,18 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("TNM02/0709Z"), //Min temperature -2 centigrade on day 7, 9:00 GMT
 		{metaf::ReportPart::TAF},
 		metaf::MinMaxTemperatureGroup::makeMin(-2, 7, 9),
+	},
+	{
+		std::string("TX00/0709Z"), //Max temperature between 0 & 0.5 centigrade on day 7, 9:00 GMT
+		{metaf::ReportPart::TAF},
+		metaf::MinMaxTemperatureGroup::makeMax(
+			metaf::Temperature(0, metaf::ValueModifier::MORE_THAN), 7, 9),
+	},
+	{
+		std::string("TXM00/0709Z"), //Max temperature between -0.5 & 0 centigrade on day 7, 9:00 GMT
+		{metaf::ReportPart::TAF},
+		metaf::MinMaxTemperatureGroup::makeMax(
+			metaf::Temperature(0, metaf::ValueModifier::LESS_THAN), 7, 9),
 	},
 
 	///////////////////////////////////////////////////////////////////////////////

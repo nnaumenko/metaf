@@ -80,8 +80,10 @@ Result:
       }
     ],
     "airTemperature": -4,
+    "airTemperatureFreezing": true,
+    "airTemperatureUnit": "centigrade",
     "dewPoint": -4,
-    "temperatureUnit": "centigrade",
+    "dewPointUnit": "centigrade",
     "atmosphericPressure": 1022,
     "atmosphericPressureUnit": "hPa",
     "runwayState": [
@@ -172,12 +174,15 @@ Result:
     ],
     "maximumTemperature": {
       "temperatureValue": 5,
+      "freezing": false,
       "temperatureUnit": "centigrade",
       "expectedOnDay": 4,
       "expectedOnTime": "19:00"
     },
     "minimumTemperature": {
       "temperatureValue": 0,
+      "freezing": false,
+      "temperatureDetailed": ">0",
       "temperatureUnit": "centigrade",
       "expectedOnDay": 5,
       "expectedOnTime": "18:00"
@@ -304,7 +309,7 @@ Result:
       }
     ]
   }
-} 
+}
         </code>
     </pre>
 </details>

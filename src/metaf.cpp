@@ -76,6 +76,29 @@ bool metaf::operator ==(const Runway & lhs, const Runway & rhs) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+Temperature::Temperature (int v, ValueModifier m) : 
+	value(v), reported(true), modifier(!v ? m : ValueModifier::NONE) {}
+
+Temperature::Temperature (unsigned int v, bool m) {
+	value = v;
+	reported = true;
+	modifier = ValueModifier::NONE;
+	if (m) value = -value;
+	if (!value) modifier = m ? ValueModifier::LESS_THAN : ValueModifier::MORE_THAN;
+}
+
+bool metaf::operator ==(const Temperature & lhs, const Temperature & rhs) {
+	if (lhs.reported != rhs.reported ||
+		lhs.unit != rhs.unit) return(false);
+	if (lhs.reported) {
+		if (lhs.value != rhs.value) return(false);
+		if (!lhs.value && (lhs.modifier != rhs.modifier)) return(false);
+	} 
+	return(true);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 PlainTextGroup::PlainTextGroup(std::string text) {
 	strncpy(this->text, text.c_str(), textMaxLength);
 	this->text[PlainTextGroup::textMaxLength] = '\0';
@@ -636,6 +659,7 @@ bool VisibilityGroup::isValid() const {
 		return(true);
 	}
 	if (unit == DistanceUnit::STATUTE_MILES) {
+		if (direction != Direction::NONE) return(false);
 		if (!reported) return(true);
 		bool fraction = numerator && denominator;
 		if (modifier == ValueModifier::UNKNOWN) return(false);
@@ -978,11 +1002,7 @@ bool metaf::operator ==(const WeatherGroup & lhs, const WeatherGroup & rhs){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TemperatureGroup::TemperatureGroup(int t) : 
-	temperature(t), temperatureReported(true), dewPointReported(false) {}
-
-TemperatureGroup::TemperatureGroup(int t, int dp) :
-	temperature(t), temperatureReported(true), dewPoint(dp), dewPointReported(true) {}
+TemperatureGroup::TemperatureGroup(Temperature t, Temperature dp) : airTemp(t), dewPoint(dp) {}
 
 bool TemperatureGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex tempRegex("(?:(M)?(\\d\\d)|//)/(?:(M)?(\\d\\d)|//)?");
@@ -995,35 +1015,24 @@ bool TemperatureGroup::parse(const string & group, ReportPart reportPart) {
 	if (reportPart != ReportPart::METAR) return(false);
 	if (!regex_match(group, match, tempRegex)) return(false);
 	if (match.size() != (expectedMatchGroups)) return(false);
-	temperature = 0.0;
-	dewPoint = 0.0;
-	temperatureReported = false;
-	dewPointReported = false;
+	airTemp = Temperature();
 	if (match.length(matchTemp)) {
-		temperature = stoi(match.str(matchTemp));
-		temperatureReported = true;
+		airTemp = Temperature(stoi(match.str(matchTemp)), match.length(matchTempM));
 	}
-	if (match.length(matchTempM)) temperature = -temperature;
+	dewPoint = Temperature();
 	if (match.length(matchDewPoint)) {
-		dewPoint = stoi(match.str(matchDewPoint));
-		dewPointReported = true;
+		dewPoint = Temperature(stoi(match.str(matchDewPoint)), match.length(matchDewPointM));
 	}
-	if (match.length(matchDewPointM)) dewPoint = -dewPoint;
 	return(true);	
 }
 
 bool metaf::operator ==(const TemperatureGroup & lhs, const TemperatureGroup & rhs){
-	if (lhs.temperatureReported != rhs.temperatureReported ||
-		lhs.dewPointReported != rhs.dewPointReported ||
-		lhs.unit != rhs.unit) return(false);
-	if (lhs.temperatureReported && (lhs.temperature != rhs.temperature)) return(false);
-	if (lhs.dewPointReported && (lhs.dewPoint != rhs.dewPoint)) return(false);
-	return(true);
+	return(lhs.airTemp == rhs.airTemp && lhs.dewPoint == rhs.dewPoint);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMin(int temperature,
+MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMin(Temperature temperature,
 	unsigned int day, 
 	unsigned int hour)
 {
@@ -1035,7 +1044,7 @@ MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMin(int temperature,
 	return(group);
 }
 
-MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMax(int temperature, 
+MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMax(Temperature temperature, 
 	unsigned int day, 
 	unsigned int hour)
 {
@@ -1063,8 +1072,7 @@ bool MinMaxTemperatureGroup::parse(const string & group, ReportPart reportPart) 
 	point = Point::UNKNOWN;
 	if (match.length(matchMax)) point = Point::MAXIMUM;
 	if (match.length(matchMin)) point = Point::MINIMUM;
-	temperature = stoi(match.str(matchTemp));
-	if (match.length(matchM)) temperature = -temperature;
+	temperature = Temperature(stoi(match.str(matchTemp)), match.length(matchM));
 	day = static_cast<unsigned int>(stoi(match.str(matchDay)));
 	hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
 	return(true);
@@ -1073,8 +1081,7 @@ bool MinMaxTemperatureGroup::parse(const string & group, ReportPart reportPart) 
 bool metaf::operator ==(const MinMaxTemperatureGroup & lhs, const MinMaxTemperatureGroup & rhs){
 	if (lhs.point != rhs.point ||
 		lhs.day != rhs.day ||
-		lhs.hour != rhs.hour ||
-		lhs.unit != rhs.unit) return(false);
+		lhs.hour != rhs.hour) return(false);
 	if (lhs.temperature != rhs.temperature) return(false);
 	return(true);
 }
@@ -1327,11 +1334,14 @@ RunwayStateGroup::Extent RunwayStateGroup::extentFromString(const string & str){
 bool metaf::operator ==(const RunwayStateGroup & lhs, const RunwayStateGroup & rhs){
 	if (!(lhs.runway == rhs.runway)) return(false);
 	if (lhs.status != rhs.status) return(false);
+	if (lhs.status == RunwayStateGroup::Status::NONE ||
+		lhs.status == RunwayStateGroup::Status::CLRD) {
+			if (lhs.surfaceFriction != rhs.surfaceFriction) return(false);
+	}
 	if (lhs.status != RunwayStateGroup::Status::NONE) return(true);
 	return(lhs.deposits == rhs.deposits &&
 		lhs.contaminationExtent == rhs.contaminationExtent &&
-		lhs.depositDepth == rhs.depositDepth &&
-		lhs.surfaceFriction == rhs.surfaceFriction);
+		lhs.depositDepth == rhs.depositDepth);
 }
 
 RunwayStateGroup::DepositDepth::DepositDepth (unsigned int d) :

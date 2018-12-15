@@ -34,9 +34,10 @@ The following test cases are included:
 
 * Group: tests of Group variant functionality.
 * Runway: tests of struct Runway methods.
+* Temperature: tests of struct Temperature methods.
 * PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TimeSpanGroup, TrendTimeGroup, ProbabilityGroup, WindGroup, VarWindGroup, WindShearGroup, VisibilityGroup, CloudGroup, VerticalVisibilityGroup, WeatherGroup, TemperatureGroup, MinMaxTemperatureGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, RainfallGroup, SeaSurfaceGroup, SeaWavesGroup, ColourCodeGroup: tests of comparison operators, constructors, etc. for the structs representing individual METAR/TAF groups. The only exception is parse() method which is tested in GroupParser.
 * getSyntaxGroup: tests of function getSyntaxGroup which checks which syntax-critical group is represented by specified Group variant.
-* GroupParser tests parse() method of structs representing individual METAR/TAF groups. This is done by parsing mulptiple groups and simulating different report parts where they may and may not be encountered.
+* GroupParser tests parse() method of structs representing all individual METAR/TAF groups. This is done by parsing mulptiple groups and simulating different report parts where they may and may not be encountered.
 * Parser test tests Parser class. It contains tests for METAR and TAF report syntax parsing, 
 
 ### Test data sets

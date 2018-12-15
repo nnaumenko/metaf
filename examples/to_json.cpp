@@ -167,6 +167,7 @@ private:
 	static std::string temperatureUnitToString(metaf::TemperatureUnit unit);
 	static std::string runwayToString(metaf::Runway runway);
 	static std::string runwayDesignatorToString(metaf::Runway::Designator designator);
+	static std::string temperatureValueToString(metaf::Temperature temperature);
 	static std::string valueModifierToString(metaf::ValueModifier modifier);
 	static std::string timeOfDayToString(unsigned int hour, unsigned int minute);
 	static std::string trendTypeToString(metaf::TrendTimeGroup::Type type);
@@ -510,17 +511,41 @@ void GroupVisitorJson::visitWeatherGroup(const metaf::WeatherGroup & group) {
 }
 
 void GroupVisitorJson::visitTemperatureGroup(const metaf::TemperatureGroup & group) {
-	if (group.temperatureReported) json.valueInt("airTemperature", group.temperature);
-	if (group.dewPointReported) json.valueInt("dewPoint", group.dewPoint);
-	if (group.temperatureReported || group.dewPointReported) {
-		json.valueStr("temperatureUnit", temperatureUnitToString(group.unit));
+	if (group.airTemp.reported) {
+		json.valueInt("airTemperature", group.airTemp.value);
+		bool freezing = group.airTemp.value < 0;
+		if (!group.airTemp.value && 
+			group.airTemp.modifier == metaf::ValueModifier::LESS_THAN) {
+				freezing = true;
+		}
+		json.valueBool("airTemperatureFreezing", freezing);
+		if (!group.airTemp.value) {
+			json.valueStr("airTemperatureDetailed", temperatureValueToString(group.airTemp));
+		}
+		json.valueStr("airTemperatureUnit", temperatureUnitToString(group.airTemp.unit));
+	}
+	if (group.dewPoint.reported) {
+		json.valueInt("dewPoint", group.dewPoint.value);
+		if (!group.dewPoint.value) {
+			json.valueStr("dewPointDetailed", temperatureValueToString(group.dewPoint));
+		}
+		json.valueStr("dewPointUnit", temperatureUnitToString(group.dewPoint.unit));
 	}
 }
 
 void GroupVisitorJson::visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
 	json.startObject(temperaturePointToString(group.point));
-	json.valueInt("temperatureValue", group.temperature);
-	json.valueStr("temperatureUnit", temperatureUnitToString(group.unit));
+	json.valueInt("temperatureValue", group.temperature.value);
+	bool freezing = group.temperature.value < 0;
+	if (!group.temperature.value && 
+		group.temperature.modifier == metaf::ValueModifier::LESS_THAN) {
+			freezing = true;
+	}
+	json.valueBool("freezing", freezing);
+	if (!group.temperature.value) {
+		json.valueStr("temperatureDetailed", temperatureValueToString(group.temperature));
+	}
+	json.valueStr("temperatureUnit", temperatureUnitToString(group.temperature.unit));
 	json.valueInt("expectedOnDay", group.day);
 	json.valueStr("expectedOnTime", timeOfDayToString(group.hour, 0));
 	json.finish();
@@ -897,8 +922,31 @@ std::string GroupVisitorJson::runwayDesignatorToString(metaf::Runway::Designator
 	}	
 }
 
-std::string GroupVisitorJson::valueModifierToString(metaf::ValueModifier modifier)
-{
+std::string GroupVisitorJson::temperatureValueToString(metaf::Temperature temperature) {
+	if (!temperature.reported) return("");
+	std::string modifierStr;
+	switch (temperature.modifier) {
+		case metaf::ValueModifier::NONE:
+		break;
+
+		case metaf::ValueModifier::MORE_THAN:
+		modifierStr = ">";
+		break;
+
+		case metaf::ValueModifier::LESS_THAN:
+		modifierStr = "<";
+		break;
+
+		case metaf::ValueModifier::UNKNOWN:
+		default:
+		modifierStr = "?";
+		break;
+	}
+	return(std::string(modifierStr) + std::to_string(temperature.value));
+}
+
+
+std::string GroupVisitorJson::valueModifierToString(metaf::ValueModifier modifier) {
 	switch(modifier) {
 		case metaf::ValueModifier::UNKNOWN:
 		return("unknown");
