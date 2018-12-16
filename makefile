@@ -3,7 +3,7 @@ CXXFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
 TEST_CXXFLAGS := -I googletest/googletest/include -I googletest/googletest/
-TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 
+TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 --emrun
 
 INCLUDEDIR := src
 SRCDIR := src

@@ -1059,16 +1059,27 @@ TEST(VisibilityGroup, makeVisibilityMeters1) {
 TEST(VisibilityGroup, makeVisibilityMeters2) {
 	static const auto direction = metaf::VisibilityGroup::Direction::NW;
 	static const auto visibility = 2000;
-	const metaf::VisibilityGroup group = 
+	static const auto modifier = metaf::ValueModifier::MORE_THAN;
+	const metaf::VisibilityGroup group1 = 
 		metaf::VisibilityGroup::makeVisibilityMeters(visibility, direction);
-	EXPECT_EQ(group.unit, metaf::DistanceUnit::METERS);
-	EXPECT_TRUE(group.reported);
-	EXPECT_EQ(group.integer, visibility);
-	EXPECT_EQ(group.numerator, 0);
-	EXPECT_EQ(group.denominator, 0);
-	EXPECT_EQ(group.direction, direction);
-	EXPECT_EQ(group.modifier, metaf::ValueModifier::NONE);
-	EXPECT_FALSE(group.incompleteInteger);
+	EXPECT_EQ(group1.unit, metaf::DistanceUnit::METERS);
+	EXPECT_TRUE(group1.reported);
+	EXPECT_EQ(group1.integer, visibility);
+	EXPECT_EQ(group1.numerator, 0);
+	EXPECT_EQ(group1.denominator, 0);
+	EXPECT_EQ(group1.direction, direction);
+	EXPECT_EQ(group1.modifier, metaf::ValueModifier::NONE);
+	EXPECT_FALSE(group1.incompleteInteger);
+	const metaf::VisibilityGroup group2 = 
+		metaf::VisibilityGroup::makeVisibilityMeters(visibility, direction, modifier);
+	EXPECT_EQ(group2.unit, metaf::DistanceUnit::METERS);
+	EXPECT_TRUE(group2.reported);
+	EXPECT_EQ(group2.integer, visibility);
+	EXPECT_EQ(group2.numerator, 0);
+	EXPECT_EQ(group2.denominator, 0);
+	EXPECT_EQ(group2.direction, direction);
+	EXPECT_EQ(group2.modifier, metaf::ValueModifier::MORE_THAN);
+	EXPECT_FALSE(group2.incompleteInteger);
 }
 
 //Confirm that 'not reported' version of makeVisibilityMiles initialises the 
@@ -1245,7 +1256,7 @@ TEST(VisibilityGroup, mergeVisibilityGroups4) {
 	EXPECT_EQ(mergeGroup5, visibilityMilesLessThan);
 }
 
-//Confirm that isValid would not validate groups with uknown distance units
+//Confirm that isValid would not validate groups with unknown distance units
 TEST(VisibilityGroup, isValidVisibilityUnknownUnits) {
 	metaf::VisibilityGroup invalidGroup1; //The unit is unknown
 	invalidGroup1.reported = false;
@@ -1299,12 +1310,28 @@ TEST(VisibilityGroup, isValidVisibilityMetersValid) {
 	validGroup7.reported = true;
 	validGroup7.integer = 4000;
 	EXPECT_TRUE(validGroup7.isValid());
+	//Visibility more than 10 km
+	metaf::VisibilityGroup validGroup8; 
+	validGroup8.unit = metaf::DistanceUnit::METERS;
+	validGroup8.direction = metaf::VisibilityGroup::Direction::NONE;
+	validGroup8.modifier = metaf::ValueModifier::MORE_THAN;
+	validGroup8.integer = 10000;
+	validGroup8.reported = true;
+	EXPECT_TRUE(validGroup8.isValid());
+	//Visibility more than 10 km, no directional visibility
+	metaf::VisibilityGroup validGroup9; 
+	validGroup9.unit = metaf::DistanceUnit::METERS;
+	validGroup9.direction = metaf::VisibilityGroup::Direction::NDV;
+	validGroup9.modifier = metaf::ValueModifier::MORE_THAN;
+	validGroup9.integer = 10000;
+	validGroup9.reported = true;
+	EXPECT_TRUE(validGroup9.isValid());
 }
 
 //Confirm that isValid correctly checks validity of valid struct when the 
 //visibility measurement unit is meters
 TEST(VisibilityGroup, isValidVisibilityMetersInvalid) {
-	//Reported, no direction, modifier is not NONE
+	//Reported, no direction, modifier is LESS_THAN
 	metaf::VisibilityGroup invalidGroup1; 
 	invalidGroup1.unit = metaf::DistanceUnit::METERS;
 	invalidGroup1.direction = metaf::VisibilityGroup::Direction::NONE;
@@ -1393,6 +1420,16 @@ TEST(VisibilityGroup, isValidVisibilityMilesValid) {
 	validGroup5.denominator = 2;
 	validGroup5.modifier = metaf::ValueModifier::LESS_THAN;
 	EXPECT_TRUE(validGroup5.isValid());
+	//Reported integer, numerator and denominator, modifier MORE_THAN
+	metaf::VisibilityGroup validGroup6;
+	validGroup6.unit = metaf::DistanceUnit::STATUTE_MILES;
+	validGroup6.direction = metaf::VisibilityGroup::Direction::NONE;
+	validGroup6.reported = true;
+	validGroup6.integer = 2;
+	validGroup6.numerator = 1;
+	validGroup6.denominator = 2;
+	validGroup6.modifier = metaf::ValueModifier::LESS_THAN;
+	EXPECT_TRUE(validGroup6.isValid());
 }
 
 //Confirm that isValid correctly checks validity of valid struct when the 

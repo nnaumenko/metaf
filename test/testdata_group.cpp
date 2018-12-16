@@ -344,6 +344,11 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		metaf::VisibilityGroup::makeVisibilityMeters(1600),
 	},
 	{
+		std::string("0150"),	//visibility 100 meters
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMeters(150),
+	},
+	{
 		std::string("0100"),	//visibility 100 meters
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
 		metaf::VisibilityGroup::makeVisibilityMeters(100),
@@ -366,10 +371,18 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 			metaf::VisibilityGroup::Direction::E),
 	},
 	{
+		std::string("9999"),	//visibility more than 10km
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMeters(10000, 
+			metaf::VisibilityGroup::Direction::NONE,
+			metaf::ValueModifier::MORE_THAN),
+	},
+	{
 		std::string("9999NDV"),	//visibility more than 10km, no directional visibility
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::VisibilityGroup::makeVisibilityMeters(9999, 
-			metaf::VisibilityGroup::Direction::NDV),
+		metaf::VisibilityGroup::makeVisibilityMeters(10000, 
+			metaf::VisibilityGroup::Direction::NDV,
+			metaf::ValueModifier::MORE_THAN),
 	},
 	{
 		std::string("////"),	//visibility not reported (but distance unit is meters)
@@ -397,9 +410,44 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		metaf::VisibilityGroup::makeVisibilityMiles(0, 1, 8, metaf::ValueModifier::LESS_THAN),
 	},
 	{
+		std::string("M1SM"),	//visibility less than 1 statute mile
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(1, 0, 0, metaf::ValueModifier::LESS_THAN),
+	},
+	{
+		std::string("P6SM"),	//visibility more than 6 statute miles
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(6, 0, 0, metaf::ValueModifier::MORE_THAN),
+	},
+	{
+		std::string("P15SM"),	//visibility more than 6 statute miles
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(15, 0, 0, metaf::ValueModifier::MORE_THAN),
+	},
+	{
+		std::string("P3/4SM"),	//visibility more than 6 statute miles
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(0, 3, 4, metaf::ValueModifier::MORE_THAN),
+	},
+	{
 		std::string("11/2SM"),	//visibility 1 1/2 statute miles
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
 		metaf::VisibilityGroup::makeVisibilityMiles(1, 1, 2),
+	},
+	{
+		std::string("M11/2SM"),	//visibility less than 1 1/2 statute miles
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(1, 1, 2, metaf::ValueModifier::LESS_THAN),
+	},
+	{
+		std::string("P11/2SM"),	//visibility more than 1 1/2 statute miles
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::VisibilityGroup::makeVisibilityMiles(1, 1, 2, metaf::ValueModifier::MORE_THAN),
+	},
+	{
+		std::string("N1/8SM"),	//only P (more than) or M (less than) modifiers allowed
+		{testdata::GroupTestData::allReportParts},
+		metaf::PlainTextGroup("N1/8SM")
 	},
 	{
 		std::string("////SM"),	//visibility not reported (but distance unit is statute miles)

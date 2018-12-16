@@ -568,7 +568,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 		"(?:(////)(SM)?)|"
 		"(?:(\\d\\d\\d\\d)(?:(NDV)|(N)|(S)|(W)|(E)|(NW)|(NE)|(SW)|(SE))?)|"
 		"([12])|"
-		"(?:([M])?(\\d\\d?)(?:/(\\d\\d?))?SM)");
+		"(?:([MP])?(\\d\\d?)(?:/(\\d\\d?))?SM)");
 	static const auto expectedMatchGroups = 17;
 	static const auto matchVisNr = 1;
 	static const auto matchVisNrSm = 2;
@@ -583,7 +583,7 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 	static const auto matchSW = 11;
 	static const auto matchSE = 12;
 	static const auto matchIncompleteInt = 13;
-	static const auto matchFractionM = 14;
+	static const auto matchModifier = 14;
 	static const auto matchFractionNumOrInt = 15;
 	static const auto matchFractionDen = 16;
 	smatch match;
@@ -606,8 +606,14 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 		return(true);
 	}
 	if (match.length(matchVisMeters)) {
+		static const auto moreThanTenKm = 9999;
+		static const auto tenKm = 10000;
 		unit = DistanceUnit::METERS;
 		integer = static_cast<unsigned int>(stoi(match.str(matchVisMeters)));
+		if (integer == moreThanTenKm) {
+			integer = tenKm;
+			modifier = ValueModifier::MORE_THAN;
+		}
 		direction = Direction::NONE;
 		if (match.length(matchNDV)) direction = Direction::NDV;
 		if (match.length(matchN)) direction = Direction::N;
@@ -630,7 +636,14 @@ bool VisibilityGroup::parse(const string & group, ReportPart reportPart) {
 		return(true);
 	}
 	if (match.length(matchFractionNumOrInt)) {
-		if (match.length(matchFractionM)) modifier = ValueModifier::LESS_THAN;
+		if (match.length(matchModifier)) {
+			const auto str = match.str(matchModifier);
+			static const auto lessThan = "M";
+			static const auto moreThan = "P";
+			modifier = ValueModifier::UNKNOWN;
+			if (str == lessThan) modifier = ValueModifier::LESS_THAN;
+			if (str == moreThan) modifier = ValueModifier::MORE_THAN;
+		}
 		integer = static_cast<unsigned int>(stoi(match.str(matchFractionNumOrInt)));
 		unit = DistanceUnit::STATUTE_MILES;
 		direction = Direction::NONE;
@@ -653,7 +666,8 @@ bool VisibilityGroup::isValid() const {
 	if (unit == DistanceUnit::METERS) {
 		if (!reported) return(true);
 		if (direction == Direction::UNKNOWN) return(false);
-		if (modifier != ValueModifier::NONE) return(false);
+		if (modifier != ValueModifier::NONE && 
+			modifier != ValueModifier::MORE_THAN) return(false);
 		if (incompleteInteger) return(false);
 		if (!integer || numerator || denominator) return(false);
 		return(true);
