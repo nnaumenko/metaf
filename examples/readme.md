@@ -26,7 +26,7 @@ There are no sanity checks, and malformed report might produce a malformed JSON.
 
 Only minified JSON generation is possible. If "Formatted result" checkbox is set, the formatting is performed using JavaScript by JSON.parse & JSON.stringify sequence.
 
-See file `metar_taf_to_json.cpp` for details.
+See file `examples/to_json.cpp` for details.
 
 #### Running
 
@@ -313,3 +313,19 @@ Result:
         </code>
     </pre>
 </details>
+
+### Example 2: Explaining METAR or TAF report in plain language
+
+This example parses the METAR or TAF report and generates descriptive text suitable for reading by person not familiar with METAR and TAF format.
+
+There are no sanity checks, and malformed report might produce weird explanation.
+
+See file `examples/explain.cpp` for details.
+
+#### Running
+
+Open file `bin/examples/explain.html` in www browser (Webassembly support required).
+
+[Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+
+Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and decoded report in plain language is displayed under Report Explanation. 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Metaf example: METAR & TAF reports explained</title>
+    <style type="text/css">
+    body { background-color:lightblue; color:black; text-align:center;}
+    </style>
+    <script>
+      function clearTable() {
+        while (document.getElementById("explanation").tBodies[0].rows.length > 0) {
+          document.getElementById("explanation").tBodies[0].deleteRow(0);
+        }
+      };
+
+      function addRow(cell0, cell1) {
+        var rowNum = document.getElementById("explanation").tBodies[0].rows.length;
+        var row = document.getElementById("explanation").tBodies[0].insertRow(rowNum);
+        row.insertCell(0).innerHTML = cell0;
+        row.insertCell(1).innerHTML = cell1;
+      };
+
+    	function explain() {
+        const delimiter = "|";
+        clearTable();
+        var inputStr = document.getElementById("input").value;
+        var result = Module.ccall('explain',    // name of C function 
+                                  'string',     // return type
+                                  ['string'],   // argument types
+                                  [inputStr]);  // arguments
+        Module.ccall('freeMemory', null, null, null);
+        var resultArray = result.split(delimiter);
+        var i;
+        for (i=0; i<(resultArray.length/2); i++){
+          addRow(resultArray[i*2], resultArray[i*2+1]);
+        }
+    	};
+    </script>
+    <script async type="text/javascript" src="explain.js"></script>
+  </head>
+  <body>
+      <h1>METAR &amp; TAF reports explained</h1>
+  	  Enter METAR or TAF here:<br>
+      <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>
+      <br><br>
+      Report explanation:
+      <table id="explanation" border="2">
+        <thead>
+          <tr><th>Group</th><th>Explanation</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+  </body>
+</html>
+

@@ -1439,16 +1439,21 @@ namespace metaf {
 		/// @param report Raw report string.
 		/// @return True if no error occurred during parsing, false if an error
 		/// did occurr during parsing.
-		bool parse(const std::string & report);
+		bool parse(const std::string & report, bool keepSourceGroup = false);
 		/// Get parsing result.
-		/// @return Vector of Group which contain complete report (if parsed
+		/// @return Vector of Group which contains complete report (if parsed
 		/// successfully) or part of the report (to the point where an error 
 		/// occurred).
 		const std::vector<Group> & getResult() const { return(result); }
+		/// Get source groups.
+		/// @return Vector of string which contains all parsed source groups 
+		/// (if parsed successfully) or part of the report (to the point where 
+		/// an error occurred).
+		const std::vector<std::string> & getSourceGroups() const { return(sourceGroups); }
 		/// @brief Reset parsing result and free memory.
-		/// @details After calling this method, getResult() will return an 
-		/// empty vector, getReportType() will return 
-		/// metaf::ReportType::UNKNOWN, and getError() will return 
+		/// @details After calling this method, getResult() and 
+		/// getSourceGroups() will return empty vectors, getReportType() will 
+		/// return metaf::ReportType::UNKNOWN, and getError() will return 
 		/// metaf::Parser::Error::NONE.
 		void resetResult();
 		/// Get report type autodetected during parsing.
@@ -1461,6 +1466,7 @@ namespace metaf {
 		Error getError() const { return(error); }
 	private:
 		std::vector<Group> result;
+		std::vector<std::string> sourceGroups;
 		ReportType reportType = ReportType::UNKNOWN;
 		Error error = Error::NONE;
 
@@ -1497,37 +1503,209 @@ namespace metaf {
 	/// report information decoded by parser.
 	/// @details To reduce amount of boilerplate, inherit from GroupVisitor
 	/// and implement all individual virtual methods for each group type.
-	/// @par 
+	template <typename T>
 	class GroupVisitor {
 	public:
-		void visit(const Group & group);
-		void visit(const std::vector<Group> & groups);
+		inline T visit(const Group & group);
 	protected:
-		virtual void visitPlainTextGroup(const PlainTextGroup & group) = 0;
-		virtual void visitFixedGroup(const FixedGroup & group) = 0;
-		virtual void visitLocationGroup(const LocationGroup & group) = 0;
-		virtual void visitReportTimeGroup(const ReportTimeGroup & group) = 0;
-		virtual void visitTimeSpanGroup(const TimeSpanGroup & group) = 0;
-		virtual void visitTrendTimeGroup(const TrendTimeGroup & group) = 0;
-		virtual void visitProbabilityGroup(const ProbabilityGroup & group) = 0;
-		virtual void visitWindGroup(const WindGroup & group) = 0;
-		virtual void visitVarWindGroup(const VarWindGroup & group) = 0;
-		virtual void visitWindShearGroup(const WindShearGroup & group) = 0;
-		virtual void visitVisibilityGroup(const VisibilityGroup & group) = 0;
-		virtual void visitCloudGroup(const CloudGroup & group) = 0;
-		virtual void visitVerticalVisibilityGroup(const VerticalVisibilityGroup & group) = 0;
-		virtual void visitWeatherGroup(const WeatherGroup & group) = 0;
-		virtual void visitTemperatureGroup(const TemperatureGroup & group) = 0;
-		virtual void visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
-		virtual void visitPressureGroup(const PressureGroup & group) = 0;
-		virtual void visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
-		virtual void visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
-		virtual void visitRainfallGroup(const RainfallGroup & group) = 0;
-		virtual void visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
-		virtual void visitSeaWavesGroup(const SeaWavesGroup & group) = 0;
-		virtual void visitColourCodeGroup(const ColourCodeGroup & group) = 0;
-		virtual void visitOther(const Group & group) = 0;
+		virtual T visitPlainTextGroup(const PlainTextGroup & group) = 0;
+		virtual T visitFixedGroup(const FixedGroup & group) = 0;
+		virtual T visitLocationGroup(const LocationGroup & group) = 0;
+		virtual T visitReportTimeGroup(const ReportTimeGroup & group) = 0;
+		virtual T visitTimeSpanGroup(const TimeSpanGroup & group) = 0;
+		virtual T visitTrendTimeGroup(const TrendTimeGroup & group) = 0;
+		virtual T visitProbabilityGroup(const ProbabilityGroup & group) = 0;
+		virtual T visitWindGroup(const WindGroup & group) = 0;
+		virtual T visitVarWindGroup(const VarWindGroup & group) = 0;
+		virtual T visitWindShearGroup(const WindShearGroup & group) = 0;
+		virtual T visitVisibilityGroup(const VisibilityGroup & group) = 0;
+		virtual T visitCloudGroup(const CloudGroup & group) = 0;
+		virtual T visitVerticalVisibilityGroup(const VerticalVisibilityGroup & group) = 0;
+		virtual T visitWeatherGroup(const WeatherGroup & group) = 0;
+		virtual T visitTemperatureGroup(const TemperatureGroup & group) = 0;
+		virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
+		virtual T visitPressureGroup(const PressureGroup & group) = 0;
+		virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
+		virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
+		virtual T visitRainfallGroup(const RainfallGroup & group) = 0;
+		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
+		virtual T visitSeaWavesGroup(const SeaWavesGroup & group) = 0;
+		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
+		virtual T visitOther(const Group & group) = 0;
 	};
+
+	/// General value-returning visitor implementation
+	template <typename T>
+	inline T GroupVisitor<T>::visit(const Group & group) {
+		if (std::holds_alternative<PlainTextGroup>(group)) {
+			return(this->visitPlainTextGroup(std::get<PlainTextGroup>(group)));
+		}
+		if (std::holds_alternative<FixedGroup>(group)) {
+			return(this->visitFixedGroup(std::get<FixedGroup>(group)));
+		}
+		if (std::holds_alternative<LocationGroup>(group)) {
+			return(this->visitLocationGroup(std::get<LocationGroup>(group)));
+		}
+		if (std::holds_alternative<ReportTimeGroup>(group)) {
+			return(this->visitReportTimeGroup(std::get<ReportTimeGroup>(group)));
+		}
+		if (std::holds_alternative<TimeSpanGroup>(group)) {
+			return(this->visitTimeSpanGroup(std::get<TimeSpanGroup>(group)));
+		}
+		if (std::holds_alternative<TrendTimeGroup>(group)) {
+			return(this->visitTrendTimeGroup(std::get<TrendTimeGroup>(group)));
+		}
+		if (std::holds_alternative<ProbabilityGroup>(group)) {
+			return(this->visitProbabilityGroup(std::get<ProbabilityGroup>(group)));
+		}
+		if (std::holds_alternative<WindGroup>(group)) {
+			return(this->visitWindGroup(std::get<WindGroup>(group)));
+		}
+		if (std::holds_alternative<VarWindGroup>(group)) {
+			return(this->visitVarWindGroup(std::get<VarWindGroup>(group)));
+		}
+		if (std::holds_alternative<WindShearGroup>(group)) {
+			return(this->visitWindShearGroup(std::get<WindShearGroup>(group)));
+		}
+		if (std::holds_alternative<VisibilityGroup>(group)) {
+			return(this->visitVisibilityGroup(std::get<VisibilityGroup>(group)));
+		}
+		if (std::holds_alternative<CloudGroup>(group)) {
+			return(this->visitCloudGroup(std::get<CloudGroup>(group)));
+		}
+		if (std::holds_alternative<VerticalVisibilityGroup>(group)) {
+			return(this->visitVerticalVisibilityGroup(std::get<VerticalVisibilityGroup>(group)));
+		}
+		if (std::holds_alternative<WeatherGroup>(group)) {
+			return(this->visitWeatherGroup(std::get<WeatherGroup>(group)));
+		}
+		if (std::holds_alternative<TemperatureGroup>(group)) {
+			return(this->visitTemperatureGroup(std::get<TemperatureGroup>(group)));
+		}
+		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
+			return(this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group)));
+		}
+		if (std::holds_alternative<PressureGroup>(group)) {
+			return(this->visitPressureGroup(std::get<PressureGroup>(group)));
+		}
+		if (std::holds_alternative<RunwayVisualRangeGroup>(group)) {
+			return(this->visitRunwayVisualRangeGroup(std::get<RunwayVisualRangeGroup>(group)));
+		}
+		if (std::holds_alternative<RunwayStateGroup>(group)) {
+			return(this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group)));
+		}
+		if (std::holds_alternative<RainfallGroup>(group)) {
+			return(this->visitRainfallGroup(std::get<RainfallGroup>(group)));
+		}
+		if (std::holds_alternative<SeaSurfaceGroup>(group)) {
+			return(this->visitSeaSurfaceGroup(std::get<SeaSurfaceGroup>(group)));
+		}
+		if (std::holds_alternative<SeaWavesGroup>(group)) {
+			return(this->visitSeaWavesGroup(std::get<SeaWavesGroup>(group)));
+		}
+		if (std::holds_alternative<ColourCodeGroup>(group)) {
+			return(this->visitColourCodeGroup(std::get<ColourCodeGroup>(group)));
+		}
+		return(this->visitOther(group));
+	}
+
+	/// Non-value-returning visitor implementation
+	template<>
+	inline void GroupVisitor<void>::visit(const Group & group) {
+		if (std::holds_alternative<PlainTextGroup>(group)) {
+			this->visitPlainTextGroup(std::get<PlainTextGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<FixedGroup>(group)) {
+			this->visitFixedGroup(std::get<FixedGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<LocationGroup>(group)) {
+			this->visitLocationGroup(std::get<LocationGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<ReportTimeGroup>(group)) {
+			this->visitReportTimeGroup(std::get<ReportTimeGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<TimeSpanGroup>(group)) {
+			this->visitTimeSpanGroup(std::get<TimeSpanGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<TrendTimeGroup>(group)) {
+			this->visitTrendTimeGroup(std::get<TrendTimeGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<ProbabilityGroup>(group)) {
+			this->visitProbabilityGroup(std::get<ProbabilityGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<WindGroup>(group)) {
+			this->visitWindGroup(std::get<WindGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<VarWindGroup>(group)) {
+			this->visitVarWindGroup(std::get<VarWindGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<WindShearGroup>(group)) {
+			this->visitWindShearGroup(std::get<WindShearGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<VisibilityGroup>(group)) {
+			this->visitVisibilityGroup(std::get<VisibilityGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<CloudGroup>(group)) {
+			this->visitCloudGroup(std::get<CloudGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<VerticalVisibilityGroup>(group)) {
+			this->visitVerticalVisibilityGroup(std::get<VerticalVisibilityGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<WeatherGroup>(group)) {
+			this->visitWeatherGroup(std::get<WeatherGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<TemperatureGroup>(group)) {
+			this->visitTemperatureGroup(std::get<TemperatureGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
+			this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<PressureGroup>(group)) {
+			this->visitPressureGroup(std::get<PressureGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<RunwayVisualRangeGroup>(group)) {
+			this->visitRunwayVisualRangeGroup(std::get<RunwayVisualRangeGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<RunwayStateGroup>(group)) {
+			this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<RainfallGroup>(group)) {
+			this->visitRainfallGroup(std::get<RainfallGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<SeaSurfaceGroup>(group)) {
+			this->visitSeaSurfaceGroup(std::get<SeaSurfaceGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<SeaWavesGroup>(group)) {
+			this->visitSeaWavesGroup(std::get<SeaWavesGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<ColourCodeGroup>(group)) {
+			this->visitColourCodeGroup(std::get<ColourCodeGroup>(group));
+			return;
+		}
+		this->visitOther(group);
+	}
 
 }; //namespace metaf
 

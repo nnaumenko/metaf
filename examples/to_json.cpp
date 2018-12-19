@@ -121,7 +121,7 @@ void MakeJson::valueNull() {
 	commaRequired = true;
 }
 
-class GroupVisitorJson : private metaf::GroupVisitor {
+class GroupVisitorJson : private metaf::GroupVisitor<void> {
 public:
 	GroupVisitorJson(std::ostream & output) : json(output) {}
 	void toJson(metaf::ReportType reportType, 
@@ -208,6 +208,7 @@ void GroupVisitorJson::toJson(metaf::ReportType reportType,
 	json.startObject("report");
 	json.valueStr("type", reportTypeToString(reportType));
 	json.valueBool("partial", (error != metaf::Parser::Error::NONE));
+	json.valueStr("timeZone", "GMT");
 	for (const auto & group : content) {
 		similarGroupsToArrays(group);
 		trendsToArray(group);
@@ -1098,7 +1099,7 @@ std::string GroupVisitorJson::cloudTypeToString(metaf::CloudGroup::Type type) {
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(type)));
 	}
 }
-
+ 
 std::string GroupVisitorJson::weatherToString(metaf::WeatherGroup::Weather weather) {
 	switch (weather) {
 			case metaf::WeatherGroup::Weather::UNKNOWN:

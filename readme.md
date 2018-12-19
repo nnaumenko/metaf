@@ -12,6 +12,8 @@ This project focuses on using METAR and TAF parsing with Webassembly, however th
 
 [Example: convert METAR or TAF to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
 
+[Example: explain METAR or TAF in plain language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+
 ### Project status
 
 Currently this project is work in progress.
@@ -205,3 +207,10 @@ produces the following JSON (providing that "Formatted result" is checked):
     </pre>
 </details>
 
+### Example 2: Explaining METAR or TAF report in plain language
+
+[Run this example at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+
+To run this example locally, open file `bin/examples/explain.html` in a browser.
+
+Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and decoded report in plain language is displayed under Report Explanation. 

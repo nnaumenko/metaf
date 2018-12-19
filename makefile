@@ -38,6 +38,10 @@ examples: $(OBJECTS)
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
 	--shell-file examples/shellfiles/to_json_shell.html \
 	-o $(EXAMPLETARGETDIR)/to_json.html
+	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/explain.cpp \
+	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
+	--shell-file examples/shellfiles/explain.html \
+	-o $(EXAMPLETARGETDIR)/explain.html
 
 .PHONY: performance
 performance: $(OBJECTS) $(TESTBUILDDIR)/testdata_real.o

@@ -899,7 +899,6 @@ bool WeatherGroup::isPrecipitation() const {
 		switch (weather[i]) {
 			case metaf::WeatherGroup::Weather::DRIZZLE:
 			case metaf::WeatherGroup::Weather::RAIN:
-			case metaf::WeatherGroup::Weather::SNOW:
 			case metaf::WeatherGroup::Weather::SNOW_GRAINS:
 			case metaf::WeatherGroup::Weather::ICE_CRYSTALS:
 			case metaf::WeatherGroup::Weather::ICE_PELLETS:
@@ -907,6 +906,12 @@ bool WeatherGroup::isPrecipitation() const {
 			case metaf::WeatherGroup::Weather::SMALL_HAIL:
 			case metaf::WeatherGroup::Weather::UNDETERMINED:
 			return(true);
+
+			case metaf::WeatherGroup::Weather::SNOW:
+			if (!i) return(true);
+			if (weather[i-1] != metaf::WeatherGroup::Weather::LOW_DRIFTING &&
+				weather[i-1] != metaf::WeatherGroup::Weather::BLOWING) return(true);
+			return(false);
 
 			default:
 			break;
@@ -1720,7 +1725,7 @@ Group GroupParser::ParseGroupHelper<GroupParser::groups_total-1, T>::parse(const
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool Parser::parse(const string & metarTafString) {
+bool Parser::parse(const string & metarTafString, bool keepSourceGroup) {
 	static const regex delimiterRegex("\\s+");
 	sregex_token_iterator iter(metarTafString.begin(), metarTafString.end(), delimiterRegex, -1);
 	bool reportEnd = false;
@@ -1749,7 +1754,20 @@ bool Parser::parse(const string & metarTafString) {
 				}, result.back(), group) : 
 				false;
 
-			if (!groupMerged) result.push_back(group);
+			if (!groupMerged) {
+				//Current group is not related to previously saved group.
+				result.push_back(group);
+				if (keepSourceGroup) sourceGroups.push_back(groupString);
+			}
+			if (groupMerged && keepSourceGroup) {
+				//Current group has been merged with previous saved group.
+				//No need to save current group in result vector (because 
+				//result.back has already been updated by call to nextGroup()).
+				//The source group string must be appended to previously 
+				//saved source group.
+				sourceGroups.back() += std::string(" ");
+				sourceGroups.back() += groupString;
+			}
 		}
 
 		iter++;
@@ -1761,6 +1779,7 @@ bool Parser::parse(const string & metarTafString) {
 
 void Parser::resetResult() {
 	vector<Group>().swap(result);
+	vector<string>().swap(sourceGroups);
 	reportType = ReportType::UNKNOWN;
 	error = Error::NONE;
 }
@@ -1914,109 +1933,5 @@ Parser::State Parser::finalTransition(State state) {
 
 		default:
 		return(parseError(Error::INTERNAL_PARSER_STATE));
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void GroupVisitor::visit(const Group & group) {
-	if (holds_alternative<PlainTextGroup>(group)) {
-		this->visitPlainTextGroup(get<PlainTextGroup>(group));
-		return;
-	}
-	if (holds_alternative<FixedGroup>(group)) {
-		this->visitFixedGroup(get<FixedGroup>(group));
-		return;
-	}
-	if (holds_alternative<LocationGroup>(group)) {
-		this->visitLocationGroup(get<LocationGroup>(group));
-		return;
-	}
-	if (holds_alternative<ReportTimeGroup>(group)) {
-		this->visitReportTimeGroup(get<ReportTimeGroup>(group));
-		return;
-	}
-	if (holds_alternative<TimeSpanGroup>(group)) {
-		this->visitTimeSpanGroup(get<TimeSpanGroup>(group));
-		return;
-	}
-	if (holds_alternative<TrendTimeGroup>(group)) {
-		this->visitTrendTimeGroup(get<TrendTimeGroup>(group));
-		return;
-	}
-	if (holds_alternative<ProbabilityGroup>(group)) {
-		this->visitProbabilityGroup(get<ProbabilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<WindGroup>(group)) {
-		this->visitWindGroup(get<WindGroup>(group));
-		return;
-	}
-	if (holds_alternative<VarWindGroup>(group)) {
-		this->visitVarWindGroup(get<VarWindGroup>(group));
-		return;
-	}
-	if (holds_alternative<WindShearGroup>(group)) {
-		this->visitWindShearGroup(get<WindShearGroup>(group));
-		return;
-	}
-	if (holds_alternative<VisibilityGroup>(group)) {
-		this->visitVisibilityGroup(get<VisibilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<CloudGroup>(group)) {
-		this->visitCloudGroup(get<CloudGroup>(group));
-		return;
-	}
-	if (holds_alternative<VerticalVisibilityGroup>(group)) {
-		this->visitVerticalVisibilityGroup(get<VerticalVisibilityGroup>(group));
-		return;
-	}
-	if (holds_alternative<WeatherGroup>(group)) {
-		this->visitWeatherGroup(get<WeatherGroup>(group));
-		return;
-	}
-	if (holds_alternative<TemperatureGroup>(group)) {
-		this->visitTemperatureGroup(get<TemperatureGroup>(group));
-		return;
-	}
-	if (holds_alternative<MinMaxTemperatureGroup>(group)) {
-		this->visitMinMaxTemperatureGroup(get<MinMaxTemperatureGroup>(group));
-		return;
-	}
-	if (holds_alternative<PressureGroup>(group)) {
-		this->visitPressureGroup(get<PressureGroup>(group));
-		return;
-	}
-	if (holds_alternative<RunwayVisualRangeGroup>(group)) {
-		this->visitRunwayVisualRangeGroup(get<RunwayVisualRangeGroup>(group));
-		return;
-	}
-	if (holds_alternative<RunwayStateGroup>(group)) {
-		this->visitRunwayStateGroup(get<RunwayStateGroup>(group));
-		return;
-	}
-	if (holds_alternative<RainfallGroup>(group)) {
-		this->visitRainfallGroup(get<RainfallGroup>(group));
-		return;
-	}
-	if (holds_alternative<SeaSurfaceGroup>(group)) {
-		this->visitSeaSurfaceGroup(get<SeaSurfaceGroup>(group));
-		return;
-	}
-	if (holds_alternative<SeaWavesGroup>(group)) {
-		this->visitSeaWavesGroup(get<SeaWavesGroup>(group));
-		return;
-	}
-	if (holds_alternative<ColourCodeGroup>(group)) {
-		this->visitColourCodeGroup(get<ColourCodeGroup>(group));
-		return;
-	}
-	this->visitOther(group);
-}
-
-void GroupVisitor::visit(const vector<Group> & groups) {
-	for (const auto & group : groups) {
-		visit(group);
 	}
 }
