@@ -69,7 +69,7 @@ void MakeJson::finish() {
 	(*output) << closingBraces.top();
 	closingBraces.pop();
 	commaRequired = true;
-	if (closingBraces.empty()) (*output) << '\n';
+	if (closingBraces.empty()) (*output) << std::endl;
 }
 
 void MakeJson::finishAll() {
@@ -164,7 +164,7 @@ private:
 	static std::string parserErrorToString(metaf::Parser::Error error);
 	static std::string distanceUnitToString(metaf::DistanceUnit unit);
 	static std::string speedUnitToString(metaf::SpeedUnit unit);
-	static std::string temperatureUnitToString(metaf::TemperatureUnit unit);
+	static std::string temperatureUnitToString(metaf::Temperature::Unit unit);
 	static std::string runwayToString(metaf::Runway runway);
 	static std::string runwayDesignatorToString(metaf::Runway::Designator designator);
 	static std::string temperatureValueToString(metaf::Temperature temperature);
@@ -361,26 +361,17 @@ void GroupVisitorJson::visitProbabilityGroup(const metaf::ProbabilityGroup & gro
 }
 
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
-	if (group.directionReported &&
-		!group.directionVariable &&
-		!group.direction &&
-		group.speedReported && 
-		!group.speed &&
-		!group.gustSpeedReported) { 
-			//Calm, no wind
-			json.startObject("wind");
-			json.valueInt("speed", group.speed);
-			json.valueStr("speedUnit", speedUnitToString(group.unit));
-			json.finish();
-			return;
-	}
+	 
 	json.startObject("wind");
-	if (group.directionReported && group.directionVariable) {
-		json.valueStr("direction", "variable");
-	}
-	if (group.directionReported && !group.directionVariable) {
-		json.valueInt("direction", group.direction);
-		json.valueStr("cardinalDirection", cardinalDirection(group.direction));
+	if (group.isCalm()) json.valueBool("calm", group.isCalm());
+	if (!group.isCalm()) {
+		if (group.directionReported && group.directionVariable) {
+			json.valueStr("direction", "variable");
+		}
+		if (group.directionReported && !group.directionVariable) {
+			json.valueInt("direction", group.direction);
+			json.valueStr("cardinalDirection", cardinalDirection(group.direction));
+		}
 	}
 	if (group.speedReported) json.valueInt("speed", group.speed);
 	if (group.gustSpeedReported) json.valueInt("gustSpeed", group.speed);
@@ -559,7 +550,12 @@ void GroupVisitorJson::visitPressureGroup(const metaf::PressureGroup & group) {
 
 void GroupVisitorJson::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group) {
 	json.startObject();
-	json.valueStr("runway", runwayToString(group.runway));
+	if (!group.runway.isMessageRepetition()) {
+		json.valueStr("runway", runwayToString(group.runway));
+	} else {
+		json.valueNull("runway");
+		json.valueBool("lastMessageRepetition", true);
+	}
 	if (group.visRangeReported && group.varVisRangeReported) {
 		json.valueStr("lowLimitModifier", valueModifierToString(group.visModifier));
 		json.valueInt("lowLimitRange", group.visRange);
@@ -579,7 +575,12 @@ void GroupVisitorJson::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRang
 
 void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
 	json.startObject();
-	json.valueStr("runway", runwayToString(group.runway));
+	if (!group.runway.isMessageRepetition()) {
+		json.valueStr("runway", runwayToString(group.runway));
+	} else {
+		json.valueNull("runway");
+		json.valueBool("lastMessageRepetition", true);
+	}
 	switch (group.status) {
 		case metaf::RunwayStateGroup::Status::UNKNOWN:
 		json.valueStr("status", "unknown");
@@ -671,7 +672,7 @@ void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & gro
 
 void GroupVisitorJson::visitRainfallGroup(const metaf::RainfallGroup & group) {
 	json.valueFloat("rainfallForLastTenMinutes", group.last10Minutes);
-	json.valueFloat("rainfallSince9AM", group.last10Minutes);
+	json.valueFloat("rainfallSince9AM", group.since9AM);
 	if (group.last60MinutesReported) {
 		json.valueFloat("rainfallForLastHour", group.last60Minutes);
 	}
@@ -679,10 +680,10 @@ void GroupVisitorJson::visitRainfallGroup(const metaf::RainfallGroup & group) {
 }
 
 void GroupVisitorJson::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group) {
-	if (group.temperatureReported) {
-		json.valueInt("seaSurfaceTemperature", group.temperature);
+	if (group.surfaceTemp.reported) {
+		json.valueInt("seaSurfaceTemperature", group.surfaceTemp.value);
 		json.valueStr("seaSurfaceTemperatureUnit", 
-			temperatureUnitToString(group.temperatureUnit));
+			temperatureUnitToString(group.surfaceTemp.unit));
 	}
 	if (group.stateOfSurface != metaf::SeaSurfaceGroup::StateOfSurface::NOT_REPORTED) {
 		json.valueStr("stateOfSeaSurface", stateOfSeaSurfaceToString(group.stateOfSurface));
@@ -690,10 +691,10 @@ void GroupVisitorJson::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group
 }
 
 void GroupVisitorJson::visitSeaWavesGroup(const metaf::SeaWavesGroup & group) {
-	if (group.temperatureReported) {
-		json.valueInt("seaSurfaceTemperature", group.temperature);
+	if (group.surfaceTemp.reported) {
+		json.valueInt("seaSurfaceTemperature", group.surfaceTemp.value);
 		json.valueStr("seaSurfaceTemperatureUnit", 
-			temperatureUnitToString(group.temperatureUnit));
+			temperatureUnitToString(group.surfaceTemp.unit));
 	}
 	if (group.waveHeightReported) {
 		json.valueInt("seaWaveHeight", group.waveHeight);
@@ -877,12 +878,12 @@ std::string GroupVisitorJson::speedUnitToString(metaf::SpeedUnit unit) {
 	}
 }
 
-std::string GroupVisitorJson::temperatureUnitToString(metaf::TemperatureUnit unit) {
+std::string GroupVisitorJson::temperatureUnitToString(metaf::Temperature::Unit unit) {
 	switch (unit) {
-		case metaf::TemperatureUnit::UNKNOWN:
+		case metaf::Temperature::Unit::UNKNOWN:
 		return("unknown");
 
-		case metaf::TemperatureUnit::DEGREES_C:
+		case metaf::Temperature::Unit::DEGREES_C:
 		return("centigrade");
 
 		default: 
@@ -891,6 +892,8 @@ std::string GroupVisitorJson::temperatureUnitToString(metaf::TemperatureUnit uni
 }
 
 std::string GroupVisitorJson::runwayToString(metaf::Runway runway) {
+	if (runway.isAllRunways()) return("all runways");
+	if (runway.isMessageRepetition()) return ("repetition of last message");
 	static const char strSize = 3; //2 digits + \0
 	char runwayNumberStr[strSize];
 	std::snprintf(runwayNumberStr, strSize, "%02u", runway.number);
@@ -1343,7 +1346,6 @@ std::string GroupVisitorJson::runwayStateExtentToString(
 		default:
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(extent)));
 	}
-
 }
 
 std::string GroupVisitorJson::runwayStateDepositDepthUnitToString(

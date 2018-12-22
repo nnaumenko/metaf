@@ -5,8 +5,15 @@
     <title>Metaf example: METAR & TAF reports explained</title>
     <style type="text/css">
     body { background-color:lightblue; color:black; text-align:center;}
+    table { margin-left:auto; margin-right:auto; 
+      border:1px solid black; border-collapse: collapse;}
+    th {border:1px solid black; font-weight:bold; text-align:left; padding:0.33em; background-color:blue; color:white;}
+    td {border:1px solid black; text-align:left; padding:0.33em;}
+    tr:hover {background-color:darkblue; color:white;}
+    td {text-align:left;}
     </style>
     <script>
+
       function clearTable() {
         while (document.getElementById("explanation").tBodies[0].rows.length > 0) {
           document.getElementById("explanation").tBodies[0].deleteRow(0);
@@ -24,17 +31,23 @@
         const delimiter = "|";
         clearTable();
         var inputStr = document.getElementById("input").value;
+        console.log(inputStr);
         var result = Module.ccall('explain',    // name of C function 
                                   'string',     // return type
                                   ['string'],   // argument types
                                   [inputStr]);  // arguments
         Module.ccall('freeMemory', null, null, null);
+        console.log(result);
+        var result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        console.log(result);
         var resultArray = result.split(delimiter);
+        console.log(resultArray);
         var i;
         for (i=0; i<(resultArray.length/2); i++){
           addRow(resultArray[i*2], resultArray[i*2+1]);
         }
     	};
+
     </script>
     <script async type="text/javascript" src="explain.js"></script>
   </head>
@@ -43,7 +56,8 @@
   	  Enter METAR or TAF here:<br>
       <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>
       <br><br>
-      Report explanation:
+      Report explanation:<br>
+      <br>
       <table id="explanation" border="2">
         <thead>
           <tr><th>Group</th><th>Explanation</th></tr>

@@ -52,6 +52,21 @@ SyntaxGroup metaf::getSyntaxGroup(const Group & group) {
 Runway::Runway(unsigned int n, Designator d) : 
 	number(n), designator(d) {}
 
+Runway Runway::makeAllRunways() {
+	Runway r;
+	r.number = allRunwaysNumber;
+	r.designator = Designator::NONE;
+	return(r);
+}
+
+Runway Runway::makeMessageRepetition() {
+	Runway r;
+	r.number = messageRepetitionNumber;
+	r.designator = Designator::NONE;
+	return(r);
+}
+
+
 Runway::Designator Runway::designatorFromChar(char c) {
 	switch (c) {
 		case 'R': return(Designator::RIGHT);
@@ -69,6 +84,15 @@ Runway::Designator Runway::designatorFromString(const string & s) {
 	if (s.length() != designatorLength) return(Designator::UNKNOWN);
 	return(designatorFromChar(s[0]));
 }
+
+bool Runway::isAllRunways() const { 
+	return(number == allRunwaysNumber && designator == Designator::NONE);
+}
+
+bool Runway::isMessageRepetition() const {
+	return(number == messageRepetitionNumber && designator == Designator::NONE);
+}
+
 
 bool metaf::operator ==(const Runway & lhs, const Runway & rhs) {
 	return (lhs.number == rhs.number && lhs.designator == rhs.designator);
@@ -369,16 +393,35 @@ WindGroup WindGroup::makeVariableDirection (SpeedUnit unit,
 		unsigned int speed, 
 		unsigned int gustSpeed)
 {
-		WindGroup group;
-		group.directionReported = true;
-		group.directionVariable = true;
-		group.speed = speed;
-		group.speedReported = true;
-		group.gustSpeed = gustSpeed;
-		group.gustSpeedReported = gustSpeed;
-		group.unit = unit;
-		return(group);
+	WindGroup group;
+	group.directionReported = true;
+	group.directionVariable = true;
+	group.speed = speed;
+	group.speedReported = true;
+	group.gustSpeed = gustSpeed;
+	group.gustSpeedReported = gustSpeed;
+	group.unit = unit;
+	return(group);
 }
+
+WindGroup WindGroup::makeCalm(SpeedUnit unit) {
+	WindGroup group;
+	group.direction = 0;
+	group.directionReported = true;
+	group.directionVariable = false;
+	group.speed = 0;
+	group.speedReported = true;
+	group.gustSpeedReported = false;
+	group.unit = unit;
+	return(group);
+}
+
+
+bool WindGroup::isCalm() const {
+	return (directionReported && !directionVariable && !direction && 
+		speedReported && !speed && !gustSpeedReported);
+}
+
 
 bool WindGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex windRegex(
@@ -895,47 +938,55 @@ vector<WeatherGroup::Weather> WeatherGroup::weatherToVector() const {
 }
 
 bool WeatherGroup::isPrecipitation() const {
+	Weather previousWeather = Weather::UNKNOWN;
 	for (auto i=0; i<weatherSize; i++) {
 		switch (weather[i]) {
-			case metaf::WeatherGroup::Weather::DRIZZLE:
-			case metaf::WeatherGroup::Weather::RAIN:
-			case metaf::WeatherGroup::Weather::SNOW_GRAINS:
-			case metaf::WeatherGroup::Weather::ICE_CRYSTALS:
-			case metaf::WeatherGroup::Weather::ICE_PELLETS:
-			case metaf::WeatherGroup::Weather::HAIL:
-			case metaf::WeatherGroup::Weather::SMALL_HAIL:
-			case metaf::WeatherGroup::Weather::UNDETERMINED:
+			case Weather::DRIZZLE:
+			case Weather::RAIN:
+			case Weather::SNOW_GRAINS:
+			case Weather::ICE_CRYSTALS:
+			case Weather::ICE_PELLETS:
+			case Weather::HAIL:
+			case Weather::SMALL_HAIL:
+			case Weather::UNDETERMINED:
 			return(true);
 
-			case metaf::WeatherGroup::Weather::SNOW:
-			if (!i) return(true);
-			if (weather[i-1] != metaf::WeatherGroup::Weather::LOW_DRIFTING &&
-				weather[i-1] != metaf::WeatherGroup::Weather::BLOWING) return(true);
-			return(false);
+			case Weather::SNOW:
+			if (previousWeather != Weather::LOW_DRIFTING && 
+				previousWeather != Weather::BLOWING) return(true);
+			break;
 
 			default:
 			break;
 		}
+		previousWeather = weather[i];
 	}
 	return(false);
 }
 
 bool WeatherGroup::isObscuration() const {
+	Weather previousWeather = Weather::UNKNOWN;
 	for (auto i=0; i<weatherSize; i++) {
 		switch (weather[i]) {
-			case metaf::WeatherGroup::Weather::MIST:
-			case metaf::WeatherGroup::Weather::FOG:
-			case metaf::WeatherGroup::Weather::SMOKE:
-			case metaf::WeatherGroup::Weather::VOLCANIC_ASH:
-			case metaf::WeatherGroup::Weather::DUST:
-			case metaf::WeatherGroup::Weather::SAND:
-			case metaf::WeatherGroup::Weather::HAZE:
-			case metaf::WeatherGroup::Weather::SPRAY:
+			case Weather::MIST:
+			case Weather::FOG:
+			case Weather::SMOKE:
+			case Weather::VOLCANIC_ASH:
+			case Weather::DUST:
+			case Weather::SAND:
+			case Weather::HAZE:
+			case Weather::SPRAY:
 			return(true);
+
+			case metaf::WeatherGroup::Weather::SNOW:
+			if (previousWeather == Weather::LOW_DRIFTING &&
+				previousWeather == Weather::BLOWING) return(true);
+			break;
 
 			default:
 			break;
 		}
+		previousWeather = weather[i];
 	}
 	return(false);
 }
@@ -943,11 +994,11 @@ bool WeatherGroup::isObscuration() const {
 bool WeatherGroup::isOtherPhenomena() const {
 	for (auto i=0; i<weatherSize; i++) {
 		switch (weather[i]) {
-			case metaf::WeatherGroup::Weather::DUST_WHIRLS:
-			case metaf::WeatherGroup::Weather::SQUALLS:
-			case metaf::WeatherGroup::Weather::FUNNEL_CLOUD:
-			case metaf::WeatherGroup::Weather::SANDSTORM:
-			case metaf::WeatherGroup::Weather::DUSTSTORM:
+			case Weather::DUST_WHIRLS:
+			case Weather::SQUALLS:
+			case Weather::FUNNEL_CLOUD:
+			case Weather::SANDSTORM:
+			case Weather::DUSTSTORM:
 			return(true);
 
 			default:
@@ -1556,11 +1607,11 @@ bool metaf::operator ==(const RainfallGroup & lhs, const RainfallGroup & rhs){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SeaSurfaceGroup::SeaSurfaceGroup(int t, StateOfSurface s) :
-	temperature(t), temperatureReported(true), stateOfSurface(s) {}
+SeaSurfaceGroup::SeaSurfaceGroup(Temperature st, StateOfSurface s) :
+	surfaceTemp(st), stateOfSurface(s) {}
 
 SeaSurfaceGroup::SeaSurfaceGroup(StateOfSurface s) :
-	temperatureReported(false), stateOfSurface(s) {}
+	surfaceTemp(Temperature()), stateOfSurface(s) {}
 
 bool SeaSurfaceGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex seaSurfaceRegex("W(?:(\\d\\d)|//)/S(?:(\\d)|/)");
@@ -1571,11 +1622,9 @@ bool SeaSurfaceGroup::parse(const string & group, ReportPart reportPart) {
 	if (reportPart!=ReportPart::METAR) return(false);
 	if (!regex_match(group, match, seaSurfaceRegex)) return(false);
 	if (match.size() != expectedMatchGroups) return(false);
-	temperature = 0;
-	temperatureReported = false;
+	surfaceTemp = Temperature();
 	if (match.length(matchTemperature)) {
-		temperature = stoi(match.str(matchTemperature));		
-		temperatureReported = true;
+		surfaceTemp = Temperature(stoi(match.str(matchTemperature)));
 	}
 	stateOfSurface = stateOfSurfaceFromString(match.str(matchStateOfSurface));
 	return(true);
@@ -1590,26 +1639,19 @@ SeaSurfaceGroup::StateOfSurface SeaSurfaceGroup::stateOfSurfaceFromString(const 
 }
 
 bool metaf::operator ==(const SeaSurfaceGroup & lhs, const SeaSurfaceGroup & rhs){
-	if (lhs.temperatureReported != rhs.temperatureReported ||
-		lhs.stateOfSurface != rhs.stateOfSurface ||
-		lhs.temperatureUnit != rhs.temperatureUnit) return(false);
-	if (!lhs.temperatureReported) return(true);
-	if (lhs.temperature != rhs.temperature) return(false);
-	return(true);
+	return (lhs.surfaceTemp == rhs.surfaceTemp && lhs.stateOfSurface == rhs.stateOfSurface);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-SeaWavesGroup::SeaWavesGroup(int t, unsigned int wh) :
-	temperature(t), 
-	temperatureReported(true), 
+SeaWavesGroup::SeaWavesGroup(Temperature t, unsigned int wh) : 
+	surfaceTemp(t), 
 	waveHeight(wh),
 	waveHeightReported(true) {}
 
-SeaWavesGroup SeaWavesGroup::makeTemperature(int temperature) {
+SeaWavesGroup SeaWavesGroup::makeTemperature(Temperature st) {
 	SeaWavesGroup group;
-	group.temperature = temperature;
-	group.temperatureReported = true;
+	group.surfaceTemp = st;
 	return(group);
 }
 
@@ -1629,11 +1671,9 @@ bool SeaWavesGroup::parse(const string & group, ReportPart reportPart) {
 	if (reportPart!=ReportPart::METAR) return(false);
 	if (!regex_match(group, match, seaWavesRegex)) return(false);
 	if (match.size() != expectedMatchGroups) return(false);
-	temperature = 0;
-	temperatureReported = false;
+	surfaceTemp = Temperature();
 	if (match.length(matchTemperature)) {
-		temperature = stoi(match.str(matchTemperature));
-		temperatureReported = true;
+		surfaceTemp = Temperature(stoi(match.str(matchTemperature)));
 	}
 	waveHeight = 0;
 	waveHeightReported = false;
@@ -1645,12 +1685,9 @@ bool SeaWavesGroup::parse(const string & group, ReportPart reportPart) {
 }
 
 bool metaf::operator ==(const SeaWavesGroup & lhs, const SeaWavesGroup & rhs){
-	if (lhs.temperatureReported != rhs.temperatureReported ||
+	if (lhs.surfaceTemp != rhs.surfaceTemp ||
 		lhs.waveHeightReported != rhs.waveHeightReported ||
-		lhs.temperatureUnit != rhs.temperatureUnit ||
 		lhs.waveHeightUnit != rhs.waveHeightUnit) return(false);
-		if (lhs.temperatureReported && 
-			(lhs.temperature != rhs.temperature)) return(false);
 		if (lhs.waveHeightReported && 
 			(lhs.waveHeight != rhs.waveHeight)) return(false);
 		return(true);

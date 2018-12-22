@@ -10,19 +10,18 @@
 
 #include "metaf.h"
 #include <vector>
-#include <string>
 #include <sstream>
 #include <cmath>
 #include <emscripten/emscripten.h>
 
-static const std::string delimiter("|");
 static std::string result;
 
 void addResult(const std::string & group, const std::string & explanation) {
+	static const char delimiter = '|';
 	result += group;
-	result += delimiter;
+	result.push_back(delimiter);
 	result += explanation;
-	result += delimiter;
+	result.push_back(delimiter);
 }
 
 class GroupVisitorExplain : public metaf::GroupVisitor<std::string> {
@@ -67,16 +66,34 @@ private:
 	static std::string valueModifierToStringShort(metaf::ValueModifier modifier);
 	static std::string distanceToString(float distance, 
 		metaf::DistanceUnit unit,
-		bool reported = true);
+		bool reported = true,
+		metaf::ValueModifier modifier = metaf::ValueModifier::NONE);
 	static std::string visibilityDirectionToString(
 		metaf::VisibilityGroup::Direction direction);
 	static std::string cloudAmountToString(metaf::CloudGroup::Amount amount);
 	static std::string cloudTypeToString(metaf::CloudGroup::Type type);
 	static std::string specialWeatherPhenomenaToString(const metaf::WeatherGroup &group);
 	static std::string weatherToString(metaf::WeatherGroup::Weather weather);
-	static std::string temperatureToString(metaf::Temperature temperature);
+	static std::string temperatureToString(const metaf::Temperature & temperature);
 	static float calculateRelHumidity(float temperatureC, float dewPointC);
 	static std::string temperaturePointToString(metaf::MinMaxTemperatureGroup::Point point);
+	static std::string runwayToString(const metaf::Runway & runway);
+	static std::string rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
+	static std::string runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
+	static std::string runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
+	static std::string runwayStateDepositDepthToString(
+		const metaf::RunwayStateGroup::DepositDepth & depth);
+	static std::string runwayStateSurfaceFrictionToString(
+		const metaf::RunwayStateGroup::SurfaceFriction & sf);
+	static std::string runwayStateBrakingActionToString(
+		metaf::RunwayStateGroup::SurfaceFriction::BrakingAction brakingAction);
+	static std::string depthToString(float depthMm);
+	static std::string stateOfSeaSurfaceToString(
+		metaf::SeaSurfaceGroup::StateOfSurface state);
+	static std::string waveHeightToString(int waveHeightDm, bool reported = true);
+	static std::string colourCodeToString(metaf::ColourCodeGroup::Code code);
+	static std::string colourCodeVisibilityToString(metaf::ColourCodeGroup::Code code);
+	static std::string colourCodeCeilingToString(metaf::ColourCodeGroup::Code code);
 };
 
 std::string GroupVisitorExplain::explainReportType(metaf::ReportType reportType) {
@@ -157,9 +174,9 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		return("Report type: METAR (weather observation report)");
 
 		case metaf::FixedGroup::Type::SPECI:
-		return("Report type: unscheduled METAR (weather observation report)<br>"
-			"Unscheduled report is issued dut to sudden changes in weather conditions: "
-			"wind shift, visibility decrease, severe weather, "
+		return("Report type: unscheduled METAR (weather observation report)\n"
+			"Unscheduled report is issued dut to sudden changes in weather "
+			"conditions: wind shift, visibility decrease, severe weather, "
 			"clouds formed or dissipated, etc.");
 
 		case metaf::FixedGroup::Type::TAF:
@@ -181,28 +198,28 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		return("Fully automated report with no human intervention or oversight");
 
 		case metaf::FixedGroup::Type::CLR:
-		return("Clear sky<br>"
+		return("Clear sky\n"
 			"No cloud layers are detected at or below 12000 feet (3700 meters) (US) "
-			"or 25000 feet (7600 meters) (Canada)<br>"
+			"or 25000 feet (7600 meters) (Canada)\n"
 			"Indicates that station is at least partly automated");
 
 		case metaf::FixedGroup::Type::NCD:
-		return("No cloud detected<br>"
+		return("No cloud detected\n"
 			"Automated weather station did not detect any clouds; "
 			"this can happen due to either no clouds present or sensor error");
 
 		case metaf::FixedGroup::Type::SKC:
-		return("Clear sky<br>"
+		return("Clear sky\n"
 			"In North America indicates report producted by human rather than "
 			"automatic weather station");
 
 		case metaf::FixedGroup::Type::NSC:
-		return("No significant cloud<br>"
+		return("No significant cloud\n"
 			"No cloud below 5000 feet (1500 meters), no cumulonimbus or towering "
 			"cumulus clouds, no vertical visibility restriction");
 
 		case metaf::FixedGroup::Type::NSW:
-		return("No significant weather<br>"
+		return("No significant weather\n"
 			"Indicates end of significant weather phenomena");
 
 		case metaf::FixedGroup::Type::AIRPORT_SNOCLO:
@@ -210,7 +227,7 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		break;
 
 		case metaf::FixedGroup::Type::CAVOK:
-		return("Ceiling and visibility OK<br>"
+		return("Ceiling and visibility OK\n"
 			"Visibility 10 km or more in all directions, "
 			"no cloud below 5000 feet (1500 meters), "
 			"no cumulonimbus or towering cumulus clouds, "
@@ -231,11 +248,11 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 			"for less than 30 minutes");
 
 		case metaf::FixedGroup::Type::RMK:
-		return("The remarks are as follows<br>"
-			"This version does not recognise or decode remarks");
+		return("The remarks are as follows\n"
+			"(this version does not recognise or decode remarks)");
 
 		default:
-		return (std::string("Fixed group type recognised by parser but not by visitor: ") + 
+		return (std::string("Fixed group type not listed: ") + 
 			std::to_string(static_cast<int>(group.type)));
 		break;
 	}
@@ -284,27 +301,19 @@ std::string GroupVisitorExplain::visitProbabilityGroup(
 }
 
 std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) {
-	if (group.directionReported &&
-		!group.directionVariable &&
-		!group.direction &&
-		group.speedReported && 
-		!group.speed &&
-		!group.gustSpeedReported) { 
-			return("No wind / Calm");
-	}
+	if (group.isCalm()) return("No wind / Calm");
 	std::ostringstream result;
 	result << "Wind direction: ";
 	result << windDirectionToString(group.direction, 
 		group.directionReported, 
 		group.directionVariable);
-	result << "<br>";
+	result << '\n';
 	result << "Wind speed: ";
 	result << speedToString(group.speed, group.unit, group.speedReported);
-	result << "<br>";
+	result << '\n';
 	if (group.gustSpeedReported) {
 		result << "Gust speed: ";
 		result << speedToString(group.gustSpeed, group.unit);
-		result << "<br>";
 	}
 	return(result.str());
 }
@@ -330,14 +339,11 @@ std::string GroupVisitorExplain::visitWindShearGroup(const metaf::WindShearGroup
 std::string GroupVisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & group) {
 	std::ostringstream result;
 	result << "Visibility (" << visibilityDirectionToString(group.direction) << ") ";
-	if (group.modifier != metaf::ValueModifier::NONE && group.reported) {
-		result << valueModifierToStringShort(group.modifier);
-	}
 	float visibility = group.integer;
 	if (group.denominator) {
 		visibility += static_cast<float>(group.numerator) / group.denominator;
 	}
-	result << distanceToString(visibility, group.unit, group.reported);
+	result << distanceToString(visibility, group.unit, group.reported, group.modifier);
 	if (group.incompleteInteger) result << " (incomplete value, possibly error in report)";
 	return(result.str());
 }
@@ -399,7 +405,7 @@ std::string GroupVisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & g
 		break;
 
 		default:
-		return(std::string("weather prefix recognised by parser but not by visitor: ") +
+		return(std::string("weather prefix not listed: ") +
 			std::to_string(static_cast<int>(group.prefix)) +
 			std::string("; "));
 	}
@@ -441,7 +447,7 @@ std::string GroupVisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & g
 std::string GroupVisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup & group) {
 	std::ostringstream result;
 	result << "Air temperature: " << temperatureToString(group.airTemp) << ", ";
-	result << "dew point: " << temperatureToString(group.dewPoint) << "<br>";
+	result << "dew point: " << temperatureToString(group.dewPoint) << '\n';
 	if (group.airTemp.reported && group.dewPoint.reported) {
 		auto rh = calculateRelHumidity(group.airTemp.value, group.dewPoint.value);
 		result << "Relative humidity: " << static_cast<int>(rh) << " percent";
@@ -461,35 +467,150 @@ std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(
 }
 
 std::string GroupVisitorExplain::visitPressureGroup(const metaf::PressureGroup & group) {
-	return("Pressure group");
+	std::ostringstream result;
+	result << "Atmospheric pressure: ";
+	if (!group.reported) {
+		result << "not reported";
+		return(result.str());
+	}
+	switch(group.unit) {
+		case metaf::PressureGroup::Unit::UNKNOWN:
+		result << "value " << group.pressure << ", unknown pressure unit";
+		break;
+
+		case metaf::PressureGroup::Unit::HECTOPASCAL:
+		result << group.pressure << " hPa (";
+		result << roundTo(group.pressure / 33.8639, 2) << "inHg)";
+		break;
+
+		case metaf::PressureGroup::Unit::INCHES_HG:
+		result << group.pressure << " inHg (";
+		result << static_cast <int>(group.pressure * 33.8639) << "hPa)";
+		break;
+
+		default:
+		result << "value " << group.pressure;
+		result << ", pressure unit not listed: "; 
+		result << static_cast<int>(group.unit);
+		break;
+	}
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group) {
-	return("Runway visual range group");
+	std::ostringstream result;
+	result << "Visual range of " << runwayToString(group.runway) << " ";
+	if (!group.visRangeReported) {
+		result << "not reported";
+		return(result.str());
+	}
+	if (group.varVisRangeReported) result << "from ";
+	result << distanceToString(group.visRange, group.unit, true, group.visModifier);
+	if (group.varVisRangeReported) {
+		result << " to " << distanceToString(group.varVisRange, 
+												group.unit, 
+												true, 
+												group.varVisModifier);
+	}
+	if (group.trend != metaf::RunwayVisualRangeGroup::Trend::NONE) {
+		result << ", and the trend is " << rvrTrendToString(group.trend);
+	}
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
-	return("Runway state group");
+	std::ostringstream result;
+	result << "State of " << runwayToString(group.runway) << ": ";
+	switch (group.status) {
+		case metaf::RunwayStateGroup::Status::UNKNOWN:
+		result << "status unknown";
+		break;
+
+		case metaf::RunwayStateGroup::Status::NONE:
+		result << runwayStateDepositsToString(group.deposits) << '\n';
+		if (group.deposits != metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY) {
+		    result << "Depth of deposits on runway: ";
+		    result << runwayStateDepositDepthToString(group.depositDepth) << '\n';
+			result << "Runway contamination extent: ";
+			result << runwayStateExtentToString(group.contaminationExtent) << '\n';
+		}
+		result << "Surface friction: ";
+		result << runwayStateSurfaceFrictionToString(group.surfaceFriction);
+		break;
+
+		case metaf::RunwayStateGroup::Status::CLRD:
+		result << "deposits on runway were cleared or ceased to exist" << '\n';
+		result << "Surface friction: ";
+		result << runwayStateSurfaceFrictionToString(group.surfaceFriction);
+		break;
+
+		case metaf::RunwayStateGroup::Status::SNOCLO:
+		result << "closed due to snow accumulation";
+		break;
+
+		default:
+		result << "status not listed: " << static_cast<int>(group.status);
+		break;
+	}
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group) {
-	return("Rainfall group");
+	std::ostringstream result;
+	if (group.unit != metaf::RainfallGroup::Unit::MM) {
+		return(std::string("rainfall measurement units expected to be millimeters, unit: ") + 
+			std::to_string(static_cast<int>(group.unit)));
+	}
+	result << "Rainfall for last 10 minutes " << depthToString(group.last10Minutes) << ", ";
+	if (group.last60MinutesReported) {
+		result << "for last 60 minutes " << depthToString(group.last60Minutes) << ", ";
+	}
+	result << "total rainfall since 9:00 AM " << depthToString(group.since9AM);
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group) {
-	return("Sea surface group");
+	std::ostringstream result;
+	result << "Sea surface temperature ";
+	result << temperatureToString(group.surfaceTemp);
+	result << '\n';
+	result << "State of sea surface: " << stateOfSeaSurfaceToString(group.stateOfSurface);
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitSeaWavesGroup(const metaf::SeaWavesGroup & group) {
-	return("Sea waves group");
+	if (group.waveHeightUnit != metaf::SeaWavesGroup::WaveHeightUnit::DECIMETERS) {
+		return(std::string("wave height measurement units expected to be decimeters, unit: ") + 
+			std::to_string(static_cast<int>(group.waveHeightUnit)));
+	}
+	std::ostringstream result;
+	result << "Sea surface temperature ";
+	result << temperatureToString(group.surfaceTemp);
+	result << '\n';
+	result << "Wave height " << waveHeightToString(group.waveHeight, group.waveHeightReported);
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGroup & group) {
-	return("Colour code group");
+	std::ostringstream result;
+	if (group.codeBlack) {
+		result << "Colour code BLACK: ";
+		result << "aerodrome closed due to snow accumulation or non-weather reasons";
+		result << '\n';
+	}
+	result << "Colour code " << colourCodeToString(group.code) << ": ";
+	if (group.code == metaf::ColourCodeGroup::Code::RED) {
+		result << "either visibility " << colourCodeVisibilityToString(group.code);
+		result << " or lowest cloud base height " << colourCodeCeilingToString(group.code);
+		return(result.str());
+	}
+	result << "visibility " << colourCodeVisibilityToString(group.code);
+	result << " and lowest cloud base height " << colourCodeCeilingToString(group.code);
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
-	return("This group is recognised by parser but not by visitor");
+	return("This group is recognised by parser but not listed");
 }
 
 std::string GroupVisitorExplain::timeOfDayToString(unsigned int hour, 
@@ -524,7 +645,7 @@ std::string GroupVisitorExplain::trendTypeToString(metaf::TrendTimeGroup::Type t
 		return("At");
 
 		default: 
-		return(std::string("Trend type recognised by parser but not by visitor: ") +
+		return(std::string("Trend type not listed: ") +
 			std::to_string(static_cast<int>(type)));
 	}
 }
@@ -569,7 +690,7 @@ std::string GroupVisitorExplain::speedToString(unsigned int speed,
 
 		default: 
 		result << "value " << speed;
-		result << ", speed unit recognised by parser but not by visitor: ";
+		result << ", speed unit not listed: ";
 		result << static_cast<int>(unit);
 		break;
 	}
@@ -626,36 +747,41 @@ std::string GroupVisitorExplain::valueModifierToStringShort(
 
 std::string GroupVisitorExplain::distanceToString(float distance, 
 	metaf::DistanceUnit unit,
-	bool reported) 
+	bool reported,
+	metaf::ValueModifier modifier) 
 {
 	if (!reported) return("not reported");
 	std::ostringstream result;
+	const std::string modStr = 
+		(modifier == metaf::ValueModifier::NONE) ? 
+			std::string("") : 
+			valueModifierToStringShort(modifier);
 	switch (unit) {
 		case metaf::DistanceUnit::UNKNOWN:
 		result << "value " << distance << ", unknown distance units";
 		break;
 
 		case metaf::DistanceUnit::METERS:
-		result << static_cast<long int>(distance) << " meters (";
-		result << roundTo(distance / 1609.347, 2) << " statute miles, ";
-		result << static_cast<long int>(distance / 0.3048) << " feet)";
+		result << modStr << static_cast<long int>(distance) << " meters (";
+		result << modStr << roundTo(distance / 1609.347, 2) << " statute miles, ";
+		result << modStr << static_cast<long int>(distance / 0.3048) << " feet)";
 		break;
 
 		case metaf::DistanceUnit::STATUTE_MILES:
-		result << roundTo(distance, 2) << " statute miles (";
-		result << static_cast<long int>(distance * 1609.347) << " meters, ";
-		result << static_cast<long int>(distance * 5280) << " feet)";
+		result << modStr << roundTo(distance, 2) << " statute miles (";
+		result << modStr << static_cast<long int>(distance * 1609.347) << " meters, ";
+		result << modStr << static_cast<long int>(distance * 5280) << " feet)";
 		break;
 
 		case metaf::DistanceUnit::FEET:
-		result << static_cast<long int>(distance) << " feet (";
-		result << static_cast<long int>(distance * 0.3048) << " meters, ";
-		result << roundTo(distance / 5280, 2) << " statute miles)";
+		result << modStr << static_cast<long int>(distance) << " feet (";
+		result << modStr << static_cast<long int>(distance * 0.3048) << " meters, ";
+		result << modStr << roundTo(distance / 5280, 2) << " statute miles)";
 		break;
 
 		default: 
-		result << "value " << distance;
-		result << ", distance unit recognised by parser but not by visitor: ";
+		result << modStr << "value " << distance;
+		result << ", distance unit not listed: ";
 		result << static_cast<int>(unit);
 		break;
 	}
@@ -700,7 +826,7 @@ std::string GroupVisitorExplain::visibilityDirectionToString(
 		return("southeast");
 
 		default: 
-		return(std::string("direction recognised by parser but not by visitor: ") + 
+		return(std::string("direction not listed: ") + 
 			std::to_string(static_cast<int>(direction)));
 		break;
 	}
@@ -864,7 +990,7 @@ std::string GroupVisitorExplain::weatherToString(metaf::WeatherGroup::Weather we
 			return("hail");
 
 			case metaf::WeatherGroup::Weather::SMALL_HAIL:
-			return("small hail");
+			return("small hail (graupel)");
 
 			case metaf::WeatherGroup::Weather::UNDETERMINED:
 			return("undetermined precipitation");
@@ -913,8 +1039,14 @@ std::string GroupVisitorExplain::weatherToString(metaf::WeatherGroup::Weather we
 	}
 }
 
-std::string GroupVisitorExplain::temperatureToString(metaf::Temperature temperature) {
+std::string GroupVisitorExplain::temperatureToString(
+	const metaf::Temperature & temperature)
+{
 	if (!temperature.reported) return("not reported");
+	if (temperature.unit != metaf::Temperature::Unit::DEGREES_C) {
+		return(std::string("temperature measurement units expected to be &deg;C, unit: ") + 
+			std::to_string(static_cast<int>(temperature.unit)));
+	}
 	std::ostringstream result;
 	if (!temperature.value) result << valueModifierToStringShort(temperature.modifier);
 	result << temperature.value << " &deg;C (";
@@ -947,9 +1079,414 @@ std::string GroupVisitorExplain::temperaturePointToString(
 		return("Maximum temperature");
 
 		default:
-		return(std::string("Temperature point recognised by parser but not by visitor: ") + 
+		return(std::string("Temperature point not listed: ") + 
 			std::to_string(static_cast<int>(point)));
 	}
+}
+
+std::string GroupVisitorExplain::runwayToString(const metaf::Runway & runway) {
+	static const char strSize = 3; //2 digits + \0
+	char runwayNumberStr[strSize];
+	std::snprintf(runwayNumberStr, strSize, "%02u", runway.number);
+	if (runway.isAllRunways()) return ("all runways");
+	if (runway.isMessageRepetition()) return ("same runway (repetition of last message)");
+	std::string runwayDesignatorStr("");
+	switch (runway.designator) {
+		case metaf::Runway::Designator::UNKNOWN:
+		runwayDesignatorStr = std::string("unknown designator");
+		break;
+
+		case metaf::Runway::Designator::NONE:
+		break;
+
+		case metaf::Runway::Designator::LEFT:
+		runwayDesignatorStr = std::string("LEFT");
+		break;
+
+		case metaf::Runway::Designator::CENTER:
+		runwayDesignatorStr = std::string("CENTER");
+		break;
+
+		case metaf::Runway::Designator::RIGHT:
+		runwayDesignatorStr = std::string("RIGHT");
+		break;
+
+		default:
+		runwayDesignatorStr = std::string("designator not listed: ") + 
+			std::to_string(static_cast<int>(runway.designator));
+	}
+	return(std::string("runway ") + 
+		std::string(runwayNumberStr) + 
+		(runwayDesignatorStr.empty() ? std::string(" ") : std::string("")) + 
+		runwayDesignatorStr);
+}
+
+std::string GroupVisitorExplain::rvrTrendToString(
+	metaf::RunwayVisualRangeGroup::Trend trend)
+{
+	switch(trend) {
+		case metaf::RunwayVisualRangeGroup::Trend::UNKNOWN:
+		return("unknown");
+
+		case metaf::RunwayVisualRangeGroup::Trend::NONE:
+		return("none");
+
+		case metaf::RunwayVisualRangeGroup::Trend::UPWARD:
+		return("upward");
+
+		case metaf::RunwayVisualRangeGroup::Trend::NEUTRAL:
+		return("neutral");
+
+		case metaf::RunwayVisualRangeGroup::Trend::DOWNWARD:
+		return("downward");
+
+		default:
+		return(std::string("not listed: ") + 
+			std::to_string(static_cast<int>(trend)));
+	}
+}
+
+std::string GroupVisitorExplain::runwayStateDepositsToString(
+	metaf::RunwayStateGroup::Deposits deposits)
+{
+	switch(deposits) {
+		case metaf::RunwayStateGroup::Deposits::UNKNOWN:
+		return("unknown");
+
+		case metaf::RunwayStateGroup::Deposits::NOT_REPORTED:
+		return("not reported");
+
+		case metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY:
+		return("clear and dry");
+
+		case metaf::RunwayStateGroup::Deposits::DAMP:
+		return("damp");
+
+		case metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES:
+		return("wet and water patches");
+
+		case metaf::RunwayStateGroup::Deposits::RIME_AND_FROST_COVERED:
+		return("rime and frost covered");
+
+		case metaf::RunwayStateGroup::Deposits::DRY_SNOW:
+		return("dry snow");
+
+		case metaf::RunwayStateGroup::Deposits::WET_SNOW:
+		return("wet snow");
+
+		case metaf::RunwayStateGroup::Deposits::SLUSH:
+		return("slush");
+
+		case metaf::RunwayStateGroup::Deposits::ICE:
+		return("ice");
+
+		case metaf::RunwayStateGroup::Deposits::COMPACTED_OR_ROLLED_SNOW:
+		return("compacted or rolled snow");
+
+		case metaf::RunwayStateGroup::Deposits::FROZEN_RUTS_OR_RIDGES:
+		return("frozen ruts or ridges");
+
+		default:
+		return(std::string("not listed: ") + 
+			std::to_string(static_cast<int>(deposits)));
+	}
+}
+
+std::string GroupVisitorExplain::runwayStateExtentToString(
+	metaf::RunwayStateGroup::Extent extent)
+{
+	switch(extent) {
+		case metaf::RunwayStateGroup::Extent::UNKNOWN:
+		return("unknown");
+
+		case metaf::RunwayStateGroup::Extent::NOT_REPORTED:
+		return("not reported");
+
+		case metaf::RunwayStateGroup::Extent::NONE:
+		return("none");
+
+		case metaf::RunwayStateGroup::Extent::LESS_THAN_10_PERCENT:
+		return("<10%");
+
+		case metaf::RunwayStateGroup::Extent::FROM_11_TO_25_PERCENT:
+		return("11% to 25%");
+
+		case metaf::RunwayStateGroup::Extent::FROM_26_TO_50_PERCENT:
+		return("26% to 50%");
+
+		case metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT:
+		return(">51%");
+
+		case metaf::RunwayStateGroup::Extent::RESERVED_3:
+		case metaf::RunwayStateGroup::Extent::RESERVED_4:
+		case metaf::RunwayStateGroup::Extent::RESERVED_6:
+		case metaf::RunwayStateGroup::Extent::RESERVED_7:
+		case metaf::RunwayStateGroup::Extent::RESERVED_8:
+		return(std::string("reserved value: ") + std::to_string(static_cast<int>(extent)));
+
+		default:
+		return(std::string("not listed: ") + 
+			std::to_string(static_cast<int>(extent)));
+	}
+}
+
+std::string GroupVisitorExplain::runwayStateDepositDepthToString(
+	const metaf::RunwayStateGroup::DepositDepth & depth) 
+{
+	if (depth.unit != metaf::RunwayStateGroup::DepositDepth::Unit::MM) {
+		return(std::string("depth measurement units expected to be millimeters, unit: ") + 
+			std::to_string(static_cast<int>(depth.unit)));
+	}
+	switch (depth.status) {
+		case metaf::RunwayStateGroup::DepositDepth::Status::UNKNOWN:
+		return("status unknown");
+
+		case metaf::RunwayStateGroup::DepositDepth::Status::REPORTED:
+		return(depthToString(depth.depth));
+			
+		case metaf::RunwayStateGroup::DepositDepth::Status::NOT_REPORTED:
+		return("not reported");
+
+		case metaf::RunwayStateGroup::DepositDepth::Status::RUNWAY_NOT_OPERATIONAL:
+		return("not measured because runway is not operational");
+
+		default:
+		return(std::string("status not listed: ") + 
+			std::to_string(static_cast<int>(depth.status)));
+	}
+}
+
+std::string GroupVisitorExplain::runwayStateSurfaceFrictionToString(
+	const metaf::RunwayStateGroup::SurfaceFriction & sf)
+{
+	switch (sf.status) {
+		case metaf::RunwayStateGroup::SurfaceFriction::Status::UNKNOWN:
+		return("status unknown");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED:
+		return (std::string("friction coefficient ") + std::to_string(sf.coefficient));
+
+		case metaf::RunwayStateGroup::SurfaceFriction::Status::BRAKING_ACTION_REPORTED:
+		return (std::string("braking action ") + 
+			runwayStateBrakingActionToString(sf.brakingAction));
+
+		case metaf::RunwayStateGroup::SurfaceFriction::Status::NOT_REPORTED:
+		return("not reported");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::Status::UNRELIABLE:
+		return("unreliable or unmeasurable");
+
+		default:
+		return(std::string("status not listed: ") +
+			std::to_string(static_cast<int>(sf.status)));
+		break;
+	}
+
+}
+
+std::string GroupVisitorExplain::runwayStateBrakingActionToString(
+		metaf::RunwayStateGroup::SurfaceFriction::BrakingAction brakingAction)
+{
+	switch(brakingAction) {
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::UNKNOWN:
+		return("unknown");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::POOR:
+		return("poor");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::MEDIUM_POOR:
+		return("medium/poor");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::MEDIUM:
+		return("medium");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::MEDIUM_GOOD:
+		return("medium/good");
+
+		case metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::GOOD:
+		return("good");
+
+		default:
+		return(std::string("not listed: ") + 
+			std::to_string(static_cast<int>(brakingAction)));
+	}
+}
+
+std::string GroupVisitorExplain::depthToString(float depthMm) {
+	return(std::to_string(depthMm) + std::string(" mm (") + 
+			std::to_string(roundTo(depthMm / 25.4, 2)) + std::string(" inches)"));
+}
+
+std::string GroupVisitorExplain::stateOfSeaSurfaceToString(
+	metaf::SeaSurfaceGroup::StateOfSurface state)
+{
+	switch(state) {
+		case metaf::SeaSurfaceGroup::StateOfSurface::UNKNOWN:
+		return("unknown");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::NOT_REPORTED:
+		return("not reported");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::CALM_GLASSY:
+		return("calm (glassy), no waves");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::CALM_RIPPLED:
+		return("calm (rippled), 0 to 0.1 meters (0 to 1/3 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::SMOOTH:
+		return("smooth, 0.1 to 0.5 meters (1/3 to 1 1/2 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::SLIGHT:
+		return("slight, 0.5 to 1.25 meters (1 1/2 to 4 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::MODERATE:
+		return("moderate, 1.25 to 2.5 meters (4 to 8 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::ROUGH:
+		return("rough, 2.5 to 4 meters (8 to 13 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::VERY_ROUGH:
+		return("very rough, 4 to 6 meters (13 to 20 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::HIGH:
+		return("high, 6 to 9 meters (20 to 30 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::VERY_HIGH:
+		return("very high, 9 to 14 meters (30 to 46 feet) wave height");
+
+		case metaf::SeaSurfaceGroup::StateOfSurface::PHENOMENAL:
+		return("phenomenal, >14 meters (>46 feet) wave height");
+
+		default:
+		return(std::string("not listed: ") + std::to_string(static_cast<int>(state)));
+	}
+}
+
+std::string GroupVisitorExplain::waveHeightToString(int waveHeightDm, bool reported) {
+	if (!reported) return("not reported");
+	return(std::to_string(roundTo(waveHeightDm / 10.0, 1)) + 
+		std::string(" meters (") +
+		std::to_string(static_cast<int>(waveHeightDm / 3.048)) + 
+		std::string(" feet)"));
+};
+
+std::string GroupVisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code code) {
+	switch(code) {
+		case metaf::ColourCodeGroup::Code::UNKNOWN:
+		return("unknown");
+
+		case metaf::ColourCodeGroup::Code::BLUE:
+		return("BLUE");
+
+		case metaf::ColourCodeGroup::Code::WHITE:
+		return("WHITE");
+
+		case metaf::ColourCodeGroup::Code::GREEN:
+		return("GREEN");
+
+		case metaf::ColourCodeGroup::Code::YELLOW1:
+		return("YELLOW1");
+
+		case metaf::ColourCodeGroup::Code::YELLOW2:
+		return("YELLOW2");
+
+		case metaf::ColourCodeGroup::Code::AMBER:
+		return("AMBER");
+
+		case metaf::ColourCodeGroup::Code::RED:
+		return("RED");
+
+		default:
+		return(std::string("not listed: ") + std::to_string(static_cast<int>(code)));
+	}
+}
+
+std::string GroupVisitorExplain::colourCodeVisibilityToString(
+	metaf::ColourCodeGroup::Code code)
+{
+	int visibility = 0;
+	metaf::ValueModifier modifier = metaf::ValueModifier::MORE_THAN;
+	switch(code) {
+		case metaf::ColourCodeGroup::Code::UNKNOWN:
+		return("unknown code");
+
+		case metaf::ColourCodeGroup::Code::BLUE:
+		visibility = 8000;
+		break;
+
+		case metaf::ColourCodeGroup::Code::WHITE:
+		visibility = 5000;
+		break;
+
+		case metaf::ColourCodeGroup::Code::GREEN:
+		visibility = 3700;
+		break;
+
+		case metaf::ColourCodeGroup::Code::YELLOW1:
+		visibility = 2500;
+		break;
+
+		case metaf::ColourCodeGroup::Code::YELLOW2:
+		visibility = 1600;
+		break;
+
+		case metaf::ColourCodeGroup::Code::AMBER:
+		visibility = 800;
+		break;
+
+		case metaf::ColourCodeGroup::Code::RED:
+		visibility = 800;
+		modifier = metaf::ValueModifier::LESS_THAN;
+		break;
+
+		default:
+		return(std::string("not listed code: ") + std::to_string(static_cast<int>(code)));
+	}
+	return(distanceToString(visibility, metaf::DistanceUnit::METERS, true, modifier));
+}
+
+std::string GroupVisitorExplain::colourCodeCeilingToString(
+	metaf::ColourCodeGroup::Code code)
+{
+	int ceiling = 0;
+	metaf::ValueModifier modifier = metaf::ValueModifier::MORE_THAN;
+	switch(code) {
+		case metaf::ColourCodeGroup::Code::UNKNOWN:
+		return("unknown code");
+
+		case metaf::ColourCodeGroup::Code::BLUE:
+		ceiling = 2500;
+		break;
+
+		case metaf::ColourCodeGroup::Code::WHITE:
+		ceiling = 1500;
+		break;
+
+		case metaf::ColourCodeGroup::Code::GREEN:
+		ceiling = 700;
+		break;
+
+		case metaf::ColourCodeGroup::Code::YELLOW1:
+		ceiling = 500;
+		break;
+
+		case metaf::ColourCodeGroup::Code::YELLOW2:
+		ceiling = 300;
+		break;
+
+		case metaf::ColourCodeGroup::Code::AMBER:
+		ceiling = 200;
+		break;
+
+		case metaf::ColourCodeGroup::Code::RED:
+		ceiling = 200;
+		modifier = metaf::ValueModifier::LESS_THAN;
+		break;
+
+		default:
+		return(std::string("not listed code: ") + std::to_string(static_cast<int>(code)));
+	}
+	return(distanceToString(ceiling, metaf::DistanceUnit::FEET, true, modifier));
 }
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {

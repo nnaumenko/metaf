@@ -40,7 +40,7 @@ examples: $(OBJECTS)
 	-o $(EXAMPLETARGETDIR)/to_json.html
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/explain.cpp \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-	--shell-file examples/shellfiles/explain.html \
+	--shell-file examples/shellfiles/explain_shell.html \
 	-o $(EXAMPLETARGETDIR)/explain.html
 
 .PHONY: performance

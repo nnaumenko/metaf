@@ -165,12 +165,6 @@ namespace metaf {
 		KILOMETERS_PER_HOUR = 2
 	};
 
-	/// Temperature measurement units, used across groups
-	enum class TemperatureUnit {
-		UNKNOWN = 30,
-		DEGREES_C = 0
-	};
-
 	enum class ValueModifier {
 		UNKNOWN = 30,
 		NONE = 0,
@@ -193,6 +187,10 @@ namespace metaf {
 		/// @param number Runway number
 		/// @param designator Runway designator, default is NONE
 		Runway(unsigned int number, Designator designator = Designator::NONE);
+		/// Initialise runway with "all runways" information coded.
+		static Runway makeAllRunways();
+		/// Initialise runway with "repetition of last message" information coded.
+		static Runway makeMessageRepetition();
 		/// @brief Decode runway designator from char
 		/// @details R/L/C are treates as Right/Left/Center, space or 
 		/// null-terminator are treated as None, every other char is treated as
@@ -208,10 +206,17 @@ namespace metaf {
 		/// @par s Designator as string
 		/// @return Decoded designator or UNKNOWN if designator is not recognised
 		static Designator designatorFromString(const std::string & s);
-		/// Runway number
-		unsigned int number = 0;
-		/// Runway designator
-		Designator designator = Designator::UNKNOWN;
+		/// Check if all runways coded (runway number 88)
+		/// @return True when all runways encoded, false otherwise
+		bool isAllRunways() const;
+		/// Check if message repetition coded (runway number 99)
+		/// @return True when all runways encoded, false otherwise
+		bool isMessageRepetition() const;
+		unsigned int number = 0; 					 /// < Runway number
+		Designator designator = Designator::UNKNOWN; ///< Runway designator
+	private:
+		static const unsigned int allRunwaysNumber = 88;
+		static const unsigned int messageRepetitionNumber = 99;
 	};
 
 	bool operator ==(const Runway & lhs, const Runway & rhs);
@@ -228,6 +233,10 @@ namespace metaf {
 	/// range [0 .. 0.5) corresponding to value 00 and means non-freezing 
 	/// temperature.
 	struct Temperature {
+		enum class Unit {
+			UNKNOWN = 30,
+			DEGREES_C = 0
+		};
 		Temperature () = default;
 		/// Initialise temperature value
 		/// @param value Temperature value
@@ -244,7 +253,7 @@ namespace metaf {
 		/// Ignored unless temperature is zero; indicates below-zero or 
 		/// above-zero temperatures rounded to zero
 		ValueModifier modifier = ValueModifier::NONE;
-		static const TemperatureUnit unit = TemperatureUnit::DEGREES_C;
+		static const Unit unit = Unit::DEGREES_C;
 	};
 
 	bool operator ==(const Temperature & lhs, const Temperature & rhs);
@@ -473,6 +482,15 @@ namespace metaf {
 		static WindGroup makeVariableDirection (SpeedUnit unit, 
 			unsigned int speed, 
 			unsigned int gustSpeed = 0);
+		/// Initialised group with calm wind (no wind) info.
+		/// @param Speed unit
+		/// @return Initialised wind group.
+		static WindGroup makeCalm(SpeedUnit unit);
+		/// Checks if there's calm wind (i.e. no wind). Wind direction and 
+		/// speed MUST be reported, gust speed MUST NOT be reported. Calm wind 
+		/// is encoded as 00000KT or 00000MPS.
+		/// @return True if calm wind, false if the wind is observed.
+		bool isCalm() const;
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		/// Wind direction "from" in degrees (if reported and not variable).
@@ -735,7 +753,9 @@ namespace metaf {
 			/// Precipitation in form of branched (unlike ice crystals) ice 
 			/// crystals.
 			SNOW = 10,
-			/// Very small, opaque, white grains of ice (2 to 5 mm).
+			/// Very small, opaque, white grains of ice (2 to 5 mm), essentially
+			/// small graupel. Snow grains normally neither bounce off the ground
+			/// nor break when falling to the ground.
 			SNOW_GRAINS = 11,	
 			/// Non-branched (unlike snow) ice crystals in form of needles, 
 			/// columns or plates (a.k.a. diamond dust).
@@ -747,8 +767,8 @@ namespace metaf {
 			/// Small balls or other pieces of ice, can be frozen together in
 			/// irregular lumps.
 			HAIL = 14,
-			/// White, small, opaque grains of ice (2 to 5 mm).
-			SMALL_HAIL = 15,	
+			/// White, small, opaque grains of ice (2 to 5 mm), a.k.a graupel.
+			SMALL_HAIL = 15,
 			/// Precipitation detected by automated station but precipitation 
 			/// type cannot be determined.
 			UNDETERMINED = 16,
@@ -1234,19 +1254,17 @@ namespace metaf {
 		};
 		SeaSurfaceGroup() = default;
 		/// Initialise group with temperature and optional state of surface value
-		/// @param temperature Temperature of sea surface (if reported).
+		/// @param surfaceTemp Temperature of sea surface.
 		/// @param stateOfSurface State of sea surface.
-		SeaSurfaceGroup(int temperature, StateOfSurface stateOfSurface = StateOfSurface::NOT_REPORTED);
+		SeaSurfaceGroup(Temperature surfaceTemp, 
+			StateOfSurface stateOfSurface = StateOfSurface::NOT_REPORTED);
 		/// Initialise group with state of surface value only (temperature is 
 		/// not reported).
 		/// @param stateOfSurface State of sea surface (if reported).
 		SeaSurfaceGroup(StateOfSurface stateOfSurface);
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
-		int temperature = 0;					///< Sea surface temperature.
-		bool temperatureReported = false;		///< Is sea surface temperature reported.
-		/// Temperature measurement units
-		static const TemperatureUnit temperatureUnit = TemperatureUnit::DEGREES_C;
+		Temperature surfaceTemp;			///< Sea surface temperature.
 		StateOfSurface stateOfSurface = StateOfSurface::UNKNOWN; ///< State of sea surface.
 	private:
 		StateOfSurface stateOfSurfaceFromString(const std::string & str);
@@ -1266,25 +1284,22 @@ namespace metaf {
 		};
 		SeaWavesGroup() = default;
 		/// Initialises group with both temperature and wave height.
-		/// @param temperature Temperature of sea surface.
+		/// @param surfaceTemp Temperature of sea surface.
 		/// @param waveHeight Sea waves height.
-		SeaWavesGroup(int temperature, unsigned int waveHeight);
+		SeaWavesGroup(Temperature surfaceTemp, unsigned int waveHeight);
 		/// Initialises group with temperature only (wave height not reported).
-		/// @param temperature Temperature of sea surface.
+		/// @param surfaceTemp Temperature of sea surface.
 		/// @return Initialised group.
-		static SeaWavesGroup makeTemperature(int temperature);
+		static SeaWavesGroup makeTemperature(Temperature surfaceTemp);
 		/// Initialises group with wave height only (temperature not reported).
 		/// @param waveHeight Sea waves height.
 		/// @return Initialised group.
 		static SeaWavesGroup makeWaveHeight(unsigned int waveHeight);
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
-		int temperature = 0;				///< Sea surface temperature.
-		bool temperatureReported = false;	///< Is sea surface temperature reported.
+		Temperature surfaceTemp;			///< Sea surface temperature.
 		unsigned int waveHeight = 0;		///< Wave height.
 		bool waveHeightReported = false;	///< Is wave height reported.
-		/// Temperature measurement units.
-		static const TemperatureUnit temperatureUnit = TemperatureUnit::DEGREES_C;
 		/// Wave height measurement units.
 		static const WaveHeightUnit waveHeightUnit = WaveHeightUnit::DECIMETERS;
 	};
@@ -1437,6 +1452,11 @@ namespace metaf {
 		/// @par Use getResult(), getReportType() and getError() to get parse 
 		/// results.
 		/// @param report Raw report string.
+		/// @param keepSourceGroup When true, each group string being parsed 
+		/// is kept in a vector. After parsing this vector can be acquired via 
+		/// getSourceGroups(). When false, group string are not kept to 
+		/// maximise performance and getSourceGroups() will return an empty 
+		/// vector.
 		/// @return True if no error occurred during parsing, false if an error
 		/// did occurr during parsing.
 		bool parse(const std::string & report, bool keepSourceGroup = false);
@@ -1445,7 +1465,7 @@ namespace metaf {
 		/// successfully) or part of the report (to the point where an error 
 		/// occurred).
 		const std::vector<Group> & getResult() const { return(result); }
-		/// Get source groups.
+		/// Get source group strings memorised during parsing.
 		/// @return Vector of string which contains all parsed source groups 
 		/// (if parsed successfully) or part of the report (to the point where 
 		/// an error occurred).
@@ -1503,6 +1523,8 @@ namespace metaf {
 	/// report information decoded by parser.
 	/// @details To reduce amount of boilerplate, inherit from GroupVisitor
 	/// and implement all individual virtual methods for each group type.
+	/// @tparam T Type returned by visitor methods or void if visitor methods
+	/// do not need to return a value.
 	template <typename T>
 	class GroupVisitor {
 	public:
@@ -1534,7 +1556,8 @@ namespace metaf {
 		virtual T visitOther(const Group & group) = 0;
 	};
 
-	/// General value-returning visitor implementation
+	/// General value-returning visitor implementation.
+	/// @tparam T Type returned by visitor methods.
 	template <typename T>
 	inline T GroupVisitor<T>::visit(const Group & group) {
 		if (std::holds_alternative<PlainTextGroup>(group)) {
@@ -1609,7 +1632,9 @@ namespace metaf {
 		return(this->visitOther(group));
 	}
 
-	/// Non-value-returning visitor implementation
+	/// Non-value-returning visitor implementation.
+	/// Partial template specialisation for template type void, where visitor 
+	/// methods do not return a value.
 	template<>
 	inline void GroupVisitor<void>::visit(const Group & group) {
 		if (std::holds_alternative<PlainTextGroup>(group)) {

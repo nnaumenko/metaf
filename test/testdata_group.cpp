@@ -289,6 +289,17 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("18206KT"),
 	},
+	{
+		std::string("00000KT"),	//calm wind (i.e. no wind), speed unit is knots
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::WindGroup::makeCalm(metaf::SpeedUnit::KNOTS),
+	},
+	{
+		std::string("00000MPS"),	//calm wind (i.e. no wind), speed unit is m/s
+		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
+		metaf::WindGroup::makeCalm(metaf::SpeedUnit::METERS_PER_SECOND),
+	},
+
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -1423,6 +1434,15 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 			metaf::DistanceUnit::FEET,
 			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
 	},
+	{
+		std::string("R34/6000FTN"), //Runway 34 visual range is 6000 feet and trend is 
+		//neutral, with slash before trend being omitted
+		{metaf::ReportPart::METAR},
+		metaf::RunwayVisualRangeGroup(metaf::Runway(34),
+			6000, metaf::DistanceUnit::FEET,
+			metaf::ValueModifier::NONE,
+			metaf::RunwayVisualRangeGroup::Trend::NEUTRAL),
+	},
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -1499,13 +1519,25 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/CLRD70"), //All runways state: cleared, friction coefficient 0.70
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup::makeClrd(metaf::Runway(88),
+		metaf::RunwayStateGroup::makeClrd(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::SurfaceFriction(0.70)),
+	},
+	{
+		std::string("R99/19//95"), //Repetition of last message: more than 51% of runway damp,
+		//deposit depth not reported, braking action good
+		{metaf::ReportPart::METAR},
+		metaf::RunwayStateGroup(metaf::Runway::makeMessageRepetition(),
+			metaf::RunwayStateGroup::Status::NONE, 
+			metaf::RunwayStateGroup::Deposits::DAMP, 
+			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
+			metaf::RunwayStateGroup::DepositDepth::makeNotReported(),
+			metaf::RunwayStateGroup::SurfaceFriction(
+				metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::GOOD)),
 	},
 	{
 		std::string("R88/0/////"), //All runways state: clear and dry
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1515,7 +1547,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/1/////"), //All runways state: damp
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::DAMP, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1525,7 +1557,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/2/////"), //All runways state: wet and water patches
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1535,7 +1567,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/3/////"), //All runways state: rime and frost covered
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::RIME_AND_FROST_COVERED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1545,7 +1577,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/4/////"), //All runways state: dry snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::DRY_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1555,7 +1587,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/5/////"), //All runways state: wet snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::WET_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1565,7 +1597,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/6/////"), //All runways state: slush
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::SLUSH, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1575,7 +1607,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/7/////"), //All runways state: ice
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::ICE, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1585,7 +1617,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/8/////"), //All runways state: compacted or rolled snow
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::COMPACTED_OR_ROLLED_SNOW, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1595,7 +1627,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/9/////"), //All runways state: frozen ruts or ridges
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::FROZEN_RUTS_OR_RIDGES, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1606,7 +1638,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("R88//1////"), //All runways state: contamination less than 10 
 		//percent of runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::LESS_THAN_10_PERCENT,
@@ -1617,7 +1649,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("R88//2////"), //All runways state: contamination from 11 to 25 
 		//percent of runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::FROM_11_TO_25_PERCENT,
@@ -1628,7 +1660,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("R88//5////"), //All runways state: contamination from 26 to 50 
 		//percent or runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::FROM_26_TO_50_PERCENT,
@@ -1639,7 +1671,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("R88//9////"), //All runways state: contamination of more than 51 
 		//percent or runway
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT,
@@ -1649,7 +1681,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///90//"), //All runways state: deposits depth 90 mm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1659,7 +1691,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///92//"), //All runways state: deposits depth 10 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1669,7 +1701,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///93//"), //All runways state: deposits depth 15 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1679,7 +1711,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///94//"), //All runways state: deposits depth 20 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1689,7 +1721,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///95//"), //All runways state: deposits depth 25 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1699,7 +1731,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///96//"), //All runways state: deposits depth 30 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1709,7 +1741,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///97//"), //All runways state: deposits depth 10 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1719,7 +1751,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///98//"), //All runways state: deposits depth 40 cm
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1729,7 +1761,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88///99//"), //All runways state: runway not operational
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1739,7 +1771,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////91"), //All runways state: braking action poor
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1750,7 +1782,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////92"), //All runways state: braking action medium poor
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1761,7 +1793,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////93"), //All runways state: braking action medium
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1772,7 +1804,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////94"), //All runways state: braking action medium good
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1783,7 +1815,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////95"), //All runways state: braking action good
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
@@ -1794,7 +1826,7 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	{
 		std::string("R88/////99"), //All runways state: surface friction unreliable
 		{metaf::ReportPart::METAR},
-		metaf::RunwayStateGroup(metaf::Runway(88),
+		metaf::RunwayStateGroup(metaf::Runway::makeAllRunways(),
 			metaf::RunwayStateGroup::Status::NONE, 
 			metaf::RunwayStateGroup::Deposits::NOT_REPORTED, 
 			metaf::RunwayStateGroup::Extent::NOT_REPORTED,
