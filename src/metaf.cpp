@@ -941,6 +941,7 @@ bool WeatherGroup::isPrecipitation() const {
 	Weather previousWeather = Weather::UNKNOWN;
 	for (auto i=0; i<weatherSize; i++) {
 		switch (weather[i]) {
+			case Weather::SHOWERS:
 			case Weather::DRIZZLE:
 			case Weather::RAIN:
 			case Weather::SNOW_GRAINS:
@@ -976,10 +977,12 @@ bool WeatherGroup::isObscuration() const {
 			case Weather::SAND:
 			case Weather::HAZE:
 			case Weather::SPRAY:
+			case Weather::SANDSTORM:
+			case Weather::DUSTSTORM:
 			return(true);
 
 			case metaf::WeatherGroup::Weather::SNOW:
-			if (previousWeather == Weather::LOW_DRIFTING &&
+			if (previousWeather == Weather::LOW_DRIFTING ||
 				previousWeather == Weather::BLOWING) return(true);
 			break;
 
@@ -994,6 +997,7 @@ bool WeatherGroup::isObscuration() const {
 bool WeatherGroup::isOtherPhenomena() const {
 	for (auto i=0; i<weatherSize; i++) {
 		switch (weather[i]) {
+			case Weather::THUNDERSTORM:
 			case Weather::DUST_WHIRLS:
 			case Weather::SQUALLS:
 			case Weather::FUNNEL_CLOUD:

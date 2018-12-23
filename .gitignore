@@ -42,8 +42,11 @@ $RECYCLE.BIN/
 # Project-specific
 # ----------------
 
-#Reference documentation (+doxygen docs)
-docs/
+#Coveralls intermediate directory
+cov-int/
+
+#Doxygen docs
+docs/html/
 
 #Small helper projects/utilities/drafts
 misc/

@@ -1874,7 +1874,7 @@ TEST(WeatherGroup, makeNotReported) {
 }
 
 //Confirm that toVector() returns the correct data
-TEST(WeatherGroup, toVector1) {
+TEST(WeatherGroup, toVectorNonEmpty) {
 	static const auto prefix = metaf::WeatherGroup::Prefix::VICINITY;
 	const std::vector<metaf::WeatherGroup::Weather> weather = {
 		metaf::WeatherGroup::Weather::SHOWERS,
@@ -1886,9 +1886,279 @@ TEST(WeatherGroup, toVector1) {
 }
 
 //Confirm that if no weather is specified, toVector returns an empty vector
-TEST(WeatherGroup, toVector2) {
+TEST(WeatherGroup, toVectorEmpty) {
 	const metaf::WeatherGroup group;
 	EXPECT_FALSE(group.weatherToVector().size());
+}
+
+class WeatherGroupIsAttribute : public ::testing::Test {
+protected:
+	//Simple precipitation groups
+	const metaf::WeatherGroup precDrizzle =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::DRIZZLE);
+	const metaf::WeatherGroup precRain =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::RAIN);
+	const metaf::WeatherGroup precSnow =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::SNOW);
+	const metaf::WeatherGroup precSnowGrains =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	const metaf::WeatherGroup precIceCrystals =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::ICE_CRYSTALS);
+	const metaf::WeatherGroup precIcePellets =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::ICE_PELLETS);
+	const metaf::WeatherGroup precHail =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::HAIL);
+	const metaf::WeatherGroup precSmallHail =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::SMALL_HAIL);
+	const metaf::WeatherGroup precUndetermined =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+					metaf::WeatherGroup::Weather::UNDETERMINED);
+	//Precipitation groups with prefix or descriptor
+	const metaf::WeatherGroup precShowersInVicinity =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
+					metaf::WeatherGroup::Weather::SHOWERS);
+	const metaf::WeatherGroup precHeavySnowShowers =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY,
+					metaf::WeatherGroup::Weather::SHOWERS,
+					metaf::WeatherGroup::Weather::SNOW);
+	//Mixed precipitation
+	const metaf::WeatherGroup precRainAndSnowMix =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE,
+					metaf::WeatherGroup::Weather::RAIN,
+					metaf::WeatherGroup::Weather::SNOW);
+	const metaf::WeatherGroup precThunderstormShowersRainSmallHail =
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE,
+					std::vector<metaf::WeatherGroup::Weather> {
+						metaf::WeatherGroup::Weather::THUNDERSTORM,
+						metaf::WeatherGroup::Weather::SHOWERS,
+						metaf::WeatherGroup::Weather::SMALL_HAIL,
+						metaf::WeatherGroup::Weather::RAIN
+					});
+	//Simple obscuration groups
+	const metaf::WeatherGroup obscMist = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::MIST);
+	const metaf::WeatherGroup obscFog = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::FOG);
+	const metaf::WeatherGroup obscSmoke = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::SMOKE);
+	const metaf::WeatherGroup obscVolcanicAsh = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::VOLCANIC_ASH);
+	const metaf::WeatherGroup obscDust = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::DUST);
+	const metaf::WeatherGroup obscSand = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::SAND);
+	const metaf::WeatherGroup obscHaze = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::HAZE);
+	//Obscuration groups with descriptors and prefix
+	const metaf::WeatherGroup obscBlowingSpray = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::BLOWING,
+			metaf::WeatherGroup::Weather::SPRAY);
+	const metaf::WeatherGroup obscFreezingFog = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::FREEZING,
+			metaf::WeatherGroup::Weather::FOG);
+	const metaf::WeatherGroup obscFogInVicinity = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
+			metaf::WeatherGroup::Weather::FOG);
+	const metaf::WeatherGroup obscBlowingDust = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::BLOWING,
+			metaf::WeatherGroup::Weather::DUST);
+	const metaf::WeatherGroup obscDriftingDustInVicinity = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
+			metaf::WeatherGroup::Weather::LOW_DRIFTING,
+			metaf::WeatherGroup::Weather::DUST);
+	//Blowing snow and low drifting snow are obscuration rather than precipitation
+	const metaf::WeatherGroup obscDriftingSnow = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::LOW_DRIFTING,
+			metaf::WeatherGroup::Weather::SNOW);
+	const metaf::WeatherGroup obscBlowingSnow = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::BLOWING,
+			metaf::WeatherGroup::Weather::SNOW);
+	//Simple other weather groups
+	const metaf::WeatherGroup otherDustWhirls = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::DUST_WHIRLS);
+	const metaf::WeatherGroup otherSqualls = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::SQUALLS);
+	const metaf::WeatherGroup otherFunnelCloud = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::FUNNEL_CLOUD);
+	//Other weather groups with prefix
+	const metaf::WeatherGroup otherDustWhirlsInVicinity = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
+			metaf::WeatherGroup::Weather::DUST_WHIRLS);
+	const metaf::WeatherGroup otherTornado = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY, 
+			metaf::WeatherGroup::Weather::FUNNEL_CLOUD);
+	//Thunderstorm without associated precipitation is other weather
+	const metaf::WeatherGroup otherThunderstorm = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::THUNDERSTORM);
+	const metaf::WeatherGroup otherThunderstormInVicinity = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY,
+			metaf::WeatherGroup::Weather::THUNDERSTORM);
+	//Sand storm and dust storm are both obscuration and other weather
+	const metaf::WeatherGroup obscOtherSandStortInVicinity = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::VICINITY, 
+			metaf::WeatherGroup::Weather::SANDSTORM);
+	const metaf::WeatherGroup obscOtherHeavyDustStort = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::HEAVY, 
+			metaf::WeatherGroup::Weather::DUSTSTORM);
+	const metaf::WeatherGroup obscOtherSandStorm = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::SANDSTORM);
+	const metaf::WeatherGroup obscOtherDustStorm = 
+		metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
+			metaf::WeatherGroup::Weather::DUSTSTORM);
+};
+
+TEST_F(WeatherGroupIsAttribute, isPrecipitation){
+	EXPECT_TRUE(precDrizzle.isPrecipitation());
+	EXPECT_TRUE(precRain.isPrecipitation());
+	EXPECT_TRUE(precSnow.isPrecipitation());
+	EXPECT_TRUE(precSnowGrains.isPrecipitation());
+	EXPECT_TRUE(precIceCrystals.isPrecipitation());
+	EXPECT_TRUE(precIcePellets.isPrecipitation());
+	EXPECT_TRUE(precHail.isPrecipitation());
+	EXPECT_TRUE(precIcePellets.isPrecipitation());
+	EXPECT_TRUE(precHail.isPrecipitation());
+	EXPECT_TRUE(precSmallHail.isPrecipitation());
+	EXPECT_TRUE(precUndetermined.isPrecipitation());
+	EXPECT_TRUE(precShowersInVicinity.isPrecipitation());
+	EXPECT_TRUE(precHeavySnowShowers.isPrecipitation());
+	EXPECT_TRUE(precRainAndSnowMix.isPrecipitation());
+	EXPECT_TRUE(precThunderstormShowersRainSmallHail.isPrecipitation());
+	EXPECT_FALSE(obscMist.isPrecipitation());
+	EXPECT_FALSE(obscFog.isPrecipitation());
+	EXPECT_FALSE(obscSmoke.isPrecipitation());
+	EXPECT_FALSE(obscVolcanicAsh.isPrecipitation());
+	EXPECT_FALSE(obscDust.isPrecipitation());
+	EXPECT_FALSE(obscSand.isPrecipitation());
+	EXPECT_FALSE(obscHaze.isPrecipitation());
+	EXPECT_FALSE(obscBlowingSpray.isPrecipitation());
+	EXPECT_FALSE(obscFreezingFog.isPrecipitation());
+	EXPECT_FALSE(obscFogInVicinity.isPrecipitation());
+	EXPECT_FALSE(obscBlowingDust.isPrecipitation());
+	EXPECT_FALSE(obscDriftingDustInVicinity.isPrecipitation());
+	EXPECT_FALSE(obscDriftingSnow.isPrecipitation());
+	EXPECT_FALSE(obscBlowingSnow.isPrecipitation());
+	EXPECT_FALSE(otherDustWhirls.isPrecipitation());
+	EXPECT_FALSE(otherSqualls.isPrecipitation());
+	EXPECT_FALSE(otherFunnelCloud.isPrecipitation());
+	EXPECT_FALSE(otherDustWhirlsInVicinity.isPrecipitation());
+	EXPECT_FALSE(otherTornado.isPrecipitation());
+	EXPECT_FALSE(otherThunderstorm.isPrecipitation());
+	EXPECT_FALSE(otherThunderstormInVicinity.isPrecipitation());
+	EXPECT_FALSE(obscOtherSandStortInVicinity.isPrecipitation());
+	EXPECT_FALSE(obscOtherHeavyDustStort.isPrecipitation());
+	EXPECT_FALSE(obscOtherSandStorm.isPrecipitation());
+	EXPECT_FALSE(obscOtherDustStorm.isPrecipitation());
+}
+
+TEST_F(WeatherGroupIsAttribute, isObscuration){
+	EXPECT_FALSE(precDrizzle.isObscuration());
+	EXPECT_FALSE(precRain.isObscuration());
+	EXPECT_FALSE(precSnow.isObscuration());
+	EXPECT_FALSE(precSnowGrains.isObscuration());
+	EXPECT_FALSE(precIceCrystals.isObscuration());
+	EXPECT_FALSE(precIcePellets.isObscuration());
+	EXPECT_FALSE(precHail.isObscuration());
+	EXPECT_FALSE(precIcePellets.isObscuration());
+	EXPECT_FALSE(precHail.isObscuration());
+	EXPECT_FALSE(precSmallHail.isObscuration());
+	EXPECT_FALSE(precUndetermined.isObscuration());
+	EXPECT_FALSE(precShowersInVicinity.isObscuration());
+	EXPECT_FALSE(precHeavySnowShowers.isObscuration());
+	EXPECT_FALSE(precRainAndSnowMix.isObscuration());
+	EXPECT_FALSE(precThunderstormShowersRainSmallHail.isObscuration());
+	EXPECT_TRUE(obscMist.isObscuration());
+	EXPECT_TRUE(obscFog.isObscuration());
+	EXPECT_TRUE(obscSmoke.isObscuration());
+	EXPECT_TRUE(obscVolcanicAsh.isObscuration());
+	EXPECT_TRUE(obscDust.isObscuration());
+	EXPECT_TRUE(obscSand.isObscuration());
+	EXPECT_TRUE(obscHaze.isObscuration());
+	EXPECT_TRUE(obscBlowingSpray.isObscuration());
+	EXPECT_TRUE(obscFreezingFog.isObscuration());
+	EXPECT_TRUE(obscFogInVicinity.isObscuration());
+	EXPECT_TRUE(obscBlowingDust.isObscuration());
+	EXPECT_TRUE(obscDriftingDustInVicinity.isObscuration());
+	EXPECT_TRUE(obscDriftingSnow.isObscuration());
+	EXPECT_TRUE(obscBlowingSnow.isObscuration());
+	EXPECT_FALSE(otherDustWhirls.isObscuration());
+	EXPECT_FALSE(otherSqualls.isObscuration());
+	EXPECT_FALSE(otherFunnelCloud.isObscuration());
+	EXPECT_FALSE(otherDustWhirlsInVicinity.isObscuration());
+	EXPECT_FALSE(otherTornado.isObscuration());
+	EXPECT_FALSE(otherThunderstorm.isObscuration());
+	EXPECT_FALSE(otherThunderstormInVicinity.isObscuration());
+	EXPECT_TRUE(obscOtherSandStortInVicinity.isObscuration());
+	EXPECT_TRUE(obscOtherHeavyDustStort.isObscuration());
+	EXPECT_TRUE(obscOtherSandStorm.isObscuration());
+	EXPECT_TRUE(obscOtherDustStorm.isObscuration());
+}
+
+TEST_F(WeatherGroupIsAttribute, isOtherPhenomena){
+	EXPECT_FALSE(precDrizzle.isOtherPhenomena());
+	EXPECT_FALSE(precRain.isOtherPhenomena());
+	EXPECT_FALSE(precSnow.isOtherPhenomena());
+	EXPECT_FALSE(precSnowGrains.isOtherPhenomena());
+	EXPECT_FALSE(precIceCrystals.isOtherPhenomena());
+	EXPECT_FALSE(precIcePellets.isOtherPhenomena());
+	EXPECT_FALSE(precHail.isOtherPhenomena());
+	EXPECT_FALSE(precIcePellets.isOtherPhenomena());
+	EXPECT_FALSE(precHail.isOtherPhenomena());
+	EXPECT_FALSE(precSmallHail.isOtherPhenomena());
+	EXPECT_FALSE(precUndetermined.isOtherPhenomena());
+	EXPECT_FALSE(precShowersInVicinity.isOtherPhenomena());
+	EXPECT_FALSE(precHeavySnowShowers.isOtherPhenomena());
+	EXPECT_FALSE(precRainAndSnowMix.isOtherPhenomena());
+	EXPECT_TRUE(precThunderstormShowersRainSmallHail.isOtherPhenomena());
+	EXPECT_FALSE(obscMist.isOtherPhenomena());
+	EXPECT_FALSE(obscFog.isOtherPhenomena());
+	EXPECT_FALSE(obscSmoke.isOtherPhenomena());
+	EXPECT_FALSE(obscVolcanicAsh.isOtherPhenomena());
+	EXPECT_FALSE(obscDust.isOtherPhenomena());
+	EXPECT_FALSE(obscSand.isOtherPhenomena());
+	EXPECT_FALSE(obscHaze.isOtherPhenomena());
+	EXPECT_FALSE(obscBlowingSpray.isOtherPhenomena());
+	EXPECT_FALSE(obscFreezingFog.isOtherPhenomena());
+	EXPECT_FALSE(obscFogInVicinity.isOtherPhenomena());
+	EXPECT_FALSE(obscBlowingDust.isOtherPhenomena());
+	EXPECT_FALSE(obscDriftingDustInVicinity.isOtherPhenomena());
+	EXPECT_FALSE(obscDriftingSnow.isOtherPhenomena());
+	EXPECT_FALSE(obscBlowingSnow.isOtherPhenomena());
+	EXPECT_TRUE(otherDustWhirls.isOtherPhenomena());
+	EXPECT_TRUE(otherSqualls.isOtherPhenomena());
+	EXPECT_TRUE(otherFunnelCloud.isOtherPhenomena());
+	EXPECT_TRUE(otherDustWhirlsInVicinity.isOtherPhenomena());
+	EXPECT_TRUE(otherTornado.isOtherPhenomena());
+	EXPECT_TRUE(otherThunderstorm.isOtherPhenomena());
+	EXPECT_TRUE(otherThunderstormInVicinity.isOtherPhenomena());
+	EXPECT_TRUE(obscOtherSandStortInVicinity.isOtherPhenomena());
+	EXPECT_TRUE(obscOtherHeavyDustStort.isOtherPhenomena());
+	EXPECT_TRUE(obscOtherSandStorm.isOtherPhenomena());
+	EXPECT_TRUE(obscOtherDustStorm.isOtherPhenomena());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
