@@ -1517,3 +1517,8 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
 	std::string().swap(result);
 }
+
+int main(int argc, char ** argv) {
+	//Using EM_ASM_ because EM_ASM(explain()); gives a warning
+	EM_ASM_(explain(), 0); 
+}

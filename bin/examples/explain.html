@@ -48,10 +48,17 @@
         }
     	};
 
+      function setSampleInput(){
+        var sampleMetarStr = 'TAF UKLL 241107Z 2412/2512 35007G13MPS 4000 BR OVC005 TXM00/2412Z TNM05/2504Z TEMPO 2412/2418 33009G14MPS 1100 -SHSN BKN003 BKN020CB TEMPO 2418/2506 32009G14MPS 0400 +SHSN BKN002 BKN015CB TEMPO 2506/2512 29008G14MPS 2100 -SHSN BKN006 BKN025CB=';
+        if (document.getElementById("input").value.length == 0) {
+          document.getElementById("input").value = sampleMetarStr;
+        }
+      }
+
     </script>
     <script async type="text/javascript" src="explain.js"></script>
   </head>
-  <body>
+  <body onload="setSampleInput()">
       <h1>METAR &amp; TAF reports explained</h1>
   	  Enter METAR or TAF here:<br>
       <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>

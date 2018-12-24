@@ -7,6 +7,7 @@
     body { background-color:lightblue; color:black; text-align:center;}
     </style>
     <script>
+
       function convertToJson() {
         var inputStr = document.getElementById("input").value;
         var result = Module.ccall('toJson',     // name of C function 
@@ -21,10 +22,18 @@
         }
         document.getElementById("result").value = result;
       };
+
+      function setSampleInput(){
+        var sampleMetarStr = 'UKLL 241430Z 31004MPS 3100 -SHSN BKN007 BKN016CB M01/M02 Q1011 R31/290055 NOSIG=';
+        if (document.getElementById("input").value.length == 0) {
+          document.getElementById("input").value = sampleMetarStr;
+        }
+      }
+
     </script>
     <script async type="text/javascript" src="to_json.js"></script>
   </head>
-  <body>
+  <body onload="setSampleInput()">
     <h1>Convert METAR & TAF to JSON</h1>
   		Enter METAR or TAF here:<br>
       <textarea id="input" rows="8" cols="80" onInput="convertToJson()"></textarea><br>

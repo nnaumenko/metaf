@@ -1501,3 +1501,8 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE toJson(const char * input) {
 extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
 	std::string().swap(result);
 }
+
+int main(int argc, char ** argv) {
+	//Using EM_ASM_ because EM_ASM(convertToJson()); gives a warning
+	EM_ASM_(convertToJson(), 0); 
+}
