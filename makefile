@@ -31,6 +31,8 @@ tests: CXXFLAGS += $(TEST_CXXFLAGS)
 tests: EMCCFLAGS += $(TEST_EMCCFLAGS)
 tests: $(OBJECTS) $(TESTOBJECTS) $(TESTBUILDDIR)/gtest_all.o
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
+	rm -f bin/test/test.xml
+	#sh make_test_xml.sh to produce an xml report
 
 .PHONY: examples
 examples: $(OBJECTS)

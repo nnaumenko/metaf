@@ -22,6 +22,12 @@ The compiled version of tests can be run by opening the file `bin/test/main.html
 
 [Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/test/main.html).
 
+## XML Report
+
+XML report may be produced by running script `make_test_xml.sh` to produce an XML report from Google Test.
+
+The output is saved as `bin/test/test.xml`. Whenever tests are built, this .xml file is deleted and must be re-produced by running `sh make_test_xml.sh`.
+
 ## Description
 
 ### Test framework
