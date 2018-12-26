@@ -1,4 +1,11 @@
 pages:
+  stage: test
+  script:
+  - 
+  artifacts:
+    reports:
+      junit: bin/test/test.xml
+      
   stage: deploy
   script:
     - mkdir public
