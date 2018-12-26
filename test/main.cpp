@@ -13,19 +13,31 @@
 
 void printFile(const std::string & path) {
  	std::ifstream f(path);
+
     if (!f.is_open()) {
     	std::cout << "Cannot open MEMFS file " << path << std::endl;
     	return;
     }
     std::cout << "MEMFS file " << path << " contents to follow" << std::endl;
-    std::cout << "<<<<BEGIN>>>>" << std::endl;
+    std::cout << "<<<<" << path << ":BEGIN>>>>" << std::endl;
     std::cout << f.rdbuf();
-    std::cout << "<<<<END>>>>" << std::endl;
+    std::cout << "<<<<" << path << ":END>>>>" << std::endl;
 }
 
 void printFiles(const std::string & path) {
+    std::vector<std::string> subdirs;
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path))
-		if (!std::experimental::filesystem::is_directory(entry)) printFile(entry.path());
+        try {
+            if (std::experimental::filesystem::is_directory(entry)) {
+                subdirs.push_back(entry.path());
+            }
+            if (std::experimental::filesystem::is_regular_file(entry)) {
+                printFile(entry.path());
+            }
+        } catch (...) {}
+    for (auto p : subdirs) {
+        printFiles(p);
+    }
 }
 
 //Since webassembly file access is sandboxed to MEMFS filesystem, it is not 
@@ -33,8 +45,8 @@ void printFiles(const std::string & path) {
 //by gtest are saved into MEMFS partition, which is volatile and only exists 
 //until page is open in browser.
 //
-//To get access to files created by gtest, all files found in root directory 
-//are printed to cout after gtest run is complete.
+//To get access to files created by gtest, all files found on MEMFS partition  
+//are printed to std::cout after gtest run is complete.
 //
 //This makes it possible to run the tests with emrun (included in Emscripten 
 //SDK) and use part of the output where an MEMFS file is printed.
@@ -42,7 +54,10 @@ void printFiles(const std::string & path) {
 int main(int argc, char ** argv) {
 	::testing::InitGoogleTest(&argc, argv);
     const auto testResult = RUN_ALL_TESTS();
-//    printFiles(getenv("HOME"));
-    printFiles("/");
+    #ifdef __EMSCRIPTEN__
+    {
+        printFiles("/");
+    }
+    #endif
     return(testResult);
 }

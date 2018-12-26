@@ -1,11 +1,12 @@
-pages:
+tests:
   stage: test
   script:
-  - 
+  - echo At the moment XML output file is pre-generated before commit
   artifacts:
     reports:
       junit: bin/test/test.xml
-      
+
+pages:
   stage: deploy
   script:
     - mkdir public

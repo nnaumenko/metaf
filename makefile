@@ -2,7 +2,7 @@ CC := emcc
 CXXFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
-TEST_CXXFLAGS := -I googletest/googletest/include -I googletest/googletest/
+TEST_CXXFLAGS := -I googletest/googletest/include -I googletest/googletest/ -fprofile-arcs -ftest-coverage
 TEST_EMCCFLAGS := -s DISABLE_EXCEPTION_CATCHING=0 --emrun
 
 INCLUDEDIR := src
