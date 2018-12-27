@@ -30,12 +30,13 @@ all: tests examples performance clean
 tests: CXXFLAGS += $(TEST_CXXFLAGS)
 tests: EMCCFLAGS += $(TEST_EMCCFLAGS)
 tests: $(OBJECTS) $(TESTOBJECTS) $(TESTBUILDDIR)/gtest_all.o
+	rm -f bin/test/*
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) $^ -I $(INCLUDEDIR) -o $(TESTTARGET)
-	rm -f bin/test/test.xml
 	#sh make_test_xml.sh to produce an xml report
 
 .PHONY: examples
 examples: $(OBJECTS)
+	rm -f bin/examples/*
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) $^ examples/to_json.cpp \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
 	--shell-file examples/shellfiles/to_json_shell.html \
@@ -47,6 +48,7 @@ examples: $(OBJECTS)
 
 .PHONY: performance
 performance: $(OBJECTS) $(TESTBUILDDIR)/testdata_real.o
+	rm -f bin/performance/*
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -I $(TESTSRCDIR) $^ \
 	performance/main.cpp -o bin/performance/check.html
 

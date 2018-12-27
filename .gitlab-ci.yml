@@ -1,7 +1,22 @@
+build:
+  stage: build
+  image: trzeci/emscripten
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+  - emmake make all
+  - mkdir ci-build
+  - cp -r bin/* ci-build
+  artifacts:
+    paths:
+      - bin/
+
 tests:
   stage: test
   script:
-  - echo At the moment XML output file is pre-generated before commit
+  - echo TODO
+  dependencies:
+    - build
   artifacts:
     reports:
       junit: bin/test/test.xml
@@ -10,7 +25,9 @@ pages:
   stage: deploy
   script:
     - mkdir public
-    - cp -r bin/* public
+    - cp -r ci-build/* public
+  dependencies:
+    - build
   artifacts:
     paths:
       - public
