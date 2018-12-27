@@ -7,9 +7,16 @@
 
 #include "gtest/gtest.h"
 
-#include <experimental/filesystem>
 #include <iostream>
 #include <fstream>
+
+#ifdef __EMSCRIPTEN__
+    #include <experimental/filesystem>
+    namespace fs = std::experimental::filesystem;
+#else
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#endif
 
 void printFile(const std::string & path) {
  	std::ifstream f(path);
@@ -26,12 +33,12 @@ void printFile(const std::string & path) {
 
 void printFiles(const std::string & path) {
     std::vector<std::string> subdirs;
-	for (const auto & entry : std::experimental::filesystem::directory_iterator(path))
+	for (const auto & entry : fs::directory_iterator(path))
         try {
-            if (std::experimental::filesystem::is_directory(entry)) {
+            if (fs::is_directory(entry)) {
                 subdirs.push_back(entry.path());
             }
-            if (std::experimental::filesystem::is_regular_file(entry)) {
+            if (fs::is_regular_file(entry)) {
                 printFile(entry.path());
             }
         } catch (...) {}

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="240" failures="0" disabled="0" errors="0" timestamp="2018-12-27T23:07:41" time="5.424" name="AllTests">
+<testsuites tests="240" failures="0" disabled="0" errors="0" timestamp="2018-12-28T01:16:40" time="5.418" name="AllTests">
   <testsuite name="Group" tests="1" failures="0" disabled="0" errors="0" time="0.003">
     <testcase name="is_standard_layout" status="run" time="0" classname="Group" />
   </testsuite>
-  <testsuite name="Runway" tests="12" failures="0" disabled="0" errors="0" time="0.045">
+  <testsuite name="Runway" tests="12" failures="0" disabled="0" errors="0" time="0.053">
     <testcase name="defaultEqual" status="run" time="0" classname="Runway" />
     <testcase name="sameDataEqual" status="run" time="0" classname="Runway" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="Runway" />
@@ -17,7 +17,7 @@
     <testcase name="isMessageRepetitionTrue" status="run" time="0" classname="Runway" />
     <testcase name="isMessageRepetitionFalse" status="run" time="0" classname="Runway" />
   </testsuite>
-  <testsuite name="Temperature" tests="10" failures="0" disabled="0" errors="0" time="0.051">
+  <testsuite name="Temperature" tests="10" failures="0" disabled="0" errors="0" time="0.047">
     <testcase name="defaultEqual" status="run" time="0" classname="Temperature" />
     <testcase name="sameDataEqual" status="run" time="0" classname="Temperature" />
     <testcase name="comparisonTemperatureNotReported" status="run" time="0" classname="Temperature" />
@@ -29,52 +29,52 @@
     <testcase name="constructorAbsMinusNonZero" status="run" time="0" classname="Temperature" />
     <testcase name="constructorAbsMinusZero" status="run" time="0" classname="Temperature" />
   </testsuite>
-  <testsuite name="PlainTextGroup" tests="4" failures="0" disabled="0" errors="0" time="0.024">
+  <testsuite name="PlainTextGroup" tests="4" failures="0" disabled="0" errors="0" time="0.026">
     <testcase name="defaultEqual" status="run" time="0" classname="PlainTextGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="PlainTextGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="PlainTextGroup" />
     <testcase name="constructor" status="run" time="0" classname="PlainTextGroup" />
   </testsuite>
-  <testsuite name="FixedGroup" tests="4" failures="0" disabled="0" errors="0" time="0.022">
+  <testsuite name="FixedGroup" tests="4" failures="0" disabled="0" errors="0" time="0.025">
     <testcase name="defaultEqual" status="run" time="0" classname="FixedGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="FixedGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="FixedGroup" />
     <testcase name="constructor" status="run" time="0" classname="FixedGroup" />
   </testsuite>
-  <testsuite name="LocationGroup" tests="4" failures="0" disabled="0" errors="0" time="0.025">
-    <testcase name="defaultEqual" status="run" time="0.001" classname="LocationGroup" />
+  <testsuite name="LocationGroup" tests="4" failures="0" disabled="0" errors="0" time="0.028">
+    <testcase name="defaultEqual" status="run" time="0" classname="LocationGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="LocationGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="LocationGroup" />
     <testcase name="constructor" status="run" time="0" classname="LocationGroup" />
   </testsuite>
-  <testsuite name="ReportTimeGroup" tests="4" failures="0" disabled="0" errors="0" time="0.024">
+  <testsuite name="ReportTimeGroup" tests="4" failures="0" disabled="0" errors="0" time="0.028">
     <testcase name="defaultEqual" status="run" time="0" classname="ReportTimeGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="differentDataNotEqual" status="run" time="0.001" classname="ReportTimeGroup" />
+    <testcase name="differentDataNotEqual" status="run" time="0" classname="ReportTimeGroup" />
     <testcase name="constructor" status="run" time="0" classname="ReportTimeGroup" />
   </testsuite>
-  <testsuite name="TimeSpanGroup" tests="4" failures="0" disabled="0" errors="0" time="0.031">
+  <testsuite name="TimeSpanGroup" tests="4" failures="0" disabled="0" errors="0" time="0.029">
     <testcase name="defaultDataEqual" status="run" time="0" classname="TimeSpanGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="TimeSpanGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="TimeSpanGroup" />
     <testcase name="constructor" status="run" time="0" classname="TimeSpanGroup" />
   </testsuite>
-  <testsuite name="TrendTimeGroup" tests="7" failures="0" disabled="0" errors="0" time="0.064">
+  <testsuite name="TrendTimeGroup" tests="7" failures="0" disabled="0" errors="0" time="0.052">
     <testcase name="defaultDataEqual" status="run" time="0" classname="TrendTimeGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="TrendTimeGroup" />
     <testcase name="comparisonDayReported" status="run" time="0" classname="TrendTimeGroup" />
     <testcase name="comparisonDayNotReported" status="run" time="0" classname="TrendTimeGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="TrendTimeGroup" />
-    <testcase name="constructorLongGroup" status="run" time="0" classname="TrendTimeGroup" />
+    <testcase name="constructorLongGroup" status="run" time="0.001" classname="TrendTimeGroup" />
     <testcase name="constructorShortGroup" status="run" time="0" classname="TrendTimeGroup" />
   </testsuite>
-  <testsuite name="ProbabilityGroup" tests="4" failures="0" disabled="0" errors="0" time="0.04">
+  <testsuite name="ProbabilityGroup" tests="4" failures="0" disabled="0" errors="0" time="0.033">
     <testcase name="defaultDataEqual" status="run" time="0" classname="ProbabilityGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="ProbabilityGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="ProbabilityGroup" />
     <testcase name="constructor" status="run" time="0" classname="ProbabilityGroup" />
   </testsuite>
-  <testsuite name="WindGroup" tests="13" failures="0" disabled="0" errors="0" time="0.122">
+  <testsuite name="WindGroup" tests="13" failures="0" disabled="0" errors="0" time="0.131">
     <testcase name="defaultDataEqual" status="run" time="0" classname="WindGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="WindGroup" />
     <testcase name="comparisonVariableWind" status="run" time="0" classname="WindGroup" />
@@ -89,21 +89,21 @@
     <testcase name="isCalmTrue" status="run" time="0" classname="WindGroup" />
     <testcase name="isCalmFalse" status="run" time="0" classname="WindGroup" />
   </testsuite>
-  <testsuite name="VarWindGroup" tests="4" failures="0" disabled="0" errors="0" time="0.037">
+  <testsuite name="VarWindGroup" tests="4" failures="0" disabled="0" errors="0" time="0.07">
     <testcase name="defaultDataEqual" status="run" time="0" classname="VarWindGroup" />
-    <testcase name="sameDataEqual" status="run" time="0.001" classname="VarWindGroup" />
+    <testcase name="sameDataEqual" status="run" time="0" classname="VarWindGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="VarWindGroup" />
     <testcase name="constructor" status="run" time="0" classname="VarWindGroup" />
   </testsuite>
-  <testsuite name="WindShearGroup" tests="4" failures="0" disabled="0" errors="0" time="0.049">
+  <testsuite name="WindShearGroup" tests="4" failures="0" disabled="0" errors="0" time="0.051">
     <testcase name="defaultDataEqual" status="run" time="0" classname="WindShearGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="WindShearGroup" />
-    <testcase name="differentDataNotEqual" status="run" time="0" classname="WindShearGroup" />
+    <testcase name="differentDataNotEqual" status="run" time="0.001" classname="WindShearGroup" />
     <testcase name="constructor" status="run" time="0" classname="WindShearGroup" />
   </testsuite>
-  <testsuite name="VisibilityGroup" tests="21" failures="0" disabled="0" errors="0" time="0.332">
+  <testsuite name="VisibilityGroup" tests="21" failures="0" disabled="0" errors="0" time="0.275">
     <testcase name="defaultDataEqual" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="sameDataEqual" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="sameDataEqual" status="run" time="0.001" classname="VisibilityGroup" />
     <testcase name="comparisonVisibilityNotReported1" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="comparisonVisibilityNotReported2" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="comparisonVisibilityIncomplete1" status="run" time="0" classname="VisibilityGroup" />
@@ -115,7 +115,7 @@
     <testcase name="makeVisibilityMiles2" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="makeVisibilityMilesIncomplete" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="mergeVisibilityGroups1" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="mergeVisibilityGroups2" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="mergeVisibilityGroups2" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="mergeVisibilityGroups3" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="mergeVisibilityGroups4" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="isValidVisibilityUnknownUnits" status="run" time="0" classname="VisibilityGroup" />
@@ -124,7 +124,7 @@
     <testcase name="isValidVisibilityMilesValid" status="run" time="0" classname="VisibilityGroup" />
     <testcase name="isValidVisibilityMilesInvalid" status="run" time="0" classname="VisibilityGroup" />
   </testsuite>
-  <testsuite name="CloudGroup" tests="6" failures="0" disabled="0" errors="0" time="0.12">
+  <testsuite name="CloudGroup" tests="6" failures="0" disabled="0" errors="0" time="0.11">
     <testcase name="defaultDataEqual" status="run" time="0" classname="CloudGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="CloudGroup" />
     <testcase name="comparisonHeightNotReported" status="run" time="0" classname="CloudGroup" />
@@ -132,24 +132,24 @@
     <testcase name="constructorHeightReported" status="run" time="0" classname="CloudGroup" />
     <testcase name="constructorHeightNotReported" status="run" time="0" classname="CloudGroup" />
   </testsuite>
-  <testsuite name="VerticalVisibilityGroup" tests="5" failures="0" disabled="0" errors="0" time="0.071">
+  <testsuite name="VerticalVisibilityGroup" tests="5" failures="0" disabled="0" errors="0" time="0.084">
     <testcase name="defaultDataEqual" status="run" time="0" classname="VerticalVisibilityGroup" />
-    <testcase name="sameDataEqual" status="run" time="0.001" classname="VerticalVisibilityGroup" />
+    <testcase name="sameDataEqual" status="run" time="0" classname="VerticalVisibilityGroup" />
     <testcase name="comparisonVisibilityNotReported" status="run" time="0" classname="VerticalVisibilityGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="VerticalVisibilityGroup" />
     <testcase name="constructor" status="run" time="0" classname="VerticalVisibilityGroup" />
   </testsuite>
-  <testsuite name="WeatherGroup" tests="8" failures="0" disabled="0" errors="0" time="0.138">
+  <testsuite name="WeatherGroup" tests="8" failures="0" disabled="0" errors="0" time="0.147">
     <testcase name="defaultDataEqual" status="run" time="0" classname="WeatherGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="WeatherGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="constructorVector" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="constructorVector" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="constructorFixedList" status="run" time="0" classname="WeatherGroup" />
     <testcase name="makeNotReported" status="run" time="0" classname="WeatherGroup" />
     <testcase name="toVectorNonEmpty" status="run" time="0" classname="WeatherGroup" />
     <testcase name="toVectorEmpty" status="run" time="0" classname="WeatherGroup" />
   </testsuite>
-  <testsuite name="WeatherGroupIsAttribute" tests="3" failures="0" disabled="0" errors="0" time="0.044">
+  <testsuite name="WeatherGroupIsAttribute" tests="3" failures="0" disabled="0" errors="0" time="0.048">
     <testcase name="isPrecipitation" status="run" time="0" classname="WeatherGroupIsAttribute" />
     <testcase name="isObscuration" status="run" time="0" classname="WeatherGroupIsAttribute" />
     <testcase name="isOtherPhenomena" status="run" time="0" classname="WeatherGroupIsAttribute" />
@@ -161,24 +161,24 @@
     <testcase name="constructorTempertureOnly" status="run" time="0" classname="TemperatureGroup" />
     <testcase name="constructorTemperatureDewpoint" status="run" time="0" classname="TemperatureGroup" />
   </testsuite>
-  <testsuite name="MinMaxTemperatureGroup" tests="5" failures="0" disabled="0" errors="0" time="0.081">
+  <testsuite name="MinMaxTemperatureGroup" tests="5" failures="0" disabled="0" errors="0" time="0.09">
     <testcase name="defaultDataEqual" status="run" time="0" classname="MinMaxTemperatureGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="MinMaxTemperatureGroup" />
-    <testcase name="differentDataNotEqual" status="run" time="0.001" classname="MinMaxTemperatureGroup" />
+    <testcase name="differentDataNotEqual" status="run" time="0" classname="MinMaxTemperatureGroup" />
     <testcase name="makeMin" status="run" time="0" classname="MinMaxTemperatureGroup" />
     <testcase name="makeMax" status="run" time="0" classname="MinMaxTemperatureGroup" />
   </testsuite>
-  <testsuite name="PressureGroup" tests="6" failures="0" disabled="0" errors="0" time="0.12">
+  <testsuite name="PressureGroup" tests="6" failures="0" disabled="0" errors="0" time="0.154">
     <testcase name="defaultDataEqual" status="run" time="0" classname="PressureGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="PressureGroup" />
     <testcase name="comparisonDayNotReported" status="run" time="0" classname="PressureGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="PressureGroup" />
-    <testcase name="constructorNotReported" status="run" time="0.001" classname="PressureGroup" />
+    <testcase name="constructorNotReported" status="run" time="0" classname="PressureGroup" />
     <testcase name="constructorReported" status="run" time="0" classname="PressureGroup" />
   </testsuite>
-  <testsuite name="RunwayVisualRangeGroup" tests="8" failures="0" disabled="0" errors="0" time="0.21">
+  <testsuite name="RunwayVisualRangeGroup" tests="8" failures="0" disabled="0" errors="0" time="0.14">
     <testcase name="defaultDataEqual" status="run" time="0" classname="RunwayVisualRangeGroup" />
-    <testcase name="sameDataEqual" status="run" time="0.001" classname="RunwayVisualRangeGroup" />
+    <testcase name="sameDataEqual" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="comparisonRvrNotReported" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="comparisonVariableRvr" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="RunwayVisualRangeGroup" />
@@ -186,27 +186,27 @@
     <testcase name="constructorSingleRvrValue" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="constructorMinMaxRvrValue" status="run" time="0" classname="RunwayVisualRangeGroup" />
   </testsuite>
-  <testsuite name="RunwayStateGroup" tests="9" failures="0" disabled="0" errors="0" time="0.182">
+  <testsuite name="RunwayStateGroup" tests="9" failures="0" disabled="0" errors="0" time="0.224">
     <testcase name="defaultDataEqual" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="comparisonClrdSurfaceFriction" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="comparisonClrdOther" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="comparisonSNOCLO" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="comparisonSNOCLO" status="run" time="0.001" classname="RunwayStateGroup" />
     <testcase name="constructor" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="makeSnoclo" status="run" time="0" classname="RunwayStateGroup" />
     <testcase name="makeClrd" status="run" time="0" classname="RunwayStateGroup" />
   </testsuite>
-  <testsuite name="RunwayStateGroup_DepositDepth" tests="7" failures="0" disabled="0" errors="0" time="0.159">
+  <testsuite name="RunwayStateGroup_DepositDepth" tests="7" failures="0" disabled="0" errors="0" time="0.143">
     <testcase name="defaultDataEqual" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
     <testcase name="sameDataEqual" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
-    <testcase name="comparisonDepthNotReported" status="run" time="0.001" classname="RunwayStateGroup_DepositDepth" />
+    <testcase name="comparisonDepthNotReported" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
-    <testcase name="constructor" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
+    <testcase name="constructor" status="run" time="0.001" classname="RunwayStateGroup_DepositDepth" />
     <testcase name="makeNotReported" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
     <testcase name="makeRunwayNotOperational" status="run" time="0" classname="RunwayStateGroup_DepositDepth" />
   </testsuite>
-  <testsuite name="RunwayStateGroupSurfaceFriction" tests="11" failures="0" disabled="0" errors="0" time="0.292">
+  <testsuite name="RunwayStateGroupSurfaceFriction" tests="11" failures="0" disabled="0" errors="0" time="0.3">
     <testcase name="defaultDataEqual" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
     <testcase name="comparisonSurfaceFrictionReported1" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
     <testcase name="comparisonSurfaceFrictionReported2" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
@@ -217,9 +217,9 @@
     <testcase name="constructorBrakingAction" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
     <testcase name="constructorSurfaceFriction" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
     <testcase name="makeNotReported" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
-    <testcase name="makeUnreliable" status="run" time="0.001" classname="RunwayStateGroupSurfaceFriction" />
+    <testcase name="makeUnreliable" status="run" time="0" classname="RunwayStateGroupSurfaceFriction" />
   </testsuite>
-  <testsuite name="RainfallGroup" tests="6" failures="0" disabled="0" errors="0" time="0.139">
+  <testsuite name="RainfallGroup" tests="6" failures="0" disabled="0" errors="0" time="0.154">
     <testcase name="defaultDataEqual" status="run" time="0" classname="RainfallGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="RainfallGroup" />
     <testcase name="comparison60minRainfallNotReported" status="run" time="0" classname="RainfallGroup" />
@@ -227,14 +227,14 @@
     <testcase name="constructorShortGroup" status="run" time="0" classname="RainfallGroup" />
     <testcase name="constructorLongGroup" status="run" time="0" classname="RainfallGroup" />
   </testsuite>
-  <testsuite name="SeaSurfaceGroup" tests="5" failures="0" disabled="0" errors="0" time="0.114">
+  <testsuite name="SeaSurfaceGroup" tests="5" failures="0" disabled="0" errors="0" time="0.16">
     <testcase name="defaultDataEqual" status="run" time="0" classname="SeaSurfaceGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="SeaSurfaceGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="SeaSurfaceGroup" />
     <testcase name="constructorTemeperatureStateofsurface" status="run" time="0" classname="SeaSurfaceGroup" />
     <testcase name="constructorStateofsurface" status="run" time="0" classname="SeaSurfaceGroup" />
   </testsuite>
-  <testsuite name="SeaWavesGroup" tests="7" failures="0" disabled="0" errors="0" time="0.187">
+  <testsuite name="SeaWavesGroup" tests="7" failures="0" disabled="0" errors="0" time="0.163">
     <testcase name="defaultDataEqual" status="run" time="0" classname="SeaWavesGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="SeaWavesGroup" />
     <testcase name="comparisonTemperatureWaveHeightNotReported" status="run" time="0" classname="SeaWavesGroup" />
@@ -243,13 +243,13 @@
     <testcase name="makeTemperature" status="run" time="0" classname="SeaWavesGroup" />
     <testcase name="makeWaveHeight" status="run" time="0" classname="SeaWavesGroup" />
   </testsuite>
-  <testsuite name="ColourCodeGroup" tests="4" failures="0" disabled="0" errors="0" time="0.102">
+  <testsuite name="ColourCodeGroup" tests="4" failures="0" disabled="0" errors="0" time="0.123">
     <testcase name="defaultDataEqual" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="sameDataEqual" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="differentDataNotEqual" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="constructor" status="run" time="0" classname="ColourCodeGroup" />
   </testsuite>
-  <testsuite name="getSyntaxGroup" tests="41" failures="0" disabled="0" errors="0" time="1.172">
+  <testsuite name="getSyntaxGroup" tests="41" failures="0" disabled="0" errors="0" time="1.106">
     <testcase name="METAR" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="SPECI" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="TAF" status="run" time="0" classname="getSyntaxGroup" />
@@ -276,7 +276,7 @@
     <testcase name="OTHER_TrendTimeGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_ProbabilityGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_WindGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_VarWindGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_VarWindGroup" status="run" time="0.001" classname="getSyntaxGroup" />
     <testcase name="OTHER_WindShearGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_VisibilityGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_CloudGroup" status="run" time="0" classname="getSyntaxGroup" />
@@ -288,20 +288,20 @@
     <testcase name="OTHER_RunwayVisualRangeGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_RunwayStateGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_RainfallGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_SeaSurfaceGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_SeaSurfaceGroup" status="run" time="0.001" classname="getSyntaxGroup" />
     <testcase name="OTHER_SeaWavesGroup" status="run" time="0" classname="getSyntaxGroup" />
     <testcase name="OTHER_ColourCodeGroup" status="run" time="0" classname="getSyntaxGroup" />
   </testsuite>
-  <testsuite name="GroupParser" tests="1" failures="0" disabled="0" errors="0" time="0.066">
-    <testcase name="ParseAllGroups" status="run" time="0.039" classname="GroupParser" />
+  <testsuite name="GroupParser" tests="1" failures="0" disabled="0" errors="0" time="0.062">
+    <testcase name="ParseAllGroups" status="run" time="0.037" classname="GroupParser" />
   </testsuite>
-  <testsuite name="Parser" tests="7" failures="0" disabled="0" errors="0" time="0.491">
-    <testcase name="SyntaxParsing" status="run" time="0.007" classname="Parser" />
-    <testcase name="RealDataParsingMETAR" status="run" time="0.138" classname="Parser" />
-    <testcase name="RealDataParsingTAF" status="run" time="0.18" classname="Parser" />
+  <testsuite name="Parser" tests="7" failures="0" disabled="0" errors="0" time="0.487">
+    <testcase name="SyntaxParsing" status="run" time="0.008" classname="Parser" />
+    <testcase name="RealDataParsingMETAR" status="run" time="0.144" classname="Parser" />
+    <testcase name="RealDataParsingTAF" status="run" time="0.173" classname="Parser" />
     <testcase name="resetResult" status="run" time="0" classname="Parser" />
-    <testcase name="resetResultError" status="run" time="0" classname="Parser" />
-    <testcase name="doNotKeepSourceGroup" status="run" time="0.001" classname="Parser" />
-    <testcase name="keepSourceGroups" status="run" time="0.001" classname="Parser" />
+    <testcase name="resetResultError" status="run" time="0.001" classname="Parser" />
+    <testcase name="doNotKeepSourceGroup" status="run" time="0" classname="Parser" />
+    <testcase name="keepSourceGroups" status="run" time="0.002" classname="Parser" />
   </testsuite>
 </testsuites>
