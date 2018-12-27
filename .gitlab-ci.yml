@@ -9,7 +9,7 @@ build:
   - cp -r bin/* ci-build
   artifacts:
     paths:
-      - bin/
+      - ci-build/
 
 tests:
   stage: test
