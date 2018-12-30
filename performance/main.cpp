@@ -48,7 +48,7 @@ void checkPerformance() {
 }
 
 void addGroup(const string & group, vector< pair<int, string> > & dst) {
-	for (auto i=0; i<dst.size(); i++) {
+	for (auto i=0u; i<dst.size(); i++) {
 		if (get<string>(dst[i]) == group) {
 			//found group in dst, increment counter
 			auto count = get<int>(dst[i]);
@@ -152,6 +152,7 @@ void checkRecognisedGroups() {
 }
 
 int main(int argc, char ** argv) {
+	(void) argc; (void) argv;
 	checkPerformance();
 	checkRecognisedGroups();
 }

@@ -26,6 +26,23 @@ TEST(Parser, SyntaxParsing) {
 	}
 }
 
+// Confirm that parsing empty report with or without final = symbol results in 
+// EMPTY_REPORT error and empty result vector
+TEST(Parser, parseEmptyReport) {
+	metaf::Parser parser1;
+	EXPECT_FALSE(parser1.parse(""));
+	EXPECT_EQ(parser1.getReportType(), metaf::ReportType::UNKNOWN);
+	EXPECT_EQ(parser1.getError(), metaf::Parser::Error::EMPTY_REPORT);
+	EXPECT_EQ(parser1.getResult().size(), 0u);
+
+	metaf::Parser parser2;
+	EXPECT_FALSE(parser2.parse("="));
+	EXPECT_EQ(parser2.getReportType(), metaf::ReportType::UNKNOWN);
+	EXPECT_EQ(parser2.getError(), metaf::Parser::Error::EMPTY_REPORT);
+	EXPECT_EQ(parser2.getResult().size(), 0u);
+}
+
+
 // Confirm that parser is able to parse real-life METAR reports and that 
 // real-life METAR reports' syntax is recognised by parser. 
 // If this test fails, a METAR report which failed the test is printed. This 
@@ -69,15 +86,15 @@ TEST(Parser, resetResult) {
 	ASSERT_TRUE(parser.parse("METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU", true));
 	ASSERT_NE(parser.getReportType(), metaf::ReportType::UNKNOWN);
 	ASSERT_EQ(parser.getError(), metaf::Parser::Error::NONE);
-	ASSERT_NE(parser.getResult().size(), 0);
-	ASSERT_NE(parser.getSourceGroups().size(), 0);
+	ASSERT_NE(parser.getResult().size(), 0u);
+	ASSERT_NE(parser.getSourceGroups().size(), 0u);
 	parser.resetResult();
 	EXPECT_EQ(parser.getReportType(), metaf::ReportType::UNKNOWN);
 	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
-	EXPECT_EQ(parser.getResult().size(), 0);
-	EXPECT_EQ(parser.getResult().capacity(), 0); //Can be implementation-defined?
-	EXPECT_EQ(parser.getSourceGroups().size(), 0);
-	EXPECT_EQ(parser.getSourceGroups().capacity(), 0); //Can be implementation-defined?
+	EXPECT_EQ(parser.getResult().size(), 0u);
+	EXPECT_EQ(parser.getResult().capacity(), 0u); //Can be implementation-defined?
+	EXPECT_EQ(parser.getSourceGroups().size(), 0u);
+	EXPECT_EQ(parser.getSourceGroups().capacity(), 0u); //Can be implementation-defined?
 }
 
 // Confirm that resetResult() resets parsing result vector, report type and 
@@ -87,15 +104,15 @@ TEST(Parser, resetResultError) {
 	ASSERT_FALSE(parser.parse("METAR EGYP", true));
 	ASSERT_NE(parser.getReportType(), metaf::ReportType::UNKNOWN);
 	ASSERT_NE(parser.getError(), metaf::Parser::Error::NONE);
-	ASSERT_NE(parser.getResult().size(), 0);
-	ASSERT_NE(parser.getSourceGroups().size(), 0);
+	ASSERT_NE(parser.getResult().size(), 0u);
+	ASSERT_NE(parser.getSourceGroups().size(), 0u);
 	parser.resetResult();
 	EXPECT_EQ(parser.getReportType(), metaf::ReportType::UNKNOWN);
 	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
-	EXPECT_EQ(parser.getResult().size(), 0);
-	EXPECT_EQ(parser.getResult().capacity(), 0); //Can be implementation-defined?
-	EXPECT_EQ(parser.getSourceGroups().size(), 0);
-	EXPECT_EQ(parser.getSourceGroups().capacity(), 0); //Can be implementation-defined?
+	EXPECT_EQ(parser.getResult().size(), 0u);
+	EXPECT_EQ(parser.getResult().capacity(), 0u); //Can be implementation-defined?
+	EXPECT_EQ(parser.getSourceGroups().size(), 0u);
+	EXPECT_EQ(parser.getSourceGroups().capacity(), 0u); //Can be implementation-defined?
 }
 
 TEST(Parser, doNotKeepSourceGroup) {
@@ -103,8 +120,8 @@ TEST(Parser, doNotKeepSourceGroup) {
 	ASSERT_TRUE(parser.parse("METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU"));
 	ASSERT_EQ(parser.getReportType(), metaf::ReportType::METAR);
 	ASSERT_EQ(parser.getError(), metaf::Parser::Error::NONE);
-	ASSERT_NE(parser.getResult().size(), 0);
-	EXPECT_EQ(parser.getSourceGroups().size(), 0);
+	ASSERT_NE(parser.getResult().size(), 0u);
+	EXPECT_EQ(parser.getSourceGroups().size(), 0u);
 }
 
 // Confirm that parse() does not keep the source group unless specified
@@ -117,8 +134,8 @@ TEST(Parser, keepSourceGroups) {
 	ASSERT_EQ(parser.getReportType(), metaf::ReportType::METAR);
 	ASSERT_EQ(parser.getError(), metaf::Parser::Error::NONE);
 
-	EXPECT_EQ(parser.getResult().size(), 17);
-	EXPECT_EQ(parser.getSourceGroups().size(), 17);
+	EXPECT_EQ(parser.getResult().size(), 17u);
+	EXPECT_EQ(parser.getSourceGroups().size(), 17u);
 
 	EXPECT_EQ(parser.getResult().at(0), 
 		metaf::Group(metaf::FixedGroup(metaf::FixedGroup::Type::METAR)));
@@ -133,7 +150,7 @@ TEST(Parser, keepSourceGroups) {
 	EXPECT_EQ(parser.getSourceGroups().at(2), "111951Z");
 
 	EXPECT_EQ(parser.getResult().at(3), 
-		metaf::Group(metaf::WindGroup(40, metaf::SpeedUnit::KNOTS, 4)));
+		metaf::Group(metaf::WindGroup(40, metaf::Speed(4, metaf::Speed::Unit::KNOTS))));
 	EXPECT_EQ(parser.getSourceGroups().at(3), "04004KT");
 
 	EXPECT_EQ(parser.getResult().at(4), 

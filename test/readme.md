@@ -36,11 +36,10 @@ The tests use [Google Test](https://github.com/abseil/googletest/) framework.
 
 ### Unit tests
 
-The following test cases are included:
+Test cases generally correspond to the name of the class/struct being tested:
 
 * Group: tests of Group variant functionality.
-* Runway: tests of struct Runway methods.
-* Temperature: tests of struct Temperature methods.
+* Runway, Temperature, Speed: tests of comparison operators, constructors, methods for helper structs used in groups.
 * PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TimeSpanGroup, TrendTimeGroup, ProbabilityGroup, WindGroup, VarWindGroup, WindShearGroup, VisibilityGroup, CloudGroup, VerticalVisibilityGroup, WeatherGroup, TemperatureGroup, MinMaxTemperatureGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, RainfallGroup, SeaSurfaceGroup, SeaWavesGroup, ColourCodeGroup: tests of comparison operators, constructors, etc. for the structs representing individual METAR/TAF groups. The only exception is parse() method which is tested in GroupParser.
 * getSyntaxGroup: tests of function getSyntaxGroup which checks which syntax-critical group is represented by specified Group variant.
 * GroupParser tests parse() method of structs representing all individual METAR/TAF groups. This is done by parsing mulptiple groups and simulating different report parts where they may and may not be encountered.

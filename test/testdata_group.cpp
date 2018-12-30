@@ -236,74 +236,6 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	///////////////////////////////////////////////////////////////////////////////
 
 	{
-		std::string("18005G10KT"),	//direction 180 (South), speed 5 knots, gusts 10 knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::SpeedUnit::KNOTS, 5, 10),
-	},
-	{
-		std::string("18005G10MPS"),	//direction 180 (South), speed 5 m/s, gusts 10 m/s
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::SpeedUnit::METERS_PER_SECOND, 5, 10),
-	},
-	{
-		std::string("18005G10KMH"),	//direction 180 (South), speed 5 km/h, gusts 10 km/h
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::SpeedUnit::KILOMETERS_PER_HOUR, 5, 10),
-	},
-	{
-		std::string("08063G112KT"),	//direction 80 (East), speed 63 knots, gusts 112 knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(80, metaf::SpeedUnit::KNOTS, 63, 112),
-	},
-	{
-		std::string("080100G150KT"),//direction 80 (East), speed 100 knots, gusts 150 knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(80, metaf::SpeedUnit::KNOTS, 100, 150),
-	},
-	{
-		std::string("18005KT"),	//direction 180 (South), speed 5 knots, no gusts
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(180, metaf::SpeedUnit::KNOTS, 5),
-	},
-	{
-		std::string("VRB15G25KT"),	//variable direction, speed 15 knots, gusts 25 knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeVariableDirection(metaf::SpeedUnit::KNOTS, 15, 25),
-	},
-	{
-		std::string("VRB06KT"),	//variable direction, speed 6 knots no gusts
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeVariableDirection(metaf::SpeedUnit::KNOTS, 6),
-	},	{
-		std::string("/////KT"),	//direction and speed not reported
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup(metaf::SpeedUnit::KNOTS),
-	},
-	{
-		std::string("18005G10KKT"),	//unit can only be KT, MPS, or KMH
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("18005G10KKT"),
-	},
-	{
-		std::string("18206KT"),	//direction's last digit must be zero
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("18206KT"),
-	},
-	{
-		std::string("00000KT"),	//calm wind (i.e. no wind), speed unit is knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeCalm(metaf::SpeedUnit::KNOTS),
-	},
-	{
-		std::string("00000MPS"),	//calm wind (i.e. no wind), speed unit is m/s
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindGroup::makeCalm(metaf::SpeedUnit::METERS_PER_SECOND),
-	},
-
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
 		std::string("180V240"),	//variable direction from 180 (south) to 240 (west)
 		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
 		metaf::VarWindGroup(180, 240),
@@ -317,34 +249,6 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("180V242"),	//direction's last digit must be zero
 		testdata::GroupTestData::allReportParts,
 		metaf::PlainTextGroup("180V242"),
-	},
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
-		std::string("WS020/05065KT"),	//wind shear at 2000 feet: wind 50 degrees & 65 knots
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::KNOTS),
-	},
-	{
-		std::string("WS020/05065MPS"),	//wind shear at 2000 feet: wind 50 degrees & 65 m/s
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::METERS_PER_SECOND),
-	},
-	{
-		std::string("WS020/05065KMH"),	//wind shear at 2000 feet: wind 50 degrees & 65 km/h
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::WindShearGroup(2000, 50, 65, metaf::SpeedUnit::KILOMETERS_PER_HOUR),
-	},
-	{
-		std::string("WS020/05165KT"),	//direction's last digit must be zero
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("WS020/05165KT"),
-	},
-	{
-		std::string("WS020/05065KKT"),	//wind speed unit must be KT, MPS or KMH
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("WS020/05065KKT"),
 	},
 
 	///////////////////////////////////////////////////////////////////////////////

@@ -18,258 +18,6 @@ TEST(Group, is_standard_layout) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-//Confirm that default Runway structs are equal
-TEST(Runway, defaultEqual) {
-	const metaf::Runway r1;
-	const metaf::Runway r2;
-	EXPECT_TRUE(r1 == r2);
-	EXPECT_FALSE(r1 != r2);
-}
-
-//Confirm that Runway structs initialised with the same data are equal
-TEST(Runway, sameDataEqual) {
-	metaf::Runway r1;
-	r1.number = 21;
-	r1.designator = metaf::Runway::Designator::LEFT;
-	metaf::Runway r2;
-	r2.number = 21;
-	r2.designator = metaf::Runway::Designator::LEFT;
-	EXPECT_EQ(r1, r2);
-}
-
-//Confirm that Runway structs initialised with the different data are not equal
-TEST(Runway, differentDataNotEqual) {
-	metaf::Runway r;
-	r.number = 21;
-	r.designator = metaf::Runway::Designator::LEFT;
-	metaf::Runway r1(r);
-	r1.number = 22;
-	metaf::Runway r2(r);
-	r2.designator = metaf::Runway::Designator::NONE;
-	EXPECT_NE(r, r1);
-	EXPECT_NE(r, r2);
-}
-
-//Confirm that constructor initialises the Runway struct with correct data
-TEST(Runway, constructor) {
-	const metaf::Runway r(25, metaf::Runway::Designator::LEFT);
-	EXPECT_EQ(r.number, 25);
-	EXPECT_EQ(r.designator, metaf::Runway::Designator::LEFT);
-}
-
-//Confirm that makeAllRunways initialises the Runway struct with correct data
-TEST(Runway, makeAllRunways) {
-	static const unsigned int allRunwaysNumber = 88;
-	const metaf::Runway r = metaf::Runway::makeAllRunways();
-	EXPECT_EQ(r.number, allRunwaysNumber);
-	EXPECT_EQ(r.designator, metaf::Runway::Designator::NONE);
-}
-
-//Confirm that makeMessageRepetition initialises the Runway struct with correct data
-TEST(Runway, makeMessageRepetition) {
-	static const unsigned int messageRepetitionNumber = 99;	
-	const metaf::Runway r = metaf::Runway::makeMessageRepetition();
-	EXPECT_EQ(r.number, messageRepetitionNumber);
-	EXPECT_EQ(r.designator, metaf::Runway::Designator::NONE);
-}
-
-//Confirm that designatorFromChar correctly decodes a runway designator
-TEST(Runway, designatorFromChar) {
-	EXPECT_EQ(metaf::Runway::designatorFromChar('R'), metaf::Runway::Designator::RIGHT);
-	EXPECT_EQ(metaf::Runway::designatorFromChar('C'), metaf::Runway::Designator::CENTER);
-	EXPECT_EQ(metaf::Runway::designatorFromChar('L'), metaf::Runway::Designator::LEFT);
-	EXPECT_EQ(metaf::Runway::designatorFromChar(' '), metaf::Runway::Designator::NONE);
-	EXPECT_EQ(metaf::Runway::designatorFromChar('\0'), metaf::Runway::Designator::NONE);
-	EXPECT_EQ(metaf::Runway::designatorFromChar('M'), metaf::Runway::Designator::UNKNOWN);
-	EXPECT_EQ(metaf::Runway::designatorFromChar('5'), metaf::Runway::Designator::UNKNOWN);
-}
-
-//Confirm that designatorFromString correctly decodes a runway designator
-TEST(Runway, designatorFromString) {
-	EXPECT_EQ(metaf::Runway::designatorFromString("R"), metaf::Runway::Designator::RIGHT);
-	EXPECT_EQ(metaf::Runway::designatorFromString("C"),	metaf::Runway::Designator::CENTER);
-	EXPECT_EQ(metaf::Runway::designatorFromString("L"),	metaf::Runway::Designator::LEFT);
-	EXPECT_EQ(metaf::Runway::designatorFromString(" "),	metaf::Runway::Designator::NONE);
-	EXPECT_EQ(metaf::Runway::designatorFromString("\0"), metaf::Runway::Designator::NONE);
-	EXPECT_EQ(metaf::Runway::designatorFromString(""), metaf::Runway::Designator::NONE);
-	EXPECT_EQ(metaf::Runway::designatorFromString("X"), metaf::Runway::Designator::UNKNOWN);
-	EXPECT_EQ(metaf::Runway::designatorFromString("RR"), metaf::Runway::Designator::UNKNOWN);
-}
-
-//Confirm that isAllRunways correctly indicates "all runways" code present
-TEST(Runway, isAllRunwaysTrue) {
-	const metaf::Runway r1 = metaf::Runway::makeAllRunways();
-	const metaf::Runway r2(88, metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(r1.isAllRunways());
-	EXPECT_TRUE(r2.isAllRunways());
-}
-
-//Confirm that isAllRunways correctly indicates when "all runways" code is 
-//absent or malformed
-TEST(Runway, isAllRunwaysFalse) {
-	const metaf::Runway r1(25, metaf::Runway::Designator::LEFT);
-	const metaf::Runway r2(25);
-	const metaf::Runway r3(88, metaf::Runway::Designator::UNKNOWN);
-	const metaf::Runway r4(88, metaf::Runway::Designator::LEFT);
-	const metaf::Runway r5 = metaf::Runway::makeMessageRepetition();
-	EXPECT_FALSE(r1.isAllRunways());
-	EXPECT_FALSE(r2.isAllRunways());
-	EXPECT_FALSE(r3.isAllRunways());
-	EXPECT_FALSE(r4.isAllRunways());
-	EXPECT_FALSE(r5.isAllRunways());
-}
-
-//Confirm that isMessageRepetition correctly indicates "last message repetition" code 
-//present
-TEST(Runway, isMessageRepetitionTrue) {
-	const metaf::Runway r1 = metaf::Runway::makeMessageRepetition();
-	const metaf::Runway r2(99, metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(r1.isMessageRepetition());
-	EXPECT_TRUE(r2.isMessageRepetition());
-}
-
-//Confirm that isMessageRepetition correctly indicates when "all runways" code is 
-//absent or malformed
-TEST(Runway, isMessageRepetitionFalse) {
-	const metaf::Runway r1(25, metaf::Runway::Designator::LEFT);
-	const metaf::Runway r2(25);
-	const metaf::Runway r3(99, metaf::Runway::Designator::UNKNOWN);
-	const metaf::Runway r4(99, metaf::Runway::Designator::LEFT);
-	const metaf::Runway r5 = metaf::Runway::makeAllRunways();
-	EXPECT_FALSE(r1.isMessageRepetition());
-	EXPECT_FALSE(r2.isMessageRepetition());
-	EXPECT_FALSE(r3.isMessageRepetition());
-	EXPECT_FALSE(r4.isMessageRepetition());
-	EXPECT_FALSE(r5.isMessageRepetition());
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-
-//Confirm that default Temperature structs are equal
-TEST(Temperature, defaultEqual) {
-	const metaf::Temperature t1;
-	const metaf::Temperature t2;
-	EXPECT_TRUE(t1 == t2);
-	EXPECT_FALSE(t1 != t2);
-}
-
-//Confirm that Temperature structs initialised with the same data are equal
-TEST(Temperature, sameDataEqual) {
-	metaf::Temperature t1;
-	t1.value = 4;
-	t1.reported = true;
-	metaf::Temperature t2;
-	t2.value = 4;
-	t2.reported = true;
-	EXPECT_EQ(t1, t2);
-}
-
-//Confirm that if the temperature is not reported, then value and modifier 
-//DO NOT affect the comparison
-TEST(Temperature, comparisonTemperatureNotReported) {
-	metaf::Temperature t;
-	t.reported = false;
-	t.value = 4;
-	t.modifier = metaf::ValueModifier::NONE;
-	metaf::Temperature t1(t);
-	t1.value = -5;
-	t1.modifier = metaf::ValueModifier::LESS_THAN;
-	EXPECT_EQ(t, t1);
-}
-
-//Confirm that if the temperature is reported, then value DOES affect the 
-//comparison
-TEST(Temperature, comparisonTemperatureReported) {
-	metaf::Temperature t;
-	t.reported = true;
-	t.value = 4;
-	metaf::Temperature t1(t);
-	t1.value = 5;
-	EXPECT_NE(t, t1);
-}
-
-//Confirm that if the temperature is reported and non-zero, then modifier 
-//does NOT affect the comparison
-TEST(Temperature, comparisonTemperatureNonZero) {
-	metaf::Temperature t;
-	t.reported = true;
-	t.value = 4;
-	metaf::Temperature t1(t);
-	t1.modifier = metaf::ValueModifier::LESS_THAN;
-	EXPECT_EQ(t, t1);
-}
-
-//Confirm that if the temperature is reported and zero, then modifier DOES 
-//affect the comparison
-TEST(Temperature, comparisonTemperatureZero) {
-	metaf::Temperature t;
-	t.reported = true;
-	t.value = 0;
-	t.modifier = metaf::ValueModifier::MORE_THAN;
-	metaf::Temperature t1(t);
-	t1.modifier = metaf::ValueModifier::LESS_THAN;
-	EXPECT_NE(t, t1);
-}
-
-//Confirm that value&modifier constructor initialises the Temperature struct 
-//with correct data when value is non-zero
-TEST(Temperature, constructorValueModifierNonZero) {
-	const metaf::Temperature t1(-2);
-	const metaf::Temperature t2(-2, metaf::ValueModifier::LESS_THAN);
-	EXPECT_EQ(t1.value, -2);
-	EXPECT_TRUE(t1.reported);
-	EXPECT_EQ(t1.modifier, metaf::ValueModifier::NONE);
-	EXPECT_EQ(t2.value, -2);
-	EXPECT_TRUE(t2.reported);
-	EXPECT_EQ(t2.modifier, metaf::ValueModifier::NONE);
-}
-
-//Confirm that value&modifier constructor initialises the Temperature struct 
-//with correct data when value is zero
-TEST(Temperature, constructorValueModifierZero) {
-	const metaf::Temperature t1(0);
-	const metaf::Temperature t2(0, metaf::ValueModifier::LESS_THAN);
-	const metaf::Temperature t3(0, metaf::ValueModifier::MORE_THAN);
-	EXPECT_EQ(t1.value, 0);
-	EXPECT_TRUE(t1.reported);
-	EXPECT_EQ(t1.modifier, metaf::ValueModifier::NONE);
-	EXPECT_EQ(t2.value, 0);
-	EXPECT_TRUE(t2.reported);
-	EXPECT_EQ(t2.modifier, metaf::ValueModifier::LESS_THAN);
-	EXPECT_EQ(t3.value, 0);
-	EXPECT_TRUE(t3.reported);
-	EXPECT_EQ(t3.modifier, metaf::ValueModifier::MORE_THAN);
-}
-
-//Confirm that abs&minus constructor initialises the Temperature struct with 
-//correct data when value is non-zero
-TEST(Temperature, constructorAbsMinusNonZero) {
-	const metaf::Temperature t1(2, false);
-	const metaf::Temperature t2(2, true);
-	EXPECT_EQ(t1.value, 2);
-	EXPECT_TRUE(t1.reported);
-	EXPECT_EQ(t1.modifier, metaf::ValueModifier::NONE);
-	EXPECT_EQ(t2.value, -2);
-	EXPECT_TRUE(t2.reported);
-	EXPECT_EQ(t2.modifier, metaf::ValueModifier::NONE);
-}
-
-//Confirm that abs&minus constructor initialises the Temperature struct with 
-//correct data when value is zero
-TEST(Temperature, constructorAbsMinusZero) {
-	const metaf::Temperature t1(0, true);
-	const metaf::Temperature t2(0, false);
-	EXPECT_EQ(t1.value, 0);
-	EXPECT_TRUE(t1.reported);
-	EXPECT_EQ(t1.modifier, metaf::ValueModifier::LESS_THAN);
-	EXPECT_EQ(t2.value, 0);
-	EXPECT_TRUE(t2.reported);
-	EXPECT_EQ(t2.modifier, metaf::ValueModifier::MORE_THAN);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 //Confirm that default groups are equal
 TEST(PlainTextGroup, defaultEqual) {
 	const metaf::PlainTextGroup group1;
@@ -425,9 +173,9 @@ TEST(ReportTimeGroup, differentDataNotEqual) {
 
 //Confirm that constructor initialises the group with correct data
 TEST(ReportTimeGroup, constructor) {
-	static const auto day = 29;
-	static const auto hour = 23;
-	static const auto minute = 55;
+	static const auto day = 29u;
+	static const auto hour = 23u;
+	static const auto minute = 55u;
 	const metaf::ReportTimeGroup group(day, hour, minute);
 	EXPECT_EQ(group.day, day);	
 	EXPECT_EQ(group.hour, hour);	
@@ -486,10 +234,10 @@ TEST(TimeSpanGroup, differentDataNotEqual) {
 
 //Confirm that constructor initialises the group with correct data
 TEST(TimeSpanGroup, constructor) {
-	static const auto dayFrom = 29;
-	static const auto hourFrom = 23;
-	static const auto dayTill = 30;
-	static const auto hourTill = 02;
+	static const auto dayFrom = 29u;
+	static const auto hourFrom = 23u;
+	static const auto dayTill = 30u;
+	static const auto hourTill = 02u;
 	const metaf::TimeSpanGroup group(dayFrom, hourFrom, dayTill, hourTill);
 	EXPECT_EQ(group.dayFrom, dayFrom);
 	EXPECT_EQ(group.hourFrom, hourFrom);
@@ -595,9 +343,9 @@ TEST(TrendTimeGroup, differentDataNotEqual) {
 //correct data
 TEST(TrendTimeGroup, constructorLongGroup) {
 	static const auto type = metaf::TrendTimeGroup::Type::FROM;
-	static const auto day = 28;
-	static const auto hour = 17;
-	static const auto minute = 30;
+	static const auto day = 28u;
+	static const auto hour = 17u;
+	static const auto minute = 30u;
 	const metaf::TrendTimeGroup group(type, day, hour, minute);
 	EXPECT_EQ(group.type, type);
 	EXPECT_TRUE(group.dayReported);
@@ -610,8 +358,8 @@ TEST(TrendTimeGroup, constructorLongGroup) {
 //correct data
 TEST(TrendTimeGroup, constructorShortGroup) {
 	static const auto type = metaf::TrendTimeGroup::Type::FROM;
-	static const auto hour = 17;
-	static const auto minute = 30;
+	static const auto hour = 17u;
+	static const auto minute = 30u;
 	const metaf::TrendTimeGroup group(type, hour, minute);
 	EXPECT_EQ(group.type, type);
 	EXPECT_FALSE(group.dayReported);
@@ -650,262 +398,9 @@ TEST(ProbabilityGroup, differentDataNotEqual) {
 
 //Confirm that constructor initialises the group with correct data
 TEST(ProbabilityGroup, constructor) {
-	static const auto probability = 30;
+	static const auto probability = 30u;
 	const metaf::ProbabilityGroup group(probability);
 	EXPECT_EQ(group.probability, probability);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//Confirm that default groups are equal
-TEST(WindGroup, defaultDataEqual) {
-	const metaf::WindGroup group1;
-	const metaf::WindGroup group2;
-	EXPECT_TRUE(group1 == group2);
-	EXPECT_FALSE(group1 != group2);
-}
-
-//Confirm that groups holding the same data (direction, speed, gust speed, 
-//unit) are equal
-TEST(WindGroup, sameDataEqual) {
-	static const auto direction = 120;
-	static const auto directionReported = true;
-	static const auto speed = 12;
-	static const auto speedReported = true;
-	static const auto gustSpeed = 20;
-	static const auto gustSpeedReported = true;
-	static const auto unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1;
-	metaf::WindGroup group2;
-	group1.direction = direction;
-	group1.directionReported = directionReported;
-	group1.speed = speed;
-	group1.speedReported = speedReported;
-	group1.gustSpeed = gustSpeed;
-	group1.gustSpeedReported = gustSpeedReported;
-	group1.unit = unit;
-	group2.direction = direction;
-	group2.directionReported = directionReported;
-	group2.speed = speed;
-	group2.speedReported = speedReported;
-	group2.gustSpeed = gustSpeed;
-	group2.gustSpeedReported = gustSpeedReported;
-	group2.unit = unit;
-	EXPECT_EQ(group1, group2);
-}
-
-//Confirm that if the wind is variable, direction does not affect the 
-//comparison
-TEST(WindGroup, comparisonVariableWind) {
-	metaf::WindGroup group;
-	group.direction = 0;
-	group.directionReported = true;
-	group.directionVariable = true;
-	group.speed = 12;
-	group.speedReported = true;
-	group.gustSpeed = 20;
-	group.gustSpeedReported = true;
-	group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1(group);
-	group1.direction = 180;
-	EXPECT_EQ(group, group1);
-}
-
-//Confirm that if the direction is not reported, its value does not affect the 
-//comparison
-TEST(WindGroup, comparisonDirectionNotReported) {
-	metaf::WindGroup group;
-	group.direction = 0;
-	group.directionReported = false;
-	group.speed = 12;
-	group.speedReported = true;
-	group.gustSpeed = 20;
-	group.gustSpeedReported = true;
-	group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1(group);
-	group1.direction = 180;
-	EXPECT_EQ(group, group1);
-}
-
-//Confirm that if wind speed is not reported, its value does not affect the 
-//comparison
-TEST(WindGroup, comparisonWindSpeedNotReported) {
-	metaf::WindGroup group;
-	group.direction = 120;
-	group.directionReported = true;
-	group.speed = 12;
-	group.speedReported = false;
-	group.gustSpeed = 20;
-	group.gustSpeedReported = true;
-	group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1(group);
-	group1.speed = 20;
-	EXPECT_EQ(group, group1);
-}
-
-//Confirm that if gust speed is not reported, its value does not affect the 
-//comparison
-TEST(WindGroup, comparisonGustSpeedNotReported) {
-	metaf::WindGroup group;
-	group.direction = 120;
-	group.directionReported = true;
-	group.speed = 12;
-	group.speedReported = true;
-	group.gustSpeed = 20;
-	group.gustSpeedReported = false;
-	group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1(group);
-	group1.gustSpeed = 30;
-	EXPECT_EQ(group, group1);
-}
-
-//Confirm that groups holding the different data (direction, speed, gust 
-//speed, unit) are not equal
-TEST(WindGroup, differentDataNotEqual) {
-	metaf::WindGroup group;
-	group.direction = 120;
-	group.directionReported = true;
-	group.directionVariable = false;
-	group.speed = 12;
-	group.speedReported = true;
-	group.gustSpeed = 20;
-	group.gustSpeedReported = true;
-	group.unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	metaf::WindGroup group1(group);
-	group1.direction = 240;
-	metaf::WindGroup group2(group);
-	group2.directionReported = false;
-	metaf::WindGroup group3(group);
-	group3.directionVariable = true;
-	metaf::WindGroup group4(group);
-	group4.speed = 10;
-	metaf::WindGroup group5(group);
-	group5.speedReported = false;
-	metaf::WindGroup group6(group);
-	group6.gustSpeed = 25;
-	metaf::WindGroup group7(group);
-	group7.gustSpeedReported = false;
-	metaf::WindGroup group8(group);
-	group8.unit = metaf::SpeedUnit::KNOTS;
-	EXPECT_NE(group, group1);
-	EXPECT_NE(group, group2);
-	EXPECT_NE(group, group3);
-	EXPECT_NE(group, group4);
-	EXPECT_NE(group, group5);
-	EXPECT_NE(group, group6);
-	EXPECT_NE(group, group7);
-	EXPECT_NE(group, group8);
-}
-
-//Confirm that 'not reported' constructor initialises the group with correct 
-//data
-TEST(WindGroup, constructorNotReported) {
-	static const auto unit = metaf::SpeedUnit::KNOTS;
-	const metaf::WindGroup group(unit);
-	EXPECT_EQ(group.unit, unit);	
-	EXPECT_FALSE(group.directionReported);	
-	EXPECT_FALSE(group.speedReported);	
-	EXPECT_FALSE(group.gustSpeedReported);	
-}
-
-//Confirm that 'reported' constructor initialises the group with correct data
-TEST(WindGroup, constructorReported) {
-	static const auto direction = 240;
-	static const auto unit = metaf::SpeedUnit::KNOTS;
-	static const auto speed = 5;
-	static const auto gustSpeed = 12;
-	const metaf::WindGroup group1(direction, unit, speed, gustSpeed);
-	EXPECT_EQ(group1.unit, unit);
-	EXPECT_TRUE(group1.directionReported);	
-	EXPECT_TRUE(group1.speedReported);	
-	EXPECT_TRUE(group1.gustSpeedReported);	
-	EXPECT_EQ(group1.direction, direction);
-	EXPECT_EQ(group1.speed, speed);
-	EXPECT_EQ(group1.gustSpeed, gustSpeed);
-	const metaf::WindGroup group2(direction, unit, speed);
-	EXPECT_EQ(group2.unit, unit);
-	EXPECT_TRUE(group2.directionReported);	
-	EXPECT_TRUE(group2.speedReported);	
-	EXPECT_FALSE(group2.gustSpeedReported);	
-	EXPECT_EQ(group2.direction, direction);
-	EXPECT_EQ(group2.speed, speed);
-}
-
-//Confirm that 'makeVariableDirection' named constructor initialises the group 
-//with correct data
-TEST(WindGroup, makeVariableDirection) {
-	static const auto unit = metaf::SpeedUnit::KNOTS;
-	static const auto speed = 5;
-	static const auto gustSpeed = 12;
-	const metaf::WindGroup group1 = 
-		metaf::WindGroup::makeVariableDirection(unit, speed, gustSpeed);
-	EXPECT_EQ(group1.unit, unit);
-	EXPECT_TRUE(group1.directionReported);	
-	EXPECT_TRUE(group1.directionVariable);
-	EXPECT_TRUE(group1.speedReported);	
-	EXPECT_TRUE(group1.gustSpeedReported);	
-	EXPECT_EQ(group1.speed, speed);
-	EXPECT_EQ(group1.gustSpeed, gustSpeed);
-	const metaf::WindGroup group2 = 
-		metaf::WindGroup::makeVariableDirection(unit, speed, gustSpeed);
-	EXPECT_EQ(group2.unit, unit);
-	EXPECT_TRUE(group2.directionReported);	
-	EXPECT_TRUE(group2.directionVariable);
-	EXPECT_TRUE(group2.speedReported);	
-	EXPECT_TRUE(group2.gustSpeedReported);	
-	EXPECT_EQ(group2.speed, speed);
-	EXPECT_EQ(group2.gustSpeed, gustSpeed);
-}
-
-//Confirm that 'makeCalm' named constructor initialises the group with correct 
-//data
-TEST(WindGroup, makeCalm) {
-	static const auto unit = metaf::SpeedUnit::METERS_PER_SECOND;
-	const metaf::WindGroup group = metaf::WindGroup::makeCalm(unit);
-	EXPECT_EQ(group.unit, unit);
-	EXPECT_TRUE(group.directionReported);	
-	EXPECT_FALSE(group.directionVariable);
-	EXPECT_EQ(group.direction, 0);
-	EXPECT_TRUE(group.speedReported);	
-	EXPECT_EQ(group.speed, 0);
-	EXPECT_FALSE(group.gustSpeedReported);	
-}
-
-
-//Confirm that 'isCalm' correctly identifies calm wind coded in wind group
-TEST(WindGroup, isCalmTrue) {
-	const metaf::WindGroup group1 = 
-		metaf::WindGroup::makeCalm(metaf::SpeedUnit::KNOTS);
-	const metaf::WindGroup group2 = 
-		metaf::WindGroup::makeCalm(metaf::SpeedUnit::METERS_PER_SECOND);
-	EXPECT_TRUE(group1.isCalm());	
-	EXPECT_TRUE(group2.isCalm());	
-}
-
-//Confirm that 'isCalm' correctly identifies that no calm wind is coded in 
-//wind group
-TEST(WindGroup, isCalmFalse) {
-	static const auto unit = metaf::SpeedUnit::KNOTS;
-	static const auto direction = 80;
-	static const auto speed = 5;
-	static const auto gustSpeed = 12;
-	const metaf::WindGroup group1(unit);
-	const metaf::WindGroup group2(direction, unit, speed, gustSpeed);
-	const metaf::WindGroup group3(direction, unit, speed);
-	const metaf::WindGroup group4(0, unit, speed);
-	const metaf::WindGroup group5 = 
-		metaf::WindGroup::makeVariableDirection(unit, speed, gustSpeed);
-	const metaf::WindGroup group6 = 
-		metaf::WindGroup::makeVariableDirection(unit, speed);
-	const metaf::WindGroup group7 = 
-		metaf::WindGroup::makeVariableDirection(unit, 0);
-	EXPECT_FALSE(group1.isCalm());
-	EXPECT_FALSE(group2.isCalm());
-	EXPECT_FALSE(group3.isCalm());
-	EXPECT_FALSE(group4.isCalm());
-	EXPECT_FALSE(group5.isCalm());
-	EXPECT_FALSE(group6.isCalm());
-	EXPECT_FALSE(group7.isCalm());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -920,8 +415,8 @@ TEST(VarWindGroup, defaultDataEqual) {
 
 //Confirm that groups holding the same value are equal 
 TEST(VarWindGroup, sameDataEqual) {
-	static const auto directionFrom = 60;
-	static const auto directionTo = 120;
+	static const auto directionFrom = 60u;
+	static const auto directionTo = 120u;
 	metaf::VarWindGroup group1;
 	metaf::VarWindGroup group2;
 	group1.directionFrom = directionFrom;
@@ -946,74 +441,11 @@ TEST(VarWindGroup, differentDataNotEqual) {
 
 //Confirm that constructor initialises the group with correct data
 TEST(VarWindGroup, constructor) {
-	static const auto directionFrom = 120;
-	static const auto directionTo = 150;
+	static const auto directionFrom = 120u;
+	static const auto directionTo = 150u;
 	const metaf::VarWindGroup group(directionFrom, directionTo);
 	EXPECT_EQ(group.directionFrom, directionFrom);
 	EXPECT_EQ(group.directionTo, directionTo);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//Confirm that default groups are equal
-TEST(WindShearGroup, defaultDataEqual) {
-	const metaf::WindShearGroup group1;
-	const metaf::WindShearGroup group2;
-	EXPECT_TRUE(group1 == group2);
-	EXPECT_FALSE(group1 != group2);
-}
-
-//Confirm that groups holding the same value are equal 
-TEST(WindShearGroup, sameDataEqual) {
-	static const auto direction = 240;
-	static const auto height = 4000;
-	static const auto speed = 20;
-	static const auto speedUnit = metaf::SpeedUnit::KNOTS;
-	metaf::WindShearGroup group1;
-	metaf::WindShearGroup group2;
-	group1.direction = direction;
-	group1.height = height;
-	group1.speed = speed;
-	group1.speedUnit = speedUnit;
-	group2.direction = direction;
-	group2.height = height;
-	group2.speed = speed;
-	group2.speedUnit = speedUnit;
-	EXPECT_EQ(group1, group2);
-}
-
-//Confirm that groups holding the different values are not equal 
-TEST(WindShearGroup, differentDataNotEqual) {
-	metaf::WindShearGroup group;
-	group.direction = 240;
-	group.height = 4000;
-	group.speed = 20;
-	group.speedUnit = metaf::SpeedUnit::KNOTS;
-	metaf::WindShearGroup group1(group);
-	group1.direction = 180;
-	metaf::WindShearGroup group2(group);
-	group2.height = 6000;
-	metaf::WindShearGroup group3(group);
-	group3.speed = 22;
-	metaf::WindShearGroup group4(group);
-	group4.speedUnit = metaf::SpeedUnit::METERS_PER_SECOND;
-	EXPECT_NE(group, group1);
-	EXPECT_NE(group, group2);
-	EXPECT_NE(group, group3);
-	EXPECT_NE(group, group4);
-}
-
-//Confirm that constructor initialises the group with correct data
-TEST(WindShearGroup, constructor) {
-	static const auto direction = 240;
-	static const auto height = 4000;
-	static const auto speed = 20;
-	static const auto speedUnit = metaf::SpeedUnit::KNOTS;
-	const metaf::WindShearGroup group(height, direction, speed, speedUnit);
-	EXPECT_EQ(group.height, height);
-	EXPECT_EQ(group.direction, direction);
-	EXPECT_EQ(group.speed, speed);
-	EXPECT_EQ(group.speedUnit, speedUnit);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1173,15 +605,15 @@ TEST(VisibilityGroup, makeVisibilityMeters1) {
 //with correct data
 TEST(VisibilityGroup, makeVisibilityMeters2) {
 	static const auto direction = metaf::VisibilityGroup::Direction::NW;
-	static const auto visibility = 2000;
+	static const auto visibility = 2000u;
 	static const auto modifier = metaf::ValueModifier::MORE_THAN;
 	const metaf::VisibilityGroup group1 = 
 		metaf::VisibilityGroup::makeVisibilityMeters(visibility, direction);
 	EXPECT_EQ(group1.unit, metaf::DistanceUnit::METERS);
 	EXPECT_TRUE(group1.reported);
 	EXPECT_EQ(group1.integer, visibility);
-	EXPECT_EQ(group1.numerator, 0);
-	EXPECT_EQ(group1.denominator, 0);
+	EXPECT_EQ(group1.numerator, 0u);
+	EXPECT_EQ(group1.denominator, 0u);
 	EXPECT_EQ(group1.direction, direction);
 	EXPECT_EQ(group1.modifier, metaf::ValueModifier::NONE);
 	EXPECT_FALSE(group1.incompleteInteger);
@@ -1190,8 +622,8 @@ TEST(VisibilityGroup, makeVisibilityMeters2) {
 	EXPECT_EQ(group2.unit, metaf::DistanceUnit::METERS);
 	EXPECT_TRUE(group2.reported);
 	EXPECT_EQ(group2.integer, visibility);
-	EXPECT_EQ(group2.numerator, 0);
-	EXPECT_EQ(group2.denominator, 0);
+	EXPECT_EQ(group2.numerator, 0u);
+	EXPECT_EQ(group2.denominator, 0u);
 	EXPECT_EQ(group2.direction, direction);
 	EXPECT_EQ(group2.modifier, metaf::ValueModifier::MORE_THAN);
 	EXPECT_FALSE(group2.incompleteInteger);
@@ -1209,9 +641,9 @@ TEST(VisibilityGroup, makeVisibilityMiles1) {
 //Confirm that 'reported' version of makeVisiblityMiles initialises the group 
 //with correct data
 TEST(VisibilityGroup, makeVisibilityMiles2) {
-	static const auto integer = 2;
-	static const auto numerator = 1;
-	static const auto denominator = 4;
+	static const auto integer = 2u;
+	static const auto numerator = 1u;
+	static const auto denominator = 4u;
 	static const auto modifier = metaf::ValueModifier::LESS_THAN;
 	const metaf::VisibilityGroup group = metaf::VisibilityGroup::makeVisibilityMiles(
 		integer, 
@@ -1231,30 +663,30 @@ TEST(VisibilityGroup, makeVisibilityMiles2) {
 //Confirm that makeVisiblityMilesIncomplete initialises the group with correct 
 //data
 TEST(VisibilityGroup, makeVisibilityMilesIncomplete) {
-	static const auto integer = 1;
+	static const auto integer = 1u;
 	const metaf::VisibilityGroup group = 
 		metaf::VisibilityGroup::makeVisibilityMilesIncomplete(integer);
 	EXPECT_EQ(group.direction, metaf::VisibilityGroup::Direction::NONE);
 	EXPECT_EQ(group.unit, metaf::DistanceUnit::STATUTE_MILES);
 	EXPECT_TRUE(group.reported);
 	EXPECT_EQ(group.integer, integer);
-	EXPECT_EQ(group.numerator, 0);
-	EXPECT_EQ(group.denominator, 0);
+	EXPECT_EQ(group.numerator, 0u);
+	EXPECT_EQ(group.denominator, 0u);
 	EXPECT_EQ(group.modifier, metaf::ValueModifier::NONE);
 	EXPECT_TRUE(group.incompleteInteger);
 }
 
 //Confirm that incomplete integer group correctly merges following fraction group
 TEST(VisibilityGroup, mergeVisibilityGroups1) {
-	static const auto integer = 1;
-	static const auto numerator = 3;
-	static const auto denominator = 4;
+	static const auto integer = 1u;
+	static const auto numerator = 3u;
+	static const auto denominator = 4u;
 	const metaf::VisibilityGroup completeGroup = 
 		metaf::VisibilityGroup::makeVisibilityMiles(integer, numerator, denominator);
 	const metaf::VisibilityGroup incompleteIntegerGroup = 
 		metaf::VisibilityGroup::makeVisibilityMilesIncomplete(integer);
 	const metaf::VisibilityGroup fractionGroup = 
-		metaf::VisibilityGroup::makeVisibilityMiles(0, numerator, denominator);
+		metaf::VisibilityGroup::makeVisibilityMiles(0u, numerator, denominator);
 	metaf::VisibilityGroup mergeGroup(incompleteIntegerGroup);
 	bool result = mergeGroup.nextGroup(fractionGroup);
 	EXPECT_TRUE(result);
@@ -1708,7 +1140,7 @@ TEST(CloudGroup, differentDataNotEqual) {
 //Confirm that constructor with height initialises the group with correct data
 TEST(CloudGroup, constructorHeightReported) {
 	static const auto amount = metaf::CloudGroup::Amount::OVERCAST;
-	static const auto height = 1000;
+	static const auto height = 1000u;
 	static const auto type = metaf::CloudGroup::Type::NONE;
 	const metaf::CloudGroup group(amount, height, type);
 	EXPECT_EQ(group.amount, amount);
@@ -1774,7 +1206,7 @@ TEST(VerticalVisibilityGroup, differentDataNotEqual) {
 
 //Confirm that constructor initialises the group with correct data
 TEST(VerticalVisibilityGroup, constructor) {
-	static const auto vertVisibility = 700;
+	static const auto vertVisibility = 700u;
 	const metaf::VerticalVisibilityGroup group(vertVisibility);
 	EXPECT_EQ(group.vertVisibility, vertVisibility);
 	EXPECT_TRUE(group.reported);
@@ -1842,7 +1274,7 @@ TEST(WeatherGroup, constructorVector) {
 	const metaf::WeatherGroup group(prefix, weather);
 	EXPECT_EQ(group.prefix, prefix);
 	EXPECT_EQ(group.weatherSize, weather.size());
-	for (auto i=0; i<weather.size(); i++) {
+	for (auto i=0u; i<weather.size(); i++) {
 		EXPECT_EQ(group.weather[i], weather.at(i)) << "Index: " << i;
 	}
 }
@@ -1855,7 +1287,7 @@ TEST(WeatherGroup, constructorFixedList) {
 	static const auto weather2 = metaf::WeatherGroup::Weather::RAIN;
 	const metaf::WeatherGroup group(prefix, weather1, weather2);
 	EXPECT_EQ(group.prefix, prefix);
-	EXPECT_EQ(group.weatherSize, 2);
+	EXPECT_EQ(group.weatherSize, 2u);
 	EXPECT_EQ(group.weather[0], weather1);
 	EXPECT_EQ(group.weather[1], weather2);
 }
@@ -1864,12 +1296,12 @@ TEST(WeatherGroup, constructorFixedList) {
 TEST(WeatherGroup, makeNotReported) {
 	const metaf::WeatherGroup group1 = metaf::WeatherGroup::makeNotReported(true);
 	EXPECT_EQ(group1.prefix, metaf::WeatherGroup::Prefix::RECENT);
-	EXPECT_EQ(group1.weatherSize, 1);
+	EXPECT_EQ(group1.weatherSize, 1u);
 	EXPECT_EQ(group1.weather[0], metaf::WeatherGroup::Weather::NOT_REPORTED);
 
 	const metaf::WeatherGroup group2 = metaf::WeatherGroup::makeNotReported(false);
 	EXPECT_EQ(group2.prefix, metaf::WeatherGroup::Prefix::NONE);
-	EXPECT_EQ(group2.weatherSize, 1);
+	EXPECT_EQ(group2.weatherSize, 1u);
 	EXPECT_EQ(group2.weather[0], metaf::WeatherGroup::Weather::NOT_REPORTED);
 }
 
@@ -2275,8 +1707,8 @@ TEST(MinMaxTemperatureGroup, differentDataNotEqual) {
 //Confirm that makeMin initialises the group with correct data
 TEST(MinMaxTemperatureGroup, makeMin) {
 	static const auto temperature = metaf::Temperature(1);
-	static const auto day = 25;
-	static const auto hour = 12;
+	static const auto day = 25u;
+	static const auto hour = 12u;
 	const metaf::MinMaxTemperatureGroup group = 
 		metaf::MinMaxTemperatureGroup::makeMin(temperature, day, hour);
 	EXPECT_EQ(group.point, metaf::MinMaxTemperatureGroup::Point::MINIMUM);
@@ -2288,8 +1720,8 @@ TEST(MinMaxTemperatureGroup, makeMin) {
 //Confirm that makeMax initialises the group with correct data
 TEST(MinMaxTemperatureGroup, makeMax) {
 	static const auto temperature = metaf::Temperature(1);
-	static const auto day = 25;
-	static const auto hour = 12;
+	static const auto day = 25u;
+	static const auto hour = 12u;
 	const metaf::MinMaxTemperatureGroup group = 
 		metaf::MinMaxTemperatureGroup::makeMax(temperature, day, hour);
 	metaf::MinMaxTemperatureGroup group1;
@@ -2529,7 +1961,7 @@ TEST(RunwayVisualRangeGroup, constructorNotReported) {
 //the group with correct data
 TEST(RunwayVisualRangeGroup, constructorSingleRvrValue) {
 	static const auto runway = metaf::Runway(22);
-	static const auto visRange = 6500;
+	static const auto visRange = 6500u;
 	static const auto modifier = metaf::ValueModifier::NONE;
 	static const auto unit = metaf::DistanceUnit::METERS;
 	static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
@@ -2551,9 +1983,9 @@ TEST(RunwayVisualRangeGroup, constructorSingleRvrValue) {
 //correct data
 TEST(RunwayVisualRangeGroup, constructorMinMaxRvrValue) {
 	static const auto runway = metaf::Runway(22);
-	static const auto visRange = 4500;
+	static const auto visRange = 4500u;
 	static const auto modifier = metaf::ValueModifier::LESS_THAN;
-	static const auto varVisRange = 6500;
+	static const auto varVisRange = 6500u;
 	static const auto varVisModifier = metaf::ValueModifier::MORE_THAN;
 	static const auto unit = metaf::DistanceUnit::FEET;
 	static const auto trend = metaf::RunwayVisualRangeGroup::Trend::NEUTRAL;
@@ -2704,7 +2136,7 @@ TEST(RunwayStateGroup, constructor) {
 	static const auto status = metaf::RunwayStateGroup::Status::NONE;
 	static const auto deposits = metaf::RunwayStateGroup::Deposits::DRY_SNOW;
 	static const auto extent = metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT;
-	static const auto ddDepth = 5;
+	static const auto ddDepth = 5u;
 	static const auto sfBrakingAction = 
 		metaf::RunwayStateGroup::SurfaceFriction::BrakingAction::POOR;
 	const metaf::RunwayStateGroup group(
@@ -3147,7 +2579,7 @@ TEST(SeaWavesGroup, differentDataNotEqual) {
 //Confirm that constructor initialises the group with correct data
 TEST(SeaWavesGroup, constructor) {
 	static const auto surfaceTemp = metaf::Temperature(5);
-	static const auto waveHeight = 12;
+	static const auto waveHeight = 12u;
 	const metaf::SeaWavesGroup group(surfaceTemp, waveHeight);
 	EXPECT_EQ(group.surfaceTemp, surfaceTemp);
 	EXPECT_TRUE(group.waveHeightReported);
@@ -3415,7 +2847,9 @@ TEST(getSyntaxGroup, OTHER_ProbabilityGroup) {
 //Confirm that passing WindGroup to getSyntaxGroup() results in SyntaxGroup::OTHER
 TEST(getSyntaxGroup, OTHER_WindGroup) {
 	const metaf::Group group = 
-		metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 2, 7);
+		metaf::WindGroup(240, 
+			metaf::Speed(2, metaf::Speed::Unit::KNOTS), 
+			metaf::Speed(7, metaf::Speed::Unit::KNOTS));
 	EXPECT_EQ(metaf::getSyntaxGroup(group), metaf::SyntaxGroup::OTHER);
 }
 
@@ -3428,7 +2862,7 @@ TEST(getSyntaxGroup, OTHER_VarWindGroup) {
 //Confirm that passing WindShearGroup to getSyntaxGroup() results in SyntaxGroup::OTHER
 TEST(getSyntaxGroup, OTHER_WindShearGroup) {
 	const metaf::Group group = 
-		metaf::WindShearGroup(2200, 30, 45, metaf::SpeedUnit::KNOTS);
+		metaf::WindShearGroup(2200, 30, metaf::Speed(45, metaf::Speed::Unit::KNOTS));
 	EXPECT_EQ(metaf::getSyntaxGroup(group), metaf::SyntaxGroup::OTHER);
 }
 

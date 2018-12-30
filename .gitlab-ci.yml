@@ -14,7 +14,7 @@ build:
 tests:
   stage: test
   script:
-  - echo TODO
+  - echo Work in progress, see branch ci/tests_gitlab
   dependencies:
     - build
   artifacts:

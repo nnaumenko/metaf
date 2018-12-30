@@ -1,5 +1,5 @@
 CC := emcc
-CXXFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wno-c++11-extensions -std=c++17
+CXXFLAGS := -O3 -s WASM=1 -pedantic -Wall -Wextra -Wno-c++11-extensions -std=c++17
 EMCCFLAGS := 
 
 TEST_CXXFLAGS := -I googletest/googletest/include -I googletest/googletest/

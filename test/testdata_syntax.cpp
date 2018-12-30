@@ -10,26 +10,6 @@
 const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 
 	///////////////////////////////////////////////////////////////////////////////
-	// empty reports
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
-		"",
-		metaf::ReportType::UNKNOWN,
-		metaf::Parser::Error::EMPTY_REPORT,
-		{
-		}
-	},
-
-	{
-		"=",
-		metaf::ReportType::UNKNOWN,
-		metaf::Parser::Error::EMPTY_REPORT,
-		{
-		}
-	},
-
-	///////////////////////////////////////////////////////////////////////////////
 	// malformed reports with only type/location specified
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -380,7 +360,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -399,7 +379,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::SPECI),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -418,7 +398,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(5000),
 			metaf::WeatherGroup(metaf::WeatherGroup::Prefix::NONE, 
 				metaf::WeatherGroup::Weather::RAIN,
@@ -442,7 +422,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::COR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -462,7 +442,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::COR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -482,7 +462,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::FixedGroup(metaf::FixedGroup::Type::COR),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -502,7 +482,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::FixedGroup(metaf::FixedGroup::Type::COR),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -525,7 +505,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -549,7 +529,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::SPECI),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -577,7 +557,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 		{
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -595,7 +575,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 		{
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -726,7 +706,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -742,7 +722,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -758,7 +738,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -800,7 +780,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 			metaf::FixedGroup(metaf::FixedGroup::Type::RMK),
@@ -826,7 +806,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 			
@@ -834,7 +814,9 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 
 			metaf::FixedGroup(metaf::FixedGroup::Type::TEMPO),
 			metaf::TimeSpanGroup(4, 20, 4, 24),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 10, 15),
+			metaf::WindGroup(240, 
+				metaf::Speed(10, metaf::Speed::Unit::KNOTS),
+				metaf::Speed(15, metaf::Speed::Unit::KNOTS)),
 
 			metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::FROM, 5, 3, 0),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::BROKEN, 10000),
@@ -906,7 +888,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -926,7 +908,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -940,7 +922,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -960,7 +942,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -974,7 +956,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -994,7 +976,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMiles(10),
 			metaf::CloudGroup(metaf::CloudGroup::Amount::FEW, 25000),
 		}
@@ -1012,7 +994,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -1029,7 +1011,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::FixedGroup(metaf::FixedGroup::Type::NIL)
 		}
 	},
@@ -1042,7 +1024,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::FixedGroup(metaf::FixedGroup::Type::METAR),
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::VisibilityGroup::makeVisibilityMeters(10000,
 				metaf::VisibilityGroup::Direction::NONE,
 				metaf::ValueModifier::MORE_THAN),
@@ -1059,7 +1041,7 @@ const std::vector<testdata::MetarTafSyntaxTestData> testdata::syntaxDataSet = {
 			metaf::LocationGroup("ZZZZ"),
 			metaf::ReportTimeGroup(4, 11, 15),
 			metaf::TimeSpanGroup(4, 12, 5, 12),
-			metaf::WindGroup(240, metaf::SpeedUnit::KNOTS, 5),
+			metaf::WindGroup(240, metaf::Speed(5, metaf::Speed::Unit::KNOTS)),
 			metaf::FixedGroup(metaf::FixedGroup::Type::CNL)
 		}
 	},

@@ -49,8 +49,18 @@ SyntaxGroup metaf::getSyntaxGroup(const Group & group) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Runway::Runway(unsigned int n, Designator d) : 
-	number(n), designator(d) {}
+Runway::Runway(unsigned int n, Designator d) {
+	//50 is sometimes added to indicate right runway, e.g. 55 is runway 5R
+	static const auto rightRunwayNumber = 50; 
+	if (n >= rightRunwayNumber && 
+		n <= rightRunwayNumber + maxRunwayHeading) {
+		number = n - 50;
+		designator = Designator::RIGHT;
+		return;
+	}
+	number = n;
+	designator = d;
+}
 
 Runway Runway::makeAllRunways() {
 	Runway r;
@@ -66,6 +76,16 @@ Runway Runway::makeMessageRepetition() {
 	return(r);
 }
 
+bool Runway::isValid() const {
+	// Runway number must be between 0 and 35 (corresponds to heading 0 to 350 
+	// degrees) except special values 88 (all runways) and 99 (last message 
+	// repetition)
+	if (number > maxRunwayHeading && 
+		number != allRunwaysNumber &&
+		number != messageRepetitionNumber) return(false);
+	if (designator == Designator::UNKNOWN ) return(false);
+	return(true);
+}
 
 Runway::Designator Runway::designatorFromChar(char c) {
 	switch (c) {
@@ -111,6 +131,41 @@ Temperature::Temperature (unsigned int v, bool m) {
 	if (!value) modifier = m ? ValueModifier::LESS_THAN : ValueModifier::MORE_THAN;
 }
 
+float Temperature::valueAs(Unit unit) const {
+	if (!reported) return(0);
+	float v = value;
+	// When value is zero, modifier is also checked to differentiate between
+	// freezing and non-freezing temperatures.
+	// Modifier 'less than' with zero temeprature means group M00 (rounded to 
+	// zero and freezing / slightly below zero).
+	// Modifier 'more than' with zero temeprature means group M00 (rounded to 
+	// zero and non-freezing / slightly above zero).
+	if (!value) {
+		static const auto nearZeroValue = 0.25;
+		if (modifier == ValueModifier::LESS_THAN) v = - nearZeroValue;
+		if (modifier == ValueModifier::MORE_THAN) v = nearZeroValue;
+	}
+	if (this->unit == unit) return(v);
+	//Conversion factors from:
+	//https://en.wikipedia.org/wiki/Conversion_of_units_of_temperature#Celsius_(centigrade)
+	if (this->unit == Unit::DEGREES_C && unit == Unit::DEGREES_F) return(v * 1.8 + 32);
+//	if (this->unit == Unit::DEGREES_F && unit == Unit::DEGREES_C) return((v - 32) / ​1.8 + 32);
+	return(0);
+}
+
+bool Temperature::isValid() const {
+	if (reported) {
+		// Currently unit of stored temperature value is centigrade only
+		if (modifier == ValueModifier::UNKNOWN) return(false);
+		// Modifier 'less than' or 'more than' is only used to indicate 
+		// freezing temperatures when temperature value is rounded to zero. 
+		// Considering how temperature values are encoded in METAR / TAF, a 
+		// modifier does not make sense with non-zero values.
+		if (modifier != ValueModifier::NONE && value) return(false);
+	}
+	return(true);
+}
+
 bool metaf::operator ==(const Temperature & lhs, const Temperature & rhs) {
 	if (lhs.reported != rhs.reported ||
 		lhs.unit != rhs.unit) return(false);
@@ -118,6 +173,126 @@ bool metaf::operator ==(const Temperature & lhs, const Temperature & rhs) {
 		if (lhs.value != rhs.value) return(false);
 		if (!lhs.value && (lhs.modifier != rhs.modifier)) return(false);
 	} 
+	return(true);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+Speed::Speed(Unit u) : value(0), reported(false), unit(u) {}
+
+Speed::Speed(unsigned int v, Unit u) : value (v), reported(true), unit(u) {}
+
+bool Speed::isValid() const {
+	if (reported && unit == Unit::UNKNOWN) return(false);
+	return(true);
+}
+
+float Speed::valueAs(Unit unit) const {
+	if (!reported) return(0);
+	switch (this->unit) {
+		case Unit::KNOTS: 
+		return(knotValueAs(value, unit));
+
+		case Unit::METERS_PER_SECOND: 
+		return(mpsValueAs(value, unit));
+
+		case Unit::KILOMETERS_PER_HOUR:
+		return(kmhValueAs(value, unit));
+
+		case Unit::MILES_PER_HOUR:
+		return(mphValueAs(value, unit));
+
+		default:
+		return(0);
+	}
+	return(0);
+}
+
+float Speed::knotValueAs(float valueKnots, Unit otherUnit) {
+//Conversion factors from https://en.wikipedia.org/wiki/Speed#Units
+	switch(otherUnit) {
+		case Unit::KNOTS: 
+		return(valueKnots);
+
+		case Unit::METERS_PER_SECOND: 
+		return(valueKnots * 0.514444);
+
+		case Unit::KILOMETERS_PER_HOUR:
+		return(valueKnots * 1.852);
+
+		case Unit::MILES_PER_HOUR:
+		return(valueKnots * 1.150779);
+
+		default:
+		return(0);
+	}
+}
+
+float Speed::mpsValueAs(float valueMps, Unit otherUnit) {
+//Conversion factors from https://en.wikipedia.org/wiki/Speed#Units
+	switch(otherUnit) {
+		case Unit::KNOTS: 
+		return(valueMps * 1.943844);
+
+		case Unit::METERS_PER_SECOND: 
+		return(valueMps);
+
+		case Unit::KILOMETERS_PER_HOUR:
+		return(valueMps * 3.6);
+
+		case Unit::MILES_PER_HOUR:
+		return(valueMps * 2.236936);
+
+		default:
+		return(0);
+	}
+}
+
+float Speed::kmhValueAs(float valueKmh, Unit otherUnit) {
+//Conversion factors from https://en.wikipedia.org/wiki/Speed#Units
+	switch(otherUnit) {
+		case Unit::KNOTS: 
+		return(valueKmh / 1.852);
+
+		case Unit::METERS_PER_SECOND: 
+		return(valueKmh / 3.6);
+
+		case Unit::KILOMETERS_PER_HOUR:
+		return(valueKmh);
+
+		case Unit::MILES_PER_HOUR:
+		return(valueKmh * 0.621371);
+
+		default:
+		return(0);
+	}
+}
+
+float Speed::mphValueAs(float valueMph, Unit otherUnit) {
+//Conversion factors from https://en.wikipedia.org/wiki/Speed#Units
+	switch(otherUnit) {
+		case Unit::KNOTS: 
+		return(valueMph * 0.868976);
+
+		case Unit::METERS_PER_SECOND: 
+		return(valueMph * 0.44704);
+
+		case Unit::KILOMETERS_PER_HOUR:
+		return(valueMph * 1.609344);
+
+		case Unit::MILES_PER_HOUR:
+		return(valueMph);
+
+		default:
+		return(0);
+	}
+}
+
+bool metaf::operator ==(const Speed & lhs, const Speed & rhs) {
+	if (lhs.reported != rhs.reported) return(false);
+	if (lhs.reported) {
+		if (lhs.unit != rhs.unit || lhs.value != rhs.value) return(false);
+	}
 	return(true);
 }
 
@@ -373,55 +548,40 @@ bool metaf::operator ==(const ProbabilityGroup & lhs, const ProbabilityGroup & r
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WindGroup::WindGroup(SpeedUnit u) : 
-	directionReported(false), speedReported(false), gustSpeedReported(false), unit(u) {}
+WindGroup::WindGroup(Speed::Unit u) : 
+	directionReported(false), windSpeed(Speed(u)), gustSpeed(Speed(u)) {}
 
-WindGroup::WindGroup(unsigned int dir, 
-	SpeedUnit u, 
-	unsigned int s, 
-	unsigned int gs) :
+WindGroup::WindGroup(unsigned int dir, Speed ws, Speed gs) :
 		direction(dir),
 		directionReported(true),
 		directionVariable(false),
-		speed(s),
-		speedReported(true), 
-		gustSpeed(gs),
-		gustSpeedReported(gs), 
-		unit(u) {}
+		windSpeed(ws),
+		gustSpeed(gs.unit != Speed::Unit::UNKNOWN ? gs : Speed(ws.unit)) {}
 
-WindGroup WindGroup::makeVariableDirection (SpeedUnit unit, 
-		unsigned int speed, 
-		unsigned int gustSpeed)
-{
+WindGroup WindGroup::makeVariableDirection (Speed windSpeed, Speed gustSpeed) {
 	WindGroup group;
 	group.directionReported = true;
 	group.directionVariable = true;
-	group.speed = speed;
-	group.speedReported = true;
+	group.windSpeed = windSpeed;
 	group.gustSpeed = gustSpeed;
-	group.gustSpeedReported = gustSpeed;
-	group.unit = unit;
 	return(group);
 }
 
-WindGroup WindGroup::makeCalm(SpeedUnit unit) {
+WindGroup WindGroup::makeCalm(Speed::Unit unit) {
 	WindGroup group;
 	group.direction = 0;
 	group.directionReported = true;
 	group.directionVariable = false;
-	group.speed = 0;
-	group.speedReported = true;
-	group.gustSpeedReported = false;
-	group.unit = unit;
+	group.windSpeed = Speed(0, unit);
+	group.gustSpeed = Speed(unit);
 	return(group);
 }
 
 
 bool WindGroup::isCalm() const {
 	return (directionReported && !directionVariable && !direction && 
-		speedReported && !speed && !gustSpeedReported);
+		windSpeed.reported && !windSpeed.value && !gustSpeed.reported);
 }
-
 
 bool WindGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex windRegex(
@@ -452,36 +612,29 @@ bool WindGroup::parse(const string & group, ReportPart reportPart) {
 		directionVariable = true;
 		directionReported = true;
 	}
-	speed = 0;
-	speedReported = false;
+	auto unit = Speed::Unit::UNKNOWN;
+	if (match.length(matchKt)) unit = Speed::Unit::KNOTS;
+	if (match.length(matchMps)) unit = Speed::Unit::METERS_PER_SECOND;
+	if (match.length(matchKmh)) unit = Speed::Unit::KILOMETERS_PER_HOUR;
+	windSpeed = Speed(unit);
 	if (match.length(matchSpeedNumeric)) {
-		speed = static_cast<unsigned int>(stoi(match.str(matchSpeedNumeric)));
-		speedReported = true;
+		windSpeed = Speed(static_cast<unsigned int>(stoi(match.str(matchSpeedNumeric))), unit);
 	}
-	gustSpeed = 0;
-	gustSpeedReported = false;
+	gustSpeed = Speed(unit);
 	if (match.length(matchGustSpeed)) {
-		gustSpeed = static_cast<unsigned int>(stoi(match.str(matchGustSpeed)));
-		gustSpeedReported = true;
+		gustSpeed = Speed(static_cast<unsigned int>(stoi(match.str(matchGustSpeed))), unit);
 	}
-	unit = SpeedUnit::UNKNOWN;
-	if (match.length(matchKt)) unit = SpeedUnit::KNOTS;
-	if (match.length(matchKmh)) unit = SpeedUnit::KILOMETERS_PER_HOUR;
-	if (match.length(matchMps)) unit = SpeedUnit::METERS_PER_SECOND;
 	return(true);
 }
 
 bool metaf::operator ==(const WindGroup & lhs, const WindGroup & rhs){
-	if (lhs.directionReported != rhs.directionReported ||
-		lhs.speedReported != rhs.speedReported ||
-		lhs.gustSpeedReported != rhs.gustSpeedReported ||
-		lhs.unit != rhs.unit) return(false);
+	if (lhs.directionReported != rhs.directionReported) return(false);
 	if (lhs.directionReported) {
 		if (lhs.directionVariable != rhs.directionVariable) return(false);
 		if (!lhs.directionVariable && (lhs.direction != rhs.direction)) return(false);
 	}
-	if (lhs.speedReported && (lhs.speed != rhs.speed)) return(false);
-	if (lhs.gustSpeedReported && (lhs.gustSpeed != rhs.gustSpeed)) return(false);
+	if (lhs.windSpeed != rhs.windSpeed) return(false);
+	if (lhs.gustSpeed != rhs.gustSpeed) return(false);
 	return(true);
 }
 
@@ -512,8 +665,8 @@ bool metaf::operator ==(const VarWindGroup & lhs, const VarWindGroup & rhs){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-WindShearGroup::WindShearGroup(unsigned int h, unsigned int d, unsigned int s, SpeedUnit su) :
-	height(h), direction(d), speed(s), speedUnit(su) {}
+WindShearGroup::WindShearGroup(unsigned int h, unsigned int d, Speed ws) :
+	height(h), direction(d), windSpeed(ws) {}
 
 bool WindShearGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex windShearRegex(
@@ -535,18 +688,18 @@ bool WindShearGroup::parse(const string & group, ReportPart reportPart) {
 	if (match.size() != (expectedMatchGroups)) return(false);
 	height = static_cast<unsigned int>(stoi(match.str(matchHeight))) * heightFactor;
 	direction = static_cast<unsigned int>(stoi(match.str(matchDir)));
-	speed = static_cast<unsigned int>(stoi(match.str(matchSpeed)));
-	if (match.length(matchKt)) speedUnit = SpeedUnit::KNOTS;
-	if (match.length(matchKmh)) speedUnit = SpeedUnit::KILOMETERS_PER_HOUR;
-	if (match.length(matchMps)) speedUnit = SpeedUnit::METERS_PER_SECOND;
+	auto speedUnit = Speed::Unit::UNKNOWN;
+	if (match.length(matchKt)) speedUnit = Speed::Unit::KNOTS;
+	if (match.length(matchMps)) speedUnit = Speed::Unit::METERS_PER_SECOND;
+	if (match.length(matchKmh)) speedUnit = Speed::Unit::KILOMETERS_PER_HOUR;
+	windSpeed = Speed(static_cast<unsigned int>(stoi(match.str(matchSpeed))), speedUnit);
 	return(true);
 }
 
 bool metaf::operator ==(const WindShearGroup & lhs, const WindShearGroup & rhs){
 	return(lhs.direction == rhs.direction &&
 		lhs.height == rhs.height &&
-		lhs.speed == rhs.speed &&
-		lhs.speedUnit == rhs.speedUnit &&
+		lhs.windSpeed == rhs.windSpeed &&
 		lhs.heightUnit == lhs.heightUnit);
 }
 
@@ -931,7 +1084,7 @@ bool WeatherGroup::parse(const string & group, ReportPart reportPart) {
 
 vector<WeatherGroup::Weather> WeatherGroup::weatherToVector() const {
 	vector<Weather> result;
-	for (auto i=0; i<weatherSize; i++) {
+	for (auto i=0u; i<weatherSize; i++) {
 		result.push_back(weather[i]);
 	}
 	return(result);
@@ -939,7 +1092,7 @@ vector<WeatherGroup::Weather> WeatherGroup::weatherToVector() const {
 
 bool WeatherGroup::isPrecipitation() const {
 	Weather previousWeather = Weather::UNKNOWN;
-	for (auto i=0; i<weatherSize; i++) {
+	for (auto i=0u; i<weatherSize; i++) {
 		switch (weather[i]) {
 			case Weather::SHOWERS:
 			case Weather::DRIZZLE:
@@ -967,7 +1120,7 @@ bool WeatherGroup::isPrecipitation() const {
 
 bool WeatherGroup::isObscuration() const {
 	Weather previousWeather = Weather::UNKNOWN;
-	for (auto i=0; i<weatherSize; i++) {
+	for (auto i=0u; i<weatherSize; i++) {
 		switch (weather[i]) {
 			case Weather::MIST:
 			case Weather::FOG:
@@ -995,7 +1148,7 @@ bool WeatherGroup::isObscuration() const {
 }
 
 bool WeatherGroup::isOtherPhenomena() const {
-	for (auto i=0; i<weatherSize; i++) {
+	for (auto i=0u; i<weatherSize; i++) {
 		switch (weather[i]) {
 			case Weather::THUNDERSTORM:
 			case Weather::DUST_WHIRLS:
@@ -1068,7 +1221,7 @@ WeatherGroup::Weather WeatherGroup::weatherFromString(const string & str){
 bool metaf::operator ==(const WeatherGroup & lhs, const WeatherGroup & rhs){
 	if (lhs.weatherSize != rhs.weatherSize ||
 		lhs.prefix != rhs.prefix) return(false);
-	for (auto i=0; i<std::min<size_t>(lhs.weatherSize, WeatherGroup::maxWeatherSize); i++) {
+	for (auto i=0u; i<std::min<size_t>(lhs.weatherSize, WeatherGroup::maxWeatherSize); i++) {
 		if (lhs.weather[i] != rhs.weather[i]) return(false);
 	}
 	return(true);

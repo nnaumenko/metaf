@@ -163,7 +163,7 @@ private:
 	static std::string reportTypeToString(metaf::ReportType reportType);
 	static std::string parserErrorToString(metaf::Parser::Error error);
 	static std::string distanceUnitToString(metaf::DistanceUnit unit);
-	static std::string speedUnitToString(metaf::SpeedUnit unit);
+	static std::string speedUnitToString(metaf::Speed::Unit unit);
 	static std::string temperatureUnitToString(metaf::Temperature::Unit unit);
 	static std::string runwayToString(metaf::Runway runway);
 	static std::string runwayDesignatorToString(metaf::Runway::Designator designator);
@@ -373,9 +373,12 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 			json.valueStr("cardinalDirection", cardinalDirection(group.direction));
 		}
 	}
-	if (group.speedReported) json.valueInt("speed", group.speed);
-	if (group.gustSpeedReported) json.valueInt("gustSpeed", group.speed);
-	json.valueStr("speedUnit", speedUnitToString(group.unit));
+	if (group.windSpeed.reported) json.valueInt("windSpeed", group.windSpeed.value);
+	if (group.gustSpeed.reported) json.valueInt("gustSpeed", group.gustSpeed.value);
+	json.valueStr("windSpeedUnit", speedUnitToString(group.windSpeed.unit));
+	if (group.gustSpeed.reported && group.windSpeed.unit != group.gustSpeed.unit) {
+		json.valueStr("gustSpeedUnit", speedUnitToString(group.gustSpeed.unit));
+	}
 	json.finish();
 }
 
@@ -394,8 +397,8 @@ void GroupVisitorJson::visitWindShearGroup(const metaf::WindShearGroup & group) 
 	json.valueStr("heightUnit", distanceUnitToString(group.heightUnit));
 	json.valueInt("windDirection", group.direction);
 	json.valueStr("windCardinalDirection", cardinalDirection(group.direction));
-	json.valueInt("windSpeed", group.speed);
-	json.valueStr("speedUnit", speedUnitToString(group.speedUnit));
+	json.valueInt("windSpeed", group.windSpeed.value);
+	json.valueStr("windSpeedUnit", speedUnitToString(group.windSpeed.unit));
 	json.finish();
 }
 
@@ -708,6 +711,7 @@ void GroupVisitorJson::visitColourCodeGroup(const metaf::ColourCodeGroup & group
 }
 
 void GroupVisitorJson::visitOther(const metaf::Group & group) {
+	(void)group;
 	json.valueNull("unknownGroup");
 }
 
@@ -859,19 +863,22 @@ std::string GroupVisitorJson::distanceUnitToString(metaf::DistanceUnit unit) {
 	}
 }
 
-std::string GroupVisitorJson::speedUnitToString(metaf::SpeedUnit unit) {
+std::string GroupVisitorJson::speedUnitToString(metaf::Speed::Unit unit) {
 	switch (unit) {
-		case metaf::SpeedUnit::UNKNOWN:
+		case metaf::Speed::Unit::UNKNOWN:
 		return("unknown");
 
-		case metaf::SpeedUnit::KNOTS:
+		case metaf::Speed::Unit::KNOTS:
 		return("knots");
 
-		case metaf::SpeedUnit::METERS_PER_SECOND:
+		case metaf::Speed::Unit::METERS_PER_SECOND:
 		return("m/s");
 
-		case metaf::SpeedUnit::KILOMETERS_PER_HOUR:
+		case metaf::Speed::Unit::KILOMETERS_PER_HOUR:
 		return("km/h");
+
+		case metaf::Speed::Unit::MILES_PER_HOUR:
+		return("mph");
 
 		default: 
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(unit)));
@@ -884,7 +891,10 @@ std::string GroupVisitorJson::temperatureUnitToString(metaf::Temperature::Unit u
 		return("unknown");
 
 		case metaf::Temperature::Unit::DEGREES_C:
-		return("centigrade");
+		return("C");
+
+		case metaf::Temperature::Unit::DEGREES_F:
+		return("F");
 
 		default: 
 		return(std::string("undefined: ") + std::to_string(static_cast<int>(unit)));
@@ -1503,6 +1513,7 @@ extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
 }
 
 int main(int argc, char ** argv) {
+	(void)argc; (void)argv;
 	//Using EM_ASM_ because EM_ASM(convertToJson()); gives a warning
 	EM_ASM_(convertToJson(), 0); 
 }

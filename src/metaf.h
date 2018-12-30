@@ -146,7 +146,7 @@ namespace metaf {
 		/// the following group and thus there is no need to save the 
 		/// following group. False if groups cannot be combined and 
 		/// the following group must be treated separately.
-		bool nextGroup(const Group & nextGroup) { return(false); }
+		bool nextGroup(const Group & nextGroup) { (void)nextGroup; return(false); }
 	};
 
 	/// Distance measurement units, used across groups
@@ -155,14 +155,6 @@ namespace metaf {
 		METERS = 0,
 		STATUTE_MILES = 1,
 		FEET = 2
-	};
-
-	/// Speed measurement units, used across groups
-	enum class SpeedUnit {
-		UNKNOWN = 30,
-		KNOTS = 0,
-		METERS_PER_SECOND = 1,
-		KILOMETERS_PER_HOUR = 2
 	};
 
 	enum class ValueModifier {
@@ -191,6 +183,9 @@ namespace metaf {
 		static Runway makeAllRunways();
 		/// Initialise runway with "repetition of last message" information coded.
 		static Runway makeMessageRepetition();
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
 		/// @brief Decode runway designator from char
 		/// @details R/L/C are treates as Right/Left/Center, space or 
 		/// null-terminator are treated as None, every other char is treated as
@@ -215,8 +210,9 @@ namespace metaf {
 		unsigned int number = 0; 					 /// < Runway number
 		Designator designator = Designator::UNKNOWN; ///< Runway designator
 	private:
-		static const unsigned int allRunwaysNumber = 88;
-		static const unsigned int messageRepetitionNumber = 99;
+		static const unsigned int allRunwaysNumber = 88;		//88 = all runways
+		static const unsigned int messageRepetitionNumber = 99;	//99 = repetition of last message
+		static const auto maxRunwayHeading = 35; 				//350 degrees divided by 10
 	};
 
 	bool operator ==(const Runway & lhs, const Runway & rhs);
@@ -233,9 +229,11 @@ namespace metaf {
 	/// range [0 .. 0.5) corresponding to value 00 and means non-freezing 
 	/// temperature.
 	struct Temperature {
+		/// Temperature measurement units
 		enum class Unit {
 			UNKNOWN = 30,
-			DEGREES_C = 0
+			DEGREES_C = 0,
+			DEGREES_F = 1,
 		};
 		Temperature () = default;
 		/// Initialise temperature value
@@ -244,20 +242,84 @@ namespace metaf {
 		/// temperature is zero then belowZero field is initialised with
 		/// the value of this parameter.
 		Temperature (int value, ValueModifier modifier = ValueModifier::NONE);
-		/// Initialise temperature value
-		/// @param value Integer absolute (always positive) temperature value
-		/// @param minus Set to true if the temperature value is negative
+		/// Initialise temperature value.
+		/// @param value Integer absolute (always positive) temperature value.
+		/// @param minus Set to true if the temperature value is negative.
 		Temperature (unsigned int value, bool minus);
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
+		/// Return value converted to certain measurment units.
+		/// @param unit Units to convert value to.
+		/// @return Temperature value converted to specified units (or zero if 
+		/// value is either not reported or the unit is unknown).
+		float valueAs(Unit unit) const;
 		int value = 0;				///< Temperature value
 		bool reported = false;		///< Is temperature value reported
 		/// Ignored unless temperature is zero; indicates below-zero or 
 		/// above-zero temperatures rounded to zero
 		ValueModifier modifier = ValueModifier::NONE;
-		static const Unit unit = Unit::DEGREES_C;
+		static const Unit unit = Unit::DEGREES_C;	///< Measurement unit (fixed at centigrade)
 	};
 
 	bool operator ==(const Temperature & lhs, const Temperature & rhs);
 	inline bool operator !=(const Temperature & lhs, const Temperature & rhs) {
+		return !(lhs == rhs);
+	}
+
+	/// Speed value used across several groups.
+	struct Speed {
+		/// Speed measurement units
+		enum class Unit {
+			UNKNOWN = 30,
+			KNOTS = 0,
+			METERS_PER_SECOND = 1,
+			KILOMETERS_PER_HOUR = 2,
+			MILES_PER_HOUR = 3
+		};
+		Speed() = default;
+		/// Initialise a non-reported speed value.
+		/// @param unit Measurement units.
+		Speed(Unit unit);
+		/// Initialise speed value.
+		/// @param value Speed value.
+		/// @param unit Measurement units for value.
+		Speed(unsigned int value, Unit unit);
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
+		/// Return value converted to certain measurment units.
+		/// @param unit Units to convert value to.
+		/// @return Speed value converted to specified units (or zero if 
+		/// value is either not reported or the unit is unknown).
+		float valueAs(Unit unit) const;
+		unsigned int value = 0;		///< Speed value
+		bool reported = false;  	///< Is speed value reported
+		Unit unit = Unit::UNKNOWN;	///< Measurement unit
+		/// Convert value in knots to other unit.
+		/// @param valueKnots Value in knots.
+		/// @param otherUnit Unit to convert value to.
+		/// @return Value converted to otherUnit or zero if otherUnit is unknown.
+		static float knotValueAs(float valueKnots, Unit otherUnit);
+		/// Convert value in meters per second to other unit.
+		/// @param valueMps Value in meters per second.
+		/// @param otherUnit Unit to convert value to.
+		/// @return Value converted to otherUnit or zero if otherUnit is unknown.
+		static float mpsValueAs(float valueMps, Unit otherUnit);
+		/// Convert value in kilometers per hour to other unit.
+		/// @param valueKmh Value in kilometers per hour.
+		/// @param otherUnit Unit to convert value to.
+		/// @return Value converted to otherUnit or zero if otherUnit is unknown.
+		static float kmhValueAs(float valueKmh, Unit otherUnit);
+		/// Convert value in miles per hour to other unit.
+		/// @param valueMph Value in miles per hour.
+		/// @param otherUnit Unit to convert value to.
+		/// @return Value converted to otherUnit or zero if otherUnit is unknown.
+		static float mphValueAs(float valueMph, Unit otherUnit);
+	};
+
+	bool operator ==(const Speed & lhs, const Speed & rhs);
+	inline bool operator !=(const Speed & lhs, const Speed & rhs) {
 		return !(lhs == rhs);
 	}
 
@@ -461,7 +523,7 @@ namespace metaf {
 		WindGroup() = default;
 		/// Initialises group where no wind direction or speed is reported.
 		/// @param unit Wind speed unit.
-		WindGroup(SpeedUnit unit);
+		WindGroup(Speed::Unit unit);
 		/// Initialises group where wind direction, speed and optionally gust
 		/// speed is reported.
 		/// @param direction Wind direction ("from") in degrees. Must be rounded 
@@ -471,21 +533,18 @@ namespace metaf {
 		/// @param speed Wind speed in specified units.
 		/// @param gustSpeed Wind gust speed in specified units (optional).
 		WindGroup(unsigned int direction, 
-			SpeedUnit unit, 
-			unsigned int speed, 
-			unsigned int gustSpeed = 0);
+			Speed windSpeed, 
+			Speed gustSpeed = Speed());
 		/// Initialises group where wind direction is variable
 		/// @param unit Wind speed unit.
 		/// @param speed Wind speed in specified units.
 		/// @param gustSpeed Wind gust speed in specified units (optional).
 		/// @return Initialised wind group.
-		static WindGroup makeVariableDirection (SpeedUnit unit, 
-			unsigned int speed, 
-			unsigned int gustSpeed = 0);
+		static WindGroup makeVariableDirection (Speed windSpeed, Speed gustSpeed = Speed());
 		/// Initialised group with calm wind (no wind) info.
 		/// @param Speed unit
 		/// @return Initialised wind group.
-		static WindGroup makeCalm(SpeedUnit unit);
+		static WindGroup makeCalm(Speed::Unit unit);
 		/// Checks if there's calm wind (i.e. no wind). Wind direction and 
 		/// speed MUST be reported, gust speed MUST NOT be reported. Calm wind 
 		/// is encoded as 00000KT or 00000MPS.
@@ -497,11 +556,8 @@ namespace metaf {
 		unsigned int direction = 0;		
 		bool directionReported = false;	///< Is wind direction is reported.
 		bool directionVariable = false; ///< Is wind direction is variable.
-		unsigned int speed = 0;			///< Wind speed.
-		bool speedReported = false;		///< Is wind speed reported.
-		unsigned int gustSpeed = 0;		///< Wind gust speed.
-		bool gustSpeedReported = false; ///< Is wind gust speed reported.
-		SpeedUnit unit = SpeedUnit::UNKNOWN; ///< Wind speed measurement units.
+		Speed windSpeed;					///< Wind speed.
+		Speed gustSpeed;				///< Wind gust speed.
 	};
 
 	bool operator ==(const WindGroup & lhs, const WindGroup & rhs);
@@ -542,15 +598,12 @@ namespace metaf {
 		/// @param speedUnit Wind speed unit.
 		WindShearGroup(unsigned int height,
 			unsigned int direction, 
-			unsigned int speed,	
-			SpeedUnit speedUnit);
+			Speed windSpeed);
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		unsigned int height = 0;	///> Height where wind shear occurs.
 		unsigned int direction = 0;	///> Wind direction in degrees
-		unsigned int speed = 0;		///> Wind speed
-		/// Wind speed measurement units
-		SpeedUnit speedUnit = SpeedUnit::UNKNOWN;	
+		Speed windSpeed;				///> Wind speed
 		/// Height measurement units
 		static const DistanceUnit heightUnit = DistanceUnit::FEET;
 	};
@@ -834,7 +887,7 @@ namespace metaf {
 		/// Check if this group includes other weather phenomena
 		bool isOtherPhenomena() const;
 		/// Maximum number of stored weather phenomena.
-		inline static const auto maxWeatherSize = 8; 
+		inline static const size_t maxWeatherSize = 8; 
 		Prefix prefix = Prefix::UNKNOWN; ///< Intensity or proximity of weather phenomena.
 		Weather weather[maxWeatherSize] = {Weather::UNKNOWN}; ///< Stored weather phenomena.
 		size_t weatherSize = 0; ///< Number of stored weather phenomena.

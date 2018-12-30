@@ -57,9 +57,7 @@ private:
 		unsigned int minute);
 	static std::string trendTypeToString(metaf::TrendTimeGroup::Type type);
 	static float roundTo(float number, int digitsAfterDecimalPoint);
-	static std::string speedToString(unsigned int speed, 
-		metaf::SpeedUnit unit,
-		bool reported = true);
+	static std::string speedToString(const metaf::Speed & speed);
 	static std::string windDirectionToString(unsigned int direction, 
 		bool reported = true, 
 		bool variable = false);
@@ -309,11 +307,11 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 		group.directionVariable);
 	result << '\n';
 	result << "Wind speed: ";
-	result << speedToString(group.speed, group.unit, group.speedReported);
+	result << speedToString(group.windSpeed);
 	result << '\n';
-	if (group.gustSpeedReported) {
+	if (group.gustSpeed.reported) {
 		result << "Gust speed: ";
-		result << speedToString(group.gustSpeed, group.unit);
+		result << speedToString(group.gustSpeed);
 	}
 	return(result.str());
 }
@@ -332,7 +330,7 @@ std::string GroupVisitorExplain::visitWindShearGroup(const metaf::WindShearGroup
 	result << "Wind shear at height ";
 	result << distanceToString(group.height, group.heightUnit);
 	result << ", direction " << windDirectionToString(group.direction);
-	result << ", speed " << speedToString(group.speed, group.speedUnit);
+	result << ", wind speed " << speedToString(group.windSpeed);
 	return(result.str());
 }
 
@@ -610,6 +608,7 @@ std::string GroupVisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGro
 }
 
 std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
+	(void)group;
 	return("This group is recognised by parser but not listed");
 }
 
@@ -655,44 +654,59 @@ float GroupVisitorExplain::roundTo(float number, int digitsAfterDecimalPoint) {
 	return(static_cast<long int>(number * factor) / factor);
 }
 
-std::string GroupVisitorExplain::speedToString(unsigned int speed, 
-	metaf::SpeedUnit unit,
-	bool reported)
-{
+std::string GroupVisitorExplain::speedToString(const metaf::Speed & speed) {
 	//Conversion factors from https://en.wikipedia.org/wiki/Knot_(unit)
-	if (!reported) return("not reported");
+	if (!speed.reported) return("not reported");
 	std::ostringstream result;
-	switch (unit) {
-		case metaf::SpeedUnit::UNKNOWN:
-		result << "value " << speed << ", unknown speed units";
+	bool unknownUnits = false;
+	switch (speed.unit) {
+		case metaf::Speed::Unit::UNKNOWN:
+		result << "value " << speed.value << ", unknown speed units";
+		unknownUnits = true;
 		break;
 
-		case metaf::SpeedUnit::KNOTS:
-		result << speed << " knots (";
-		result << roundTo(speed * 0.514444, 1) << " m/s, ";
-		result << roundTo(speed * 1.852, 1) << " km/h, ";
-		result << roundTo(speed * 1.150779, 1) << " mph)";
+		case metaf::Speed::Unit::KNOTS:
+		result << speed.valueAs(metaf::Speed::Unit::KNOTS) << " knots";
 		break;
 
-		case metaf::SpeedUnit::METERS_PER_SECOND:
-		result << speed << " m/s (";
-		result << roundTo(speed * 1.943844, 1) << " knots, ";
-		result << roundTo(speed * 3.6, 1) << " km/h, ";
-		result << roundTo(speed * 2.236936, 1) << " mph)";
+		case metaf::Speed::Unit::METERS_PER_SECOND:
+		result << speed.valueAs(metaf::Speed::Unit::METERS_PER_SECOND) << " m/s";
 		break;
 		
-		case metaf::SpeedUnit::KILOMETERS_PER_HOUR:
-		result << speed << " km/h (";
-		result << roundTo(speed * 0.621371, 1) << " knots, ";
-		result << roundTo(speed * 0.277778, 1) << " m/s, ";
-		result << roundTo(speed * 0.621371, 1) << " mph)";
+		case metaf::Speed::Unit::KILOMETERS_PER_HOUR:
+		result << speed.valueAs(metaf::Speed::Unit::KILOMETERS_PER_HOUR) << " km/h";
 		break;
 
+		case metaf::Speed::Unit::MILES_PER_HOUR:
+		result << speed.valueAs(metaf::Speed::Unit::MILES_PER_HOUR) << " mph";
+
 		default: 
-		result << "value " << speed;
+		result << "value " << speed.value;
 		result << ", speed unit not listed: ";
-		result << static_cast<int>(unit);
+		result << static_cast<int>(speed.unit);
+		unknownUnits = true;
 		break;
+	}
+	if (!unknownUnits) {
+		result << " (";
+		if (speed.unit != metaf::Speed::Unit::KNOTS) {
+			result << roundTo(speed.valueAs(metaf::Speed::Unit::KNOTS), 1);
+			result << " knots, ";
+		}
+		if (speed.unit != metaf::Speed::Unit::METERS_PER_SECOND) {
+			result << roundTo(speed.valueAs(metaf::Speed::Unit::METERS_PER_SECOND), 1);
+			result << " m/s, ";
+		}
+		if (speed.unit != metaf::Speed::Unit::KILOMETERS_PER_HOUR) {
+			result << roundTo(speed.valueAs(metaf::Speed::Unit::KILOMETERS_PER_HOUR), 1);
+			result << " km/h";
+			if (speed.unit != metaf::Speed::Unit::MILES_PER_HOUR) result << ", ";
+		}
+		if (speed.unit != metaf::Speed::Unit::MILES_PER_HOUR) {
+			result << roundTo(speed.valueAs(metaf::Speed::Unit::MILES_PER_HOUR), 1);
+			result << " mph";
+		}
+		result << ")";
 	}
 	return(result.str());
 }
@@ -1049,9 +1063,10 @@ std::string GroupVisitorExplain::temperatureToString(
 	}
 	std::ostringstream result;
 	if (!temperature.value) result << valueModifierToStringShort(temperature.modifier);
-	result << temperature.value << " &deg;C (";
+	result << temperature.valueAs(metaf::Temperature::Unit::DEGREES_C) << " &deg;C (";
 	if (!temperature.value) result << valueModifierToStringShort(temperature.modifier);
-	result << static_cast<int>(temperature.value * 9.0 / 5 + 32) << " &deg;F";
+	result << static_cast<int>(temperature.valueAs(metaf::Temperature::Unit::DEGREES_F));
+	result << " &deg;F";
 	result << ")";
 	return(result.str());
 }
@@ -1500,7 +1515,7 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 			std::string("Parsing error: ") + 
 			GroupVisitorExplain::explainReportError(parser.getError()));
 	}
-	for (auto i=0; i<parser.getResult().size(); i++) {
+	for (auto i=0u; i<parser.getResult().size(); i++) {
 		std::string source = std::string("");
 		if (i < parser.getSourceGroups().size()) {
 			source = parser.getSourceGroups().at(i);
@@ -1519,6 +1534,7 @@ extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
 }
 
 int main(int argc, char ** argv) {
+	(void) argc; (void) argv;
 	//Using EM_ASM_ because EM_ASM(explain()); gives a warning
 	EM_ASM_(explain(), 0); 
 }
