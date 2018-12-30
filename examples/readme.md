@@ -328,4 +328,37 @@ Open file `bin/examples/explain.html` in www browser (Webassembly support requir
 
 [Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
 
-Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and decoded report in plain language is displayed under Report Explanation. 
+Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and decoded report in plain language is displayed under Report Explanation.
+
+For example entering the following METAR report: 
+
+    NZSP 042250Z 08008KT 9999 FEW005 FEW030 M29/ A2869 RMK FG DSNT GRID S CLN AIR 09009KT ALL WNDS GRID SDG/HDG
+
+produces the following plain language explanation:
+
+<details>
+    <summary>Click to show/hide result</summary>
+    <pre>
+Detected report type: METAR (weather observation)
+NZSP : ICAO code for location: NZSP
+042250Z : Day and time of report issue: day 4, time 22:50 GMT
+08008KT : Wind direction: 80° (east) Wind speed:8 knots (4.1 m/s, 14.8 km/h, 9.2 mph)
+9999 : Visibility (prevailing) >10000 meters (>6.21 statute miles, >32808 feet)|
+FEW005 : Few clouds (1/8 to 2/8 sky covered), base height 500 feet (152 meters, 0.09 statute miles)
+FEW030 : Few clouds (1/8 to 2/8 sky covered), base height 3000 feet (914 meters, 0.56 statute miles)
+M29/ : Air temperature: -29 °C (-20 °F), dew point: not reported
+A2869 : Atmospheric pressure: 28.69 inHg (971hPa)
+RMK : The remarks are as follows (this version does not recognise or decode remarks)
+FG : This group is not recognised by parser: FG
+DSNT : This group is not recognised by parser: DSNT
+GRID : This group is not recognised by parser: GRID
+S : This group is not recognised by parser: S
+CLN : This group is not recognised by parser: CLN
+AIR : This group is not recognised by parser: AIR
+09009KT : This group is not recognised by parser: 09009KT
+ALL : This group is not recognised by parser: ALL
+WNDS : This group is not recognised by parser: WNDS
+GRID : This group is not recognised by parser: GRID
+SDG/HDG : This group is not recognised by parser: SDG/HDG
+    </pre>
+</details>
