@@ -146,7 +146,7 @@ TEST(Parser, keepSourceGroups) {
 	EXPECT_EQ(parser.getSourceGroups().at(1), "KLGA");
 
 	EXPECT_EQ(parser.getResult().at(2), 
-		metaf::Group(metaf::ReportTimeGroup(11, 19, 51)));
+		metaf::Group(metaf::ReportTimeGroup(metaf::MetafTime(11, 19, 51))));
 	EXPECT_EQ(parser.getSourceGroups().at(2), "111951Z");
 
 	EXPECT_EQ(parser.getResult().at(3), 

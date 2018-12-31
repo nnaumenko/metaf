@@ -131,60 +131,6 @@ TEST(LocationGroup, constructor) {
 ///////////////////////////////////////////////////////////////////////////////
 
 //Confirm that default groups are equal
-TEST(ReportTimeGroup, defaultEqual) {
-	const metaf::ReportTimeGroup group1;
-	const metaf::ReportTimeGroup group2;
-	EXPECT_TRUE(group1 == group2);
-	EXPECT_FALSE(group1 != group2);
-}
-
-//Confirm that groups with the same day/time are equal
-TEST(ReportTimeGroup, sameDataEqual) {
-	static const auto day = 29;
-	static const auto hour = 23;
-	static const auto minute = 55;
-	metaf::ReportTimeGroup group1;
-	metaf::ReportTimeGroup group2;
-	group1.day = day;
-	group1.hour = hour;
-	group1.minute = minute;
-	group2.day = day;
-	group2.hour = hour;
-	group2.minute = minute;
-	EXPECT_EQ(group1, group2);
-}
-
-//Confirm that groups with different day/time are not equal
-TEST(ReportTimeGroup, differentDataNotEqual) {
-	metaf::ReportTimeGroup group;
-	group.day = 29;
-	group.hour = 23;
-	group.minute = 55;
-	metaf::ReportTimeGroup group1(group);
-	group1.day = 28;
-	metaf::ReportTimeGroup group2(group);
-	group2.hour = 12;
-	metaf::ReportTimeGroup group3(group);
-	group3.minute = 0;
-	EXPECT_NE(group, group1);
-	EXPECT_NE(group, group2);
-	EXPECT_NE(group, group3);
-}
-
-//Confirm that constructor initialises the group with correct data
-TEST(ReportTimeGroup, constructor) {
-	static const auto day = 29u;
-	static const auto hour = 23u;
-	static const auto minute = 55u;
-	const metaf::ReportTimeGroup group(day, hour, minute);
-	EXPECT_EQ(group.day, day);	
-	EXPECT_EQ(group.hour, hour);	
-	EXPECT_EQ(group.minute, minute);	
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-//Confirm that default groups are equal
 TEST(TimeSpanGroup, defaultDataEqual) {
 	const metaf::TimeSpanGroup group1;
 	const metaf::TimeSpanGroup group2;
@@ -2726,7 +2672,7 @@ TEST(getSyntaxGroup, LOCATION) {
 //Confirm that passing ReportTimeGroup to getSyntaxGroup() results in 
 //SyntaxGroup::REPORT_TIME
 TEST(getSyntaxGroup, REPORT_TIME) {
-	const metaf::Group group = metaf::ReportTimeGroup(8, 12, 30);
+	const metaf::Group group = metaf::ReportTimeGroup(metaf::MetafTime(8, 12, 30));
 	EXPECT_EQ(metaf::getSyntaxGroup(group), metaf::SyntaxGroup::REPORT_TIME);
 }
 

@@ -332,8 +332,8 @@ void GroupVisitorJson::visitLocationGroup(const metaf::LocationGroup & group) {
 }
 
 void GroupVisitorJson::visitReportTimeGroup(const metaf::ReportTimeGroup & group) {
-	json.valueInt("reportReleaseDay", group.day);
-	json.valueStr("reportReleaseTime", timeOfDayToString(group.hour, group.minute));
+	json.valueInt("reportReleaseDay", group.time.day);
+	json.valueStr("reportReleaseTime", timeOfDayToString(group.time.hour, group.time.minute));
 }
 
 void GroupVisitorJson::visitTimeSpanGroup(const metaf::TimeSpanGroup & group) {

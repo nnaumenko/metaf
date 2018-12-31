@@ -6,7 +6,7 @@
 */
 
 /// @file 
-/// @brief METAR or TAF report parser, helpers and structs representing 
+/// @brief METAR / TAF report parser, helpers and structs representing 
 /// parsed METAR or TAF groups.
 
 #ifndef METAR_H
@@ -166,7 +166,7 @@ namespace metaf {
 
 	/// Runway identification
 	struct Runway {
-		/// Runway designator
+		/// Runway designator (left / right / center)
 		enum class Designator {
 			UNKNOWN = 30,
 			NONE = 0,
@@ -176,9 +176,9 @@ namespace metaf {
 		};
 		Runway() = default;
 		/// Initialise Runway based on its number and designator
-		/// @param number Runway number
-		/// @param designator Runway designator, default is NONE
-		Runway(unsigned int number, Designator designator = Designator::NONE);
+		/// @param num Runway number
+		/// @param dі Runway designator, default is NONE
+		Runway(unsigned int num, Designator ds = Designator::NONE);
 		/// Initialise runway with "all runways" information coded.
 		static Runway makeAllRunways();
 		/// Initialise runway with "repetition of last message" information coded.
@@ -189,17 +189,17 @@ namespace metaf {
 		/// @brief Decode runway designator from char
 		/// @details R/L/C are treates as Right/Left/Center, space or 
 		/// null-terminator are treated as None, every other char is treated as
-		/// Unknown
-		/// @par c Designator as char
-		/// @return Decoded designator or UNKNOWN if designator is not recognised
+		/// Unknown.
+		/// @par c Char to convert to designator.
+		/// @return Decoded designator or UNKNOWN if designator is not recognised.
 		static Designator designatorFromChar(char c);
 		/// @brief Decode runway designator from string
 		/// @details If input string has zero length, the designator is None. If 
 		/// input string has length greater than one, the designator is Unknown.
 		/// If input string has length of exactly one, the designator is as per
 		/// designatorFromChar.
-		/// @par s Designator as string
-		/// @return Decoded designator or UNKNOWN if designator is not recognised
+		/// @par s String to convert to designator.
+		/// @return Decoded designator or UNKNOWN if designator is not recognised.
 		static Designator designatorFromString(const std::string & s);
 		/// Check if all runways coded (runway number 88)
 		/// @return True when all runways encoded, false otherwise
@@ -217,6 +217,37 @@ namespace metaf {
 
 	bool operator ==(const Runway & lhs, const Runway & rhs);
 	inline bool operator !=(const Runway & lhs, const Runway & rhs) {
+		return !(lhs == rhs);
+	}
+
+	/// Time used in METAR/TAF. Includes day-of-month (optional), hour and 
+	/// minute. Day is optional and can be not included. Hour is in range 
+	/// from 0 to 24; 0 hours means 'midnight between previous and this day', 
+	/// 24 hours means 'midnight between this and next day'.
+	struct MetafTime {
+		MetafTime() = default;
+		/// Initialise the time if day is included.
+		/// @param dy Day of month, 1 to 31.
+		/// @param hr Time of day, hours.
+		/// @param mn Time of day, minutes.
+		MetafTime(unsigned int dy, unsigned int hr, unsigned int mn);
+		/// Initialise the time if day is not included.
+		/// @param hr Time of day, hours.
+		/// @param mn Time of day, minutes.
+		MetafTime(unsigned int hr, unsigned int mn = 0);
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
+		/// Check is day is reported.
+		/// @return True if day has been reported, false otherwise.
+		bool isDayReported() const { return(day != 0); }
+		unsigned int day = 0;			///< Day of month (or 0 if not reported)
+		unsigned int hour = 0;			///< Time, hours
+		unsigned int minute = 0;		///< Time, minutes
+	};
+
+	bool operator ==(const MetafTime & lhs, const MetafTime & rhs);
+	inline bool operator !=(const MetafTime & lhs, const MetafTime & rhs) {
 		return !(lhs == rhs);
 	}
 
@@ -241,11 +272,11 @@ namespace metaf {
 		/// @param modifier Ignored unless temperature is zero. If 
 		/// temperature is zero then belowZero field is initialised with
 		/// the value of this parameter.
-		Temperature (int value, ValueModifier modifier = ValueModifier::NONE);
+		Temperature (int val, ValueModifier m = ValueModifier::NONE);
 		/// Initialise temperature value.
 		/// @param value Integer absolute (always positive) temperature value.
 		/// @param minus Set to true if the temperature value is negative.
-		Temperature (unsigned int value, bool minus);
+		Temperature (unsigned int val, bool minus);
 		/// Check value for validity/consistency.
 		/// @return True if data in struct fields are consistent, false otherwise.
 		bool isValid() const;
@@ -419,18 +450,20 @@ namespace metaf {
 	struct ReportTimeGroup : public GroupBase {
 		ReportTimeGroup() = default;
 		/// Initialise report with day and time.
-		/// @param day Day when report was issued.
-		/// @param hour Hour when report was issued.
-		/// @param minute Minute when report was issued.
-		ReportTimeGroup(unsigned int day, unsigned int hour, unsigned int minute);
+		/// @param t Time when report was issued (day MUST be reported).
+		ReportTimeGroup(const MetafTime & t) : time(t) {}
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
-		unsigned int day = 0; ///< Day when report was issued.
-		unsigned int hour = 0; ///< Hour when report was issued.
-		unsigned int minute = 0; ///< Minute when report was issued.
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const { return(time.isValid() && time.isDayReported()); }
+		MetafTime time;	///< Time when report was issued
 	};
 
-	bool operator ==(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs);
+	inline bool operator ==(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs){
+		return(lhs.time == rhs.time);
+	}
+
 	inline bool operator !=(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs) {
 	 return !(lhs == rhs);
 	}

@@ -1,7 +1,6 @@
 # Modern c++ library for parsing METAR and TAF with focus on Webassembly
 
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
-
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
 ## Introduction
@@ -10,7 +9,7 @@ Metaf is a dependency-free modern c++ library for parsing [METAR weather reports
 
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
-[Example: METAR/TAF report is parsed and converted JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+[Example: METAR/TAF report is parsed and converted to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
 
 [Example: METAR/TAF explained in plain language (English)](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
 

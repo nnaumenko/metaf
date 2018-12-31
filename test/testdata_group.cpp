@@ -154,14 +154,6 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	///////////////////////////////////////////////////////////////////////////////
 
 	{
-		std::string("201730Z"),	//Day-of-month 20, time 17:30 GMT
-		{metaf::ReportPart::HEADER},
-		metaf::ReportTimeGroup(20, 17, 30)
-	},
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
 		std::string("1221/1303"),	//From day 12 21:00 till day 13 03:00
 		{metaf::ReportPart::HEADER, metaf::ReportPart::TAF},
 		metaf::TimeSpanGroup(12,21,13,3)

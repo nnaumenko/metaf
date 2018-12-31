@@ -462,7 +462,7 @@ TEST(WindGroup, parseWrongMalformedGroups) {
 //Confirm that parse() method does not parse other similar groups
 TEST(WindGroup, parseWrongSimilarGroups) {
 	metaf::WindGroup g1;
-	EXPECT_FALSE(g1.parse("1800", metaf::ReportPart::METAR)); 
+	EXPECT_FALSE(g1.parse("201730Z", metaf::ReportPart::METAR)); 
 
 	metaf::WindGroup g2;
 	EXPECT_FALSE(g2.parse("WS020/05025KT", metaf::ReportPart::METAR)); 

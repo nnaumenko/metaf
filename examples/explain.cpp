@@ -53,8 +53,7 @@ private:
 	virtual std::string visitSeaWavesGroup(const metaf::SeaWavesGroup & group);
 	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group);
 	virtual std::string visitOther(const metaf::Group & group);
-	static std::string timeOfDayToString(unsigned int hour, 
-		unsigned int minute);
+	static std::string metafTimeToString(const metaf::MetafTime & time);
 	static std::string trendTypeToString(metaf::TrendTimeGroup::Type type);
 	static float roundTo(float number, int digitsAfterDecimalPoint);
 	static std::string speedToString(const metaf::Speed & speed);
@@ -266,27 +265,23 @@ std::string GroupVisitorExplain::visitReportTimeGroup(
 	const metaf::ReportTimeGroup & group)
 {
 	std::ostringstream result;
-	result << "Day and time of report issue: day " << group.day << ", time ";
-	result << timeOfDayToString(group.hour, group.minute);
+	result << "Day and time of report issue: " << metafTimeToString(group.time);
 	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitTimeSpanGroup(const metaf::TimeSpanGroup & group) {
 	std::ostringstream result;
-	result << "From day " << group.dayFrom << ", time ";
-	result << timeOfDayToString(group.hourFrom, 0);
-	result << " until day " << group.dayTill << ", time ";
-	result << timeOfDayToString(group.hourTill, 0);
+	result << "From " << metafTimeToString(metaf::MetafTime(group.dayFrom, group.hourFrom, 0));
+	result << " until " << metafTimeToString(metaf::MetafTime(group.dayTill, group.hourTill, 0));
 	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitTrendTimeGroup(const metaf::TrendTimeGroup & group) {
 	std::ostringstream result;
 	result << trendTypeToString(group.type) << " ";
-	if (group.dayReported) {
-		result << std::string("day ") << std::to_string(group.day) << ", time ";
-	}
-	result << timeOfDayToString(group.hour, group.minute);
+	metaf::MetafTime t(group.hour, group.minute);
+	if (group.dayReported) t = metaf::MetafTime(group.day, group.hour, group.minute);
+	result << metafTimeToString(t);
 	return(result.str());
 }
 
@@ -459,8 +454,7 @@ std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(
 	std::ostringstream result;
 	result << temperaturePointToString(group.point) << " ";
 	result << temperatureToString(group.temperature) << ", ";
-	result << "expected on day " << group.day;
-	result << ", time " << timeOfDayToString(group.hour, 0);
+	result << "expected on " << metafTimeToString(metaf::MetafTime(group.day, group.hour, 0));
 	return(result.str());
 }
 
@@ -612,21 +606,17 @@ std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
 	return("This group is recognised by parser but not listed");
 }
 
-std::string GroupVisitorExplain::timeOfDayToString(unsigned int hour, 
-	unsigned int minute)
-{
+std::string GroupVisitorExplain::metafTimeToString(const metaf::MetafTime & time) {
+	std::ostringstream result;
+	if (time.isDayReported()) result << "day " << time.day << ", ";
 	static const std::string hourMinuteSeparator(":");
 	static const size_t numberStrSize = 3; //Actually 2 digits + \0
-	char hourStr[numberStrSize];
-	char minuteStr[numberStrSize];
-	if (hour>24) hour = 24;
-	std::snprintf(hourStr, numberStrSize, "%02u", hour);
-	if (minute>59) minute = 59;
-	std::snprintf(minuteStr, numberStrSize, "%02u", minute);
-	return(std::string(hourStr) + 
-		hourMinuteSeparator + 
-		std::string(minuteStr) + 
-		std::string(" GMT"));
+	char numberStr[numberStrSize];
+	std::snprintf(numberStr, numberStrSize, "%02u", time.hour<=24 ? time.hour : 24);
+	result << numberStr << hourMinuteSeparator;
+	std::snprintf(numberStr, numberStrSize, "%02u", time.minute<=59 ? time.minute : 59);
+	result << numberStr << " GMT";
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::trendTypeToString(metaf::TrendTimeGroup::Type type){

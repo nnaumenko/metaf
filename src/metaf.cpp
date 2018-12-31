@@ -5,6 +5,10 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
+/// @file 
+/// @brief METAR / TAF report parser, helpers and structs representing 
+/// parsed METAR or TAF groups.
+
 #include "metaf.h"
 
 #include <string>
@@ -49,17 +53,15 @@ SyntaxGroup metaf::getSyntaxGroup(const Group & group) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Runway::Runway(unsigned int n, Designator d) {
+Runway::Runway(unsigned int num, Designator ds) {
 	//50 is sometimes added to indicate right runway, e.g. 55 is runway 5R
 	static const auto rightRunwayNumber = 50; 
-	if (n >= rightRunwayNumber && 
-		n <= rightRunwayNumber + maxRunwayHeading) {
-		number = n - 50;
+	number = num;
+	designator = ds;
+	if (num >= rightRunwayNumber && num <= (rightRunwayNumber + maxRunwayHeading)) {
+		number -= 50;
 		designator = Designator::RIGHT;
-		return;
 	}
-	number = n;
-	designator = d;
 }
 
 Runway Runway::makeAllRunways() {
@@ -120,15 +122,37 @@ bool metaf::operator ==(const Runway & lhs, const Runway & rhs) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Temperature::Temperature (int v, ValueModifier m) : 
-	value(v), reported(true), modifier(!v ? m : ValueModifier::NONE) {}
+MetafTime::MetafTime(unsigned int dy, unsigned int hr, unsigned int mn) :
+	day(dy), hour(hr), minute(mn) {}
 
-Temperature::Temperature (unsigned int v, bool m) {
-	value = v;
+MetafTime::MetafTime(unsigned int hr, unsigned int mn) : 
+	day (0), hour(hr), minute(mn) {}
+
+bool MetafTime::isValid() const {
+	static const auto maxDay = 31u;
+	static const auto maxHour = 24u;
+	static const auto maxMinute = 59u;
+	if (day > maxDay) return(false); //day == 0 means 'day not reported'
+	if (hour > maxHour) return(false);
+	if (minute > maxMinute) return(false);
+	return(true);
+}
+
+bool metaf::operator ==(const MetafTime & lhs, const MetafTime & rhs) {
+	return (lhs.day == rhs.day && lhs.hour == rhs.hour && lhs.minute == rhs.minute);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+Temperature::Temperature (int val, ValueModifier m) : 
+	value(val), reported(true), modifier(!val ? m : ValueModifier::NONE) {}
+
+Temperature::Temperature (unsigned int val, bool minus) {
+	value = val;
 	reported = true;
 	modifier = ValueModifier::NONE;
-	if (m) value = -value;
-	if (!value) modifier = m ? ValueModifier::LESS_THAN : ValueModifier::MORE_THAN;
+	if (minus) value = -value;
+	if (!value) modifier = minus ? ValueModifier::LESS_THAN : ValueModifier::MORE_THAN;
 }
 
 float Temperature::valueAs(Unit unit) const {
@@ -421,9 +445,6 @@ bool metaf::operator ==(const LocationGroup & lhs, const LocationGroup & rhs){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ReportTimeGroup::ReportTimeGroup(unsigned int d, unsigned int h, unsigned int m) : 
-	day(d), hour(h), minute(m) {}
-
 bool ReportTimeGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex reportTimeRegex ("(\\d\\d)(\\d\\d)(\\d\\d)Z");
 	static const auto expectedMatchGroups = 4;
@@ -434,16 +455,11 @@ bool ReportTimeGroup::parse(const string & group, ReportPart reportPart) {
 	if (reportPart != ReportPart::HEADER) return(false);
 	if (!regex_match(group, match, reportTimeRegex)) return(false);
 	if (match.size() != (expectedMatchGroups)) return(false);
-	day = static_cast<unsigned int>(stoi(match.str(matchDay)));
-	hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
-	minute = static_cast<unsigned int>(stoi(match.str(matchMinute)));
+	const auto day = static_cast<unsigned int>(stoi(match.str(matchDay)));
+	const auto hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
+	const auto minute = static_cast<unsigned int>(stoi(match.str(matchMinute)));
+	time = MetafTime(day, hour, minute);
 	return(true);
-}
-
-bool metaf::operator ==(const ReportTimeGroup & lhs, const ReportTimeGroup & rhs){
-	return(lhs.day == rhs.day && 
-		lhs.hour == rhs.hour && 
-		lhs.minute == rhs.minute);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
