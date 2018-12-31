@@ -13,11 +13,14 @@ build:
 
 tests:
   stage: test
+  image: ubuntu:16.04
   script:
   - echo Work in progress, see branch ci/tests_gitlab
   - echo So far we only check that prebuilt test.xml file exists and no failures included
   - test -f bin/test/test.xml
+  - echo $?
   - cat bin/test/test.xml | grep 'failures="[1-9]' | [ $(wc -c) -eq 0 ]
+  - echo $?
   dependencies:
     - build
   artifacts:
