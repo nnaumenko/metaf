@@ -93,6 +93,17 @@ TEST(ReportTimeGroup, parseWrongReportPart) {
 	EXPECT_FALSE(g4.parse(gs, metaf::ReportPart::RMK));
 }
 
+//Confirm that parse() method does not parse Report Time Groups if number of 
+//digits is wrong
+TEST(ReportTimeGroup, parseWrongDigitNumber) {
+	metaf::ReportTimeGroup g1;
+	EXPECT_FALSE(g1.parse("2017300Z", metaf::ReportPart::HEADER)); //Too many digits
+
+	metaf::ReportTimeGroup g2;
+	EXPECT_FALSE(g2.parse("20173Z", metaf::ReportPart::HEADER)); //Too few digits
+}
+
+
 //Confirm that parse() method does not parse malformed Report Time Groups
 TEST(ReportTimeGroup, parseWrongMalformedGroups) {
 	metaf::ReportTimeGroup g1;
@@ -109,4 +120,11 @@ TEST(ReportTimeGroup, parseWrongMalformedGroups) {
 TEST(ReportTimeGroup, parseWrongSimilarGroups) {
 	metaf::ReportTimeGroup g1;
 	EXPECT_FALSE(g1.parse("05025KT", metaf::ReportPart::HEADER));
+
+	metaf::ReportTimeGroup g2;
+	EXPECT_FALSE(g2.parse("1709/1721", metaf::ReportPart::HEADER));
+
+	metaf::ReportTimeGroup g3;
+	EXPECT_FALSE(g3.parse("FM122230", metaf::ReportPart::HEADER));
+
 }

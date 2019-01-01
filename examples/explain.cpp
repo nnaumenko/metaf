@@ -271,17 +271,15 @@ std::string GroupVisitorExplain::visitReportTimeGroup(
 
 std::string GroupVisitorExplain::visitTimeSpanGroup(const metaf::TimeSpanGroup & group) {
 	std::ostringstream result;
-	result << "From " << metafTimeToString(metaf::MetafTime(group.dayFrom, group.hourFrom, 0));
-	result << " until " << metafTimeToString(metaf::MetafTime(group.dayTill, group.hourTill, 0));
+	result << "From " << metafTimeToString(group.from);
+	result << " until " << metafTimeToString(group.till);
 	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitTrendTimeGroup(const metaf::TrendTimeGroup & group) {
 	std::ostringstream result;
 	result << trendTypeToString(group.type) << " ";
-	metaf::MetafTime t(group.hour, group.minute);
-	if (group.dayReported) t = metaf::MetafTime(group.day, group.hour, group.minute);
-	result << metafTimeToString(t);
+	result << metafTimeToString(group.time);
 	return(result.str());
 }
 
@@ -454,7 +452,7 @@ std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(
 	std::ostringstream result;
 	result << temperaturePointToString(group.point) << " ";
 	result << temperatureToString(group.temperature) << ", ";
-	result << "expected on " << metafTimeToString(metaf::MetafTime(group.day, group.hour, 0));
+	result << "expected on " << metafTimeToString(group.time);
 	return(result.str());
 }
 
@@ -1052,9 +1050,30 @@ std::string GroupVisitorExplain::temperatureToString(
 			std::to_string(static_cast<int>(temperature.unit)));
 	}
 	std::ostringstream result;
-	if (!temperature.value) result << valueModifierToStringShort(temperature.modifier);
-	result << temperature.valueAs(metaf::Temperature::Unit::DEGREES_C) << " &deg;C (";
-	if (!temperature.value) result << valueModifierToStringShort(temperature.modifier);
+	if (!temperature.value) {
+		switch (temperature.modifier) {
+			case metaf::ValueModifier::UNKNOWN:
+			result << "unknown modifier, ";
+			break;
+
+			case metaf::ValueModifier::NONE:
+			break;
+
+			case metaf::ValueModifier::LESS_THAN:
+			result << "slightly less than ";
+			break;
+
+			case metaf::ValueModifier::MORE_THAN:
+			result << "slightly more than ";
+			break;
+
+			default: 
+			result << "modifier not listed: " << static_cast<int>(temperature.modifier) << ", ";
+			break;
+		}
+	}
+	result << static_cast<int>(temperature.valueAs(metaf::Temperature::Unit::DEGREES_C));
+	result << " &deg;C (";
 	result << static_cast<int>(temperature.valueAs(metaf::Temperature::Unit::DEGREES_F));
 	result << " &deg;F";
 	result << ")";

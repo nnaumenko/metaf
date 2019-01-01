@@ -154,57 +154,6 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 	///////////////////////////////////////////////////////////////////////////////
 
 	{
-		std::string("1221/1303"),	//From day 12 21:00 till day 13 03:00
-		{metaf::ReportPart::HEADER, metaf::ReportPart::TAF},
-		metaf::TimeSpanGroup(12,21,13,3)
-	},
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
-		std::string("FM191445"),	//from day 19 14:45
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::FROM, 19, 14, 45),
-	},
-	{
-		std::string("TL010300"),	//till day 1, 03:00
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::TILL, 1, 3, 0),
-	},
-	{
-		std::string("AT121530"),	//at day 12 15:30
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::AT, 12, 15, 30),
-	},
-	{
-		std::string("FM1445"),	//from 14:45
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::FROM, 14, 45),
-	},
-	{
-		std::string("TL0300"),	//till 03:00
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::TILL, 3, 0),
-	},
-	{
-		std::string("AT1530"),	//at 15:30
-		{metaf::ReportPart::METAR, metaf::ReportPart::TAF},
-		metaf::TrendTimeGroup(metaf::TrendTimeGroup::Type::AT, 15, 30),
-	},
-	{
-		std::string("FF051025"),	//type can only be FM, TL, and AT
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("FF051025"),
-	},
-	{
-		std::string("FF1025"),	//type can only be FM, TL, and AT
-		testdata::GroupTestData::allReportParts,
-		metaf::PlainTextGroup("FF1025"),
-	},
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
 		std::string("PROB30"),	//probability 30%
 		{metaf::ReportPart::TAF},
 		metaf::ProbabilityGroup(30),
@@ -1049,42 +998,6 @@ const std::vector<testdata::GroupTestData> testdata::groupDataSet = {
 		std::string("02/00"), //temperature 2 centigrade, dew point between -0.5 and 0 centigrade
 		{metaf::ReportPart::METAR},
 		metaf::TemperatureGroup(2, metaf::Temperature(0, metaf::ValueModifier::MORE_THAN)),
-	},
-
-
-	///////////////////////////////////////////////////////////////////////////////
-
-	{
-		std::string("TX03/0620Z"), //Max temperature 03 centigrade on day 6, 20:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMax(3, 6, 20),
-	},
-	{
-		std::string("TXM01/1402Z"), //Max temperature 01 centigrade on day 4, 2:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMax(-1, 14, 02),
-	},
-	{
-		std::string("TN13/1204Z"), //Min temperature 13 centigrade on day 12, 4:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMin(13, 12, 4),
-	},
-	{
-		std::string("TNM02/0709Z"), //Min temperature -2 centigrade on day 7, 9:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMin(-2, 7, 9),
-	},
-	{
-		std::string("TX00/0709Z"), //Max temperature between 0 & 0.5 centigrade on day 7, 9:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMax(
-			metaf::Temperature(0, metaf::ValueModifier::MORE_THAN), 7, 9),
-	},
-	{
-		std::string("TXM00/0709Z"), //Max temperature between -0.5 & 0 centigrade on day 7, 9:00 GMT
-		{metaf::ReportPart::TAF},
-		metaf::MinMaxTemperatureGroup::makeMax(
-			metaf::Temperature(0, metaf::ValueModifier::LESS_THAN), 7, 9),
 	},
 
 	///////////////////////////////////////////////////////////////////////////////

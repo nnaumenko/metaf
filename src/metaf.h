@@ -472,25 +472,24 @@ namespace metaf {
 	/// @details: Time span when report or trend is applicable.
 	struct TimeSpanGroup : public GroupBase {
 		TimeSpanGroup() = default;
-		/// Initialise group with a day/hour from and until which report is
-		/// applicable.
-		/// @param dayFrom Day from which the report is applicable.
-		/// @param hourFrom Hour from which the report is applicable.
-		/// @param dayTill Day until which the report is applicable.
-		/// @param hourTill Hour until which the report is applicable.
-		TimeSpanGroup(unsigned int dayFrom,	
-			unsigned int hourFrom, 
-			unsigned int dayTill, 
-			unsigned int hourTill);
+		/// Initialise group with a time from and until which report or 
+		/// trend is applicable.
+		/// @param fm Time span begin time ('from'), minutes must be zero
+		/// @param tl Time span end time ('till'), minutes must be zero
+		TimeSpanGroup(const MetafTime & fm, const MetafTime & tl) : from(fm), till(tl) {}
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
-		unsigned int dayFrom = 0;  ///< Day from which the report is applicable.
-		unsigned int hourFrom = 0; ///< Hour from which the report is applicable.
-		unsigned int dayTill = 0;  ///< Day until which the report is applicable.
-		unsigned int hourTill = 0; ///< Hour until which the report is applicable.
+		MetafTime from;  ///< Time span begin time
+		MetafTime till;  ///< Time span end time
 	};
 
-	bool operator ==(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs);
+	inline bool operator ==(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs) {
+		return(lhs.from == rhs.from && lhs.till == rhs.till);
+	}
+
 	inline bool operator !=(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs) {
 	 return !(lhs == rhs);
 	}
@@ -506,29 +505,22 @@ namespace metaf {
 		};
 		TrendTimeGroup () = default;
 		/// Initialised group with a day and time (long trend time group).
-		/// @param type Trend time type (FROM, UNTIL, AT).
-		/// @param day Day of the trend time.
-		/// @param hour Hour of the trend time.
-		/// @param minute Minute of the trend time.
-		TrendTimeGroup (Type type,
-			unsigned int day, 
-			unsigned int hour, 
-			unsigned int minute);
-		/// Initialised group with time only (short trend time group)
-		/// @param type Trend time type (FROM, UNTIL, AT)
-		/// @param hour Hour of the trend time
-		/// @param minute Minute of the trend time
-		TrendTimeGroup (Type type, unsigned int hour, unsigned int minute);
+		/// @param tp Trend time type (FROM, UNTIL, AT).
+		/// @param t Time when event begins (FROM), ends (UNTIL) of occurs (AT).
+		TrendTimeGroup (Type tp, const MetafTime & t) : type(tp), time(t) {}
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const { return(type != Type::UNKNOWN && time.isValid()); }
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		Type type = Type::UNKNOWN;	///< Trend time type (FROM, UNTIL, AT)
-		unsigned int day = 0;		///< Day of the trend time (if included)
-		unsigned int hour = 0;		///< Hour of the trend time
-		unsigned int minute = 0;	///< Minute of the trend time
-		bool dayReported = false;	///< Is day included in the trend time
+		MetafTime time;				///< Time when event begins, ends or occurs
 	};
 
-	bool operator ==(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs);
+	inline bool operator ==(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs) {
+		return(lhs.type == rhs.type && lhs.time == rhs.time);
+	}
+
 	inline bool operator !=(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs) {
 	 return !(lhs == rhs);
 	}
@@ -583,6 +575,9 @@ namespace metaf {
 		/// is encoded as 00000KT or 00000MPS.
 		/// @return True if calm wind, false if the wind is observed.
 		bool isCalm() const;
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		/// Wind direction "from" in degrees (if reported and not variable).
@@ -632,6 +627,9 @@ namespace metaf {
 		WindShearGroup(unsigned int height,
 			unsigned int direction, 
 			Speed windSpeed);
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		unsigned int height = 0;	///> Height where wind shear occurs.
@@ -966,27 +964,31 @@ namespace metaf {
 		};
 		MinMaxTemperatureGroup() = default;
 		/// Initialise group with minimum temperature forecast.
-		/// @param temperature Minimum temperature expected.
-		/// @param day Day when specified temperature is expected.
-		/// @param hour Hour when specified temperature is expected.
-		static MinMaxTemperatureGroup makeMin(Temperature temperature,
-			unsigned int day, 
-			unsigned int hour);
+		/// @param temp Minimum temperature expected.
+		/// @param tm Time when specified temperature is expected.
+		static MinMaxTemperatureGroup makeMin(Temperature temp, const MetafTime & tm);
 		/// Initialise group with maximum temperature forecast.
-		/// @param temperature Maximum temperature expected.		/// @param day Day when specified temperature is expected.
-		/// @param hour Hour when specified temperature is expected.
-		static MinMaxTemperatureGroup makeMax(Temperature temperature, 
-			unsigned int day, 
-			unsigned int hour);
+		/// @param temp Maximum temperature expected.
+		/// @param tm Time when specified temperature is expected.
+		static MinMaxTemperatureGroup makeMax(Temperature temp, const MetafTime & tm);
+		/// Check value for validity/consistency.
+		/// @return True if data in struct fields are consistent, false otherwise.
+		bool isValid() const;
 		/// Attempt to parse group. See GroupBase::parse for details.
 		bool parse(const std::string & group, ReportPart reportPart);
 		Point point = Point::UNKNOWN;	///< Temperature point (minimum or maximum)
-		Temperature temperature = Temperature(0); ///< Temperature value (minimum or maximum)
-		unsigned int day = 0;		///< Day when specified temperature is expected.
-		unsigned int hour = 0;		///< Hour when specified temperature is expected.
+		Temperature temperature; 		///< Temperature value (minimum or maximum)
+		MetafTime time;					///< Time when specified temperature is expected.
 	};
 
-	bool operator ==(const MinMaxTemperatureGroup & lhs, const MinMaxTemperatureGroup & rhs);
+	inline bool operator ==(const MinMaxTemperatureGroup & lhs, 
+		const MinMaxTemperatureGroup & rhs)
+	{
+		return(lhs.point == rhs.point && 
+			lhs.temperature == rhs.temperature && 
+			lhs.time == rhs.time);
+	}
+
 	inline bool operator !=(const MinMaxTemperatureGroup & lhs, 
 		const MinMaxTemperatureGroup & rhs)
 	{

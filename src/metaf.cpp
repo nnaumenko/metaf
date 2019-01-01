@@ -464,13 +464,6 @@ bool ReportTimeGroup::parse(const string & group, ReportPart reportPart) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-TimeSpanGroup::TimeSpanGroup(unsigned int df,	
-	unsigned int hf, 
-	unsigned int dt, 
-	unsigned int ht) : 
-		dayFrom(df), hourFrom(hf), dayTill(dt), hourTill(ht) {}
-
-
 bool TimeSpanGroup::parse(const string & group, ReportPart reportPart){
 	static const regex timeSpanRegex("(\\d\\d)(\\d\\d)/(\\d\\d)(\\d\\d)");
 	static const auto expectedMatchGroups = 5;
@@ -482,28 +475,24 @@ bool TimeSpanGroup::parse(const string & group, ReportPart reportPart){
 	if (reportPart != ReportPart::HEADER &&	reportPart != ReportPart::TAF) return(false);
 	if (!regex_match(group, match, timeSpanRegex)) return(false);
 	if (match.size() != (expectedMatchGroups)) return(false);
-	dayFrom = static_cast<unsigned int>(stoi(match.str(matchDayFrom)));
-	hourFrom = static_cast<unsigned int>(stoi(match.str(matchHourFrom)));
-	dayTill = static_cast<unsigned int>(stoi(match.str(matchDayTill)));
-	hourTill = static_cast<unsigned int>(stoi(match.str(matchHourTill)));
+	const auto dayFrom = static_cast<unsigned int>(stoi(match.str(matchDayFrom)));
+	const auto hourFrom = static_cast<unsigned int>(stoi(match.str(matchHourFrom)));
+	const auto dayTill = static_cast<unsigned int>(stoi(match.str(matchDayTill)));
+	const auto hourTill = static_cast<unsigned int>(stoi(match.str(matchHourTill)));
+	from = MetafTime(dayFrom, hourFrom, 0);
+	till = MetafTime(dayTill, hourTill, 0);
 	return(true);
 }
 
-bool metaf::operator ==(const TimeSpanGroup & lhs, const TimeSpanGroup & rhs){
-	return(lhs.dayFrom == rhs.dayFrom &&
-		lhs.hourFrom == rhs.hourFrom &&
-		lhs.dayTill == rhs.dayTill &&
-		lhs.hourTill == rhs.hourTill);
+bool TimeSpanGroup::isValid() const {
+	//The format of time span group is FROM DAY FROM HOUR / TILL DAY TILL HOUR
+	//Due to this, minutes are implied to be zero and day must be always reported
+	if (!from.isValid() || from.minute || !from.isDayReported()) return(false);
+	if (!till.isValid() || till.minute || !till.isDayReported()) return(false);
+	return(true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-TrendTimeGroup::TrendTimeGroup (Type t, unsigned int d, unsigned int h, unsigned int m) :
-	type(t), day(d), hour(h), minute(m), dayReported(true) {}
-
-TrendTimeGroup::TrendTimeGroup (Type t, unsigned int h, unsigned int m) : 
-	type(t), hour(h), minute(m), dayReported(false) {}
-
 
 bool TrendTimeGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex trendTimeRegex ("(?:(FM)|(TL)|(AT))(\\d\\d)?(\\d\\d)(\\d\\d)");
@@ -523,23 +512,15 @@ bool TrendTimeGroup::parse(const string & group, ReportPart reportPart) {
 	if (match.length(matchFm)) type = Type::FROM;
 	if (match.length(matchTl)) type = Type::TILL;
 	if (match.length(matchAt)) type = Type::AT;
-	dayReported = false; day = 0;
+	const auto hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
+	const auto minute = static_cast<unsigned int>(stoi(match.str(matchMinute)));
 	if (match.length(matchDay)) {
-		day = static_cast<unsigned int>(stoi(match.str(matchDay)));
-		dayReported = true;
+		const auto day = static_cast<unsigned int>(stoi(match.str(matchDay)));
+		time = MetafTime(day, hour, minute);
+	} else {
+		time = MetafTime(hour, minute);
 	}
-	hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
-	minute = static_cast<unsigned int>(stoi(match.str(matchMinute)));
 	return(true);
-}
-
-bool metaf::operator ==(const TrendTimeGroup & lhs, const TrendTimeGroup & rhs){
-	if (lhs.type != rhs.type ||
-		lhs.dayReported != rhs.dayReported ||
-		lhs.hour != rhs.hour ||
-		lhs.minute != rhs.minute) return(false);
-		if (lhs.dayReported && (lhs.day != rhs.day)) return(false);
-	return(true);		
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -598,6 +579,16 @@ bool WindGroup::isCalm() const {
 	return (directionReported && !directionVariable && !direction && 
 		windSpeed.reported && !windSpeed.value && !gustSpeed.reported);
 }
+
+bool WindGroup::isValid() const {
+	static const auto maxDirection = 350u;
+	if (directionReported && !directionVariable && direction > maxDirection) return(false);	
+	if (!windSpeed.isValid() || gustSpeed.isValid()) return(false);
+	if (windSpeed.unit != gustSpeed.unit) return(false);
+	if (windSpeed.value < gustSpeed.value) return(false);
+	return(true);
+}
+
 
 bool WindGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex windRegex(
@@ -683,6 +674,11 @@ bool metaf::operator ==(const VarWindGroup & lhs, const VarWindGroup & rhs){
 
 WindShearGroup::WindShearGroup(unsigned int h, unsigned int d, Speed ws) :
 	height(h), direction(d), windSpeed(ws) {}
+
+bool WindShearGroup::isValid() const {
+	static const auto maxDirection = 350u;
+	return(height > 0 && direction <= maxDirection && windSpeed.isValid());
+}
 
 bool WindShearGroup::parse(const string & group, ReportPart reportPart) {
 	static const regex windShearRegex(
@@ -1275,27 +1271,23 @@ bool metaf::operator ==(const TemperatureGroup & lhs, const TemperatureGroup & r
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMin(Temperature temperature,
-	unsigned int day, 
-	unsigned int hour)
+MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMin(Temperature temperature, 
+	const MetafTime & time)
 {
 	MinMaxTemperatureGroup group;
 	group.point = MinMaxTemperatureGroup::Point::MINIMUM;
 	group.temperature = temperature;
-	group.day = day;
-	group.hour = hour;
+	group.time = time;
 	return(group);
 }
 
 MinMaxTemperatureGroup MinMaxTemperatureGroup::makeMax(Temperature temperature, 
-	unsigned int day, 
-	unsigned int hour)
+	const MetafTime & time) 
 {
 	MinMaxTemperatureGroup group;
 	group.point = MinMaxTemperatureGroup::Point::MAXIMUM;
 	group.temperature = temperature;
-	group.day = day;
-	group.hour = hour;
+	group.time = time;
 	return(group);
 }
 
@@ -1316,17 +1308,20 @@ bool MinMaxTemperatureGroup::parse(const string & group, ReportPart reportPart) 
 	if (match.length(matchMax)) point = Point::MAXIMUM;
 	if (match.length(matchMin)) point = Point::MINIMUM;
 	temperature = Temperature(stoi(match.str(matchTemp)), match.length(matchM));
-	day = static_cast<unsigned int>(stoi(match.str(matchDay)));
-	hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
+	const auto day = static_cast<unsigned int>(stoi(match.str(matchDay)));
+	const auto hour = static_cast<unsigned int>(stoi(match.str(matchHour)));
+	time = MetafTime(day, hour, 0);
 	return(true);
 }
 
-bool metaf::operator ==(const MinMaxTemperatureGroup & lhs, const MinMaxTemperatureGroup & rhs){
-	if (lhs.point != rhs.point ||
-		lhs.day != rhs.day ||
-		lhs.hour != rhs.hour) return(false);
-	if (lhs.temperature != rhs.temperature) return(false);
-	return(true);
+bool MinMaxTemperatureGroup::isValid() const {
+	//The time format of time span group includes day and hour only, minutes 
+	//are implied to be zero and day must be always reported
+	return(point != Point::UNKNOWN &&
+		temperature.isValid() &&
+		time.isValid() &&
+		!time.minute &&
+		time.isDayReported());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

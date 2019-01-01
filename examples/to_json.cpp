@@ -340,10 +340,10 @@ void GroupVisitorJson::visitTimeSpanGroup(const metaf::TimeSpanGroup & group) {
 	if (std::holds_alternative<metaf::ProbabilityGroup>(lastGroup)) {
 		json.valueStr("trend", "time span");
 	}
-	json.valueInt("applicableFromDay", group.dayFrom);
-	json.valueStr("applicableFromTime", timeOfDayToString(group.hourFrom, 0));
-	json.valueInt("applicableUntilDay", group.dayTill);
-	json.valueStr("applicableUntilTime", timeOfDayToString(group.hourTill, 0));
+	json.valueInt("applicableFromDay", group.from.day);
+	json.valueStr("applicableFromTime", timeOfDayToString(group.from.hour, 0));
+	json.valueInt("applicableUntilDay", group.till.day);
+	json.valueStr("applicableUntilTime", timeOfDayToString(group.till.hour, 0));
 }
 
 void GroupVisitorJson::visitTrendTimeGroup(const metaf::TrendTimeGroup & group) {
@@ -351,8 +351,8 @@ void GroupVisitorJson::visitTrendTimeGroup(const metaf::TrendTimeGroup & group) 
 		json.valueStr("trend", trendTypeToString(group.type));
 	}
 	json.startObject(trendTypeToString(group.type));
-	if (group.dayReported) json.valueInt("day", group.day);
-	json.valueStr("time", timeOfDayToString(group.hour, group.minute));
+	if (group.time.isDayReported()) json.valueInt("day", group.time.day);
+	json.valueStr("time", timeOfDayToString(group.time.hour, group.time.minute));
 	json.finish();
 }
 
@@ -541,8 +541,8 @@ void GroupVisitorJson::visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatur
 		json.valueStr("temperatureDetailed", temperatureValueToString(group.temperature));
 	}
 	json.valueStr("temperatureUnit", temperatureUnitToString(group.temperature.unit));
-	json.valueInt("expectedOnDay", group.day);
-	json.valueStr("expectedOnTime", timeOfDayToString(group.hour, 0));
+	json.valueInt("expectedOnDay", group.time.day);
+	json.valueStr("expectedOnTime", timeOfDayToString(group.time.hour, 0));
 	json.finish();
 }
 
