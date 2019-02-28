@@ -8,123 +8,71 @@
 #include "gtest/gtest.h"
 #include "metaf.h"
 
-//Confirm that default groups are equal
-TEST(ReportTimeGroup, defaultEqual) {
-	const metaf::ReportTimeGroup group1;
-	const metaf::ReportTimeGroup group2;
-	EXPECT_TRUE(group1 == group2);
-	EXPECT_FALSE(group1 != group2);
-}
-
-//Confirm that groups with the same day/time are equal
-TEST(ReportTimeGroup, sameDataEqual) {
-	static const auto day = 29;
-	static const auto hour = 23;
-	static const auto minute = 55;
-	metaf::ReportTimeGroup group1;
-	metaf::ReportTimeGroup group2;
-	group1.time = metaf::MetafTime(day, hour, minute);
-	group2.time = metaf::MetafTime(day, hour, minute);
-	EXPECT_EQ(group1, group2);
-}
-
-//Confirm that groups with different day/time are not equal
-TEST(ReportTimeGroup, differentDataNotEqual) {
-	metaf::ReportTimeGroup group;
-	group.time = metaf::MetafTime(29, 23, 55);
-	metaf::ReportTimeGroup group1(group);
-	group1.time = metaf::MetafTime(29, 23, 56);
-	EXPECT_NE(group, group1);
-}
-
-//Confirm that constructor initialises the group with correct data
-TEST(ReportTimeGroup, constructor) {
-	static const auto time = metaf::MetafTime (29, 23, 55);
-	const metaf::ReportTimeGroup group(time);
-	EXPECT_EQ(group.time, time);	
-}
-
-//Confirm that isValid returns true if day/time is valid and day is reported
-TEST(ReportTimeGroup, isValidCorrect) {
-	static const auto time = metaf::MetafTime (29, 23, 55);
-	ASSERT_TRUE(time.isValid());
-	ASSERT_TRUE(time.isDayReported());
-	const metaf::ReportTimeGroup group(time);
-	EXPECT_TRUE(group.isValid());
-}
-
-//Confirm that isValid returns false if day/time is not valid or day is not 
-//reported
-TEST(ReportTimeGroup, isValidIncorrect) {
-	static const auto time1 = metaf::MetafTime (32, 23, 55);
-	ASSERT_FALSE(time1.isValid());
-	const metaf::ReportTimeGroup group1(time1);
-
-	static const auto time2 = metaf::MetafTime (23, 55);
-	ASSERT_FALSE(time2.isDayReported());
-	const metaf::ReportTimeGroup group2(time2);
-
-	EXPECT_FALSE(group1.isValid());
-	EXPECT_FALSE(group2.isValid());
-}
-
-//Confirm that parse() method correctly parses Report Time Group
 TEST(ReportTimeGroup, parseReportTime) {
-	metaf::ReportTimeGroup g;
-	EXPECT_TRUE(g.parse("201730Z", metaf::ReportPart::HEADER)); //day-of-month 20, time 17:30
-	EXPECT_EQ(g.time, metaf::MetafTime(20, 17, 30));
+	const auto rtg = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg.has_value());
+	ASSERT_TRUE(rtg->time().day().has_value());
+	EXPECT_EQ(rtg->time().day().value(), 20u);
+	EXPECT_EQ(rtg->time().hour(), 17u);
+	EXPECT_EQ(rtg->time().minute(), 30u);
 }
 
-//Confirm that parse() method does not parse Report Time Group in report parts 
-//other than Header
 TEST(ReportTimeGroup, parseWrongReportPart) {
-	const std::string gs("201730Z"); //day-of-month 20, time 17:30
-
-	metaf::ReportTimeGroup g1;
-	EXPECT_FALSE(g1.parse(gs, metaf::ReportPart::UNKNOWN));
-
-	metaf::ReportTimeGroup g2;
-	EXPECT_FALSE(g2.parse(gs, metaf::ReportPart::METAR));
-
-	metaf::ReportTimeGroup g3;
-	EXPECT_FALSE(g3.parse(gs, metaf::ReportPart::TAF));
-
-	metaf::ReportTimeGroup g4;
-	EXPECT_FALSE(g4.parse(gs, metaf::ReportPart::RMK));
+	const std::string gs("201730Z");
+	ASSERT_TRUE(metaf::ReportTimeGroup::parse(gs, metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::ReportTimeGroup::parse(gs, metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::ReportTimeGroup::parse(gs, metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::ReportTimeGroup::parse(gs, metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::ReportTimeGroup::parse(gs, metaf::ReportPart::RMK));
 }
 
-//Confirm that parse() method does not parse Report Time Groups if number of 
-//digits is wrong
-TEST(ReportTimeGroup, parseWrongDigitNumber) {
-	metaf::ReportTimeGroup g1;
-	EXPECT_FALSE(g1.parse("2017300Z", metaf::ReportPart::HEADER)); //Too many digits
-
-	metaf::ReportTimeGroup g2;
-	EXPECT_FALSE(g2.parse("20173Z", metaf::ReportPart::HEADER)); //Too few digits
+TEST(ReportTimeGroup, parseWrongFormat) {
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("//////Z", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("2017030Z", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("20173Z", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("201730", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("05025KT", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("1709/1721", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::ReportTimeGroup::parse("FM122230", metaf::ReportPart::HEADER).has_value());
 }
 
+TEST(ReportTimeGroup, isValidCorrect) {
+	const auto rtg1 = metaf::ReportTimeGroup::parse("312459Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg1.has_value());
+	EXPECT_TRUE(rtg1->isValid());
 
-//Confirm that parse() method does not parse malformed Report Time Groups
-TEST(ReportTimeGroup, parseWrongMalformedGroups) {
-	metaf::ReportTimeGroup g1;
-	EXPECT_FALSE(g1.parse("20/1730Z", metaf::ReportPart::HEADER));
-
-	metaf::ReportTimeGroup g2;
-	EXPECT_FALSE(g2.parse("20:17:30Z", metaf::ReportPart::HEADER));
-
-	metaf::ReportTimeGroup g3;
-	EXPECT_FALSE(g3.parse("201730", metaf::ReportPart::HEADER));
+	const auto rtg2 = metaf::ReportTimeGroup::parse("010000Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg2.has_value());
+	EXPECT_TRUE(rtg2->isValid());
 }
 
-//Confirm that parse() method does not parse other similar groups
-TEST(ReportTimeGroup, parseWrongSimilarGroups) {
-	metaf::ReportTimeGroup g1;
-	EXPECT_FALSE(g1.parse("05025KT", metaf::ReportPart::HEADER));
+TEST(ReportTimeGroup, isValidDayIncorrect) {
+	const auto rtg1 = metaf::ReportTimeGroup::parse("321730Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg1.has_value());
+	EXPECT_FALSE(rtg1->isValid());
 
-	metaf::ReportTimeGroup g2;
-	EXPECT_FALSE(g2.parse("1709/1721", metaf::ReportPart::HEADER));
+	const auto rtg2 = metaf::ReportTimeGroup::parse("001730Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg2.has_value());
+	EXPECT_FALSE(rtg2->isValid());
+}
 
-	metaf::ReportTimeGroup g3;
-	EXPECT_FALSE(g3.parse("FM122230", metaf::ReportPart::HEADER));
+TEST(ReportTimeGroup, isValidHourIncorrect) {
+	const auto rtg = metaf::ReportTimeGroup::parse("202530Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg.has_value());
+	EXPECT_FALSE(rtg->isValid());
+}
 
+TEST(ReportTimeGroup, isValidMinuteIncorrect) {
+	const auto rtg = metaf::ReportTimeGroup::parse("201760Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg.has_value());
+	EXPECT_FALSE(rtg->isValid());
 }

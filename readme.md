@@ -5,7 +5,7 @@
 
 ## Introduction
 
-Metaf is a dependency-free modern c++ library for parsing [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
+Metaf is a header-only, dependency-free modern c++ library for parsing [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
 
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
@@ -33,18 +33,19 @@ From practice, METAR and TAF reports may contain rare kinds of information used 
 
 The report type (METAR or TAF) is autodetected by the parser, autodetected type can be obtained via getter method. There is no need to specify report type before parsing.
 
+### Integrating
+
+To integrate the metaf library into your project, copy the file src/metaf.h to your include directory.
+
 ### Limitations
 
 Remarks (everything after RMK group) are currently decoded as plain text only.
 
 ### Prerequisites and dependencies
 
-Metaf is written for C++17.
+Metaf requires C++17.
 
 No external dependencies for parser itself, only standard C++ libraries used. 
-
-* Variant (std::variant) is used for a typesafe union. 
-* The current version relies extensively on regular expressions (std::regex).
 
 Unit tests included with the project use [Google Test](https://github.com/abseil/googletest) framework.
 
@@ -159,35 +160,43 @@ produces the following JSON (providing that "Formatted result" is checked):
     "reportReleaseTime": "22:50",
     "wind": {
       "direction": 80,
-      "cardinalDirection": "east",
+      "directionUnit": "degrees",
+      "directionCardinal": "east",
       "windSpeed": 8,
       "windSpeedUnit": "knots"
     },
     "visibility": [
       {
-        "visibilityModifier": "moreThan",
         "visibility": 10000,
-        "visibilityUnit": "meters"
+        "visibilityUnit": "meters",
+        "visibilityModifier": ">"
       }
     ],
     "cloudLayers": [
       {
         "amount": "few",
+        "coverMinimumOcta": 1,
+        "coverMaximumOcta": 2,
         "convectiveType": null,
         "baseHeight": 500,
         "heightUnit": "feet"
       },
       {
         "amount": "few",
+        "coverMinimumOcta": 1,
+        "coverMaximumOcta": 2,
         "convectiveType": null,
         "baseHeight": 3000,
         "heightUnit": "feet"
       }
     ],
     "airTemperature": -29,
-    "airTemperatureFreezing": true,
     "airTemperatureUnit": "C",
-    "atmosphericPressure": 28,
+    "airTemperatureFreezing": true,
+    "dewPoint": -29,
+    "dewPointUnit": "C",
+    "dewPointFreezing": true,
+    "atmosphericPressure": 28.69,
     "atmosphericPressureUnit": "inHg",
     "remarks": {
       "plainText0": "FG",
@@ -227,14 +236,14 @@ produces the following plain language explanation:
     <pre>
 Detected report type: METAR (weather observation)
 NZSP : ICAO code for location: NZSP
-042250Z : Day and time of report issue: day 4, time 22:50 GMT
-08008KT : Wind direction: 80° (east) Wind speed:8 knots (4.1 m/s, 14.8 km/h, 9.2 mph)
-9999 : Visibility (prevailing) >10000 meters (>6.21 statute miles, >32808 feet)|
-FEW005 : Few clouds (1/8 to 2/8 sky covered), base height 500 feet (152 meters, 0.09 statute miles)
-FEW030 : Few clouds (1/8 to 2/8 sky covered), base height 3000 feet (914 meters, 0.56 statute miles)
-M29/ : Air temperature: -29 °C (-20 °F), dew point: not reported
-A2869 : Atmospheric pressure: 28.69 inHg (971hPa)
-RMK : The remarks are as follows (this version does not recognise or decode remarks)
+042250Z : Day and time of report issue: day 4, 22:50 GMT
+08008KT : Surface wind: Wind direction: 80 degrees(east) Wind speed: 8 knots (4.1 m/s / 14.8 km/h / 9.2 mph)
+9999 : Visibility (prevailing) >10000 meters (6.213 statute miles / 32808 feet)
+FEW005 : Few clouds (1/8 to 2/8 sky covered) Base height 500 feet (152 meters / 0.094 statute miles)
+FEW030 : Few clouds (1/8 to 2/8 sky covered) Base height 3000 feet (914 meters / 0.568 statute miles)
+M29/ : Air temperature: -29 °C / -20 °F Dew point: not reported
+A2869 : Atmospheric pressure: 971 hPa / 28.68 inHg
+RMK : The remarks are as follows Note: this version does not recognise or decode remarks
 FG : This group is not recognised by parser: FG
 DSNT : This group is not recognised by parser: DSNT
 GRID : This group is not recognised by parser: GRID
