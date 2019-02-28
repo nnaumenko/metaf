@@ -57,23 +57,11 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::ReportTimeGroup>():
 		return("ReportTimeGroup");
 
-		case variant_index<metaf::Group, metaf::TimeSpanGroup>():
-		return("TimeSpanGroup");
-
-		case variant_index<metaf::Group, metaf::TrendTimeGroup>():
-		return("TrendTimeGroup");
-
-		case variant_index<metaf::Group, metaf::ProbabilityGroup>():
-		return("ProbabilityGroup");
+		case variant_index<metaf::Group, metaf::TrendGroup>():
+		return("TrendGroup");
 
 		case variant_index<metaf::Group, metaf::WindGroup>():
 		return("WindGroup");
-
-		case variant_index<metaf::Group, metaf::VarWindGroup>():
-		return("VarWindGroup");
-
-		case variant_index<metaf::Group, metaf::WindShearGroup>():
-		return("WindShearGroup");
 
 		case variant_index<metaf::Group, metaf::VisibilityGroup>():
 		return("VisibilityGroup");
@@ -81,17 +69,14 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::CloudGroup>():
 		return("CloudGroup");
 
-		case variant_index<metaf::Group, metaf::VerticalVisibilityGroup>():
-		return("VerticalVisibilityGroup");
-
 		case variant_index<metaf::Group, metaf::WeatherGroup>():
 		return("WeatherGroup");
 
 		case variant_index<metaf::Group, metaf::TemperatureGroup>():
 		return("TemperatureGroup");
 
-		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
-		return("MinMaxTemperatureGroup");
+		case variant_index<metaf::Group, metaf::TemperatureForecastGroup>():
+		return("TemperatureForecastGroup");
 
 		case variant_index<metaf::Group, metaf::PressureGroup>():
 		return("PressureGroup");
@@ -107,9 +92,6 @@ string_view groupName (size_t index) {
 
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
 		return("SeaSurfaceGroup");
-
-		case variant_index<metaf::Group, metaf::SeaWavesGroup>():
-		return("SeaWavesGroup");
 
 		case variant_index<metaf::Group, metaf::ColourCodeGroup>():
 		return("ColourCodeGroup");
@@ -322,11 +304,11 @@ int addPlainTextGroups(const vector<metaf::Group> & src, vector< pair<int, strin
 	auto count = 0;	for (const auto & group : src) {
 		if (holds_alternative<metaf::FixedGroup>(group)) {
 			auto fixedGroup = get_if<metaf::FixedGroup>(&group);
-			if (fixedGroup->type == metaf::FixedGroup::Type::RMK) return (count);
+			if (fixedGroup->type() == metaf::FixedGroup::Type::RMK) return (count);
 		}
 		if (holds_alternative<metaf::PlainTextGroup>(group)) {
 			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&group);
-			if (plainTextGroup) addGroup(plainTextGroup->text, dst);
+			if (plainTextGroup) addGroup(plainTextGroup->toString(), dst);
 			count++;
 		}
 	}

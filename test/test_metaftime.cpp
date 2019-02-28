@@ -8,109 +8,106 @@
 #include "gtest/gtest.h"
 #include "metaf.h"
 
-//Confirm that default MetafTime structs are equal
-TEST(MetafTime, defaultEqual) {
-	const metaf::MetafTime t1;
-	const metaf::MetafTime t2;
-	EXPECT_TRUE(t1 == t2);
-	EXPECT_FALSE(t1 != t2);
+TEST(MetafTime, fromStringDDHHMMwithDay) {
+	const auto t = metaf::MetafTime::fromStringDDHHMM("120830");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 12u);
+	EXPECT_EQ(t->hour(), 8u);
+	EXPECT_EQ(t->minute(), 30u);
 }
 
-//Confirm that MetafTime structs initialised with the same data are equal
-TEST(MetafTime, sameDataEqual) {
-	metaf::MetafTime t1;
-	t1.day = 28;
-	t1.hour = 15;
-	t1.minute = 45;
-	metaf::MetafTime t2;
-	t2.day = 28;
-	t2.hour = 15;
-	t2.minute = 45;
-	EXPECT_EQ(t1, t2);
+TEST(MetafTime, fromStringDDHHMMwithoutDay) {
+	const auto t = metaf::MetafTime::fromStringDDHHMM("0830");
+	ASSERT_TRUE(t.has_value());
+	EXPECT_FALSE(t->day().has_value());
+	EXPECT_EQ(t->hour(), 8u);
+	EXPECT_EQ(t->minute(), 30u);
 }
 
-//Confirm that MetafTime structs holding the different data are not equal
-TEST(MetafTime, differentDataNotEqual) {
-	metaf::MetafTime t;
-	t.day = 28;
-	t.hour = 15;
-	t.minute = 45;
-	metaf::MetafTime t1 (t);
-	t1.day = 29;
-	metaf::MetafTime t2 (t);
-	t2.hour = 16;
-	metaf::MetafTime t3 (t);
-	t3.minute = 46;
-	EXPECT_NE(t, t1);
-	EXPECT_NE(t, t2);
-	EXPECT_NE(t, t3);
+TEST(MetafTime, fromStringDDHHMM_wrongFormat) {
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("12/08:30").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("A20830").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("//////").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("20830").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("1208030").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("120830Z").has_value());
 }
 
-//Confirm that constructor for reported day initialises the struct with 
-//correct data
-TEST(MetafTime, constructorDayReported) {
-	static const auto day = 29u;
-	static const auto hour = 23u;
-	static const auto minute = 55u;
-	const metaf::MetafTime t(day, hour, minute);
-	EXPECT_EQ(t.day, day);	
-	EXPECT_EQ(t.hour, hour);	
-	EXPECT_EQ(t.minute, minute);	
+TEST(MetafTime, fromStringDDHH) {
+	const auto t = metaf::MetafTime::fromStringDDHH("1208");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 12u);
+	EXPECT_EQ(t->hour(), 8u);
+	EXPECT_EQ(t->minute(), 0u);
 }
 
-//Confirm that constructor for non-reported day initialises the struct with 
-//correct data
-TEST(MetafTime, constructorDayNotReported) {
-	static const auto hour = 23u;
-	static const auto minute = 55u;
-	const metaf::MetafTime t(hour, minute);
-	EXPECT_EQ(t.hour, hour);	
-	EXPECT_EQ(t.minute, minute);	
+TEST(MetafTime, fromStringDDHH_wrongFormat) {
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("12:08").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("12/08").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("A208").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("208").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("////").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("12080").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("1208Z").has_value());
 }
 
-//Confirm that isDayReported() returns true if day was initialised and false 
-//otherwise
-TEST(MetafTime, isDayReported) {
-	static const auto day = 29u;
-	static const auto hour = 23u;
-	static const auto minute = 55u;
-	const metaf::MetafTime t1(day, hour, minute);
-	const metaf::MetafTime t2(hour, minute);
-	EXPECT_TRUE(t1.isDayReported());
-	EXPECT_FALSE(t2.isDayReported());
-}
-
-//Confirm that isValid() returns true if day and time are within limits
 TEST(MetafTime, isValidCorrect) {
-	static const auto dayMin = 1u;
-	static const auto dayMax = 31u;
-	static const auto hourMin = 0u;
-	static const auto hourMax = 24u;
-	static const auto minuteMin = 0u;
-	static const auto minuteMax = 59u;
-	const metaf::MetafTime t1(dayMin, hourMin, minuteMin);
-	const metaf::MetafTime t2(hourMin, minuteMin);
-	const metaf::MetafTime t3(dayMax, hourMax, minuteMax);
-	const metaf::MetafTime t4(hourMax, minuteMax);
-	EXPECT_TRUE(t1.isValid());
-	EXPECT_TRUE(t2.isValid());
-	EXPECT_TRUE(t3.isValid());
-	EXPECT_TRUE(t4.isValid());
+	const auto t1 = metaf::MetafTime::fromStringDDHHMM("312459");
+	ASSERT_TRUE(t1.has_value());
+	EXPECT_TRUE(t1->isValid());
+
+	const auto t2 = metaf::MetafTime::fromStringDDHHMM("010000");
+	ASSERT_TRUE(t2.has_value());
+	EXPECT_TRUE(t2->isValid());
+
+	const auto t3 = metaf::MetafTime::fromStringDDHHMM("2459");
+	ASSERT_TRUE(t3.has_value());
+	EXPECT_TRUE(t3->isValid());
+
+	const auto t4 = metaf::MetafTime::fromStringDDHHMM("0000");
+	ASSERT_TRUE(t4.has_value());
+	EXPECT_TRUE(t4->isValid());
+
+	const auto t5 = metaf::MetafTime::fromStringDDHH("3124");
+	ASSERT_TRUE(t5.has_value());
+	EXPECT_TRUE(t5->isValid());
+
+	const auto t6 = metaf::MetafTime::fromStringDDHH("0100");
+	ASSERT_TRUE(t6.has_value());
+	EXPECT_TRUE(t6->isValid());
+
 }
 
-//Confirm that isValid() returns false if day and time are outside limits
 TEST(MetafTime, isValidIncorrect) {
-	static const auto dayMax = 31u;
-	static const auto hourMax = 24u;
-	static const auto minuteMax = 59u;
-	const metaf::MetafTime t1(dayMax + 1, hourMax, minuteMax);
-	const metaf::MetafTime t2(dayMax, hourMax + 1, minuteMax);
-	const metaf::MetafTime t3(dayMax, hourMax, minuteMax + 1);
-	const metaf::MetafTime t4(hourMax + 1, minuteMax);
-	const metaf::MetafTime t5(hourMax, minuteMax + 1);
-	EXPECT_FALSE(t1.isValid());
-	EXPECT_FALSE(t2.isValid());
-	EXPECT_FALSE(t3.isValid());
-	EXPECT_FALSE(t4.isValid());
-	EXPECT_FALSE(t5.isValid());
+	const auto t1 = metaf::MetafTime::fromStringDDHHMM("322459");
+	ASSERT_TRUE(t1.has_value());
+	EXPECT_FALSE(t1->isValid());
+
+	const auto t2 = metaf::MetafTime::fromStringDDHHMM("312559");
+	ASSERT_TRUE(t2.has_value());
+	EXPECT_FALSE(t2->isValid());
+
+	const auto t3 = metaf::MetafTime::fromStringDDHHMM("312460");
+	ASSERT_TRUE(t3.has_value());
+	EXPECT_FALSE(t3->isValid());
+
+	const auto t4 = metaf::MetafTime::fromStringDDHHMM("002459");
+	ASSERT_TRUE(t4.has_value());
+	EXPECT_FALSE(t4->isValid());
+
+	const auto t5 = metaf::MetafTime::fromStringDDHH("3224");
+	ASSERT_TRUE(t5.has_value());
+	EXPECT_FALSE(t5->isValid());
+
+	const auto t6 = metaf::MetafTime::fromStringDDHH("0024");
+	ASSERT_TRUE(t6.has_value());
+	EXPECT_FALSE(t6->isValid());
+
+	const auto t7 = metaf::MetafTime::fromStringDDHH("3125");
+	ASSERT_TRUE(t7.has_value());
+	EXPECT_FALSE(t7->isValid());
 }
