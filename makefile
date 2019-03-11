@@ -67,7 +67,14 @@ $(TESTBUILDDIR)/gtest_all.o: googletest/googletest/src/gtest-all.cc
 	mkdir -p $(TESTBUILDDIR)
 	$(CC) $(CXXFLAGS) $(EMCCFLAGS) -I $(INCLUDEDIR) -c $< -o $@
 
+.PHONY: docs
+docs:
+	rm -r -f bin/docs/*
+	mkdir -p "$(BUILDDIR)/sphinx"
+	sphinx-build -b html "docs/sphinx" "bin/docs" -j auto -d "$(BUILDDIR)/sphinx"
+
 .PHONY: clean
 clean:
+	rm --recursive --force "$(BUILDDIR)/sphinx"
 	rm --recursive --force $(TESTBUILDDIR)
 	rm --recursive --force $(BUILDDIR)

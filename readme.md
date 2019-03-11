@@ -21,6 +21,8 @@ In its current state the parser successfully parses various real-life examples M
 
 ### Description
 
+Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
+
 METAR or TAF reports consist of groups, lexical tokens sparated by spaces. In this project a METAR or TAF group is represented by type Group. Group is a variant type which can hold structs representing various METAR or TAF groups. For example, consider Group that contains struct LocationGroup which represents report's location (in a form of 4-char ICAO code), or Group that contains struct CloudGroup which represents cloud layer information such as cloud cover, base height and convective type.
 
 A string with raw report is passed to parser which produces a vector or type Group. This vector is stored within parser instance and can be accessed via getter method. A GroupVisitor base class is provided to simplify working with Group and vector of Group.
@@ -40,6 +42,8 @@ To integrate the metaf library into your project, copy the file src/metaf.h to y
 ### Limitations
 
 Remarks (everything after RMK group) are currently decoded as plain text only.
+
+Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
 
 ### Prerequisites and dependencies
 

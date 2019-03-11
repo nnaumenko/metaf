@@ -55,3 +55,6 @@ misc/
 build/*.*
 build/test/*.*
 build/examples/*.*
+
+#Sphinx docs cache
+build/sphinx/*.*
