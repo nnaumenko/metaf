@@ -19,6 +19,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Extending Metaf functionality" href="extending.html" />
     <link rel="prev" title="Getting started" href="getting_started.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -27,6 +28,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="extending.html" title="Extending Metaf functionality"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
@@ -41,38 +45,1396 @@
             
   <div class="section" id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
-<p>This section is a work in progress; more information on the way.</p>
+<p>This section describes the APIs related to parsing METAR or TAF report and reading the data from parsed results.</p>
+<p>See Extending Metaf Functionality section for APIs related to adding additional features and new groups.</p>
 <div class="section" id="data-types">
 <h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<p>This section lists the types which store the data, such as temperature, direction, time, etc.</p>
 <div class="section" id="runway">
 <h3>Runway<a class="headerlink" href="#runway" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="index-0"></span><dl class="class">
+<dt id="_CPPv4N5metaf6RunwayE">
+<span id="_CPPv3N5metaf6RunwayE"></span><span id="_CPPv2N5metaf6RunwayE"></span><span id="metaf::Runway"></span><em class="property">class </em><code class="descname">Runway</code><a class="headerlink" href="#_CPPv4N5metaf6RunwayE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Provides runway identification in form of runway number and designator.</p>
+<p>The runway number is formed by the first two digits of runway heading (which is 0 to 360 degrees). The valid range for runway number is thus 0 to 36.</p>
+<p>The following special codes can also be used for runway number:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="37%" />
+<col width="53%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Number</th>
+<th class="head">Meaning</th>
+<th class="head">Associated method</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>88</td>
+<td>All runways</td>
+<td><a class="reference internal" href="#_CPPv4NK5metaf6Runway12isAllRunwaysEv" title="metaf::Runway::isAllRunways"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">isAllRunways()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td>99</td>
+<td>Last message repetition</td>
+<td><a class="reference internal" href="#_CPPv4NK5metaf6Runway19isMessageRepetitionEv" title="metaf::Runway::isMessageRepetition"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">isMessageRepetition()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<p>Parallel runways are distinguished by designating them as a left / center / right runway (e.g. runways <code class="docutils literal notranslate"><span class="pre">21</span> <span class="pre">right</span></code> and <code class="docutils literal notranslate"><span class="pre">21</span> <span class="pre">left</span></code> are two parallel runways with heading 210 degrees).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf6Runway10DesignatorE">
+<span id="_CPPv3N5metaf6Runway10DesignatorE"></span><span id="_CPPv2N5metaf6Runway10DesignatorE"></span><em class="property">enum class </em><code class="descname">Designator</code><a class="headerlink" href="#_CPPv4N5metaf6Runway10DesignatorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Distinguishes parallel runways.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf6Runway10Designator4NONEE">
+<span id="_CPPv3N5metaf6Runway10Designator4NONEE"></span><span id="_CPPv2N5metaf6Runway10Designator4NONEE"></span><em class="property">enumerator </em><code class="descname">NONE</code><a class="headerlink" href="#_CPPv4N5metaf6Runway10Designator4NONEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>No designator was specified (not a parallel runway).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf6Runway10Designator4LEFTE">
+<span id="_CPPv3N5metaf6Runway10Designator4LEFTE"></span><span id="_CPPv2N5metaf6Runway10Designator4LEFTE"></span><em class="property">enumerator </em><code class="descname">LEFT</code><a class="headerlink" href="#_CPPv4N5metaf6Runway10Designator4LEFTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Left runway.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf6Runway10Designator6CENTERE">
+<span id="_CPPv3N5metaf6Runway10Designator6CENTERE"></span><span id="_CPPv2N5metaf6Runway10Designator6CENTERE"></span><em class="property">enumerator </em><code class="descname">CENTER</code><a class="headerlink" href="#_CPPv4N5metaf6Runway10Designator6CENTERE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Center runway.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf6Runway10Designator5RIGHTE">
+<span id="_CPPv3N5metaf6Runway10Designator5RIGHTE"></span><span id="_CPPv2N5metaf6Runway10Designator5RIGHTE"></span><em class="property">enumerator </em><code class="descname">RIGHT</code><a class="headerlink" href="#_CPPv4N5metaf6Runway10Designator5RIGHTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Right runway.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf6Runway6numberEv">
+<span id="_CPPv3NK5metaf6Runway6numberEv"></span><span id="_CPPv2NK5metaf6Runway6numberEv"></span><span id="metaf::Runway::numberC"></span>unsigned int <code class="descname">number</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf6Runway6numberEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Runway number or one of special codes (see also <a class="reference internal" href="#_CPPv4NK5metaf6Runway12isAllRunwaysEv" title="metaf::Runway::isAllRunways"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">isAllRunways()</span></code></a> and <a class="reference internal" href="#_CPPv4NK5metaf6Runway19isMessageRepetitionEv" title="metaf::Runway::isMessageRepetition"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">isMessageRepetition()</span></code></a>).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf6Runway10designatorEv">
+<span id="_CPPv3NK5metaf6Runway10designatorEv"></span><span id="_CPPv2NK5metaf6Runway10designatorEv"></span><span id="metaf::Runway::designatorC"></span><a class="reference internal" href="#_CPPv4N5metaf6Runway10DesignatorE" title="metaf::Runway::Designator">Designator</a> <code class="descname">designator</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf6Runway10designatorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Runway designator or <a class="reference internal" href="#_CPPv4N5metaf6Runway10Designator4NONEE" title="metaf::Runway::Designator::NONE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Designator::NONE</span></code></a> if no runway designator was specified, which means that the runway is not one of the parallel runways.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Checking for special runway codes</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf6Runway12isAllRunwaysEv">
+<span id="_CPPv3NK5metaf6Runway12isAllRunwaysEv"></span><span id="_CPPv2NK5metaf6Runway12isAllRunwaysEv"></span><span id="metaf::Runway::isAllRunwaysC"></span>bool <code class="descname">isAllRunways</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf6Runway12isAllRunwaysEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if ‘all runways’ value is coded in runway information (i.e. runway number 88 and designator <a class="reference internal" href="#_CPPv4N5metaf6Runway10Designator4NONEE" title="metaf::Runway::Designator::NONE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Designator::NONE</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf6Runway19isMessageRepetitionEv">
+<span id="_CPPv3NK5metaf6Runway19isMessageRepetitionEv"></span><span id="_CPPv2NK5metaf6Runway19isMessageRepetitionEv"></span><span id="metaf::Runway::isMessageRepetitionC"></span>bool <code class="descname">isMessageRepetition</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf6Runway19isMessageRepetitionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if ‘last message repetition’ value is coded in runway information (i.e. runway number 99 and designator <a class="reference internal" href="#_CPPv4N5metaf6Runway10Designator4NONEE" title="metaf::Runway::Designator::NONE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Designator::NONE</span></code></a>), and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf6Runway7isValidEv">
+<span id="_CPPv3NK5metaf6Runway7isValidEv"></span><span id="_CPPv2NK5metaf6Runway7isValidEv"></span><span id="metaf::Runway::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf6Runway7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if stored runway information is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.<dl class="docutils">
+<dt>The information is considered valid if any of the following conditions is met:</dt>
+<dd><ul class="first last simple">
+<li>the runway number is in range 0 to 36;</li>
+<li>the runway number is either 88 or 99 and the designator is NONE;</li>
+</ul>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="metaftime">
 <h3>MetafTime<a class="headerlink" href="#metaftime" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf9MetafTimeE">
+<span id="_CPPv3N5metaf9MetafTimeE"></span><span id="_CPPv2N5metaf9MetafTimeE"></span><span id="metaf::MetafTime"></span><em class="property">class </em><code class="descname">MetafTime</code><a class="headerlink" href="#_CPPv4N5metaf9MetafTimeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>MetafTime is a time format used in METAR and TAF reports. It contains time-of-day in form of hour and minute and optional day-of-month.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">METAR and TAF reports always use GMT time.</p>
+</div>
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf9MetafTime3dayEv">
+<span id="_CPPv3NK5metaf9MetafTime3dayEv"></span><span id="_CPPv2NK5metaf9MetafTime3dayEv"></span><span id="metaf::MetafTime::dayC"></span>std::optional&lt;unsigned int&gt; <code class="descname">day</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9MetafTime3dayEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The value of day-of-month or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if no day was specified.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9MetafTime4hourEv">
+<span id="_CPPv3NK5metaf9MetafTime4hourEv"></span><span id="_CPPv2NK5metaf9MetafTime4hourEv"></span><span id="metaf::MetafTime::hourC"></span>unsigned int <code class="descname">hour</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9MetafTime4hourEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Time-of-day hour.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9MetafTime6minuteEv">
+<span id="_CPPv3NK5metaf9MetafTime6minuteEv"></span><span id="_CPPv2NK5metaf9MetafTime6minuteEv"></span><span id="metaf::MetafTime::minuteC"></span>unsigned int <code class="descname">minute</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9MetafTime6minuteEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Time-of-day minute.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf9MetafTime7isValidEv">
+<span id="_CPPv3NK5metaf9MetafTime7isValidEv"></span><span id="_CPPv2NK5metaf9MetafTime7isValidEv"></span><span id="metaf::MetafTime::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9MetafTime7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if stored day-of-month and time-of-day information is valid and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.<dl class="docutils">
+<dt>The information is considered valid if all of the following conditions are met:</dt>
+<dd><ul class="first last simple">
+<li>The day-of-month value is in range 1 to 31;</li>
+<li>The hour value is in range 0 to 24;</li>
+<li>The minute value is in range 0 to 59;</li>
+</ul>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="temperature">
 <h3>Temperature<a class="headerlink" href="#temperature" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf11TemperatureE">
+<span id="_CPPv3N5metaf11TemperatureE"></span><span id="_CPPv2N5metaf11TemperatureE"></span><span id="metaf::Temperature"></span><em class="property">class </em><code class="descname">Temperature</code><a class="headerlink" href="#_CPPv4N5metaf11TemperatureE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores a temperature value. Temperature value may be not reported (i.e. no value).</p>
+<p>If the temperature value is rounded to zero, an additional information can be acquired whether the value represents a freezing or non-freezing temperature (i.e. slightly above or slightly below zero).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf11Temperature4UnitE">
+<span id="_CPPv3N5metaf11Temperature4UnitE"></span><span id="_CPPv2N5metaf11Temperature4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf11Temperature4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Temperature measurement units.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf11Temperature4Unit1CE">
+<span id="_CPPv3N5metaf11Temperature4Unit1CE"></span><span id="_CPPv2N5metaf11Temperature4Unit1CE"></span><em class="property">enumerator </em><code class="descname">C</code><a class="headerlink" href="#_CPPv4N5metaf11Temperature4Unit1CE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Degrees Celsius.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf11Temperature4Unit1FE">
+<span id="_CPPv3N5metaf11Temperature4Unit1FE"></span><span id="_CPPv2N5metaf11Temperature4Unit1FE"></span><em class="property">enumerator </em><code class="descname">F</code><a class="headerlink" href="#_CPPv4N5metaf11Temperature4Unit1FE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Degrees Fahrenheit.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Temperature value is always stored in degrees Celsius but may be converted to degrees Fahrenheit using <a class="reference internal" href="#_CPPv4NK5metaf11Temperature6toUnitE4Unit" title="metaf::Temperature::toUnit"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">toUnit()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf11Temperature11temperatureEv">
+<span id="_CPPv3NK5metaf11Temperature11temperatureEv"></span><span id="_CPPv2NK5metaf11Temperature11temperatureEv"></span><span id="metaf::Temperature::temperatureC"></span>std::optional&lt;int&gt; <code class="descname">temperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf11Temperature11temperatureEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Stored temperature value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if temperature value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf11Temperature4unitEv">
+<span id="_CPPv3NK5metaf11Temperature4unitEv"></span><span id="_CPPv2NK5metaf11Temperature4unitEv"></span><span id="metaf::Temperature::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf11Temperature4UnitE" title="metaf::Temperature::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf11Temperature4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Temperature measurement unit which was used with stored value. Currently always returns <a class="reference internal" href="#_CPPv4N5metaf11Temperature4Unit1CE" title="metaf::Temperature::Unit::C"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Unit::C</span></code></a> since the value is always stored in degrees Celsius.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf11Temperature6toUnitE4Unit">
+<span id="_CPPv3NK5metaf11Temperature6toUnitE4Unit"></span><span id="_CPPv2NK5metaf11Temperature6toUnitE4Unit"></span><span id="metaf::Temperature::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf11Temperature4UnitE" title="metaf::Temperature::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf11Temperature6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored temperature value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Miscellaneous</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf11Temperature10isFreezingEv">
+<span id="_CPPv3NK5metaf11Temperature10isFreezingEv"></span><span id="_CPPv2NK5metaf11Temperature10isFreezingEv"></span><span id="metaf::Temperature::isFreezingC"></span>bool <code class="descname">isFreezing</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf11Temperature10isFreezingEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored temperature value is below water freezing point (0 degrees Celsius or 32 degrees Fahrenheit), and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored temperature value is above freezing point.<p>If the temperature value is rounded to the freezing point, isFreezing() may return either <code class="docutils literal notranslate"><span class="pre">true</span></code> or <code class="docutils literal notranslate"><span class="pre">false</span></code> based on the following conditions:</p>
+<ul class="simple">
+<li>if the original temperature value was in range (0.0 .. -0.5) which is encoded in METAR/TAF report as <code class="docutils literal notranslate"><span class="pre">M00</span></code>, then <code class="docutils literal notranslate"><span class="pre">isFreezing()</span></code> returns <code class="docutils literal notranslate"><span class="pre">true</span></code>;</li>
+<li>if the original temperature value was in range (0.5 .. 0.0] which is encoded in METAR/TAF report as <code class="docutils literal notranslate"><span class="pre">00</span></code>, then <code class="docutils literal notranslate"><span class="pre">isFreezing()</span></code> returns <code class="docutils literal notranslate"><span class="pre">false</span></code>;</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="speed">
 <h3>Speed<a class="headerlink" href="#speed" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf5SpeedE">
+<span id="_CPPv3N5metaf5SpeedE"></span><span id="_CPPv2N5metaf5SpeedE"></span><span id="metaf::Speed"></span><em class="property">class </em><code class="descname">Speed</code><a class="headerlink" href="#_CPPv4N5metaf5SpeedE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores a speed value. Speed value can be optionally not reported (i.e. no value).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf5Speed4UnitE">
+<span id="_CPPv3N5metaf5Speed4UnitE"></span><span id="_CPPv2N5metaf5Speed4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf5Speed4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Speed measurement unit.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf5Speed4Unit5KNOTSE">
+<span id="_CPPv3N5metaf5Speed4Unit5KNOTSE"></span><span id="_CPPv2N5metaf5Speed4Unit5KNOTSE"></span><em class="property">enumerator </em><code class="descname">KNOTS</code><a class="headerlink" href="#_CPPv4N5metaf5Speed4Unit5KNOTSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Knots.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf5Speed4Unit17METERS_PER_SECONDE">
+<span id="_CPPv3N5metaf5Speed4Unit17METERS_PER_SECONDE"></span><span id="_CPPv2N5metaf5Speed4Unit17METERS_PER_SECONDE"></span><em class="property">enumerator </em><code class="descname">METERS_PER_SECOND</code><a class="headerlink" href="#_CPPv4N5metaf5Speed4Unit17METERS_PER_SECONDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Meters per second.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf5Speed4Unit19KILOMETERS_PER_HOURE">
+<span id="_CPPv3N5metaf5Speed4Unit19KILOMETERS_PER_HOURE"></span><span id="_CPPv2N5metaf5Speed4Unit19KILOMETERS_PER_HOURE"></span><em class="property">enumerator </em><code class="descname">KILOMETERS_PER_HOUR</code><a class="headerlink" href="#_CPPv4N5metaf5Speed4Unit19KILOMETERS_PER_HOURE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Kilometers per hour.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf5Speed4Unit14MILES_PER_HOURE">
+<span id="_CPPv3N5metaf5Speed4Unit14MILES_PER_HOURE"></span><span id="_CPPv2N5metaf5Speed4Unit14MILES_PER_HOURE"></span><em class="property">enumerator </em><code class="descname">MILES_PER_HOUR</code><a class="headerlink" href="#_CPPv4N5metaf5Speed4Unit14MILES_PER_HOURE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Miles per hour.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently the speed value is never stored in miles per hour. <a class="reference internal" href="#_CPPv4N5metaf5Speed4Unit14MILES_PER_HOURE" title="metaf::Speed::Unit::MILES_PER_HOUR"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Unit::MILES_PER_HOUR</span></code></a> is provided only to be able to convert speed values to miles per hour.</p>
+</div>
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf5Speed5speedEv">
+<span id="_CPPv3NK5metaf5Speed5speedEv"></span><span id="_CPPv2NK5metaf5Speed5speedEv"></span><span id="metaf::Speed::speedC"></span>std::optional&lt;unsigned int&gt; <code class="descname">speed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf5Speed5speedEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Stored speed value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if speed value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf5Speed4unitEv">
+<span id="_CPPv3NK5metaf5Speed4unitEv"></span><span id="_CPPv2NK5metaf5Speed4unitEv"></span><span id="metaf::Speed::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf5Speed4UnitE" title="metaf::Speed::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf5Speed4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Speed measurement unit which was used with stored value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf5Speed6toUnitE4Unit">
+<span id="_CPPv3NK5metaf5Speed6toUnitE4Unit"></span><span id="_CPPv2NK5metaf5Speed6toUnitE4Unit"></span><span id="metaf::Speed::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf5Speed4UnitE" title="metaf::Speed::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf5Speed6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored speed value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="distance">
 <h3>Distance<a class="headerlink" href="#distance" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf8DistanceE">
+<span id="_CPPv3N5metaf8DistanceE"></span><span id="_CPPv2N5metaf8DistanceE"></span><span id="metaf::Distance"></span><em class="property">class </em><code class="descname">Distance</code><a class="headerlink" href="#_CPPv4N5metaf8DistanceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores a distance or height value. The value may be expressed as integer (e.g. 3500) or rational (e.g. 2 1/4) number.</p>
+<p>The value consists of integer and fraction components, fraction component in turn consists of numerator and denominator. Integer or fraction parts can be optionally not reported (i.e. no value).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf8Distance4UnitE">
+<span id="_CPPv3N5metaf8Distance4UnitE"></span><span id="_CPPv2N5metaf8Distance4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf8Distance4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Distance measurement units.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance4Unit6METERSE">
+<span id="_CPPv3N5metaf8Distance4Unit6METERSE"></span><span id="_CPPv2N5metaf8Distance4Unit6METERSE"></span><em class="property">enumerator </em><code class="descname">METERS</code><a class="headerlink" href="#_CPPv4N5metaf8Distance4Unit6METERSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance4Unit13STATUTE_MILESE">
+<span id="_CPPv3N5metaf8Distance4Unit13STATUTE_MILESE"></span><span id="_CPPv2N5metaf8Distance4Unit13STATUTE_MILESE"></span><em class="property">enumerator </em><code class="descname">STATUTE_MILES</code><a class="headerlink" href="#_CPPv4N5metaf8Distance4Unit13STATUTE_MILESE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Statute miles.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance4Unit4FEETE">
+<span id="_CPPv3N5metaf8Distance4Unit4FEETE"></span><span id="_CPPv2N5metaf8Distance4Unit4FEETE"></span><em class="property">enumerator </em><code class="descname">FEET</code><a class="headerlink" href="#_CPPv4N5metaf8Distance4Unit4FEETE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Feet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf8Distance8ModifierE">
+<span id="_CPPv3N5metaf8Distance8ModifierE"></span><span id="_CPPv2N5metaf8Distance8ModifierE"></span><em class="property">enum class </em><code class="descname">Modifier</code><a class="headerlink" href="#_CPPv4N5metaf8Distance8ModifierE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Modifier is used when instead of exact distance, a minimum or maximum value is provided. Modifier is used to report distances such as ‘less than 1/4 Statute Mile’ or ‘more than 10000 meters’.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance8Modifier4NONEE">
+<span id="_CPPv3N5metaf8Distance8Modifier4NONEE"></span><span id="_CPPv2N5metaf8Distance8Modifier4NONEE"></span><em class="property">enumerator </em><code class="descname">NONE</code><a class="headerlink" href="#_CPPv4N5metaf8Distance8Modifier4NONEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>No modifier; exact value is reported.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance8Modifier9LESS_THANE">
+<span id="_CPPv3N5metaf8Distance8Modifier9LESS_THANE"></span><span id="_CPPv2N5metaf8Distance8Modifier9LESS_THANE"></span><em class="property">enumerator </em><code class="descname">LESS_THAN</code><a class="headerlink" href="#_CPPv4N5metaf8Distance8Modifier9LESS_THANE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The distance is less than reported value.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Distance8Modifier9MORE_THANE">
+<span id="_CPPv3N5metaf8Distance8Modifier9MORE_THANE"></span><span id="_CPPv2N5metaf8Distance8Modifier9MORE_THANE"></span><em class="property">enumerator </em><code class="descname">MORE_THAN</code><a class="headerlink" href="#_CPPv4N5metaf8Distance8Modifier9MORE_THANE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The distance is more than reported value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf8Distance7integerEv">
+<span id="_CPPv3NK5metaf8Distance7integerEv"></span><span id="_CPPv2NK5metaf8Distance7integerEv"></span><span id="metaf::Distance::integerC"></span>std::optional&lt;unsigned int&gt; <code class="descname">integer</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance7integerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Integer component of stored distance value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if there is no integer component or the value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance9numeratorEv">
+<span id="_CPPv3NK5metaf8Distance9numeratorEv"></span><span id="_CPPv2NK5metaf8Distance9numeratorEv"></span><span id="metaf::Distance::numeratorC"></span>std::optional&lt;unsigned int&gt; <code class="descname">numerator</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance9numeratorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Numerator of fraction component of stored distance value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if there is no fraction part or the value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance11denominatorEv">
+<span id="_CPPv3NK5metaf8Distance11denominatorEv"></span><span id="_CPPv2NK5metaf8Distance11denominatorEv"></span><span id="metaf::Distance::denominatorC"></span>std::optional&lt;unsigned int&gt; <code class="descname">denominator</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance11denominatorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Denominator of fraction component of stored distance value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if there is no fraction part or the value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance8modifierEv">
+<span id="_CPPv3NK5metaf8Distance8modifierEv"></span><span id="_CPPv2NK5metaf8Distance8modifierEv"></span><span id="metaf::Distance::modifierC"></span><a class="reference internal" href="#_CPPv4N5metaf8Distance8ModifierE" title="metaf::Distance::Modifier">Modifier</a> <code class="descname">modifier</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance8modifierEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Modifier of stored distance value (less than / more than).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance4unitEv">
+<span id="_CPPv3NK5metaf8Distance4unitEv"></span><span id="_CPPv2NK5metaf8Distance4unitEv"></span><span id="metaf::Distance::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf8Distance4UnitE" title="metaf::Distance::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Distance measurement unit which was used with stored value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Integer &amp; fraction components</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf8Distance9isIntegerEv">
+<span id="_CPPv3NK5metaf8Distance9isIntegerEv"></span><span id="_CPPv2NK5metaf8Distance9isIntegerEv"></span><span id="metaf::Distance::isIntegerC"></span>bool <code class="descname">isInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance9isIntegerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value has only integer component, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value does not have an integer component or has fraction component or is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance10isFractionEv">
+<span id="_CPPv3NK5metaf8Distance10isFractionEv"></span><span id="_CPPv2NK5metaf8Distance10isFractionEv"></span><span id="metaf::Distance::isFractionC"></span>bool <code class="descname">isFraction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance10isFractionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value has only fraction component, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value does not have a fraction component or has integer component or is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N5metaf8Distance10isReportedEv">
+<span id="_CPPv3N5metaf8Distance10isReportedEv"></span><span id="_CPPv2N5metaf8Distance10isReportedEv"></span><span id="metaf::Distance::isReported"></span>bool <code class="descname">isReported</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5metaf8Distance10isReportedEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value is reported, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance6toUnitE4Unit">
+<span id="_CPPv3NK5metaf8Distance6toUnitE4Unit"></span><span id="_CPPv2NK5metaf8Distance6toUnitE4Unit"></span><span id="metaf::Distance::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf8Distance4UnitE" title="metaf::Distance::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored distance value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.<p>Both integer and fractional components are used in conversion. For example, attempting to convert value of 1 1/2 statute miles into statute miles will return value 1.5.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p><strong>Validating</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf8Distance7isValidEv">
+<span id="_CPPv3NK5metaf8Distance7isValidEv"></span><span id="_CPPv2NK5metaf8Distance7isValidEv"></span><span id="metaf::Distance::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>::returns:: <code class="docutils literal notranslate"><span class="pre">true</span></code> if stored distance value is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+<blockquote>
+<div><p>When fraction component is present, both numerator and denominator must be non-zero for the stored value to be valid.</p>
+<p>When fraction component is not present, the stored value is always considered valid.</p>
+</div></blockquote>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="direction">
 <h3>Direction<a class="headerlink" href="#direction" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf9DirectionE">
+<span id="_CPPv3N5metaf9DirectionE"></span><span id="_CPPv2N5metaf9DirectionE"></span><span id="metaf::Direction"></span><em class="property">class </em><code class="descname">Direction</code><a class="headerlink" href="#_CPPv4N5metaf9DirectionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores a direction value. The value can be specified in degrees or as a cardinal direction. Alternatively the direction value may be omitted (i.e. not specified), specified as not reported (i.e. no value), specified as variable, or specified as No Directional Variation.</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf9Direction8CardinalE">
+<span id="_CPPv3N5metaf9Direction8CardinalE"></span><span id="_CPPv2N5metaf9Direction8CardinalE"></span><em class="property">enum class </em><code class="descname">Cardinal</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8CardinalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Specifies a cardinal or intercardinal direction. No secondary intercardinal directions can be specified. Alternatively may specify No Directional Variation or No Value.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal4NONEE">
+<span id="_CPPv3N5metaf9Direction8Cardinal4NONEE"></span><span id="_CPPv2N5metaf9Direction8Cardinal4NONEE"></span><em class="property">enumerator </em><code class="descname">NONE</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal4NONEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>No value or no corresponding cardinal direction can be found.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal3NDVE">
+<span id="_CPPv3N5metaf9Direction8Cardinal3NDVE"></span><span id="_CPPv2N5metaf9Direction8Cardinal3NDVE"></span><em class="property">enumerator </em><code class="descname">NDV</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal3NDVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>No directional variation.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal1NE">
+<span id="_CPPv3N5metaf9Direction8Cardinal1NE"></span><span id="_CPPv2N5metaf9Direction8Cardinal1NE"></span><em class="property">enumerator </em><code class="descname">N</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal1NE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>North (0 to 22 degrees or 338 to 360 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal1SE">
+<span id="_CPPv3N5metaf9Direction8Cardinal1SE"></span><span id="_CPPv2N5metaf9Direction8Cardinal1SE"></span><em class="property">enumerator </em><code class="descname">S</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal1SE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>South (158 to 202 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal1WE">
+<span id="_CPPv3N5metaf9Direction8Cardinal1WE"></span><span id="_CPPv2N5metaf9Direction8Cardinal1WE"></span><em class="property">enumerator </em><code class="descname">W</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal1WE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>West (248 to 292 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal1EE">
+<span id="_CPPv3N5metaf9Direction8Cardinal1EE"></span><span id="_CPPv2N5metaf9Direction8Cardinal1EE"></span><em class="property">enumerator </em><code class="descname">E</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal1EE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>East (68 to 112 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal2NWE">
+<span id="_CPPv3N5metaf9Direction8Cardinal2NWE"></span><span id="_CPPv2N5metaf9Direction8Cardinal2NWE"></span><em class="property">enumerator </em><code class="descname">NW</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal2NWE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Northwest (293 to 337 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal2NEE">
+<span id="_CPPv3N5metaf9Direction8Cardinal2NEE"></span><span id="_CPPv2N5metaf9Direction8Cardinal2NEE"></span><em class="property">enumerator </em><code class="descname">NE</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal2NEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Northeast (23 to 67 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal2SWE">
+<span id="_CPPv3N5metaf9Direction8Cardinal2SWE"></span><span id="_CPPv2N5metaf9Direction8Cardinal2SWE"></span><em class="property">enumerator </em><code class="descname">SW</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal2SWE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Southwest (203 to 247 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal2SEE">
+<span id="_CPPv3N5metaf9Direction8Cardinal2SEE"></span><span id="_CPPv2N5metaf9Direction8Cardinal2SEE"></span><em class="property">enumerator </em><code class="descname">SE</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal2SEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Southeast (113 to 157 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal6TRUE_NE">
+<span id="_CPPv3N5metaf9Direction8Cardinal6TRUE_NE"></span><span id="_CPPv2N5metaf9Direction8Cardinal6TRUE_NE"></span><em class="property">enumerator </em><code class="descname">TRUE_N</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal6TRUE_NE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>True north (exactly 360 degrees). Value of 0 degrees is not considered as true north.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal6TRUE_WE">
+<span id="_CPPv3N5metaf9Direction8Cardinal6TRUE_WE"></span><span id="_CPPv2N5metaf9Direction8Cardinal6TRUE_WE"></span><em class="property">enumerator </em><code class="descname">TRUE_W</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal6TRUE_WE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>True west (exactly 270 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal6TRUE_SE">
+<span id="_CPPv3N5metaf9Direction8Cardinal6TRUE_SE"></span><span id="_CPPv2N5metaf9Direction8Cardinal6TRUE_SE"></span><em class="property">enumerator </em><code class="descname">TRUE_S</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal6TRUE_SE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>True south (exactly 180 degrees).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction8Cardinal6TRUE_EE">
+<span id="_CPPv3N5metaf9Direction8Cardinal6TRUE_EE"></span><span id="_CPPv2N5metaf9Direction8Cardinal6TRUE_EE"></span><em class="property">enumerator </em><code class="descname">TRUE_E</code><a class="headerlink" href="#_CPPv4N5metaf9Direction8Cardinal6TRUE_EE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>True east (exactly 90 degrees).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf9Direction6StatusE">
+<span id="_CPPv3N5metaf9Direction6StatusE"></span><span id="_CPPv2N5metaf9Direction6StatusE"></span><em class="property">enum class </em><code class="descname">Status</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6StatusE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The status of the direction value reported. If the status is other than <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status13VALUE_DEGREESE" title="metaf::Direction::Status::VALUE_DEGREES"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">VALUE_DEGREES</span></code></a> or <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status14VALUE_CARDINALE" title="metaf::Direction::Status::VALUE_CARDINAL"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">VALUE_CARDINAL</span></code></a>, then no numerical direction value is provided.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status8OMMITTEDE">
+<span id="_CPPv3N5metaf9Direction6Status8OMMITTEDE"></span><span id="_CPPv2N5metaf9Direction6Status8OMMITTEDE"></span><em class="property">enumerator </em><code class="descname">OMMITTED</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status8OMMITTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is omitted (i.e. no direction specified at all).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status12NOT_REPORTEDE">
+<span id="_CPPv3N5metaf9Direction6Status12NOT_REPORTEDE"></span><span id="_CPPv2N5metaf9Direction6Status12NOT_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">NOT_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status12NOT_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is specified as ‘not reported’.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status8VARIABLEE">
+<span id="_CPPv3N5metaf9Direction6Status8VARIABLEE"></span><span id="_CPPv2N5metaf9Direction6Status8VARIABLEE"></span><em class="property">enumerator </em><code class="descname">VARIABLE</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status8VARIABLEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is reported as variable.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status3NDVE">
+<span id="_CPPv3N5metaf9Direction6Status3NDVE"></span><span id="_CPPv2N5metaf9Direction6Status3NDVE"></span><em class="property">enumerator </em><code class="descname">NDV</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status3NDVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is reported as ‘No Directional Variation’.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status13VALUE_DEGREESE">
+<span id="_CPPv3N5metaf9Direction6Status13VALUE_DEGREESE"></span><span id="_CPPv2N5metaf9Direction6Status13VALUE_DEGREESE"></span><em class="property">enumerator </em><code class="descname">VALUE_DEGREES</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status13VALUE_DEGREESE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is reported as value in degrees.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf9Direction6Status14VALUE_CARDINALE">
+<span id="_CPPv3N5metaf9Direction6Status14VALUE_CARDINALE"></span><span id="_CPPv2N5metaf9Direction6Status14VALUE_CARDINALE"></span><em class="property">enumerator </em><code class="descname">VALUE_CARDINAL</code><a class="headerlink" href="#_CPPv4N5metaf9Direction6Status14VALUE_CARDINALE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Direction is reported as cardinal value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf9Direction6statusEv">
+<span id="_CPPv3NK5metaf9Direction6statusEv"></span><span id="_CPPv2NK5metaf9Direction6statusEv"></span><span id="metaf::Direction::statusC"></span><a class="reference internal" href="#_CPPv4N5metaf9Direction6StatusE" title="metaf::Direction::Status">Status</a> <code class="descname">status</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9Direction6statusEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>::returns:: Status of stored direction value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9Direction8cardinalEb">
+<span id="_CPPv3NK5metaf9Direction8cardinalEb"></span><span id="_CPPv2NK5metaf9Direction8cardinalEb"></span><span id="metaf::Direction::cardinal__bC"></span><a class="reference internal" href="#_CPPv4N5metaf9Direction8CardinalE" title="metaf::Direction::Cardinal">Cardinal</a> <code class="descname">cardinal</code><span class="sig-paren">(</span>bool <em>trueDirections</em> = false<span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9Direction8cardinalEb" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trueDirections</strong> – If set to <code class="docutils literal notranslate"><span class="pre">true</span></code> allows returning <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::TRUE_NORTH</span></code>, <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::TRUE_SOUTH</span></code>, <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::TRUE_EAST</span></code>, <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::TRUE_WEST</span></code></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Cardinal direction corresponding to the stored direction value.<ul class="simple">
+<li>If the status of the stored value is <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8OMMITTEDE" title="metaf::Direction::Status::OMMITTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::OMMITTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status12NOT_REPORTEDE" title="metaf::Direction::Status::NOT_REPORTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NOT_REPORTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8VARIABLEE" title="metaf::Direction::Status::VARIABLE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VARIABLE</span></code></a>, then <a class="reference internal" href="#_CPPv4N5metaf9Direction8Cardinal4NONEE" title="metaf::Direction::Cardinal::NONE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::NONE</span></code></a> is returned.</li>
+<li>If the status is <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status3NDVE" title="metaf::Direction::Status::NDV"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NDV</span></code></a> then <a class="reference internal" href="#_CPPv4N5metaf9Direction8Cardinal3NDVE" title="metaf::Direction::Cardinal::NDV"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::NDV</span></code></a> is returned.</li>
+<li>If the direction value in degrees is reported (i.e. status is <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status13VALUE_DEGREESE" title="metaf::Direction::Status::VALUE_DEGREES"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VALUE_DEGREES</span></code></a>) and the value exceeds 360 degrees then <a class="reference internal" href="#_CPPv4N5metaf9Direction8Cardinal4NONEE" title="metaf::Direction::Cardinal::NONE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Cardinal::NONE</span></code></a> is returned.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9Direction7degreesEv">
+<span id="_CPPv3NK5metaf9Direction7degreesEv"></span><span id="_CPPv2NK5metaf9Direction7degreesEv"></span><span id="metaf::Direction::degreesC"></span>std::optional&lt;unsigned int&gt; <code class="descname">degrees</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9Direction7degreesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Stored value in degrees. If cardinal value was stored, then the middle value of the corresponding directional sector is returned as follows:<table border="1" class="docutils">
+<colgroup>
+<col width="56%" />
+<col width="44%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Cardinal direction</th>
+<th class="head">Returned value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>North</td>
+<td>360</td>
+</tr>
+<tr class="row-odd"><td>Northeast</td>
+<td>45</td>
+</tr>
+<tr class="row-even"><td>East</td>
+<td>90</td>
+</tr>
+<tr class="row-odd"><td>Southeast</td>
+<td>135</td>
+</tr>
+<tr class="row-even"><td>South</td>
+<td>180</td>
+</tr>
+<tr class="row-odd"><td>Southwest</td>
+<td>225</td>
+</tr>
+<tr class="row-even"><td>West</td>
+<td>270</td>
+</tr>
+<tr class="row-odd"><td>Northwest</td>
+<td>315</td>
+</tr>
+</tbody>
+</table>
+<p>If the status of the stored value is <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8OMMITTEDE" title="metaf::Direction::Status::OMMITTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::OMMITTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status12NOT_REPORTEDE" title="metaf::Direction::Status::NOT_REPORTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NOT_REPORTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8VARIABLEE" title="metaf::Direction::Status::VARIABLE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VARIABLE</span></code></a> or <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status3NDVE" title="metaf::Direction::Status::NDV"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NDV</span></code></a>, then an empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> is returned.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Miscellaneous</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf9Direction7isValueEv">
+<span id="_CPPv3NK5metaf9Direction7isValueEv"></span><span id="_CPPv2NK5metaf9Direction7isValueEv"></span><span id="metaf::Direction::isValueC"></span>bool <code class="descname">isValue</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9Direction7isValueEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored direction contains a value, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored direction does not contain a concrete value.<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">true</span></code> is returned if ether cardinal direction (<a class="reference internal" href="#_CPPv4N5metaf9Direction6Status14VALUE_CARDINALE" title="metaf::Direction::Status::VALUE_CARDINAL"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VALUE_CARDINAL</span></code></a>) or value in degrees (<a class="reference internal" href="#_CPPv4N5metaf9Direction6Status13VALUE_DEGREESE" title="metaf::Direction::Status::VALUE_DEGREES"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VALUE_DEGREES</span></code></a>) is stored.</li>
+<li><code class="docutils literal notranslate"><span class="pre">false</span></code> is returned if the status is <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8OMMITTEDE" title="metaf::Direction::Status::OMMITTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::OMMITTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status12NOT_REPORTEDE" title="metaf::Direction::Status::NOT_REPORTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NOT_REPORTED</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status8VARIABLEE" title="metaf::Direction::Status::VARIABLE"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::VARIABLE</span></code></a> or <a class="reference internal" href="#_CPPv4N5metaf9Direction6Status3NDVE" title="metaf::Direction::Status::NDV"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NDV</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf9Direction7isValidEv">
+<span id="_CPPv3NK5metaf9Direction7isValidEv"></span><span id="_CPPv2NK5metaf9Direction7isValidEv"></span><span id="metaf::Direction::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9Direction7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if stored direction value is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.<p>The direction value is considered to be valid if value in degrees was specified and the value is less or equal than 360 degrees. If stored direction does not contain a value, it is always considered valid.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="pressure">
 <h3>Pressure<a class="headerlink" href="#pressure" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf8PressureE">
+<span id="_CPPv3N5metaf8PressureE"></span><span id="_CPPv2N5metaf8PressureE"></span><span id="metaf::Pressure"></span><em class="property">class </em><code class="descname">Pressure</code><a class="headerlink" href="#_CPPv4N5metaf8PressureE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores a pressure value. The intended use is atmospheric pressure but any absolute pressure value can be stored.</p>
+<p>Pressure value can be optionally not reported (i.e. no value).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf8Pressure4UnitE">
+<span id="_CPPv3N5metaf8Pressure4UnitE"></span><span id="_CPPv2N5metaf8Pressure4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf8Pressure4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Pressure measurement units.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Pressure4Unit11HECTOPASCALE">
+<span id="_CPPv3N5metaf8Pressure4Unit11HECTOPASCALE"></span><span id="_CPPv2N5metaf8Pressure4Unit11HECTOPASCALE"></span><em class="property">enumerator </em><code class="descname">HECTOPASCAL</code><a class="headerlink" href="#_CPPv4N5metaf8Pressure4Unit11HECTOPASCALE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Hectopascal.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Pressure4Unit9INCHES_HGE">
+<span id="_CPPv3N5metaf8Pressure4Unit9INCHES_HGE"></span><span id="_CPPv2N5metaf8Pressure4Unit9INCHES_HGE"></span><em class="property">enumerator </em><code class="descname">INCHES_HG</code><a class="headerlink" href="#_CPPv4N5metaf8Pressure4Unit9INCHES_HGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Inches mercury.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf8Pressure8pressureEv">
+<span id="_CPPv3NK5metaf8Pressure8pressureEv"></span><span id="_CPPv2NK5metaf8Pressure8pressureEv"></span><span id="metaf::Pressure::pressureC"></span>std::optional&lt;float&gt; <code class="descname">pressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Pressure8pressureEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">Stored pressure value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if pressure value is not reported.</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Pressure4unitEv">
+<span id="_CPPv3NK5metaf8Pressure4unitEv"></span><span id="_CPPv2NK5metaf8Pressure4unitEv"></span><span id="metaf::Pressure::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf8Pressure4UnitE" title="metaf::Pressure::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Pressure4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">Pressure measurement unit which was used with stored value.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf8Pressure6toUnitE4Unit">
+<span id="_CPPv3NK5metaf8Pressure6toUnitE4Unit"></span><span id="_CPPv2NK5metaf8Pressure6toUnitE4Unit"></span><span id="metaf::Pressure::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf8Pressure4UnitE" title="metaf::Pressure::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Pressure6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored pressure value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="precipitation">
 <h3>Precipitation<a class="headerlink" href="#precipitation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf13PrecipitationE">
+<span id="_CPPv3N5metaf13PrecipitationE"></span><span id="_CPPv2N5metaf13PrecipitationE"></span><span id="metaf::Precipitation"></span><em class="property">class </em><code class="descname">Precipitation</code><a class="headerlink" href="#_CPPv4N5metaf13PrecipitationE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The amount or accumulation of precipitation.</p>
+<p>The amount/accumulation may be not reported (i.e. no value) or alternatively it may specify that the runway is not operational due to deposits accumulation (which means that exact accumulation value is not important and is not reported).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf13Precipitation6StatusE">
+<span id="_CPPv3N5metaf13Precipitation6StatusE"></span><span id="_CPPv2N5metaf13Precipitation6StatusE"></span><em class="property">enum class </em><code class="descname">Status</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation6StatusE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Status of precipitation value.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13Precipitation6Status12NOT_REPORTEDE">
+<span id="_CPPv3N5metaf13Precipitation6Status12NOT_REPORTEDE"></span><span id="_CPPv2N5metaf13Precipitation6Status12NOT_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">NOT_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation6Status12NOT_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The amount or accumulation of precipitation is not reported (i.e. no value).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13Precipitation6Status8REPORTEDE">
+<span id="_CPPv3N5metaf13Precipitation6Status8REPORTEDE"></span><span id="_CPPv2N5metaf13Precipitation6Status8REPORTEDE"></span><em class="property">enumerator </em><code class="descname">REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation6Status8REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The amount or accumulation of precipitation value is reported.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13Precipitation6Status22RUNWAY_NOT_OPERATIONALE">
+<span id="_CPPv3N5metaf13Precipitation6Status22RUNWAY_NOT_OPERATIONALE"></span><span id="_CPPv2N5metaf13Precipitation6Status22RUNWAY_NOT_OPERATIONALE"></span><em class="property">enumerator </em><code class="descname">RUNWAY_NOT_OPERATIONAL</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation6Status22RUNWAY_NOT_OPERATIONALE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The runway is not operational due to deposits accumulation; the exact accumulation value is not important since runway cannot be used.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf13Precipitation4UnitE">
+<span id="_CPPv3N5metaf13Precipitation4UnitE"></span><span id="_CPPv2N5metaf13Precipitation4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Precipitation amount or accumulation measurement units.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13Precipitation4Unit2MME">
+<span id="_CPPv3N5metaf13Precipitation4Unit2MME"></span><span id="_CPPv2N5metaf13Precipitation4Unit2MME"></span><em class="property">enumerator </em><code class="descname">MM</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation4Unit2MME" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Millimeters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13Precipitation4Unit6INCHESE">
+<span id="_CPPv3N5metaf13Precipitation4Unit6INCHESE"></span><span id="_CPPv2N5metaf13Precipitation4Unit6INCHESE"></span><em class="property">enumerator </em><code class="descname">INCHES</code><a class="headerlink" href="#_CPPv4N5metaf13Precipitation4Unit6INCHESE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Inches.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Precipitation amount/accumulation value is always stored in millimeters but may be converted to inches using <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">toUnit()</span></code>.</p>
+</div>
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf13Precipitation6statusEv">
+<span id="_CPPv3NK5metaf13Precipitation6statusEv"></span><span id="_CPPv2NK5metaf13Precipitation6statusEv"></span><span id="metaf::Precipitation::statusC"></span><a class="reference internal" href="#_CPPv4N5metaf13Precipitation6StatusE" title="metaf::Precipitation::Status">Status</a> <code class="descname">status</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13Precipitation6statusEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Status of precipitation amount or accumulation value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf13Precipitation13precipitationEv">
+<span id="_CPPv3NK5metaf13Precipitation13precipitationEv"></span><span id="_CPPv2NK5metaf13Precipitation13precipitationEv"></span><span id="metaf::Precipitation::precipitationC"></span>std::optional&lt;float&gt; <code class="descname">precipitation</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13Precipitation13precipitationEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Stored amount/accumulation value or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if the value is not reported (<a class="reference internal" href="#_CPPv4N5metaf13Precipitation6Status12NOT_REPORTEDE" title="metaf::Precipitation::Status::NOT_REPORTED"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::NOT_REPORTED</span></code></a>) or runway is not operational (<a class="reference internal" href="#_CPPv4N5metaf13Precipitation6Status22RUNWAY_NOT_OPERATIONALE" title="metaf::Precipitation::Status::RUNWAY_NOT_OPERATIONAL"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::RUNWAY_NOT_OPERATIONAL</span></code></a>).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf13Precipitation4unitEv">
+<span id="_CPPv3NK5metaf13Precipitation4unitEv"></span><span id="_CPPv2NK5metaf13Precipitation4unitEv"></span><span id="metaf::Precipitation::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf13Precipitation4UnitE" title="metaf::Precipitation::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13Precipitation4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Precipitation amount/accumulation measurement unit which was used with stored value. Currently always returns <a class="reference internal" href="#_CPPv4N5metaf13Precipitation4Unit2MME" title="metaf::Precipitation::Unit::MM"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Unit::MM</span></code></a> since the value is always stored in millimeters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf13Precipitation6toUnitE4Unit">
+<span id="_CPPv3NK5metaf13Precipitation6toUnitE4Unit"></span><span id="_CPPv2NK5metaf13Precipitation6toUnitE4Unit"></span><span id="metaf::Precipitation::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf13Precipitation4UnitE" title="metaf::Precipitation::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13Precipitation6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored precipitation amount/accumulation value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported or if the runway is not operational.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="surfacefriction">
 <h3>SurfaceFriction<a class="headerlink" href="#surfacefriction" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf15SurfaceFrictionE">
+<span id="_CPPv3N5metaf15SurfaceFrictionE"></span><span id="_CPPv2N5metaf15SurfaceFrictionE"></span><span id="metaf::SurfaceFriction"></span><em class="property">class </em><code class="descname">SurfaceFriction</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFrictionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Surface friction. The intended use is reporting the surface friction of the runway. Surface friction may be reported in the form of friction coefficient or braking action.</p>
+<p>The value may be optionally not reported, or reported as unreliable/unmeasurable.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Surface friction coefficient is a dimensionless value and has no associated measurement units.</p>
+</div>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf15SurfaceFriction6StatusE">
+<span id="_CPPv3N5metaf15SurfaceFriction6StatusE"></span><span id="_CPPv2N5metaf15SurfaceFriction6StatusE"></span><em class="property">enum class </em><code class="descname">Status</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction6StatusE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The status of surface friction value.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction6Status12NOT_REPORTEDE">
+<span id="_CPPv3N5metaf15SurfaceFriction6Status12NOT_REPORTEDE"></span><span id="_CPPv2N5metaf15SurfaceFriction6Status12NOT_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">NOT_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction6Status12NOT_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Surface friction is not reported.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction6Status25SURFACE_FRICTION_REPORTEDE">
+<span id="_CPPv3N5metaf15SurfaceFriction6Status25SURFACE_FRICTION_REPORTEDE"></span><span id="_CPPv2N5metaf15SurfaceFriction6Status25SURFACE_FRICTION_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">SURFACE_FRICTION_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction6Status25SURFACE_FRICTION_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Surface friction reported in form of friction coefficient (a value from 0.00 to 1.00, lesser values mean more slippery surface).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction6Status23BRAKING_ACTION_REPORTEDE">
+<span id="_CPPv3N5metaf15SurfaceFriction6Status23BRAKING_ACTION_REPORTEDE"></span><span id="_CPPv2N5metaf15SurfaceFriction6Status23BRAKING_ACTION_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">BRAKING_ACTION_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction6Status23BRAKING_ACTION_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Surface friction reported in form of braking action.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction6Status10UNRELIABLEE">
+<span id="_CPPv3N5metaf15SurfaceFriction6Status10UNRELIABLEE"></span><span id="_CPPv2N5metaf15SurfaceFriction6Status10UNRELIABLEE"></span><em class="property">enumerator </em><code class="descname">UNRELIABLE</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction6Status10UNRELIABLEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The measurement result is unreliable or the value is unmeasurable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingActionE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingActionE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingActionE"></span><em class="property">enum class </em><code class="descname">BrakingAction</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingActionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Descriptive braking action which specifies approximate range of surface friction coefficient rather than precise coefficient value.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction4NONEE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction4NONEE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction4NONEE"></span><em class="property">enumerator </em><code class="descname">NONE</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction4NONEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Value is either not reported, unreliable or unmeasurable.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction4POORE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction4POORE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction4POORE"></span><em class="property">enumerator </em><code class="descname">POOR</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction4POORE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Friction coefficient is 0.25 or lesser.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction11MEDIUM_POORE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction11MEDIUM_POORE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction11MEDIUM_POORE"></span><em class="property">enumerator </em><code class="descname">MEDIUM_POOR</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction11MEDIUM_POORE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Friction coefficient is from 0.26 to 0.29.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction6MEDIUME">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction6MEDIUME"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction6MEDIUME"></span><em class="property">enumerator </em><code class="descname">MEDIUM</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction6MEDIUME" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Friction coefficient is from 0.30 to 0.35.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction11MEDIUM_GOODE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction11MEDIUM_GOODE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction11MEDIUM_GOODE"></span><em class="property">enumerator </em><code class="descname">MEDIUM_GOOD</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction11MEDIUM_GOODE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Friction coefficient is from 0.36 to 0.39.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf15SurfaceFriction13BrakingAction4GOODE">
+<span id="_CPPv3N5metaf15SurfaceFriction13BrakingAction4GOODE"></span><span id="_CPPv2N5metaf15SurfaceFriction13BrakingAction4GOODE"></span><em class="property">enumerator </em><code class="descname">GOOD</code><a class="headerlink" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction4GOODE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Friction coefficient is 0.40 or greater.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf15SurfaceFriction6statusEv">
+<span id="_CPPv3NK5metaf15SurfaceFriction6statusEv"></span><span id="_CPPv2NK5metaf15SurfaceFriction6statusEv"></span><span id="metaf::SurfaceFriction::statusC"></span><a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction6StatusE" title="metaf::SurfaceFriction::Status">Status</a> <code class="descname">status</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SurfaceFriction6statusEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Status of surface friction value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf15SurfaceFriction11coefficientEv">
+<span id="_CPPv3NK5metaf15SurfaceFriction11coefficientEv"></span><span id="_CPPv2NK5metaf15SurfaceFriction11coefficientEv"></span><span id="metaf::SurfaceFriction::coefficientC"></span>std::optional&lt;float&gt; <code class="descname">coefficient</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SurfaceFriction11coefficientEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The value of friction coefficient or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if the value is not reported, unreliable or unmeasurable.<p>If <a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction13BrakingActionE" title="metaf::SurfaceFriction::BrakingAction"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">BrakingAction</span></code></a> was reported, then ‘worst’ (i.e. least) friction coefficient for the range specified by stored braking action value is returned (e.g. if braking action was reported as <a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction11MEDIUM_GOODE" title="metaf::SurfaceFriction::BrakingAction::MEDIUM_GOOD"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">BrakingAction::MEDIUM_GOOD</span></code></a> then 0.36 is returned).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf15SurfaceFriction13brakingActionEv">
+<span id="_CPPv3NK5metaf15SurfaceFriction13brakingActionEv"></span><span id="_CPPv2NK5metaf15SurfaceFriction13brakingActionEv"></span><span id="metaf::SurfaceFriction::brakingActionC"></span><a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction13BrakingActionE" title="metaf::SurfaceFriction::BrakingAction">BrakingAction</a> <code class="descname">brakingAction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SurfaceFriction13brakingActionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Braking action value corresponding to stored value.<p>If friction coefficient was reported, a range of <a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction13BrakingActionE" title="metaf::SurfaceFriction::BrakingAction"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">BrakingAction</span></code></a> where this value of the friction coefficient fits is returned (e.g. if friction coefficient with value 0.33 was reported, then <a class="reference internal" href="#_CPPv4N5metaf15SurfaceFriction13BrakingAction6MEDIUME" title="metaf::SurfaceFriction::BrakingAction::MEDIUM"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">BrakingAction::MEDIUM</span></code></a> is returned).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="waveheight">
 <h3>WaveHeight<a class="headerlink" href="#waveheight" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="_CPPv4N5metaf10WaveHeightE">
+<span id="_CPPv3N5metaf10WaveHeightE"></span><span id="_CPPv2N5metaf10WaveHeightE"></span><span id="metaf::WaveHeight"></span><em class="property">class </em><code class="descname">WaveHeight</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeightE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>WaveHeight or descriptive state of sea surface which specifies the range of wave heights.</p>
+<p>Both state of sea surface and wave height may be optionally not reported (i.e. no value).</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf10WaveHeight4TypeE">
+<span id="_CPPv3N5metaf10WaveHeight4TypeE"></span><span id="_CPPv2N5metaf10WaveHeight4TypeE"></span><em class="property">enum class </em><code class="descname">Type</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4TypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight4Type16STATE_OF_SURFACEE">
+<span id="_CPPv3N5metaf10WaveHeight4Type16STATE_OF_SURFACEE"></span><span id="_CPPv2N5metaf10WaveHeight4Type16STATE_OF_SURFACEE"></span><em class="property">enumerator </em><code class="descname">STATE_OF_SURFACE</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4Type16STATE_OF_SURFACEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Descriptive state of surface is specified.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight4Type11WAVE_HEIGHTE">
+<span id="_CPPv3N5metaf10WaveHeight4Type11WAVE_HEIGHTE"></span><span id="_CPPv2N5metaf10WaveHeight4Type11WAVE_HEIGHTE"></span><em class="property">enumerator </em><code class="descname">WAVE_HEIGHT</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4Type11WAVE_HEIGHTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Actual numerical wave height is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf10WaveHeight4UnitE">
+<span id="_CPPv3N5metaf10WaveHeight4UnitE"></span><span id="_CPPv2N5metaf10WaveHeight4UnitE"></span><em class="property">enum class </em><code class="descname">Unit</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4UnitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wave height measurement unit.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight4Unit6METERSE">
+<span id="_CPPv3N5metaf10WaveHeight4Unit6METERSE"></span><span id="_CPPv2N5metaf10WaveHeight4Unit6METERSE"></span><em class="property">enumerator </em><code class="descname">METERS</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4Unit6METERSE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight4Unit4FEETE">
+<span id="_CPPv3N5metaf10WaveHeight4Unit4FEETE"></span><span id="_CPPv2N5metaf10WaveHeight4Unit4FEETE"></span><em class="property">enumerator </em><code class="descname">FEET</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight4Unit4FEETE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Feet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurfaceE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurfaceE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurfaceE"></span><em class="property">enum class </em><code class="descname">StateOfSurface</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurfaceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface12NOT_REPORTEDE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface12NOT_REPORTEDE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface12NOT_REPORTEDE"></span><em class="property">enumerator </em><code class="descname">NOT_REPORTED</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface12NOT_REPORTEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>State of sea surface is not reported.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface11CALM_GLASSYE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface11CALM_GLASSYE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface11CALM_GLASSYE"></span><em class="property">enumerator </em><code class="descname">CALM_GLASSY</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface11CALM_GLASSYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sea surface calm (glassy), no waves.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface12CALM_RIPPLEDE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface12CALM_RIPPLEDE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface12CALM_RIPPLEDE"></span><em class="property">enumerator </em><code class="descname">CALM_RIPPLED</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface12CALM_RIPPLEDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sea surface calm (rippled), wave height &lt;0.1 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface6SMOOTHE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface6SMOOTHE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface6SMOOTHE"></span><em class="property">enumerator </em><code class="descname">SMOOTH</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface6SMOOTHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sea surface smooth, wave height 0.1 to 0.5 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface6SLIGHTE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface6SLIGHTE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface6SLIGHTE"></span><em class="property">enumerator </em><code class="descname">SLIGHT</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface6SLIGHTE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Slight waves with height 0.5 to 1.25 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface8MODERATEE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface8MODERATEE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface8MODERATEE"></span><em class="property">enumerator </em><code class="descname">MODERATE</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface8MODERATEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Moderate waves with height 1.25 to 2.5 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface5ROUGHE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface5ROUGHE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface5ROUGHE"></span><em class="property">enumerator </em><code class="descname">ROUGH</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface5ROUGHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sea surface rough, wave height 2.5 to 4 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface10VERY_ROUGHE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface10VERY_ROUGHE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface10VERY_ROUGHE"></span><em class="property">enumerator </em><code class="descname">VERY_ROUGH</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface10VERY_ROUGHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sea surface very rough, wave height 4 to 6 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface4HIGHE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface4HIGHE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface4HIGHE"></span><em class="property">enumerator </em><code class="descname">HIGH</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface4HIGHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>High waves with height 6 to 9 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface9VERY_HIGHE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface9VERY_HIGHE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface9VERY_HIGHE"></span><em class="property">enumerator </em><code class="descname">VERY_HIGH</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface9VERY_HIGHE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Very high waves with height 9 to 14 meters.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf10WaveHeight14StateOfSurface10PHENOMENALE">
+<span id="_CPPv3N5metaf10WaveHeight14StateOfSurface10PHENOMENALE"></span><span id="_CPPv2N5metaf10WaveHeight14StateOfSurface10PHENOMENALE"></span><em class="property">enumerator </em><code class="descname">PHENOMENAL</code><a class="headerlink" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface10PHENOMENALE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Phenomenal waves with height of 14 meters or more.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring the data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight4typeEv">
+<span id="_CPPv3NK5metaf10WaveHeight4typeEv"></span><span id="_CPPv2NK5metaf10WaveHeight4typeEv"></span><span id="metaf::WaveHeight::typeC"></span><a class="reference internal" href="#_CPPv4N5metaf10WaveHeight4TypeE" title="metaf::WaveHeight::Type">Type</a> <code class="descname">type</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight4typeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Type of the value: descriptive sea surface or numerical wave height.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight14stateOfSurfaceEv">
+<span id="_CPPv3NK5metaf10WaveHeight14stateOfSurfaceEv"></span><span id="_CPPv2NK5metaf10WaveHeight14stateOfSurfaceEv"></span><span id="metaf::WaveHeight::stateOfSurfaceC"></span><a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurfaceE" title="metaf::WaveHeight::StateOfSurface">StateOfSurface</a> <code class="descname">stateOfSurface</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight14stateOfSurfaceEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">State of sea surface corresponding to the value.<p>If wave height was specified, a range of <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurfaceE" title="metaf::WaveHeight::StateOfSurface"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">StateOfSurface</span></code></a> where this value of the wave height fits is returned (e.g. if wave height of 1.1 meters was reported, then <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface6SLIGHTE" title="metaf::WaveHeight::StateOfSurface::SLIGHT"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">StateOfSurface::SLIGHT</span></code></a> is returned).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight10waveHeightEv">
+<span id="_CPPv3NK5metaf10WaveHeight10waveHeightEv"></span><span id="_CPPv2NK5metaf10WaveHeight10waveHeightEv"></span><span id="metaf::WaveHeight::waveHeightC"></span>std::optional&lt;float&gt; <code class="descname">waveHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight10waveHeightEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Wave height value.<p>If <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurfaceE" title="metaf::WaveHeight::StateOfSurface"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">StateOfSurface</span></code></a> was reported, then highest wave height for the range specified by stored descriptive value is returned (e.g. if state of sea surface was reported as <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface5ROUGHE" title="metaf::WaveHeight::StateOfSurface::ROUGH"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">StateOfSurface::ROUGH</span></code></a> then 4.0 is returned).</p>
+<p>If <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurface10PHENOMENALE" title="metaf::WaveHeight::StateOfSurface::PHENOMENAL"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">StateOfSurface::PHENOMENAL</span></code></a> was reported then there is no highest wave height value and lowest value of 14 meters is returned instead.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight4unitEv">
+<span id="_CPPv3NK5metaf10WaveHeight4unitEv"></span><span id="_CPPv2NK5metaf10WaveHeight4unitEv"></span><span id="metaf::WaveHeight::unitC"></span><a class="reference internal" href="#_CPPv4N5metaf10WaveHeight4UnitE" title="metaf::WaveHeight::Unit">Unit</a> <code class="descname">unit</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight4unitEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Wave height measurement unit which was used with stored value. Currently always returns <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight4Unit6METERSE" title="metaf::WaveHeight::Unit::METERS"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Unit::METERS</span></code></a> since the value is always specified in decimeters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Converting to other measurement units</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight6toUnitE4Unit">
+<span id="_CPPv3NK5metaf10WaveHeight6toUnitE4Unit"></span><span id="_CPPv2NK5metaf10WaveHeight6toUnitE4Unit"></span><span id="metaf::WaveHeight::toUnit__UnitC"></span>std::optional&lt;float&gt; <code class="descname">toUnit</code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5metaf10WaveHeight4UnitE" title="metaf::WaveHeight::Unit">Unit</a> <em>unit</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight6toUnitE4Unit" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>unit</strong> – Measurement unit to convert the value to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Stored wave height value (or highest wave height value for specified <a class="reference internal" href="#_CPPv4N5metaf10WaveHeight14StateOfSurfaceE" title="metaf::WaveHeight::StateOfSurface"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">StateOfSurface</span></code></a>) converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
 </div>
 </div>
 <div class="section" id="group">
@@ -196,6 +1558,9 @@
   <h4>Previous topic</h4>
   <p class="topless"><a href="getting_started.html"
                         title="previous chapter">Getting started</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="extending.html"
+                        title="next chapter">Extending Metaf functionality</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -226,6 +1591,9 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="extending.html" title="Extending Metaf functionality"
+             >next</a> |</li>
+        <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Metaf 1.0.0 documentation</a> &#187;</li> 
@@ -233,7 +1601,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018-2019, Nick Naumenko.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>

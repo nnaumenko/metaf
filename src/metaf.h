@@ -21,14 +21,13 @@
 
 namespace metaf {
 
-	/// Metaf library version, see https://semver.org/ for details.
+	// Metaf library version
 	struct Version {
-		static const int major = 1;	///< Version major
-		static const int minor = 0; ///< Version minor
-		static const int patch = 0; ///< Version patch
+		static const int major = 1;
+		static const int minor = 0;
+		static const int patch = 0;
 	};
 
-	// Structs of individual METAR or TAF groups used with Group variant
 	class PlainTextGroup;
 	class FixedGroup;
 	class LocationGroup;
@@ -47,24 +46,7 @@ namespace metaf {
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
 
-	/// @brief A variant type for all possible METAR and TAF groups.
-	/// @details Used by parser to return parsed group information.
-	/// @par Group is expected to include PlainTextGroup, otherwise GroupParser
-	/// will not compile.
-	/// @par The requirements for classes included in Group are as follows.
-	/// @par parse() method is required by GroupParser to recognise and parse 
-	/// strings as individual groups. This method has two parameters: raw 
-	/// string which contains METAR or TAF group, and Report Part where the 
-	/// string was encountered. It returns either initialised Group or empty 
-	/// optional if group format was not recognised.
-	/// @par nextGroup() is used to combine sequential groups which represent 
-	/// the same data (e.g. 1 1/2SM, 1 and 1/2SM are technically different 
-	/// groups but represent different parts of the same value). Method 
-	/// nextGroup() is required; if it is absent then Parser will not compile. 
-	/// Method nextGroup() has a single parameters: a Group value which 
-	/// contains parsed next group. It returns a Group with combined data from
-	/// both current and next groups or empty optional if groups cannot be
-	/// combined.
+	// A variant type for all possible METAR and TAF groups.
 	using Group = std::variant<
 		PlainTextGroup,
 		FixedGroup,
@@ -85,74 +67,44 @@ namespace metaf {
 		ColourCodeGroup
 	>;
 
-	/// Major structural part of the report 
 	enum class ReportPart {
-		UNKNOWN,	///< Unknown part of the report
-		HEADER,		///< Report header (both METAR and TAF)
-		METAR,		///< Report body (METAR)
-		TAF,		///< Report body (TAF)
-		RMK			///< Remark (both METAR and TAF)
-	};
-
-	/// METAR or TAF group important for report's syntax structure
-	enum class SyntaxGroup {
-		OTHER,			///< Any group other than specified below
-		METAR,			///< METAR report
-		SPECI,			///< Special METAR report
-		TAF,			///< TAF report
-		COR,			///< Report is correctional
-		AMD,			///< Report is amended (TAF only)
-		LOCATION,		///< ICAO location
-		REPORT_TIME,	///< Date and time of report origin
-		TIME_SPAN,		///< Time span covered by report
-		CNL,			///< Cancelled forecast (TAF only)
-		NIL,			///< Missing report
-		RMK				///< Remark
+		UNKNOWN,
+		HEADER,
+		METAR,
+		TAF,
+		RMK
 	};
 
 	///////////////////////////////////////////////////////////////////////////
 
-	/// Runway identification
 	class Runway {
 	public:
-		/// Runway designator (left / right / center).
 		enum class Designator {
-			NONE,		///< No designator specified.
-			LEFT,		///< Left runway (parallel runways).
-			CENTER,		///< Center runway (parallel runways).
-			RIGHT,		///< Right runway (parallel runways).
+			NONE,
+			LEFT,
+			CENTER,
+			RIGHT,
 		};
-		Runway() = default;
-		/// @brief Decode runway number/designator from string.
-		/// @details The format is as follows: letter 'R' followed by two 
-		/// digits followed by optional single letter ('R' or 'L' or 'C' 
-		/// allowed).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Runway> fromString(const std::string & s);
-		/// @return True if stored data are consistent, false otherwise.
+		unsigned int number() const { return(rNumber); }
+		Designator designator() const { return(rDesignator); }
 		bool isValid() const {
 			return (rNumber <= maxRunwayNumber || 
 				(rNumber == allRunwaysNumber && rDesignator == Designator::NONE) || 
 				(rNumber == messageRepetitionNumber && rDesignator == Designator::NONE));
 		}
-		/// @return True when all runways encoded (runway number 88), false otherwise
 		bool isAllRunways() const {
 			return(rNumber == allRunwaysNumber && rDesignator == Designator::NONE);
 		}
-		/// @return True when all runways encoded (runway number 99), false otherwise
 		bool isMessageRepetition() const {
 			return(rNumber == messageRepetitionNumber && rDesignator == Designator::NONE);
 		}
-		/// @return Runway number.
-		unsigned int number() const { return(rNumber); }
-		/// @return Runway designator.
-		Designator designator() const { return(rDesignator); }
+
+		Runway() = default;
+		static inline std::optional<Runway> fromString(const std::string & s);
+
 	private:
 		static inline std::optional<Designator> designatorFromChar(char c);
-	private:
+
 		unsigned int rNumber = 0;
 		Designator rDesignator = Designator::NONE;
 		static const unsigned int allRunwaysNumber = 88;
@@ -160,263 +112,119 @@ namespace metaf {
 		static const auto maxRunwayNumber = 360 / 10;
 	};
 
-	/// @brief Time used in METAR/TAF. Includes day-of-month (optional), hour 
-	/// and minute. 
-	/// @details Day is optional and can be not included. Hour is in range 
-	/// from 0 to 24; 0 hours means 'midnight between previous and this day', 
-	/// 24 hours means 'midnight between this and next day'.
 	class MetafTime {
 	public:
-		MetafTime() = default;
-		/// @brief Decode metaf time in format DDHHMM from string 
-		/// @details DD = two digits for day-of-month (optional, can be missing), 
-		/// HH = two digits for hour in 24-hour format, MM = two digits for minute.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
-		/// @brief Decode metaf time in format DDHH from string 
-		/// @details DD = two digits for day-of-month, HH = two digits for hour
-		/// in 24-hour format. Minutes are assumed to be zero.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<MetafTime> fromStringDDHH(const std::string & s);
-		/// @return True if stored data are consistent, false otherwise.
-		inline bool isValid() const;
-		/// @return Day value or empty optional if day or entire time value is 
-		/// not repoted.
 		std::optional<unsigned int> day() const { return(dayValue); }
-		/// @return Hours in range 0 to 24.
 		unsigned int hour() const { return(hourValue); }
-		/// @return Minutes in range 0 to 59.
 		unsigned int minute() const { return(minuteValue); }
+		inline bool isValid() const;
+
+		MetafTime() = default;
+		static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
+		static inline std::optional<MetafTime> fromStringDDHH(const std::string & s);
+
 	private:
 		std::optional<unsigned int> dayValue;
 		unsigned int hourValue = 0;
 		unsigned int minuteValue = 0;
-	private:
+
 		static const inline unsigned int dayNotReported = 0;
 		static const inline unsigned int maxDay = 31;
 		static const inline unsigned int maxHour = 24;
 		static const inline unsigned int maxMinute = 59;
 	};
 
-	/// @brief Group: Temperature value.
-	/// @details Temperature value is optional (can be not reported). 
-	/// Flag 'freezing' additionally specifies freezing temperatures (i.e. 
-	/// below 0 C / 32 F). When temperature is zero degrees C, 'freezing' flag 
-	/// additionally specifies ranges either (-0.5 to 0) or [0 to 0.5), as 
-	/// encoded in METAF/TAF temperature format as M00 and 00 respectively.
 	class Temperature {
 	public:
-		/// Temperature measurement units.
 		enum class Unit {
-			C,	///< Centigrade / Degrees Celsius.
-			F,	///< Degrees Fahrenheit.
+			C,
+			F,
 		};
-		Temperature () = default;
-		/// @brief Decode temperature value from string.
-		/// @details The format is as follows: optional letter 'M' followed by 
-		/// two digits.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Temperature> fromString(const std::string & s);
-		/// @brief Return value converted to certain measurment units.
-		/// @details Conversion factors from: 
-		/// https://en.wikipedia.org/wiki/Conversion_of_units_of_temperature#Celsius_(centigrade)
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		std::optional<float> inline toUnit(Unit unit) const;
-		/// Whether temperature related to freezing (below or equal zero 
-		/// centigrate). If temperature is zero centigrade, it can be either 
-		/// freezing (corresponds to METAR/TAF value M00) or non-freezing
-		/// (corresponds to METAR/TAF value 00).
-		/// @return True if freezing temperature, false if non-freezing 
-		/// temperature or if temperature is not reported.
-		bool isFreezing() const { return(freezing); }
-		/// @return Temperature value.
 		std::optional<int> temperature() const { return(tempValue); }
-		/// @return Currently used measurement units.
 		Unit unit() const { return(tempUnit); }
+		std::optional<float> inline toUnit(Unit unit) const;
+		bool isFreezing() const { return(freezing); }
+
+		Temperature () = default;
+		static inline std::optional<Temperature> fromString(const std::string & s);
 	private:
 		std::optional<int> tempValue;
-		bool freezing = false;//Combined with zero represents difference between 00 & M00
-		static const Unit tempUnit = Unit::C; //METAR & TAF always use centigrade
+		bool freezing = false;
+		static const Unit tempUnit = Unit::C;
 	};
 
-	/// @brief Speed value.
-	/// @details Speed value is optional (can be not reported).
 	class Speed {
 	public:
-		/// Speed measurement units.
 		enum class Unit {
-			KNOTS,				///< Knots.
-			METERS_PER_SECOND,	///< Meters per second.
-			KILOMETERS_PER_HOUR,///< Kilometers per hour.
-			MILES_PER_HOUR		///< Miles per hour.
+			KNOTS,
+			METERS_PER_SECOND,
+			KILOMETERS_PER_HOUR,
+			MILES_PER_HOUR
 		};
-		Speed() = default;
-		/// @brief Decode speed value from string.
-		/// @details The format is two-digit or three-digit speed value.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @param unit Speed unit (e.g. decoded with unitFromString()).
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Speed> fromString(const std::string & s, Unit unit);
-		/// @brief Decode speed unit from string.
-		/// @details The following options are allowed: KT (knots), MPS(m/s), 
-		/// KMH (km/h).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded unit or empty optional if format error occurred.
-		static inline std::optional<Unit> unitFromString(const std::string & s);
-		/// @brief Return value converted to certain measurment units.
-		/// @details Conversion factors from: 
-		/// https://en.wikipedia.org/wiki/Speed#Units
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		std::optional<float> inline toUnit(Unit unit) const;
-		/// @return Speed value or empty optional if not reported.
 		std::optional<unsigned int> speed() const { return(speedValue); }
-		/// @return Currently used measurement units.
 		Unit unit() const { return(speedUnit); }
+		std::optional<float> inline toUnit(Unit unit) const;
+
+		Speed() = default;
+		static inline std::optional<Speed> fromString(const std::string & s, Unit unit);
+		static inline std::optional<Unit> unitFromString(const std::string & s);
+
 	private:
 		std::optional<unsigned int> speedValue;
 		Unit speedUnit = Unit::KNOTS;
-	private:
+
 		static inline std::optional<float> knotsToUnit(float valueKnots, Unit otherUnit);
 		static inline std::optional<float> mpsToUnit(float valueMps, Unit otherUnit);
 		static inline std::optional<float> kmhToUnit(float valueKmh, Unit otherUnit);
 		static inline std::optional<float> mphToUnit(float valueMph, Unit otherUnit);
 	};
 
-	/// @brief Distance or height value.
-	/// @details Distance value is optional (can be not reported). The value 
-	/// consists of integer, numerator and denominator parts (e.g. 1 1/2); if 
-	/// numerator or denominator are zero, the value is assumed to be 
-	/// integer-only.
 	class Distance {
 	public:
-		/// Distance measurement units, used across groups
 		enum class Unit {
-			METERS,			///< Distance in meters.
-			STATUTE_MILES,	///< Distance in statute miles.
-			FEET			///< Distance/altitude in feet.
+			METERS,
+			STATUTE_MILES,
+			FEET
 		};
-		/// Modifier: none (exact value) / more than / less than.
 		enum class Modifier {
-			NONE,		///< The distance is exactly as repoted.
-			LESS_THAN,	///< The distance is less than reported value.
-			MORE_THAN,	///< The distance is more than reported value.
+			NONE,
+			LESS_THAN,
+			MORE_THAN,
 		};
-		Distance() = default;
-		/// Init integer-value distance.
-		/// @param d Distance integer component.
-		/// @param u Distance units.
-		Distance(int d, Unit u) : distValueInt(d), distUnit(u) {}
-		/// Init non-reported distance.
-		/// @param u Distance units.
-		Distance(Unit u) : distUnit(u) {}
-		/// @brief Decode distance value from visibility string in meters.
-		/// @details The recognised format is four digits or //// (not reported).
-		/// @par Value "9999": interpreted as 'more than 10000 Meters'.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Distance> fromMeterString(const std::string & s);
-		/// @brief Decode distance value from visibility string in statute 
-		/// miles.
-		/// @details The recognised format is an optional letter P or M which 
-		/// means 'more than' or 'less than' respectively, followed by one or 
-		/// two digits, followed by optional slash with one or two digits, 
-		/// followed by "SM", (e.g. 1/4SM, M1/8SM, 3SM, 10SM, P6SM are valid 
-		/// examples).
-		/// @par If fraction numerator is greater than denominator then first 
-		/// digit of numerator is interpreted as integer part (e.g. 11/2SM is 
-		/// intepreted as '1 and 1/2 of statute mile' or 21/4SM is 
-		/// interpreted as '2 and 1/4 of statute mile').
-		/// @par Alternatively value "////SM" is interpreted as 'not reported'.
-		static inline std::optional<Distance> fromMileString(const std::string & s);
-		/// @brief Decode distance value from height string.
-		/// @details The format is three digits or "///" (not reported). The 
-		/// unit is assumed to be hundreds of feet (the value is multiplied by
-		/// 100 and unit set to Feet).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Distance> fromHeightString(const std::string & s);
-		/// @brief Decode distance value from Runway Visual Range string.
-		/// @details The format is optional letter P or M which means 'more 
-		/// than' or 'less than' respectively followed by four digits. The unit
-		/// is provided in a separate string which can be empty (unit assumed 
-		/// to be Meters) or take value of "FT" (unit assumed to be Feet).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @param unitFeet True if distance unit is Feet, false if distance 
-		/// unit is Meters.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Distance> fromRvrString(const std::string & s, bool unitFeet);
-		/// Combine integer and fraction parts of the distance.
-		/// @param integer Distance value which contains integer component.
-		/// @param integer Distance value which contains fraction component.
-		/// @return Distance value combined from integer and fraction 
-		/// components, or empty optional if error occurred.
-		static inline std::optional<Distance> fromIntegerAndFraction(const Distance & integer,
-			const Distance & fraction);
-		/// @return True if stored data are consistent, false otherwise.
+		inline std::optional<unsigned int> integer() const { return(distValueInt); }
+		inline std::optional<unsigned int> numerator() const { return(distValueNum); }
+		inline std::optional<unsigned int> denominator() const { return(distValueDen); }
+		Modifier modifier() const { return(distModifier); }
+		Unit unit() const { return(distUnit); }
+		bool isInteger() const {
+			return(integer().has_value() && 
+				!numerator().has_value() && !denominator().has_value());
+		}
+		bool isFraction() const {
+			return(!integer().has_value() && 
+				numerator().has_value() && denominator().has_value());
+		}
+		bool isReported() const {
+			return(integer().has_value() || 
+					(numerator().has_value() && denominator().has_value()));
+		}
+		inline std::optional<float> toUnit(Unit unit) const;
 		bool isValid() const {
 			if (distValueDen.has_value() && !distValueDen.value()) return(false);
 			if (distValueDen.has_value() && !distValueNum.value()) return(false);
 			return(true);
 		}
-		/// @return Integer component or empty optional if value is not 
-		/// reported or has no integer component.
-		inline std::optional<unsigned int> integer() const { return(distValueInt); }
-		/// @return Numerator of fraction or empty optional if value is not 
-		/// reported or has no fraction component.
-		inline std::optional<unsigned int> numerator() const { return(distValueNum); }
-		/// @return Numerator of fraction or empty optional if value is not 
-		/// reported or has no fraction component.
-		inline std::optional<unsigned int> denominator() const { return(distValueDen); }
-		/// @return True if value is integer (i.e. no fraction component), 
-		/// false otherwise.
-		bool isInteger() const {
-			return(integer().has_value() && 
-				!numerator().has_value() && !denominator().has_value());
-		}
-		/// @return True if value is integer (i.e. no fraction component), 
-		/// false otherwise.
-		bool isFraction() const {
-			return(!integer().has_value() && 
-				numerator().has_value() && denominator().has_value());
-		}
-		/// @return True if value is reported (i.e. either integer or fraction
-		/// components are non empty), false otherwise.
-		bool isReported() const {
-			return(integer().has_value() || 
-					(numerator().has_value() && denominator().has_value()));
-		}
-		/// @return Distance modifier.
-		Modifier modifier() const { return(distModifier); }
-		/// @return Current measurement units.
-		Unit unit() const { return(distUnit); }
-		/// Return value converted to certain measurment units.
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		inline std::optional<float> toUnit(Unit unit) const;
+
+		Distance() = default;
+		Distance(int d, Unit u) : distValueInt(d), distUnit(u) {} //Init distance without fraction
+		Distance(Unit u) : distUnit(u) {} // Init non-reported distance
+		static inline std::optional<Distance> fromIntegerAndFraction(const Distance & integer,
+			const Distance & fraction);
+		static inline std::optional<Distance> fromMeterString(const std::string & s);
+		static inline std::optional<Distance> fromMileString(const std::string & s);
+		static inline std::optional<Distance> fromHeightString(const std::string & s);
+		static inline std::optional<Distance> fromRvrString(const std::string & s, bool unitFeet);
+
 	private:
 		Modifier distModifier = Modifier::NONE;
 		std::optional<unsigned int> distValueInt;
@@ -432,77 +240,50 @@ namespace metaf {
 		static inline std::optional<float> feetToUnit(float value, Unit unit);
 	};
 
-	/// @brief Direction value.
-	/// @details Direction relative to north, 0 to 360 degrees.
 	class Direction {
 	public:
-		/// Cardinal directions
 		enum class Cardinal {
-			NONE,	///< No corresponding cardinal direction
-			NDV,	///< No Directional Variation.
-			N,		///< North.
-			S,		///< South.
-			W,		///< West.
-			E,		///< East.
-			NW,		///< Northwest.
-			NE,		///< Northeast.
-			SW,		///< Southwest.
-			SE,		///< Southeast.
-			TRUE_N, ///< True North.
-			TRUE_W, ///< True West.
-			TRUE_S, ///< True South.
-			TRUE_E, ///< True East.
+			NONE,	// Not reported or no corresponding cardinal direction
+			NDV,	// No Directional Variation
+			N,
+			S,
+			W,
+			E,
+			NW,
+			NE,
+			SW,
+			SE,
+			TRUE_N,
+			TRUE_W,
+			TRUE_S,
+			TRUE_E,
 		};
 		enum class Status {
-			OMMITTED, 		  ///< Direction is ommitted (not specified at all).
-			NOT_REPORTED,	  ///< Direction is specified as not reported.
-			VARIABLE,		  ///< Direction is reported as variable.
-			NDV,			  ///< Direction is reported as No Directional Variation.
-			VALUE_DEGREES, 	  ///< Direction value in degrees is reported.
-			VALUE_CARDINAL,	  ///< Direction value as cardinal direction is reported.
+			OMMITTED, 		  // Direction is ommitted (not specified at all)
+			NOT_REPORTED,	  // Direction is specified as not reported
+			VARIABLE,		  // Direction is reported as variable
+			NDV,			  // Direction is reported as No Directional Variation
+			VALUE_DEGREES, 	  // Direction is reported as value in degrees
+			VALUE_CARDINAL,	  // Direction is reported as cardinal value
 		};
-		Direction() = default;
-		/// @brief Decode direction in degrees from cardinal direction string.
-		/// @details The following options are allowed: "N", "S", "W", "E", 
-		/// "NW", "SW", "NE", "SE". The special value "NDV" is also allowed, 
-		/// value of degreesNDV is returned instead of degrees value.
-		/// @par If the input string is empty, degreesNotSpecified is used.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Direction> fromCardinalString(const std::string & s);
-		/// @brief Decode direction in degrees from numeric string. 
-		/// @details The format is three digits, alternatively special values 
-		/// are allowed: "///" (NOT_REPORTED) or "VRB" (VARIABLE). 
-		/// @par If the input string is empty, degreesNotSpecified is used.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Direction> fromDegreesString(const std::string & s);
-		/// @return True if direction value is provided, false if direciton is 
-		/// ommitted, not reported, variable or NDV.
-		bool isValue() const {
-			return(dirStatus == Status::VALUE_DEGREES || dirStatus == Status::VALUE_CARDINAL); 
-		}
-		/// @return Value in degrees units (or empty optional if the status is 
-		/// OMMITTED, NOT_REPORTED, VARIABLE or NDV).
+		Status status() const { return (dirStatus); }
+		inline Cardinal cardinal(bool trueDirections = false) const;
 		std::optional<unsigned int> degrees() const {
 			if (!isValue())	return(std::optional<unsigned int>());
 			return(dirDegrees);
 		}
-		/// @return True if stored data are consistent, false otherwise.
+		bool isValue() const {
+			return(dirStatus == Status::VALUE_DEGREES || dirStatus == Status::VALUE_CARDINAL); 
+		}
 		bool isValid() const {
 			if (isValue() && dirDegrees > maxDegrees) return(false);
 			return(true);
 		}
-		/// @return Closest cardinal direction to degrees value (or empty 
-		/// optional if the value is not reported or conversion error 
-		/// occurred).
-		inline Cardinal cardinal(bool trueDirections = false) const;
-		/// @return Status value.
-		Status status() const { return (dirStatus); }
+
+		Direction() = default;
+		static inline std::optional<Direction> fromCardinalString(const std::string & s);
+		static inline std::optional<Direction> fromDegreesString(const std::string & s);
+
 	private:
 		unsigned int dirDegrees = 0;
 		Status dirStatus = Status::OMMITTED;
@@ -518,99 +299,53 @@ namespace metaf {
 		static const inline unsigned int degreesSouthEast = 135;
 	};
 
-	/// Pressure value.
 	class Pressure {
 	public:
-		/// Pressure measurement units.
 		enum class Unit {
-			HECTOPASCAL,	///< Hectopascal (millibar).
-			INCHES_HG		///< Inches mercury.
+			HECTOPASCAL,
+			INCHES_HG
 		};
-		Pressure() = default;
-		/// @brief Decode pressure value from string.
-		/// @details The format is letter A or Q (means unit is inches mercury
-		/// or hectopascal respectively) followed by four-digit value or 
-		/// value "////" which means 'not reported'. Value in inches mercury 
-		/// is interpreted as fixed-point value with two integer digits and
-		/// two decimal fraction digits (i.e. divided by 100.0).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Pressure> fromString(const std::string & s);
-		/// Return value converted to certain measurment units.
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		inline std::optional<float> toUnit(Unit unit) const;
-		/// @return Currently used measurement units.
-		Unit unit() const { return(pressureUnit); }
-		/// @return Pressure value or empty optional if value is not reported.
 		std::optional<float> pressure() const { return(pressureValue); }
+		Unit unit() const { return(pressureUnit); }
+		inline std::optional<float> toUnit(Unit unit) const;
+
+		Pressure() = default;
+		static inline std::optional<Pressure> fromString(const std::string & s);
+
 	private:
 		std::optional<float> pressureValue;
 		Unit pressureUnit = Unit::HECTOPASCAL;
 	};
 
-	/// Precipitation amount or deposit accumulation depth.
 	class Precipitation {
 	public:
-		/// Precipitation value status.
 		enum class Status {
-			NOT_REPORTED,			///< Precipitation is not reported.
-			REPORTED,				///< Precipitation is reported.
-			RUNWAY_NOT_OPERATIONAL,	///< Runway is not operational; no precipitation reported.
+			NOT_REPORTED,
+			REPORTED,
+			RUNWAY_NOT_OPERATIONAL,
 		};
-		/// Precipitation (deposit accumulation) measurement units.
 		enum class Unit {
-			MM,		///< Millimeters
-			INCHES,	///< Inches
+			MM,
+			INCHES,
 		};
-		Precipitation() = default;
-		/// @brief Decode precipitation amount from rainfall string.
-		/// @details The format is three digits of integer value followed
-		/// by dot ('.') and one digit of decimal fraction value. If the 
-		/// string is empty, a 'not reported' value is returned.
-		/// @par Flag runwayNotOperational is always set to false.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
-		/// @brief Decode precipitation amount from runway deposit depth.
-		/// @details The format is two digits or "//" which means 'not 
-		/// reported'. 
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @par If input string contains reserved value 91, an empty optional 
-		/// is returned. If input string contains special value 99, the value
-		/// is interpreted as 'runway not operational'.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<Precipitation> fromRunwayDeposits(const std::string & s);
-		/// @brief Return value converted to certain measurment units.
-		/// @details Conversion factor from https://en.wikipedia.org/wiki/Inch
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		inline std::optional<float> toUnit(Unit unit) const;
-		/// @return Currently used measurement units.
-		Unit unit() const { return(precipUnit); }
-		/// @return Status value.
-		Status status() const { return (precipStatus); }
-		/// @return Precipitation value or empty optional if not reported or
-		/// runway is not operational.
 		std::optional<float> precipitation() const { 
 			if (precipStatus != Status::REPORTED) return(std::optional<float>());
 			return(precipValue);
 		}
+		Unit unit() const { return(precipUnit); }
+		inline std::optional<float> toUnit(Unit unit) const;
+		Status status() const { return (precipStatus); }
+
+		Precipitation() = default;
+		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
+		static inline std::optional<Precipitation> fromRunwayDeposits(const std::string & s);
+
 	private:
 		Status precipStatus = Status::NOT_REPORTED;
 		float precipValue = 0.0;
 		static const Unit precipUnit = Unit::MM;
 	private:
-		/// Special value for runway deposits depth, see Table 1079 in Manual 
-		/// on Codes (WMO No. 306).
+		// Special value for runway deposits depth, see Table 1079 in Manual on Codes (WMO No. 306).
 		enum Reserved {
 			RESERVED = 91,
 			DEPTH_10CM = 92,
@@ -624,57 +359,39 @@ namespace metaf {
 		};
 	};
 
-	/// Surface friction of the runway.
 	class SurfaceFriction {
 	public:
-		/// Value status (which value was reported).
 		enum class Status {
-			NOT_REPORTED,				///< Surface friction not reported.
-			SURFACE_FRICTION_REPORTED,	///< Surface friction coefficient is reported.
-			BRAKING_ACTION_REPORTED,	///< Braking actions is reported.
-			UNRELIABLE 					///< Value unreliable or unmeasurable.
+			NOT_REPORTED,
+			SURFACE_FRICTION_REPORTED,
+			BRAKING_ACTION_REPORTED,
+			UNRELIABLE 		// Value unreliable or unmeasurable.
 		};
-		/// Braking action values
 		enum class BrakingAction {
-			NONE,			///< Value not reported or not specified.
-			POOR,	 		///< Braking action poor (friction coef 0 to 0.25).
-			MEDIUM_POOR,	///< Braking action medium/poor (friction coef 0.26 to 0.29).
-			MEDIUM,			///< Braking action medium (friction coef 0.30 to 0.35).
-			MEDIUM_GOOD,	///< Braking action medium/good (friction coef 0.36 to 0.39).
-			GOOD,			///< Braking action good (friction coef >0.40).
+			NONE,			// Not reported or unreliable			
+			POOR,	 		// Friction coef <0.26
+			MEDIUM_POOR,	// Friction coef 0.26 to 0.29
+			MEDIUM,			// Friction coef 0.30 to 0.35
+			MEDIUM_GOOD,	// Friction coef 0.36 to 0.39
+			GOOD,			// Friction coef >0.39
 		};
-		SurfaceFriction() = default;
-		/// @brief Decode surface friction value from runway state string.
-		/// @details The format is two digits or "//" which means 'not 
-		/// reported'.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @par Either Friction Coefficient or Braking Action can be 
-		/// reported, in both cases friction coefficient is initialised (if 
-		/// Braking Action is reported, then the lowest possible friction 
-		/// coefficient value for given Braking Action is selected).
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<SurfaceFriction> fromString(const std::string & s);
-		/// @return Status value.
 		Status status() const { return (sfStatus); }
-		/// @return Friction coefficient or empty optional if not reported or 
-		/// unreliable.
 		std::optional<float> coefficient() const {
 			if (sfStatus == Status::NOT_REPORTED || 
 				sfStatus == Status::UNRELIABLE) return(std::optional<float>());
 			return(sfCoefficient * coefficientDecimalPointShift);
 		}
-		/// @return Braking action or empty optional if not reported or 
-		/// unreliable.
 		inline BrakingAction brakingAction() const;
+
+		SurfaceFriction() = default;
+		static inline std::optional<SurfaceFriction> fromString(const std::string & s);
+
 	private:
 		Status sfStatus = Status::NOT_REPORTED;	
 		unsigned int sfCoefficient = 0; //0 to 100, multiply by 0.01 to get actual value
 		static const inline auto coefficientDecimalPointShift = 0.01;
 	private:
-		/// Special values for braking action, see Table 0366 in Manual on
-		/// Codes (WMO No. 306).
+		// Special values for braking action, see Table 0366 in Manual on Codes (WMO No. 306).
 		enum Reserved {
 			BRAKING_ACTION_POOR = 91,
 			BRAKING_ACTION_MEDIUM_POOR = 92,
@@ -693,21 +410,17 @@ namespace metaf {
 		static const inline auto baGoodLowLimit = 40u;
 	};
 
-	/// Wave height or descriptive sea surface state.
-	struct WaveHeight {
+	class WaveHeight {
 	public:
-		/// Value status (which value was reported).
 		enum class Type {
-			STATE_OF_SURFACE,	///< Descriptive state of surface is reported.
-			WAVE_HEIGHT,		///< Actual wave height is reported.
+			STATE_OF_SURFACE,	// Descriptive state of surface is specified
+			WAVE_HEIGHT,		// Actual wave height is specified
 		};
-		/// Wave height measurement units.
 		enum class Unit {
-			METERS,	///< Wave height in meters.
-			FEET,	///< Wave height in feet.
+			METERS,
+			FEET,
 		};
-		/// State of sea surface, see Table 3700 in Manual on Codes (WMO No. 
-		/// 306).
+		// State of sea surface, see Table 3700 in Manual on Codes (WMO No. 306).
 		enum class StateOfSurface {
 			NOT_REPORTED,
 			CALM_GLASSY,
@@ -721,41 +434,18 @@ namespace metaf {
 			VERY_HIGH,
 			PHENOMENAL,
 		};
-		WaveHeight() = default;
-		/// @brief Decode sea wave height from string.
-		/// @details The allowed formats are as follows.
-		/// @par Letter S followed by single digit which means state of sea 
-		/// surface or '/' which means 'not reported'. 
-		/// @par Letter H followed by one to three digits which mean wave 
-		/// height in decimeters or '///' which means 'not reported'.
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @par If descriptive State of Surface is reported then waveHeight 
-		/// is initialised with maximum wave height for this state (except 
-		/// Phenomenal where there's no maximum wave height and minimum value
-		/// is used).
-		/// @par The wave height unit is set to Meters; wave height is recalculated 
-		/// from Decimeters to Meters if needed.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<WaveHeight> fromString(const std::string & s);
-		/// Return value converted to certain measurment units if reported.
-		/// @param unit Units to convert value to.
-		/// @return Value converted to specified units (or empty optional if 
-		/// value is not reported or conversion error occurred).
-		inline std::optional<float> toUnit(Unit unit) const;
-		/// @return Descriptive state of sea surface (or empty optional if 
-		/// value is not reported) corresponding to wave height.
+		Type type() const { return (whType); }
 		inline StateOfSurface stateOfSurface() const;
-		/// @return Wave height
+		Unit unit() const { return(whUnit); }
 		std::optional<float> waveHeight() const {
 			if (!whValue.has_value()) return(std::optional<float>());
 			return(whValue.value() * waveHeightDecimalPointShift);
 		}
-		/// @return Currently used measurement units.
-		Unit unit() const { return(whUnit); }
-		/// @return Status value.
-		Type type() const { return (whType); }
+		inline std::optional<float> toUnit(Unit unit) const;
+
+		WaveHeight() = default;
+		static inline std::optional<WaveHeight> fromString(const std::string & s);
+
 	private:
 		Type whType = Type::STATE_OF_SURFACE;
 		std::optional<int> whValue; //in decimeters, muliply by 0.1 to get value in meters
@@ -779,160 +469,115 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	/// @brief Group: Plain Text
-	/// @details When the group could not be recognised to conform any of the 
-	/// other group formats, it is saved as Plain Text.
-	/// @par In this implementation maximum length of stored plain text is 
-	/// limited to textMaxLength chars. All extra chars will be discarded.
 	class PlainTextGroup {
 	public:
+		std::string toString() const { return(std::string(text)); }
+		bool isValid() const { return(text[0]); }
+
 		PlainTextGroup() = default;
-		/// Initialise Plain Text group from string.
-		/// @param s String to initialise from, if longer than textMaxLength,
-		/// then only first textMaxLength characters stored.
 		PlainTextGroup(const std::string & s) {
 			strncpy(text, s.c_str(), textMaxLength); text[textMaxLength] = '\0';
 		}
-		/// @return Stored text value as a std::string.
-		std::string toString() const { return(std::string(text)); }
-		/// Maximum number of chars to be stored
-		static const size_t textMaxLength = 15; 
-		/// @return False only if empty string is stored, true otherwise.
-		bool isValid() const { return(text[0]); }
-		/// Attempt to parse group. See Group variant for details.
-		/// @par This method is expected to always parse successfully and
-		/// always returns a non-empty value.
-		static std::optional<PlainTextGroup> parse(const std::string & group, 
-			ReportPart reportPart)
-		{
+		static std::optional<PlainTextGroup> parse(const std::string & group, ReportPart reportPart) {
 			(void)reportPart; return(PlainTextGroup(group));
 		}
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
+		static const size_t textMaxLength = 15;
+
 	private:
 		char text [textMaxLength + 1] = "\0";
 	};
 
-	/// @brief Group: fixed text.
-	/// @details This group represents a fixed text which never varies in 
-	/// reports.
 	class FixedGroup {
 	public:
-		/// Group options for fixed texts.
 		enum class Type {
-			METAR = 0,	///< Report type: METAR.
-			SPECI = 1,	///< Report type: SPECI.
-			TAF = 2,	///< Report type: TAF.
-			AMD = 3,	///< Amended TAF report.
-			NIL = 4,	///< Missing report.
-			CNL = 5,	///< Cancelled TAF report.
-			COR = 6,	///< Correctional report.
-			AUTO = 7,	///< Fully automatic report without human supervision or interaction.
-			R_SNOCLO = 8,///< Aerodrome closed due to snow accumulation.
-			CAVOK = 9,	///< Ceiling and visibility OK.
-			NSW = 10,	///< No significant weather / significant weather phenomena ended.
-			RMK = 11	///< Remarks to follow.
+			METAR = 0,
+			SPECI = 1,
+			TAF = 2,
+			AMD = 3,
+			NIL = 4,
+			CNL = 5,
+			COR = 6,
+			AUTO = 7,
+			R_SNOCLO = 8,
+			CAVOK = 9,
+			NSW = 10,
+			RMK = 11
 		};
-		FixedGroup() = default;
-		/// @return Type of fixed text in group.
 		Type type() const { return(t); }
-		/// @return Always returns true for this group.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<FixedGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+
+		FixedGroup() = default;
+		static inline std::optional<FixedGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		FixedGroup(Type type) :t (type) {}
 		Type t; 
 	};
 
-	/// @brief Group: ICAO location.
-	/// @details ICAO location where report applies.
 	class LocationGroup {
 	public:
-		LocationGroup() = default;
-		/// @return Stored location value as a std::string.
 		std::string toString() const {return(std::string(location));}
-		/// @return Always true; no way to init an invalid group currently.
 		inline bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
+
+		LocationGroup() = default;
 		static inline std::optional<LocationGroup> parse(const std::string & group, 
 			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		static const inline auto locationLength = 4; 
 		char location [locationLength + 1] = "\0"; 
 	};
 
-	/// @brief Group: Report time.
-	/// @details: Day and time when report was issued.
 	class ReportTimeGroup {
 	public:
-		ReportTimeGroup() = default;
 		const MetafTime & time() const { return(t); };
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(t.isValid() && t.day().has_value()); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<ReportTimeGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+
+		ReportTimeGroup() = default;
+		static inline std::optional<ReportTimeGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		MetafTime t;	
 	};
 
-	/// @brief Group: trend or forecast.
-	/// @details Stores trend type and time if required.
 	class TrendGroup {
 	public:
-		/// Trend type.
 		enum class Type {
-			NONE = 0,		///< Incomplete groups or their combination.
-			NOSIG = 1,		///< No significant changes expected.
-			BECMG = 2,		///< Weather conditions are expected to gradually change.
-			TEMPO = 3,		///< Weather phenomena may arise for less than 60 minutes.
-			INTER = 4,    	///< Weather phenomena may arise for less than 30 minutes.
-			FROM = 5,		///< All previous weather conditions are superseded by the following.
-			TIME_SPAN = 6,	///< Time span (TAF vailidity time or incomplete).
+			NONE = 0,		// Incomplete groups or their combination.
+			NOSIG = 1,
+			BECMG = 2,
+			TEMPO = 3,
+			INTER = 4,
+			FROM = 5,
+			TIME_SPAN = 6,
 		};
-		/// Trend or forecast probability.
 		enum class Probability {
-			NONE = 0,		///< Probability not specified.
-			PROB_30 = 1,	///< Probability reported as 30%.
-			PROB_40 = 2,	///< Probability reported as 40%.
+			NONE = 0,		// Probability not specified.
+			PROB_30 = 1,
+			PROB_40 = 2,
 		};
-		TrendGroup() = default;
-		/// @return Trend/forecast type.
 		Type type() const { return(t); }
-		/// @return Trend/forecast probablity.
 		Probability probability() const { return(prob); }
-		/// @return Time when trend/forecast expected to begin.
 		const std::optional<MetafTime> & timeFrom() const { return(tFrom); }
-		/// @return Time when trend/forecast expected to end.
 		const std::optional<MetafTime> & timeTill() const { return(tTill); }
-		/// @return Precise time when weather phenomena is expected.
 		const std::optional<MetafTime> & timeAt() const { return(tAt); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const {
 			if (tFrom.has_value() && !tFrom->isValid()) return(false);
 			if (tTill.has_value() && !tTill->isValid()) return(false);
 			if (tAt.has_value() && !tAt->isValid()) return(false);
 			return (type() != Type::NONE); // Incomplete groups are considered invalid
 		}
-		/// @return True if the stored data represent a single time span group, 
-		/// not combined with any other group; false otherwise.
 		inline bool isTimeSpanGroup() const;
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<TrendGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// @brief Used to combine sequence of METAR or TAF groups which 
-		/// represent the same data (e.g. BECMG 1108/1110, BECMG and 1108/1110 
-		/// are technically different METAR/TAF groups but represent different 
-		/// parts of the same trend information). See Group variant for details.
+
+		TrendGroup() = default;
+		static inline std::optional<TrendGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		TrendGroup(Type type) : t(type) {}
 		TrendGroup(Probability p) : t(Type::NONE), prob(p) {}
@@ -960,44 +605,19 @@ namespace metaf {
 		std::optional<MetafTime> tAt;	// Precise time.
 	};
 
-	/// @brief Group: wind at ground level or wind shear.
-	/// @details Specifies wind speed, direction and gust speed. For wind 
-	/// additionall height where wind shear occurs. If variable wind direction 
-	/// sector is given, sector 'begin' and 'end' directions are specified in 
-	/// clockwise order.
 	class WindGroup {
 	public:
-		WindGroup() = default;
-		/// Checks if there's calm wind (i.e. no wind). Calm wind is encoded 
-		/// as 00000KT or 00000MPS or 00000KMH.
-		/// @return True if calm wind, false if the wind is observed. If wind 
-		/// shear or variable wind sector are specified, always returns false.
-		inline bool isCalm() const;
-		/// @return True if stored data are consistent, false otherwise.
-		inline bool isValid() const;
-		/// @return Wind direction / where the wind is coming from (or not 
-		/// reported value if the direction is not reported).
 		const Direction & direction() const { return(windDir); }
-		/// @return Wind speed (or not reported value).
 		const Speed & windSpeed() const { return(wSpeed); }
-		/// @return Wind gust speed (or not reported value).
 		const Speed & gustSpeed() const { return(gSpeed); }
-		/// @return Wind shear height (or not reported value for surface wind).
+		inline bool isCalm() const;
 		const Distance & windShearHeight() const { return(wShHeight); }
-		/// @return Variable wind sector 'begin' direction (or ommitted value 
-		/// if no variable wind sector is reported).
 		const Direction & varSectorBegin() const { return(vsecBegin); }
-		/// @return Variable wind sector 'end' direction (or ommitted value if 
-		/// no variable wind sector is reported).
 		const Direction & varSectorEnd() const { return(vsecEnd); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<WindGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// @brief Used to combine sequence of METAR or TAF groups which 
-		/// represent the same data (e.g. 2701012KT 260V280, 2701012KT and 
-		/// 260V280 are technically different METAR/TAF groups but represent 
-		/// different parts of the wind information). See Group variant for 
-		/// details.
+		inline bool isValid() const;
+
+		WindGroup() = default;
+		static inline std::optional<WindGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Direction windDir;
@@ -1011,27 +631,16 @@ namespace metaf {
 		inline bool isWindSectorGroup() const;
 	};
 
-	/// @brief Group: prevailing or directional visibility.
-	/// @details Specifies prevailing visibility or visibility toward certain 
-	/// cardinal direction.
 	class VisibilityGroup {
 	public:
-		VisibilityGroup() = default;
-		/// @return True if stored data are consistent, false otherwise.
+		const Distance & visibility() const { return(vis); }
+		const Direction & direction() const { return(dir); }
 		bool isValid() const { 
 			return(!incompleteInteger && vis.isValid() && dir.isValid());
 		}
-		/// @return Visibility value.
-		const Distance & visibility() const { return(vis); }
-		/// @return Direction value or Ommitted value if not specified.
-		const Direction & direction() const { return(dir); }
-		/// Attempt to parse group. See Group variant for details.
-		inline static std::optional<VisibilityGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// @brief Used to combine sequence of METAR or TAF groups which 
-		/// represent the same data (e.g. 1 1/2SM, 1 and 1/2SM are technically 
-		/// different METAR/TAF groups but represent different parts of the 
-		/// same visibility value). See Group variant for details.
+
+		VisibilityGroup() = default;
+		inline static std::optional<VisibilityGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Distance vis;
@@ -1039,70 +648,37 @@ namespace metaf {
 		bool incompleteInteger = false; 
 	};
 
-	/// @brief Group: Сloud layer or cloud conditions or vertical visibility.
-	/// @details Reports height, amount (cover) and type of a cloud layer, or
-	/// vertical visibility if sky is obscured (e.g. due to fog). Alternatively
-	/// specifies conditions such as Clear Sky, No Significant Clouds, etc.
 	class CloudGroup {
 	public:
-		/// Amount (cover) of clouds.
 		enum class Amount {
-			NOT_REPORTED = 0,///< Amount not reported.
-			NCD = 1,		///< No cloud detected (no cloud or sensor malfunction).
-			NSC = 2,		///< No significant clouds.
-			NONE_CLR = 3,	///< No clouds / sky clear (reported as CLR).
-			NONE_SKC = 4,	///< No clouds / sky clear (reported as SKC).
-			FEW = 5,		/// Few clouds (1/8 to 2/8 cover).
-			SCATTERED = 6,	/// Scattered clouds (3/8 to 4/8 cover).
-			BROKEN = 7,		/// Broken clouds (5/8 to 7/8 cover).
-			OVERCAST = 8,	/// Overcast (8/8 cover).
-			OBSCURED = 9	/// Sky obscured, vertical visibility given instead.
+			NOT_REPORTED = 0,
+			NCD = 1,
+			NSC = 2,
+			NONE_CLR = 3,
+			NONE_SKC = 4,
+			FEW = 5,
+			SCATTERED = 6,
+			BROKEN = 7,
+			OVERCAST = 8,
+			OBSCURED = 9
 		};
-		/// Significant cloud type.
 		enum class Type {
-			NOT_REPORTED = 0,		///< Cloud type not reported.
-			NONE = 1,				///< No significant (convective) cloud observed.
-			TOWERING_CUMULUS = 2,	///< Towering cumulus.
-			CUMULONIMBUS = 3		///< Cumulonimbus.
+			NOT_REPORTED = 0,
+			NONE = 1,
+			TOWERING_CUMULUS = 2,
+			CUMULONIMBUS = 3
 		};
-		CloudGroup () = default;
-		/// @return True if stored data are consistent, false otherwise.
-		bool isValid() const { return(heightOrVertVis.isValid()); }
-		/// @return Cloud amount (cover).
 		Amount amount() const { return(amnt); }
-		/// @return Convective type.
 		Type type() const { return(tp); }
-		/// @return Cloud cover height. If height is not reported or not 
-		/// applicable to current group (e.g. sky clear or vertical visibility), 
-		/// a non-reported distance is returned.
 		inline const Distance & height() const;
-		/// @return Vertical visibility value. If vertical visibility is not 
-		/// reported or amount is other than OBSCURED, a non-reported distance 
-		/// is returned.
 		const Distance & verticalVisibility() const {
 			if (amount() != Amount::OBSCURED) return(heightNotReported);
 			return(heightOrVertVis);
 		}
-		/// Attempt to parse group. See Group variant for details.
-		/// @details The allowed formats are as follows.
-		/// @par Cloud cover type FEW(few) or SCT(scattered) or BKN(broken) or 
-		/// OVC (overcase) or /// (cloud cover not reported), followed by 
-		/// three digits of cloud base height in hundreds of feet (or /// if 
-		/// height is not reported) followed by optional TCU (towering 
-		/// cumulus) or CB (cumulonimbus) or /// (convective cloud type not 
-		/// reported).
-		/// @par VV followed by three digits of vertical visibility in 
-		/// hundreds of feet or /// if vertical visibility is not reported.
-		/// @par One of the following strings: CLR (sky clear, automated 
-		/// reports) or SKC (sky clear, human-produced report) or NSC (no 
-		/// significant clouds) or NCD (no clouds detected).
-		/// @par If the input string does not follow this format, an empty 
-		/// optional is returned.
-		/// @param s Input string to decode.
-		/// @return Decoded value or empty optional if format error occurred.
-		static inline std::optional<CloudGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+		bool isValid() const { return(heightOrVertVis.isValid()); }
+
+		CloudGroup () = default;
+		static inline std::optional<CloudGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Amount amnt = Amount::NOT_REPORTED;
@@ -1115,133 +691,66 @@ namespace metaf {
 		static inline std::optional<Type> typeFromString(const std::string & s);
 	};
 
-	/// @brief Group: weather conditions or their combination.
-	/// @details Reports obscuration, precipitation or other weather phenomena.
 	class WeatherGroup {
 	public:
-		/// Intensity or proximity
 		enum class Qualifier {
-			/// No qualifier (for precipitation MODERATE is used instead).
 			NONE,	
-			/// Recent weather is reported.
 			RECENT,
-			/// Weather phenomena in vicinity (up to 10 miles) is reported.
 			VICINITY,	
-			/// Light (precipitation).
 			LIGHT,		
-			/// Moderate (used with precipitation instead of NONE). Not used 
-			/// with Hail/Small Hail (unless they are accompanied by rain or 
-			/// other precipitation where Moderate qualifier applies), Ice 
-			/// Crystals. Not used with Low Drifting Snow and Blowing Snow.
 			MODERATE,	
-			/// Heavy (precipitation). Also used with Funnel Cloud and means
-			/// Tornado or Waterspout. Also used with Sandstorm/Duststorm and  
-			/// means a heavy storm obscuring visibility to <5/16 miles.
 			HEAVY		
 		};
-		/// Descriptor
 		enum class Descriptor {
-			/// No descriptor
 			NONE,
-			/// Shallow (fog), having little vertical extent (less than 6 feet).
 			SHALLOW,
-			/// Partial (fog), covering part of the aerodrome.
 			PARTIAL,
-			/// Patches (of fog) randomly covering the aerodrome.
 			PATCHES,
-			/// Dust, snow or sand raised by wind to height less than 6 feet.
 			LOW_DRIFTING,
-			/// Dust, snow or sand raised by wind to height 6 feet or more.
 			BLOWING,
-			/// Precipitation characterised by sudden start or stop or change 
-			/// of intensity.
 			SHOWERS,
-			/// Thunderstorm (accompanied by lightning or thunder).
 			THUNDERSTORM,
-			/// Precipitation forming ice glase on ground or fog at freezing 
-			/// temperatures (regardless of whether it actually deposits rime).
 			FREEZING
 		};
-		/// Obscuration, precipitation or other weather phenomena.
 		enum class Weather {
 			NOT_REPORTED,
-			/// Precipitation of very fine water droplets (falls to the ground 
-			/// unlike fog and mist).
 			DRIZZLE,
-			/// Precipitation in form of water drops or droplets.
 			RAIN,
-			/// Precipitation in form of branched (unlike 'diamond dust') ice 
-			/// crystals.
 			SNOW,
-			/// Similar to graupel (small hail) but smaller in size. Very 
-			/// small, opaque, white grains of ice. Snow grains normally neither 
-			/// bounce off the ground nor break when falling to the ground.
 			SNOW_GRAINS,
-			/// 'Diamond Dust'. Non-branched (unlike snow) ice crystals in form of needles, 
-			/// columns or plates.
 			ICE_CRYSTALS,
-			/// Translucent pellets of ice (in form of frozen raindrops or 
-			/// melted and refrozen snowflakes) or snow pellets encased in 
-			/// thin ice layer. Diameter up to 5 mm.
 			ICE_PELLETS,
-			/// Small balls or other pieces of ice, can be frozen together in
-			/// irregular lumps. Diameter more than 5 mm.
 			HAIL,
-			/// Graupel. White, small, opaque grains of ice. Diameter 2 to 5 mm.
 			SMALL_HAIL,
-			/// Precipitation detected by automated station but precipitation 
-			/// type cannot be determined.
 			UNDETERMINED,
-			/// Water particles suspended in atmosphere, visibility from 5/8 
-			/// to 7 statute miles (unlike drizzle does not fall on ground).
 			MIST,
-			/// Water particles suspended in atmosphere, visibility less than
-			/// 5/8 statute miles (unlike drizzle does not fall on ground).
 			FOG,
-			/// Smoke. Suspension of combustion-produced particles in the air.
 			SMOKE,
-			/// Fine particles of rock powder originating from volcano 
-			/// suspended in atmosphere. May remain suspended for long periods.
 			VOLCANIC_ASH,
-			/// Widespread dust. Dust particles suspended in the air by the wind.
 			DUST,
-			/// Sand particles raised by wind.
 			SAND,
-			/// Suspension of very small dry particles invisible to naked eye.
 			HAZE,
-			/// Ensemble of water droplets torn by wind from surface of body 
-			/// of water (generally from crests of waves).
 			SPRAY,
-			/// Dust devils. Well developen dust or sand whirls.
 			DUST_WHIRLS,
-			/// Suddenly increasing strong wind (increases by at least 16 
-			/// knots and sustains at 22 knots for at least 1 minute).
 			SQUALLS,
-			/// Tornadic activity. Tornado, funnel cloud or waterspout.
 			FUNNEL_CLOUD,
-			/// Particles of sand carried aloft by a strong wind.
 			SANDSTORM,
-			/// Dust-filled air and strong winds.
 			DUSTSTORM
 		};
-		WeatherGroup() = default;
-		/// @return True if stored data are consistent, false otherwise.
-		bool isValid() const { return(true); } //TODO
-		/// @return Weather phenomena qualifier (intensity or proximity).
+
 		Qualifier qualifier() const { return(q); }
-		/// @return Weather phenomena descriptor.
 		Descriptor descriptor() const { return(d); }
-		/// @return A vector of weather phenomena stored in group.
 		std::vector<Weather> weather() const {
 			std::vector<Weather> result;
 			for (auto i = 0u; i < wSize; i++) result.push_back(w[i]);
 			return(result);
 		}
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<WeatherGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+		bool isValid() const { return(true); } //TODO
+
+		WeatherGroup() = default;
+		static inline std::optional<WeatherGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Qualifier q = Qualifier::NONE;
 		Descriptor d = Descriptor::NONE;
@@ -1259,51 +768,37 @@ namespace metaf {
 		static inline WeatherGroup notReportedRecent();
 	};
 
-	/// @brief Group: temperature and dew point.
-	/// @details Reports ambient air temperature and dew point.
 	class TemperatureGroup {
 	public:
-		TemperatureGroup() = default;
-		/// @return True if stored data are consistent, false otherwise.
-		inline bool isValid() const;
-		/// @return Temperature value (if reported).
 		const Temperature & airTemperature() const { return(t); }
-		/// @return Dewpoint value (if reported).
 		const Temperature & dewPoint() const { return(dp); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<TemperatureGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+		inline bool isValid() const;
+
+		TemperatureGroup() = default;
+		static inline std::optional<TemperatureGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Temperature t;
 		Temperature dp;
 	};
 
-	/// @brief Group: forecast minimum or maximum temperature.
-	/// @details Minimum or maximum temperature forecast with specified time 
-	/// when minimum or maximum temperatures are expected.
 	class TemperatureForecastGroup {
 	public:
-		/// Temperature point: minimum or maximum
 		enum class Point {
 			MINIMUM = 0,
 			MAXIMUM = 1
 		};
-		TemperatureForecastGroup() = default;
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(tm.isValid()); }
-		/// @return Temperature point.
 		Point point() const { return(p); }
-		/// @return Temperature value.
 		const Temperature & airTemperature() const { return(t); }
-		/// @return Time when the temperature value is expected.
 		const MetafTime & time() const { return(tm); }
-		/// Attempt to parse group. See Group variant for details.
+
+		TemperatureForecastGroup() = default;
 		static inline std::optional<TemperatureForecastGroup> parse(const std::string & group, 
 			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Point p = Point::MINIMUM;
 		Temperature t;
@@ -1316,56 +811,40 @@ namespace metaf {
 		}
 	};
 
-	/// @brief Group: atmospheric pressure.
-	/// @details Reports current atmospheric pressure.
 	class PressureGroup {
 	public:
 		PressureGroup() = default;
-		/// @return Pressure value.
 		const Pressure & atmosphericPressure() const { return(p); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<PressureGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+
+		static inline std::optional<PressureGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Pressure p;
 	};
 
-	/// @brief Group: runway visual range.
-	/// @details Runway visual range is an instrumentally-derived value 
-	/// that represents the horizontal distance a pilot may see down the
-	/// runway from the approach end.
 	class RunwayVisualRangeGroup {
 	public:
-		/// Runway Visual Range trend.
 		enum class Trend {
-			NONE,			///< Trend not specified.
-			NOT_REPORTED, 	///< Trend is specified as not reported.
-			UPWARD,			///< Trend is upward.
-			NEUTRAL,		///< Trend is neutral.
-			DOWNWARD		///< Trend is downward.
+			NONE,
+			NOT_REPORTED,
+			UPWARD,
+			NEUTRAL,
+			DOWNWARD
 		};
-		RunwayVisualRangeGroup() = default;
-		/// @return Runway the visual range is reported for.
 		const Runway & runway() const { return(rw); }
-		/// @return Visual range value.
 		const Distance & visualRange() const { return(visRange); }
-		/// @return Variable visual range value (if reported).
 		const Distance & variableVisualRange() const { return(varVisRange); }
-		/// @return Visual range trend.
 		Trend trend() const { return(trnd); }
-		/// @return True if variable visual range is reported, false otherwise.
 		bool isVariableVisualRange() const { return(varVisRange.isReported()); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(visRange.isValid() && varVisRange.isValid()); };
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<RunwayVisualRangeGroup> parse(const std::string & group,
+
+		RunwayVisualRangeGroup() = default;
+		static inline std::optional<RunwayVisualRangeGroup> parse(const std::string & group, 
 			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Runway rw;
 		Distance visRange;
@@ -1375,67 +854,53 @@ namespace metaf {
 		static inline std::optional<Trend> trendFromString(const std::string & s);
 	};
 
-	/// @brief Group: runway state.
-	/// @details Runway state, deposits, extent of contamination, deposit 
-	/// depth and surface friction.
 	class RunwayStateGroup {
 	public:
-		/// Runway status: Normal, Contamination ceased to exist, Closed due 
-		/// to snow accumulation.
 		enum class Status {
-			NORMAL,	///< Normal runway state reported.
-			CLRD, 	///< Runway contaminations ceased to exist.
-			SNOCLO  ///< Runway is closed due to snow accumulation
+			NORMAL,
+			CLRD,
+			SNOCLO
+		};	
+		enum class Deposits {// Deposits type, see Table 0919 in Manual on Codes (WMO No. 306).
+			CLEAR_AND_DRY,
+			DAMP,
+			WET_AND_WATER_PATCHES,
+			RIME_AND_FROST_COVERED,
+			DRY_SNOW,
+			WET_SNOW,
+			SLUSH,
+			ICE,
+			COMPACTED_OR_ROLLED_SNOW,
+			FROZEN_RUTS_OR_RIDGES,
+			NOT_REPORTED
 		};
-		/// Deposits type, see Table 0919 in Manual on Codes (WMO No. 306).
-		enum class Deposits {
-			CLEAR_AND_DRY, 				// 0
-			DAMP, 						// 1
-			WET_AND_WATER_PATCHES,		// 2
-			RIME_AND_FROST_COVERED,		// 3
-			DRY_SNOW,					// 4
-			WET_SNOW,					// 5
-			SLUSH,						// 6
-			ICE,						// 7
-			COMPACTED_OR_ROLLED_SNOW,   // 8
-			FROZEN_RUTS_OR_RIDGES,      // 9
-			NOT_REPORTED                // /
+		
+		enum class Extent {// Extent of runway contamination, see Table 0519 in Manual on Codes (WMO No. 306).
+			NONE,
+			LESS_THAN_10_PERCENT,
+			FROM_11_TO_25_PERCENT,
+			RESERVED_3,
+			RESERVED_4,
+			FROM_26_TO_50_PERCENT,
+			RESERVED_6,
+			RESERVED_7,
+			RESERVED_8,
+			MORE_THAN_51_PERCENT,
+			NOT_REPORTED
 		};
-		/// Extent of runway contamination, see Table 0519 in Manual on Codes 
-		/// (WMO No. 306).
-		enum class Extent {
-			NONE,					// 0
-			LESS_THAN_10_PERCENT,	// 1
-			FROM_11_TO_25_PERCENT,	// 2
-			RESERVED_3,				// 3
-			RESERVED_4,				// 4
-			FROM_26_TO_50_PERCENT,	// 5
-			RESERVED_6,				// 6
-			RESERVED_7,				// 7
-			RESERVED_8,				// 8
-			MORE_THAN_51_PERCENT,	// 9
-			NOT_REPORTED			// /
-		};
-		RunwayStateGroup() = default;
-		/// @return Runway for which the state is reported.
 		const Runway & runway() const { return(rw); }
-		/// @return Status of the runway.
 		Status status() const { return(st); }
-		/// @return Deposits type.
 		Deposits deposits() const { return(dp); }
-		/// @return Extent of runway contamination.
 		Extent contaminationExtent() const { return(ext); }
-		/// @return Depth of deposits.
 		const Precipitation & depositDepth() const { return(dDepth); }
-		/// @return Surface friction of runway.
 		const SurfaceFriction & surfaceFriction() const { return(sf); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
+
+		RunwayStateGroup() = default;
 		static inline std::optional<RunwayStateGroup> parse(const std::string & group, 
 			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Runway rw;
 		Status st = Status::NORMAL;
@@ -1452,118 +917,85 @@ namespace metaf {
 		static inline std::optional<Extent> extentFromString(const std::string & s);
 	};
 
-	/// @brief Group: rainfall.
-	/// @details Actually measured rainfall for various periods (Australia only?).
 	class RainfallGroup {
 	public:
-		RainfallGroup() = default;
-		/// @return Rainfall for last 10 minutes.
 		const Precipitation & rainfallLast10Minutes() const { return(last10m); }
-		/// @return Rainfall for last 60 minutes.
 		const Precipitation & rainfallLast60Minutes() const { return(last60m); }
-		/// @return Rainfall since 09:00 (9AM)
 		const Precipitation & rainfallSince9AM() const { return(since0900); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<RainfallGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+
+		RainfallGroup() = default;
+		static inline std::optional<RainfallGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Precipitation last10m;
 		Precipitation since0900;
 		Precipitation last60m;
 	};
 
-	/// @brief Group: state of sea surface.
-	/// @details Temperature of sea surface and state of surface / wave height 
-	/// (oil platforms only?).
 	class SeaSurfaceGroup {
 	public:
-		SeaSurfaceGroup() = default;
-		/// @return Sea surface temperature.
 		const Temperature & surfaceTemperature() const { return(t); }
-		/// @return State of sea surface / wave height.
 		const WaveHeight & waves() const { return(wh); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
-		static inline std::optional<SeaSurfaceGroup> parse(const std::string & group, 
-			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
+
+		SeaSurfaceGroup() = default;
+		static inline std::optional<SeaSurfaceGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+
 	private:
 		Temperature t;
 		WaveHeight wh;
 	};
 
-	/// @brief Group: Airfield colour state.
-	/// @details Encoded visibility and cloud height (UK navy & RAF only?). 
-	/// Code BLACK may indicate that airfield is closed due to reasons not 
-	/// related to visibility and ceiling (e.g. snow accumulation).
 	class ColourCodeGroup {
 	public:
 		enum class Code {
-			/// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
-			BLUE = 0,	 
-			/// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
-			WHITE = 1,
-			/// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
-			GREEN = 2,
-			/// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
-			YELLOW1 = 3,
-			/// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
-			YELLOW2 = 4,
-			/// Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
-			AMBER = 5,
-			/// Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
-			RED = 6
+			BLUE = 0,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.	 
+			WHITE = 1,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.			
+			GREEN = 2,	// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+			YELLOW1 = 3,// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
+			YELLOW2 = 4,// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+			AMBER = 5,	// Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
+			RED = 6		// Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
 		};
-		ColourCodeGroup() = default;
-		/// @return Colour code.
 		Code code() const { return(c); }
-		/// @return True if code Black reported additionally to main code.
 		bool isCodeBlack() const { return(cBlack); }
-		/// @return True if stored data are consistent, false otherwise.
 		bool isValid() const { return(true); }
-		/// Attempt to parse group. See Group variant for details.
+
+		ColourCodeGroup() = default;
 		static inline std::optional<ColourCodeGroup> parse(const std::string & group, 
 			ReportPart reportPart);
-		/// This method is required by parser but not used for this group.
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Code c = Code::BLUE;
-		bool cBlack = false; //Is colour code BLACK additionally reported.
+		bool cBlack = false; //Is colour code BLACK reported along with main code
 	};
 
 	///////////////////////////////////////////////////////////////////////////////
+	
+	enum class SyntaxGroup {
+		OTHER,
+		METAR,
+		SPECI,
+		TAF,
+		COR,
+		AMD,
+		LOCATION,
+		REPORT_TIME,
+		TIME_SPAN,
+		CNL,
+		NIL,
+		RMK
+	};
 
-	/// Returns SyntaxGroup classification of METAR or TAF group.
-	/// @param group A parsed METAR or TAF group to classify.
-	/// @return Corresponding SyntaxGroup or SyntaxGroup::OTHER if 
-	/// group is not important for report syntax.
 	inline SyntaxGroup getSyntaxGroup(const Group & group);
 
-	/// @brief Attempts to parse all types within Group variant
-	/// @details Picks each individual type from Group variant, constructs an 
-	/// instance of this type and calls its parse() method. If group instance's
-	/// parse() method returns true, the group instance is returned. If parse()
-	/// method returns false, next type is picked and the process is repeated.
-	/// @par PlainTextGroup::parse() is always called last, with no regard 
-	/// of PlainTextGroup index within Group variant. Due to this, if none of
-	/// the types within Group variant if able to recognise and parse the 
-	/// string, it is saved as a PlainTextGroup.
-	/// @par It is expected that all types within Group variant have the 
-	/// following method, otherwise this class won't compile
-	/// bool parse(const std::string & group, ReportPart reportPart)
 	class GroupParser {
 	public:
-		/// Total number of groups in Group variant.
+		// Total number of groups in Group variant.
 		static const auto groups_total = std::variant_size_v<Group>;
-		/// Call parse() method from all types within Group variant
-		/// @param group METAR or TAF group to be parsed
-		/// @param reportPart Current syntaxic part of the report
 		static Group parse(const std::string & group, ReportPart reportPart) {
 			// Start cycling through types within Group variant
 			return(ParseGroupHelper<0, std::variant_alternative_t<0, Group>>::parse(
@@ -1571,20 +1003,6 @@ namespace metaf {
 				reportPart));
 		}
 	private:
-		/// @brief Helper for cycling through all types within Group variant.
-		/// @details Performs a step of recursively cycling through types 
-		/// within Group variant.
-		/// @par If the current group is PlainTextGroup, it is skipped at this 
-		/// moment because PlainTextGroup is only used when no other group type 
-		/// is able to recognise and parse group string.
-		/// @par A call to current type's parse() method is performed, if parse
-		/// is successful (i.e. parse() returned true), the group initialised 
-		/// by parse() method is returned and recursion is terminated.
-		/// If parse using current type was not successful (i.e. parse() 
-		/// returned false) then next type within Group variant is processed
-		/// recursively.
-		/// @tparam I Index of currently processed type within Group variant.
-		/// @tparam T Currently processed type within Group variant.
 		template <size_t I, class T> 
 		struct ParseGroupHelper {
 			static inline Group parse(const std::string & group, ReportPart reportPart) {
@@ -1602,14 +1020,6 @@ namespace metaf {
 			}
 		};
 
-		/// @brief Helper for cycling through all types within Group variant.
-		/// @details Terminates recursive cycling group variant.
-		/// @par Attempts to parse group string with last type in Group 
-		/// variant, if parsing is successful, the group struct initialised by
-		/// parse() is returned; otherwise, group is parsed by PlainTextGroup,
-		/// which is guaranteed to succeed and just stores the group string.
-		/// In any case, recursion is terminated.
-		/// @tparam T Last listed type within Group variant.
 		template <class T> 
 		struct ParseGroupHelper<groups_total-1, T> {
 			static inline Group parse(const std::string & group, ReportPart reportPart) {
@@ -1628,84 +1038,34 @@ namespace metaf {
 		};
 	};
 
-	/// Report type detected by parser
 	enum class ReportType {
-		UNKNOWN = 0,	///< Report type not detected
-		METAR = 1,		///< Report type detected as METAR
-		TAF = 2			///< Report type detected as TAF
+		UNKNOWN = 0,
+		METAR = 1,
+		TAF = 2
 	};
 
-	/// @brief Parses METAR and TAF reports.
-	/// @details The report is provided as std::string; the parser splits it 
-	/// into groups (tokens separated by spaces or line breaks), and parses 
-	/// each group individually by passing group string to parse() method of 
-	/// each type included Group variant (cycling through Group variant types 
-	/// is done using GroupParser). If a call to parse() method returned true,
-	/// the relevant group is stored in a vector. If no parse() call returned 
-	/// true (that is, no particular group type was able to recognise the 
-	/// string), this group is stored as PlainTextGroup.
-	/// @par The report type and structure is detected during parsing, using 
-	/// a simple state machine. See enum State for list of states, transition()
-	/// for algorithm of transition between states, and finalTransition() for
-	/// checking whether report end is allowed for current state.
-	/// @par Parsing results are obtained via getResult() method which returns
-	/// a reference to vector of Group. If it is desirable to reset 
-	/// 
 	class Parser {
 	public:
-		/// Errors which might occur when parsing METAR or TAF report
 		enum class Error {
-			NONE = 0,							///< No error
-			EMPTY_REPORT = 1,					///< Empty report supplied
-			EXPECTED_REPORT_TYPE_OR_LOCATION = 2,///< Report must start with type or location
-			EXPECTED_LOCATION = 3,				///< Expected location here
-			EXPECTED_REPORT_TIME = 4,			///< Expected report time here
-			EXPECTED_TIME_SPAN = 5,				///< Expected time span here
-			UNEXPECTED_REPORT_END = 6,			///< Report ends unexpectedly
-			UNEXPECTED_GROUP_AFTER_NIL = 7,		///< NIL report must be empty
-			UNEXPECTED_GROUP_AFTER_CNL = 8,		///< CNL report must be empty
-			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY = 9,///< NIL or CNL not allowed in report body
-			AMD_ALLOWED_IN_TAF_ONLY = 10,		///< AMD only used in TAF reports
-			CNL_ALLOWED_IN_TAF_ONLY = 11,		///< CNL only used in TAF reports
-			INTERNAL_PARSER_STATE = 12			///< Internal error: invalid parser state
+			NONE = 0,
+			EMPTY_REPORT = 1,
+			EXPECTED_REPORT_TYPE_OR_LOCATION = 2,
+			EXPECTED_LOCATION = 3,
+			EXPECTED_REPORT_TIME = 4,
+			EXPECTED_TIME_SPAN = 5,
+			UNEXPECTED_REPORT_END = 6,
+			UNEXPECTED_GROUP_AFTER_NIL = 7,
+			UNEXPECTED_GROUP_AFTER_CNL = 8,
+			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY = 9,
+			AMD_ALLOWED_IN_TAF_ONLY = 10,
+			CNL_ALLOWED_IN_TAF_ONLY = 11,
+			INTERNAL_PARSER_STATE = 12
 		};
-		/// @brief Parse METAR or TAf report.
-		/// @details Parses METAR or TAF report, autodetects its type and 
-		/// verifies syntax.
-		/// @par Use getResult(), getReportType() and getError() to get parse 
-		/// results.
-		/// @param report Raw report string.
-		/// @param keepSourceGroup When true, each group string being parsed 
-		/// is kept in a vector. After parsing this vector can be acquired via 
-		/// getSourceGroups(). When false, group string are not kept to 
-		/// maximise performance and getSourceGroups() will return an empty 
-		/// vector.
-		/// @return True if no error occurred during parsing, false if an error
-		/// did occurr during parsing.
 		inline bool parse(const std::string & report, bool keepSourceGroup = false);
-		/// Get parsing result.
-		/// @return Vector of Group which contains complete report (if parsed
-		/// successfully) or part of the report (to the point where an error 
-		/// occurred).
 		const std::vector<Group> & getResult() const { return(result); }
-		/// Get source group strings memorised during parsing.
-		/// @return Vector of string which contains all parsed source groups 
-		/// (if parsed successfully) or part of the report (to the point where 
-		/// an error occurred).
 		const std::vector<std::string> & getSourceGroups() const { return(sourceGroups); }
-		/// @brief Reset parsing result and free memory.
-		/// @details After calling this method, getResult() and 
-		/// getSourceGroups() will return empty vectors, getReportType() will 
-		/// return ReportType::UNKNOWN, and getError() will return 
-		/// Parser::Error::NONE.
 		inline void resetResult();
-		/// Get report type autodetected during parsing.
-		/// @return Autodetected type of report (METAR or TAF or UNKNOWN if 
-		/// it was impossible to determine report type).
 		ReportType getReportType() const { return(reportType); }
-		/// Get error occurred during parsing.
-		/// @return Parsing error or Parser::Error::NONE if report was parsed 
-		/// successfully.
 		Error getError() const { return(error); }
 	private:
 		std::vector<Group> result;
@@ -1713,8 +1073,7 @@ namespace metaf {
 		ReportType reportType = ReportType::UNKNOWN;
 		Error error = Error::NONE;
 
-		/// States of state machine used to check syntax of METAR/TAF reports.
-		enum class State {
+		enum class State { // States of state machine used to check syntax of METAR/TAF reports
 			REPORT_TYPE_OR_LOCATION,
 			CORRECTION,
 			LOCATION,
@@ -1730,26 +1089,14 @@ namespace metaf {
 			CNL,
 			ERROR
 		};
-
-		/// Transition between parser state machine states.
 		inline State transition(State state, SyntaxGroup group);
-		/// Check if report end is allowed in current state.
-		/// If report ended unexpectedly, state transitions to State::ERROR.
 		inline State finalTransition(State state);
-		/// Helper method to transition to Error state during parsing.
 		inline State parseError(Error e) { error = e; return(State::ERROR); }
-		/// Derive metaf:ReportPart
 		static inline ReportPart reportPartFromState(State state);
 	};
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	/// @brief Visitor is intended for further processing of METAR or TAF 
-	/// report information decoded by parser.
-	/// @details To reduce amount of boilerplate, inherit from GroupVisitor
-	/// and implement all individual virtual methods for each group type.
-	/// @tparam T Type returned by visitor methods or void if visitor methods
-	/// do not need to return a value.
 	template <typename T>
 	class GroupVisitor {
 	public:
@@ -1775,8 +1122,6 @@ namespace metaf {
 		virtual T visitOther(const Group & group) = 0;
 	};
 
-	/// General value-returning visitor implementation.
-	/// @tparam T Type returned by visitor methods.
 	template <typename T>
 	inline T GroupVisitor<T>::visit(const Group & group) {
 		if (std::holds_alternative<PlainTextGroup>(group)) {
@@ -1833,9 +1178,6 @@ namespace metaf {
 		return(this->visitOther(group));
 	}
 
-	/// Non-value-returning visitor implementation.
-	/// Partial template specialisation for template type void, where visitor 
-	/// methods do not return a value.
 	template<>
 	inline void GroupVisitor<void>::visit(const Group & group) {
 		if (std::holds_alternative<PlainTextGroup>(group)) {

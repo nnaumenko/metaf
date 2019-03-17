@@ -14,6 +14,7 @@ Welcome to Metaf's documentation!
    basics
    getting_started
    reference
+   extending
 
 Indices and tables
 ==================

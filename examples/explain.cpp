@@ -929,7 +929,7 @@ std::string_view GroupVisitorExplain::trendTypeToString(metaf::TrendGroup::Type 
 		return("No significant weather changes expected");
 
 		case metaf::TrendGroup::Type::BECMG:
-		return("Weather conditions are expected to change as follows");
+		return("Weather conditions are expected to gradually change as follows");
 
 		case metaf::TrendGroup::Type::TEMPO:
 		return("The following temporary weather conditions may arise for less than 60 minutes");

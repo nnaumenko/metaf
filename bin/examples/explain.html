@@ -1,20 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Metaf example: METAR & TAF reports explained</title>
-    <style type="text/css">
-    body { background-color:lightblue; color:black; text-align:center;}
-    table { margin-left:auto; margin-right:auto; 
-      border:1px solid black; border-collapse: collapse;}
-    th {border:1px solid black; font-weight:bold; text-align:left; padding:0.33em; background-color:blue; color:white;}
-    td {border:1px solid black; text-align:left; padding:0.33em;}
-    tr:hover {background-color:darkblue; color:white;}
-    td {text-align:left;}
-    </style>
-    <script>
-
-      function clearTable() {
+<!doctypehtml><html lang=en><head><meta charset=utf-8><title>Metaf example: METAR & TAF reports explained</title><style>body{background-color:#add8e6;color:#000;text-align:center}table{margin-left:auto;margin-right:auto;border:1px solid #000;border-collapse:collapse}th{border:1px solid #000;font-weight:700;text-align:left;padding:.33em;background-color:#00f;color:#fff}td{border:1px solid #000;text-align:left;padding:.33em}tr:hover{background-color:#00008b;color:#fff}td{text-align:left}</style><script>function clearTable() {
         while (document.getElementById("explanation").tBodies[0].rows.length > 0) {
           document.getElementById("explanation").tBodies[0].deleteRow(0);
         }
@@ -53,25 +37,4 @@
         if (document.getElementById("input").value.length == 0) {
           document.getElementById("input").value = sampleMetarStr;
         }
-      }
-
-    </script>
-    <script async type="text/javascript" src="explain.js"></script>
-  </head>
-  <body onload="setSampleInput()">
-      <h1>METAR &amp; TAF reports explained</h1>
-  	  Enter METAR or TAF here:<br>
-      <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>
-      <br><br>
-      Report explanation:<br>
-      <br>
-      <table id="explanation" border="2">
-        <thead>
-          <tr><th>Group</th><th>Explanation</th></tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-  </body>
-</html>
-
+      }</script><script async src=explain.js></script></head><body onload=setSampleInput()><h1>METAR & TAF reports explained</h1>Enter METAR or TAF here:<br><textarea cols=80 id=input oninput=explain() rows=8></textarea><br><br><br>Report explanation:<br><br><table border=2 id=explanation><thead><tr><th>Group</th><th>Explanation</th></tr></thead><tbody></tbody></table></body></html>

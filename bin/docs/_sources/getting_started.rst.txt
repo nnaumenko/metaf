@@ -1,14 +1,17 @@
-.. highlight:: c
-
 Getting started
 ===============
+
+.. highlight:: c
+
+.. index::
+	single: Tutorial
 
 This section is organised as a tutorial to demonstrate the basic usage of Metaf library. We start with a simple cpp file and proceed step-by-step to integrate Metaf library, to parse a METAR or TAF report, to check if any error occurred during parsing and to add a basic handling of the parse results.
 
 Setting up
 ----------
 
-The tutorial uses a single file tutorial.cpp. 
+The tutorial uses a single file ``tutorial.cpp``. 
 
 We start with the following: ::
 
@@ -23,12 +26,12 @@ We start with the following: ::
 		return(0);	
 	}
 
-We need iostream to print to std::cout. Since we are not going to use argc and argv we cast them to void to suppress the warnings.
+We need iostream to print to ``std::cout``. Since we are not going to use ``argc`` and ``argv`` we cast them to ``void`` to suppress the compiler warnings.
 
 Integrating Metaf
 -----------------
 
-To integrate Metaf library into your project, copy file src/metaf.h to the project's source or include path and add the following line to the beginning of the tutorial.cpp ::
+To integrate Metaf library into your project, copy file ``src/metaf.h`` to the project's source or include path and add the following line to the beginning of the ``tutorial.cpp`` ::
 
 	#include "metaf.h"
 
@@ -37,7 +40,7 @@ To integrate Metaf library into your project, copy file src/metaf.h to the proje
 Parsing a report
 ----------------
 
-Edit function main as follows: ::
+Edit function ``main()`` as follows: ::
 
 	int main(int argc, char ** argv) {
 		(void) argc; (void) argv;
@@ -47,14 +50,14 @@ Edit function main as follows: ::
 		return(0);
 	}
 
-An instance of a metaf::Parser parses a METAR or TAF report and holds the result of the parsing. If metaf::Parser instance is destroyed, the result of parsing is no longer available.
+An instance of a ``metaf::Parser`` parses a METAR or TAF report and then holds the result of the parsing. If ``metaf::Parser`` instance is destroyed, the result of parsing is no longer available.
 
-metaf::Parser::parse() method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
+``metaf::Parser::parse()`` method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
 
 Getting a result
 ----------------
 
-Add the following function to the tutorial file (before main()): ::
+Add the following function before ``main()``: ::
 
 	std::string reportTypeMessage(metaf::ReportType reportType) {
 		switch (reportType) {
@@ -69,16 +72,16 @@ Add the following function to the tutorial file (before main()): ::
 		}
 	}
 
-Then add the following lines to the function main before return(0);::
+Then add the following lines to the function ``main()`` before ``return(0);``::
 
 	std::cout << "Detected report type: " << reportTypeMessage(parser.getReportType()) << "\n";
 	std::cout << parser.getResult().size() << " groups\n";
 
-metaf::ReportType is an enum for a report type autodetected by parser. metaf::ReportType::UNKNOWN is used when the parser is unable to detect the report type (e.g. due to malformed report).
+:cpp:enum:`metaf::ReportType` is an enum for a report type autodetected by parser. :cpp:enumerator:`metaf::ReportType::UNKNOWN` is used when the parser is unable to detect the report type (e.g. due to malformed report).
 
-metaf::Parser::getReportType() returns an autodetected type of the last report parsed by the instance of metaf::Parser.
+:cpp:func:`metaf::Parser::getReportType()` returns an autodetected type of the last report parsed by the instance of metaf::Parser.
 
-metaf::Parser::getResult returns a reference to std::vector<Group>. Group is an std::variant declared as follows: ::
+:cpp:func:`metaf::Parser::getResult()` returns a reference to `std::vector<Group>`. :cpp:type:`Group` is an `std::variant` declared as follows: ::
 
 	using metaf::Group = std::variant<
 		metaf::PlainTextGroup,
@@ -100,12 +103,12 @@ metaf::Parser::getResult returns a reference to std::vector<Group>. Group is an 
 		metaf::ColourCodeGroup
 	>;
 
-.. warning:: Reference obtained by getResult() is only valid as long as an instance of metaf::Parser is valid.
+.. warning:: Reference obtained by :cpp:func:`metaf::Parser::getResult()` is only valid as long as an instance of :cpp:class:`metaf::Parser` is valid.
 
 Checking for errors
 -------------------
 
-Add the following function to the tutorial file (before main()): ::
+Add the following function before ``main()``: ::
 
 	std::string errorMessage(metaf::Parser::Error error) {
 		switch (error) {
@@ -150,11 +153,11 @@ Add the following function to the tutorial file (before main()): ::
 		}
 	}
 
-Then add the following line to the function main before return(0);::
+Then add the following line to the function ``main()`` before ``return(0);``::
 
 	std::cout << "Detected error: " << errorMessage(parser.getError()) << "\n";
 
-metaf::Parser::getError() returns an autodetected type of the last report parsed by this instance of metaf::Parser.
+:cpp:func:`metaf::Parser::getError()` returns an autodetected type of the last report parsed by this instance of :cpp:class:`metaf::Parser`.
 
 Handling the results of parsing
 -------------------------------
@@ -163,14 +166,14 @@ Since the METAR or TAF report is parsed into the vector of type Group, and the G
 
 The GroupVisitor is there to check the type and call a method for handling this type of group.
 
-Add to the tutorial.cpp file a class that inherits GroupVisitor: ::
+Add to the ``tutorial.cpp`` file a class that inherits :cpp:class:`GroupVisitor`: ::
 
 	class MyVisitor : public metaf::GroupVisitor<std::string> {
 	};
 
-Since MyVisitor is inherited from GroupVisitor<std::string>, this means that group handling methods  return std::string. Also <void> can be used if group handling methods do not return a value.
+Since MyVisitor is inherited from ``GroupVisitor<std::string>``, this means that group handling methods  return std::string. Also ``GroupVisitor<void>`` can be used if group handling methods do not return a value.
 
-Now add to class MyVisitor the group handling methods (to keep it simple we just print the type of group here; to avoid unused parameter warnings we cast parameters to void): ::
+Now add to class MyVisitor the group handling methods (to keep it simple we just print the type of group here; to avoid unused parameter warnings we cast parameters to ``void``): ::
 
 	virtual std::string visitPlainTextGroup(const metaf::PlainTextGroup & group) {
 		(void)group; return("PlainTextGroup");
@@ -227,20 +230,20 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 		(void)group; return("Unknown Group");
 	}
 
-Since all these virtual methods are pure in GroupVisitor there is no risk that some group type would be ommitted.
+Since all these virtual methods are pure in :cpp:class:`GroupVisitor` there is no risk that some group type would be ommitted; this will result in compilation error.
 
-Now add the following lines to the function main before return(0);::
+Now add the following lines to the function ``main()`` before ``return(0);``::
 
 	for (const auto group : parser.getResult()) {
 		std::cout << "Group parsed: " << visitor.visit(group) << "\n";
 	}
 
-GroupVisitor :: visit will check the alternative stored in Group variant and call the corresponding virtual method.
+:cpp:func:`GroupVisitor::visit()` will check the alternative stored in Group variant and call the corresponding virtual method.
 
 Conclusion
 ----------
 
-At this point the file tutorial.cpp file looks like this: ::
+At this point the file ``tutorial.cpp`` file looks like this: ::
 
 	#include "metaf.h"
 

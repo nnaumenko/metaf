@@ -45,9 +45,6 @@ $RECYCLE.BIN/
 #Coveralls intermediate directory
 cov-int/
 
-#Doxygen docs
-docs/html/
-
 #Small helper projects/utilities/drafts
 misc/
 

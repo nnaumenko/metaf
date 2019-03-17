@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Metaf example: parse METAR or TAF and convert to JSON</title>
-    <style type="text/css">
-    body { background-color:lightblue; color:black; text-align:center;}
-    </style>
-    <script>
-
-      function convertToJson() {
+<!doctypehtml><html lang=en><head><meta charset=utf-8><title>Metaf example: parse METAR or TAF and convert to JSON</title><style>body{background-color:#add8e6;color:#000;text-align:center}</style><script>function convertToJson() {
         var inputStr = document.getElementById("input").value;
         var result = Module.ccall('toJson',     // name of C function 
                                   'string',     // return type
@@ -28,19 +18,4 @@
         if (document.getElementById("input").value.length == 0) {
           document.getElementById("input").value = sampleMetarStr;
         }
-      }
-
-    </script>
-    <script async type="text/javascript" src="to_json.js"></script>
-  </head>
-  <body onload="setSampleInput()">
-    <h1>Convert METAR & TAF to JSON</h1>
-  		Enter METAR or TAF here:<br>
-      <textarea id="input" rows="8" cols="80" onInput="convertToJson()"></textarea><br>
-      <br><br>
-  		Conversion result:<br>
-      <textarea id="result" rows="8" cols="80" readonly></textarea><br>
-      <input type="checkbox" id="formattedResult" onclick="convertToJson()" checked>Formatted result<br>
-  </body>
-</html>
-
+      }</script><script async src=to_json.js></script></head><body onload=setSampleInput()><h1>Convert METAR & TAF to JSON</h1>Enter METAR or TAF here:<br><textarea cols=80 id=input rows=8 oninput=convertToJson()></textarea><br><br><br>Conversion result:<br><textarea cols=80 id=result rows=8 readonly></textarea><br><input checked id=formattedResult onclick=convertToJson() type=checkbox>Formatted result<br></body></html>

@@ -45,10 +45,10 @@
             
   <div class="section" id="getting-started">
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>This section is organised as a tutorial to demonstrate the basic usage of Metaf library. We start with a simple cpp file and proceed step-by-step to integrate Metaf library, to parse a METAR or TAF report, to check if any error occurred during parsing and to add a basic handling of the parse results.</p>
+<p id="index-0">This section is organised as a tutorial to demonstrate the basic usage of Metaf library. We start with a simple cpp file and proceed step-by-step to integrate Metaf library, to parse a METAR or TAF report, to check if any error occurred during parsing and to add a basic handling of the parse results.</p>
 <div class="section" id="setting-up">
 <h2>Setting up<a class="headerlink" href="#setting-up" title="Permalink to this headline">¶</a></h2>
-<p>The tutorial uses a single file tutorial.cpp.</p>
+<p>The tutorial uses a single file <code class="docutils literal notranslate"><span class="pre">tutorial.cpp</span></code>.</p>
 <p>We start with the following:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
@@ -62,11 +62,11 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>We need iostream to print to std::cout. Since we are not going to use argc and argv we cast them to void to suppress the warnings.</p>
+<p>We need iostream to print to <code class="docutils literal notranslate"><span class="pre">std::cout</span></code>. Since we are not going to use <code class="docutils literal notranslate"><span class="pre">argc</span></code> and <code class="docutils literal notranslate"><span class="pre">argv</span></code> we cast them to <code class="docutils literal notranslate"><span class="pre">void</span></code> to suppress the compiler warnings.</p>
 </div>
 <div class="section" id="integrating-metaf">
 <h2>Integrating Metaf<a class="headerlink" href="#integrating-metaf" title="Permalink to this headline">¶</a></h2>
-<p>To integrate Metaf library into your project, copy file src/metaf.h to the project’s source or include path and add the following line to the beginning of the tutorial.cpp</p>
+<p>To integrate Metaf library into your project, copy file <code class="docutils literal notranslate"><span class="pre">src/metaf.h</span></code> to the project’s source or include path and add the following line to the beginning of the <code class="docutils literal notranslate"><span class="pre">tutorial.cpp</span></code></p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;metaf.h&quot;</span><span class="cp"></span>
 </pre></div>
 </div>
@@ -77,7 +77,7 @@
 </div>
 <div class="section" id="parsing-a-report">
 <h2>Parsing a report<a class="headerlink" href="#parsing-a-report" title="Permalink to this headline">¶</a></h2>
-<p>Edit function main as follows:</p>
+<p>Edit function <code class="docutils literal notranslate"><span class="pre">main()</span></code> as follows:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span> <span class="n">argv</span><span class="p">)</span> <span class="p">{</span>
         <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">argc</span><span class="p">;</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">argv</span><span class="p">;</span>
         <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Parsing report: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">report</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
@@ -87,12 +87,12 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>An instance of a metaf::Parser parses a METAR or TAF report and holds the result of the parsing. If metaf::Parser instance is destroyed, the result of parsing is no longer available.</p>
-<p>metaf::Parser::parse() method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.</p>
+<p>An instance of a <code class="docutils literal notranslate"><span class="pre">metaf::Parser</span></code> parses a METAR or TAF report and then holds the result of the parsing. If <code class="docutils literal notranslate"><span class="pre">metaf::Parser</span></code> instance is destroyed, the result of parsing is no longer available.</p>
+<p><code class="docutils literal notranslate"><span class="pre">metaf::Parser::parse()</span></code> method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.</p>
 </div>
 <div class="section" id="getting-a-result">
 <h2>Getting a result<a class="headerlink" href="#getting-a-result" title="Permalink to this headline">¶</a></h2>
-<p>Add the following function to the tutorial file (before main()):</p>
+<p>Add the following function before <code class="docutils literal notranslate"><span class="pre">main()</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">reportTypeMessage</span><span class="p">(</span><span class="n">metaf</span><span class="o">::</span><span class="n">ReportType</span> <span class="n">reportType</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">switch</span> <span class="p">(</span><span class="n">reportType</span><span class="p">)</span> <span class="p">{</span>
                 <span class="k">case</span> <span class="n">metaf</span><span class="o">::</span><span class="n">ReportType</span><span class="o">::</span><span class="nl">UNKNOWN</span><span class="p">:</span>
@@ -107,14 +107,14 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Then add the following lines to the function main before return(0);:</p>
+<p>Then add the following lines to the function <code class="docutils literal notranslate"><span class="pre">main()</span></code> before <code class="docutils literal notranslate"><span class="pre">return(0);</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Detected report type: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">reportTypeMessage</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">getReportType</span><span class="p">())</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">parser</span><span class="p">.</span><span class="n">getResult</span><span class="p">().</span><span class="n">size</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; groups</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>metaf::ReportType is an enum for a report type autodetected by parser. metaf::ReportType::UNKNOWN is used when the parser is unable to detect the report type (e.g. due to malformed report).</p>
-<p>metaf::Parser::getReportType() returns an autodetected type of the last report parsed by the instance of metaf::Parser.</p>
-<p>metaf::Parser::getResult returns a reference to std::vector&lt;Group&gt;. Group is an std::variant declared as follows:</p>
+<p><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">metaf::ReportType</span></code> is an enum for a report type autodetected by parser. <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">metaf::ReportType::UNKNOWN</span></code> is used when the parser is unable to detect the report type (e.g. due to malformed report).</p>
+<p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">metaf::Parser::getReportType()</span></code> returns an autodetected type of the last report parsed by the instance of metaf::Parser.</p>
+<p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">metaf::Parser::getResult()</span></code> returns a reference to <cite>std::vector&lt;Group&gt;</cite>. <code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">Group</span></code> is an <cite>std::variant</cite> declared as follows:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">using</span> <span class="n">metaf</span><span class="o">::</span><span class="n">Group</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span>
         <span class="n">metaf</span><span class="o">::</span><span class="n">PlainTextGroup</span><span class="p">,</span>
         <span class="n">metaf</span><span class="o">::</span><span class="n">FixedGroup</span><span class="p">,</span>
@@ -138,12 +138,12 @@
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">Reference obtained by getResult() is only valid as long as an instance of metaf::Parser is valid.</p>
+<p class="last">Reference obtained by <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">metaf::Parser::getResult()</span></code> is only valid as long as an instance of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">metaf::Parser</span></code> is valid.</p>
 </div>
 </div>
 <div class="section" id="checking-for-errors">
 <h2>Checking for errors<a class="headerlink" href="#checking-for-errors" title="Permalink to this headline">¶</a></h2>
-<p>Add the following function to the tutorial file (before main()):</p>
+<p>Add the following function before <code class="docutils literal notranslate"><span class="pre">main()</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">errorMessage</span><span class="p">(</span><span class="n">metaf</span><span class="o">::</span><span class="n">Parser</span><span class="o">::</span><span class="n">Error</span> <span class="n">error</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">switch</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
                 <span class="k">case</span> <span class="n">metaf</span><span class="o">::</span><span class="n">Parser</span><span class="o">::</span><span class="n">Error</span><span class="o">::</span><span class="nl">NONE</span><span class="p">:</span>
@@ -188,23 +188,23 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Then add the following line to the function main before return(0);:</p>
+<p>Then add the following line to the function <code class="docutils literal notranslate"><span class="pre">main()</span></code> before <code class="docutils literal notranslate"><span class="pre">return(0);</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Detected error: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">errorMessage</span><span class="p">(</span><span class="n">parser</span><span class="p">.</span><span class="n">getError</span><span class="p">())</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>metaf::Parser::getError() returns an autodetected type of the last report parsed by this instance of metaf::Parser.</p>
+<p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">metaf::Parser::getError()</span></code> returns an autodetected type of the last report parsed by this instance of <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">metaf::Parser</span></code>.</p>
 </div>
 <div class="section" id="handling-the-results-of-parsing">
 <h2>Handling the results of parsing<a class="headerlink" href="#handling-the-results-of-parsing" title="Permalink to this headline">¶</a></h2>
 <p>Since the METAR or TAF report is parsed into the vector of type Group, and the Group is a variant data type, to handle the results one needs to check which variant alternative Group holds, then get the correct type from variant and then handle the data.</p>
 <p>The GroupVisitor is there to check the type and call a method for handling this type of group.</p>
-<p>Add to the tutorial.cpp file a class that inherits GroupVisitor:</p>
+<p>Add to the <code class="docutils literal notranslate"><span class="pre">tutorial.cpp</span></code> file a class that inherits <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">GroupVisitor</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">class</span> <span class="nl">MyVisitor</span> <span class="p">:</span> <span class="n">public</span> <span class="n">metaf</span><span class="o">::</span><span class="n">GroupVisitor</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="p">{</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>Since MyVisitor is inherited from GroupVisitor&lt;std::string&gt;, this means that group handling methods  return std::string. Also &lt;void&gt; can be used if group handling methods do not return a value.</p>
-<p>Now add to class MyVisitor the group handling methods (to keep it simple we just print the type of group here; to avoid unused parameter warnings we cast parameters to void):</p>
+<p>Since MyVisitor is inherited from <code class="docutils literal notranslate"><span class="pre">GroupVisitor&lt;std::string&gt;</span></code>, this means that group handling methods  return std::string. Also <code class="docutils literal notranslate"><span class="pre">GroupVisitor&lt;void&gt;</span></code> can be used if group handling methods do not return a value.</p>
+<p>Now add to class MyVisitor the group handling methods (to keep it simple we just print the type of group here; to avoid unused parameter warnings we cast parameters to <code class="docutils literal notranslate"><span class="pre">void</span></code>):</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">visitPlainTextGroup</span><span class="p">(</span><span class="k">const</span> <span class="n">metaf</span><span class="o">::</span><span class="n">PlainTextGroup</span> <span class="o">&amp;</span> <span class="n">group</span><span class="p">)</span> <span class="p">{</span>
         <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">group</span><span class="p">;</span> <span class="k">return</span><span class="p">(</span><span class="s">&quot;PlainTextGroup&quot;</span><span class="p">);</span>
 <span class="p">}</span>
@@ -261,18 +261,18 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Since all these virtual methods are pure in GroupVisitor there is no risk that some group type would be ommitted.</p>
-<p>Now add the following lines to the function main before return(0);:</p>
+<p>Since all these virtual methods are pure in <code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">GroupVisitor</span></code> there is no risk that some group type would be ommitted; this will result in compilation error.</p>
+<p>Now add the following lines to the function <code class="docutils literal notranslate"><span class="pre">main()</span></code> before <code class="docutils literal notranslate"><span class="pre">return(0);</span></code>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="nl">group</span> <span class="p">:</span> <span class="n">parser</span><span class="p">.</span><span class="n">getResult</span><span class="p">())</span> <span class="p">{</span>
         <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Group parsed: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">visitor</span><span class="p">.</span><span class="n">visit</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>GroupVisitor :: visit will check the alternative stored in Group variant and call the corresponding virtual method.</p>
+<p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">GroupVisitor::visit()</span></code> will check the alternative stored in Group variant and call the corresponding virtual method.</p>
 </div>
 <div class="section" id="conclusion">
 <h2>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
-<p>At this point the file tutorial.cpp file looks like this:</p>
+<p>At this point the file <code class="docutils literal notranslate"><span class="pre">tutorial.cpp</span></code> file looks like this:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;metaf.h&quot;</span><span class="cp"></span>
 
 <span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
@@ -501,7 +501,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018-2019, Nick Naumenko.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>
 </html>
