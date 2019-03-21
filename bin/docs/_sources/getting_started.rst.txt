@@ -1,10 +1,11 @@
+.. index:: single: Metaf; Tutorial
+
+.. index:: single: Tutorial
+
 Getting started
 ===============
 
 .. highlight:: c
-
-.. index::
-	single: Tutorial
 
 This section is organised as a tutorial to demonstrate the basic usage of Metaf library. We start with a simple cpp file and proceed step-by-step to integrate Metaf library, to parse a METAR or TAF report, to check if any error occurred during parsing and to add a basic handling of the parse results.
 
@@ -37,6 +38,7 @@ To integrate Metaf library into your project, copy file ``src/metaf.h`` to the p
 
 .. note:: All classes and functions in Metaf library are located in namespace metaf.
 
+
 Parsing a report
 ----------------
 
@@ -50,12 +52,13 @@ Edit function ``main()`` as follows: ::
 		return(0);
 	}
 
-An instance of a ``metaf::Parser`` parses a METAR or TAF report and then holds the result of the parsing. If ``metaf::Parser`` instance is destroyed, the result of parsing is no longer available.
+An instance of a :cpp:class:`metaf::Parser` parses a METAR or TAF report and then holds the result of the parsing. If :cpp:class:`metaf::Parser` instance is destroyed, the result of parsing is no longer available.
 
-``metaf::Parser::parse()`` method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
+:cpp:func:`metaf::Parser::parse()` method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
 
-Getting a result
-----------------
+
+Getting the result of parsing
+-----------------------------
 
 Add the following function before ``main()``: ::
 
@@ -81,29 +84,10 @@ Then add the following lines to the function ``main()`` before ``return(0);``::
 
 :cpp:func:`metaf::Parser::getReportType()` returns an autodetected type of the last report parsed by the instance of metaf::Parser.
 
-:cpp:func:`metaf::Parser::getResult()` returns a reference to `std::vector<Group>`. :cpp:type:`Group` is an `std::variant` declared as follows: ::
-
-	using metaf::Group = std::variant<
-		metaf::PlainTextGroup,
-		metaf::FixedGroup,
-		metaf::LocationGroup,
-		metaf::ReportTimeGroup,
-		metaf::TrendGroup,
-		metaf::WindGroup,
-		metaf::VisibilityGroup,
-		metaf::CloudGroup,
-		metaf::WeatherGroup,
-		metaf::TemperatureGroup,
-		metaf::TemperatureForecastGroup,
-		metaf::PressureGroup,
-		metaf::RunwayVisualRangeGroup,
-		metaf::RunwayStateGroup,
-		metaf::RainfallGroup,
-		metaf::SeaSurfaceGroup,
-		metaf::ColourCodeGroup
-	>;
+:cpp:func:`metaf::Parser::getResult()` returns a reference to `std::vector<metaf::Group>`. :cpp:type:`metaf::Group` is an ``std::variant`` which holds all concrete group classes as variant alternatives.
 
 .. warning:: Reference obtained by :cpp:func:`metaf::Parser::getResult()` is only valid as long as an instance of :cpp:class:`metaf::Parser` is valid.
+
 
 Checking for errors
 -------------------
@@ -162,7 +146,7 @@ Then add the following line to the function ``main()`` before ``return(0);``::
 Handling the results of parsing
 -------------------------------
 
-Since the METAR or TAF report is parsed into the vector of type Group, and the Group is a variant data type, to handle the results one needs to check which variant alternative Group holds, then get the correct type from variant and then handle the data. 
+Since the METAR or TAF report is parsed into the vector of type :cpp:type:`metaf::Group`, and the :cpp:type:`metaf::Group` is a variant data type, to handle the results one needs to check which variant alternative :cpp:type:`metaf::Group` holds, then get the correct type from variant and then handle the data.
 
 The GroupVisitor is there to check the type and call a method for handling this type of group.
 

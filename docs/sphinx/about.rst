@@ -1,13 +1,21 @@
 About Metaf
 ===========
 
+.. index:: single: Metaf
+
 Metaf is a header-only, dependency-free modern c++ library for parsing METAR weather reports and TAF weather forecasts used in aviation. 
+
+.. index:: single: Metaf;License
+
+.. index:: single: License
 
 Metaf is released under MIT license.
 
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no extrenal dependencies and can be used in other environments.
 
 Metaf library requires C++17.
+
+.. index:: single: METAR
 
 What is METAR?
 --------------
@@ -23,6 +31,8 @@ Example of a simple METAR report is as follows: ::
 This report includes type (METAR), location (Cork Airport / Ireland), report issue time (day-of-month 9 at 21:00 GMT, actually issued on 9th September 2018 but month and year are not included), wind (southwest wind, wind speed 7 knots), visibility (more than 10KM), cloud layers (few clouds at 3800 feet and broken clouds at 18000 feet), temperature and dew point (temperature 11 centigrade, dewpoint 8 centrigrade), atmospheric pressure (1019 hPa) and weather trend (no significant changes expected).
 
 METAR may also contain additional information such as runway visual range, state of the runway, remarks, trends of weather change, etc. Some locations include METAR reports include specific information, e.g.: oil platforms typically report sea surface temperature and wave height, Australian aeroports often report recent rainfall, NATO militaries report so called colour codes for quick assessment of visibility and ceiling conditions.
+
+.. index:: single: TAF
 
 What is TAF?
 ------------
