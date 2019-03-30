@@ -24,7 +24,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 1;
-		static const int minor = 0;
+		static const int minor = 1;
 		static const int patch = 0;
 	};
 
@@ -208,10 +208,12 @@ namespace metaf {
 			return(integer().has_value() || 
 					(numerator().has_value() && denominator().has_value()));
 		}
+		bool hasInteger() const { return(integer().has_value()); }
+		bool hasFraction() const { return(numerator().has_value() && denominator().has_value()); }
 		inline std::optional<float> toUnit(Unit unit) const;
 		bool isValid() const {
 			if (distValueDen.has_value() && !distValueDen.value()) return(false);
-			if (distValueDen.has_value() && !distValueNum.value()) return(false);
+			if (distValueNum.has_value() && !distValueNum.value()) return(false);
 			return(true);
 		}
 
@@ -441,6 +443,7 @@ namespace metaf {
 			if (!whValue.has_value()) return(std::optional<float>());
 			return(whValue.value() * waveHeightDecimalPointShift);
 		}
+		bool isReported() const { return(whValue.has_value()); }
 		inline std::optional<float> toUnit(Unit unit) const;
 
 		WaveHeight() = default;
@@ -492,18 +495,18 @@ namespace metaf {
 	class FixedGroup {
 	public:
 		enum class Type {
-			METAR = 0,
-			SPECI = 1,
-			TAF = 2,
-			AMD = 3,
-			NIL = 4,
-			CNL = 5,
-			COR = 6,
-			AUTO = 7,
-			R_SNOCLO = 8,
-			CAVOK = 9,
-			NSW = 10,
-			RMK = 11
+			METAR,
+			SPECI,
+			TAF,
+			AMD,
+			NIL,
+			CNL,
+			COR,
+			AUTO,
+			R_SNOCLO,
+			CAVOK,
+			NSW,
+			RMK
 		};
 		Type type() const { return(t); }
 		bool isValid() const { return(true); }
@@ -534,7 +537,7 @@ namespace metaf {
 
 	class ReportTimeGroup {
 	public:
-		const MetafTime & time() const { return(t); };
+		MetafTime time() const { return(t); };
 		bool isValid() const { return(t.isValid() && t.day().has_value()); }
 
 		ReportTimeGroup() = default;
@@ -548,24 +551,24 @@ namespace metaf {
 	class TrendGroup {
 	public:
 		enum class Type {
-			NONE = 0,		// Incomplete groups or their combination.
-			NOSIG = 1,
-			BECMG = 2,
-			TEMPO = 3,
-			INTER = 4,
-			FROM = 5,
-			TIME_SPAN = 6,
+			NONE,		// Incomplete groups or their combination.
+			NOSIG,
+			BECMG,
+			TEMPO,
+			INTER,
+			FROM,
+			TIME_SPAN,
 		};
 		enum class Probability {
-			NONE = 0,		// Probability not specified.
-			PROB_30 = 1,
-			PROB_40 = 2,
+			NONE,		// Probability not specified.
+			PROB_30,
+			PROB_40,
 		};
 		Type type() const { return(t); }
 		Probability probability() const { return(prob); }
-		const std::optional<MetafTime> & timeFrom() const { return(tFrom); }
-		const std::optional<MetafTime> & timeTill() const { return(tTill); }
-		const std::optional<MetafTime> & timeAt() const { return(tAt); }
+		std::optional<MetafTime> timeFrom() const { return(tFrom); }
+		std::optional<MetafTime> timeTill() const { return(tTill); }
+		std::optional<MetafTime> timeAt() const { return(tAt); }
 		bool isValid() const {
 			if (tFrom.has_value() && !tFrom->isValid()) return(false);
 			if (tTill.has_value() && !tTill->isValid()) return(false);
@@ -607,13 +610,20 @@ namespace metaf {
 
 	class WindGroup {
 	public:
-		const Direction & direction() const { return(windDir); }
-		const Speed & windSpeed() const { return(wSpeed); }
-		const Speed & gustSpeed() const { return(gSpeed); }
+		Direction direction() const { return(windDir); }
+		Speed windSpeed() const { return(wSpeed); }
+		Speed gustSpeed() const { return(gSpeed); }
 		inline bool isCalm() const;
-		const Distance & windShearHeight() const { return(wShHeight); }
-		const Direction & varSectorBegin() const { return(vsecBegin); }
-		const Direction & varSectorEnd() const { return(vsecEnd); }
+		Distance windShearHeight() const { return(wShHeight); }
+		Direction varSectorBegin() const { return(vsecBegin); }
+		Direction varSectorEnd() const { return(vsecEnd); }
+		bool isWindShear() const { return(wShHeight.isReported()); }
+		bool isSurfaceWind() const { return(!isWindShear()); }
+		bool hasVariableSector() const { 
+			return(isSurfaceWind() &&
+				vsecBegin.status() == Direction::Status::VALUE_DEGREES && 
+				vsecEnd.status() == Direction::Status::VALUE_DEGREES);
+		}
 		inline bool isValid() const;
 
 		WindGroup() = default;
@@ -633,8 +643,13 @@ namespace metaf {
 
 	class VisibilityGroup {
 	public:
-		const Distance & visibility() const { return(vis); }
-		const Direction & direction() const { return(dir); }
+		Distance visibility() const { return(vis); }
+		Direction direction() const { return(dir); }
+		bool isPrevailing() const { 
+			return(direction().status() == Direction::Status::OMMITTED ||
+				direction().status() == Direction::Status::NDV); 
+		}
+		bool isDirectional() const { return(!isPrevailing()); }
 		bool isValid() const { 
 			return(!incompleteInteger && vis.isValid() && dir.isValid());
 		}
@@ -651,29 +666,38 @@ namespace metaf {
 	class CloudGroup {
 	public:
 		enum class Amount {
-			NOT_REPORTED = 0,
-			NCD = 1,
-			NSC = 2,
-			NONE_CLR = 3,
-			NONE_SKC = 4,
-			FEW = 5,
-			SCATTERED = 6,
-			BROKEN = 7,
-			OVERCAST = 8,
-			OBSCURED = 9
+			NOT_REPORTED,
+			NCD,
+			NSC,
+			NONE_CLR,
+			NONE_SKC,
+			FEW,
+			SCATTERED,
+			BROKEN,
+			OVERCAST,
+			OBSCURED
 		};
 		enum class Type {
-			NOT_REPORTED = 0,
-			NONE = 1,
-			TOWERING_CUMULUS = 2,
-			CUMULONIMBUS = 3
+			NOT_REPORTED,
+			NONE,
+			TOWERING_CUMULUS,
+			CUMULONIMBUS
 		};
 		Amount amount() const { return(amnt); }
 		Type type() const { return(tp); }
-		inline const Distance & height() const;
-		const Distance & verticalVisibility() const {
+		inline Distance height() const;
+		Distance verticalVisibility() const {
 			if (amount() != Amount::OBSCURED) return(heightNotReported);
 			return(heightOrVertVis);
+		}
+		bool isVerticalVisibility() const { return(amount() == Amount::OBSCURED); }
+		bool isNoClouds() const {
+			return(amount() == Amount::NONE_CLR || amount() == Amount::NONE_SKC ||
+				amount() == Amount::NCD || amount() == Amount::NSC);
+		}
+		bool isCloudLayer() const {
+			return(amount() == Amount::FEW || amount() == Amount::SCATTERED ||
+				amount() == Amount::BROKEN || amount() == Amount::OVERCAST);		
 		}
 		bool isValid() const { return(heightOrVertVis.isValid()); }
 
@@ -770,8 +794,8 @@ namespace metaf {
 
 	class TemperatureGroup {
 	public:
-		const Temperature & airTemperature() const { return(t); }
-		const Temperature & dewPoint() const { return(dp); }
+		Temperature airTemperature() const { return(t); }
+		Temperature dewPoint() const { return(dp); }
 		inline bool isValid() const;
 
 		TemperatureGroup() = default;
@@ -786,13 +810,13 @@ namespace metaf {
 	class TemperatureForecastGroup {
 	public:
 		enum class Point {
-			MINIMUM = 0,
-			MAXIMUM = 1
+			MINIMUM,
+			MAXIMUM
 		};
 		bool isValid() const { return(tm.isValid()); }
 		Point point() const { return(p); }
-		const Temperature & airTemperature() const { return(t); }
-		const MetafTime & time() const { return(tm); }
+		Temperature airTemperature() const { return(t); }
+		MetafTime time() const { return(tm); }
 
 		TemperatureForecastGroup() = default;
 		static inline std::optional<TemperatureForecastGroup> parse(const std::string & group, 
@@ -814,7 +838,7 @@ namespace metaf {
 	class PressureGroup {
 	public:
 		PressureGroup() = default;
-		const Pressure & atmosphericPressure() const { return(p); }
+		Pressure atmosphericPressure() const { return(p); }
 		bool isValid() const { return(true); }
 
 		static inline std::optional<PressureGroup> parse(const std::string & group, ReportPart reportPart);
@@ -833,12 +857,21 @@ namespace metaf {
 			NEUTRAL,
 			DOWNWARD
 		};
-		const Runway & runway() const { return(rw); }
-		const Distance & visualRange() const { return(visRange); }
-		const Distance & variableVisualRange() const { return(varVisRange); }
+		Runway runway() const { return(rw); }
+		Distance visualRange() const { 
+			if (!isVariableVisualRange()) return(visRange); 
+			return(Distance());
+		}
+		Distance minVisualRange() const {
+			if (isVariableVisualRange()) return(visRange);
+			return(Distance());
+		}
+		Distance maxVisualRange() const { return(varVisRange); }
 		Trend trend() const { return(trnd); }
 		bool isVariableVisualRange() const { return(varVisRange.isReported()); }
-		bool isValid() const { return(visRange.isValid() && varVisRange.isValid()); };
+		bool isValid() const { 
+			return(rw.isValid() && visRange.isValid() && varVisRange.isValid());
+		}
 
 		RunwayVisualRangeGroup() = default;
 		static inline std::optional<RunwayVisualRangeGroup> parse(const std::string & group, 
@@ -888,13 +921,17 @@ namespace metaf {
 			MORE_THAN_51_PERCENT,
 			NOT_REPORTED
 		};
-		const Runway & runway() const { return(rw); }
+		Runway runway() const { return(rw); }
 		Status status() const { return(st); }
 		Deposits deposits() const { return(dp); }
 		Extent contaminationExtent() const { return(ext); }
-		const Precipitation & depositDepth() const { return(dDepth); }
-		const SurfaceFriction & surfaceFriction() const { return(sf); }
-		bool isValid() const { return(true); }
+		Precipitation depositDepth() const { return(dDepth); }
+		SurfaceFriction surfaceFriction() const { return(sf); }
+		bool isValid() const { 
+			return(rw.isValid() && 
+				ext != Extent::RESERVED_3 && ext != Extent::RESERVED_4 && 
+				ext != Extent::RESERVED_6 && ext != Extent::RESERVED_7 && ext != Extent::RESERVED_8);
+		}
 
 		RunwayStateGroup() = default;
 		static inline std::optional<RunwayStateGroup> parse(const std::string & group, 
@@ -919,9 +956,9 @@ namespace metaf {
 
 	class RainfallGroup {
 	public:
-		const Precipitation & rainfallLast10Minutes() const { return(last10m); }
-		const Precipitation & rainfallLast60Minutes() const { return(last60m); }
-		const Precipitation & rainfallSince9AM() const { return(since0900); }
+		Precipitation rainfallLast10Minutes() const { return(last10m); }
+		Precipitation rainfallLast60Minutes() const { return(last60m); }
+		Precipitation rainfallSince9AM() const { return(since0900); }
 		bool isValid() const { return(true); }
 
 		RainfallGroup() = default;
@@ -936,8 +973,8 @@ namespace metaf {
 
 	class SeaSurfaceGroup {
 	public:
-		const Temperature & surfaceTemperature() const { return(t); }
-		const WaveHeight & waves() const { return(wh); }
+		Temperature surfaceTemperature() const { return(t); }
+		WaveHeight waves() const { return(wh); }
 		bool isValid() const { return(true); }
 
 		SeaSurfaceGroup() = default;
@@ -952,13 +989,13 @@ namespace metaf {
 	class ColourCodeGroup {
 	public:
 		enum class Code {
-			BLUE = 0,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.	 
-			WHITE = 1,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.			
-			GREEN = 2,	// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
-			YELLOW1 = 3,// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
-			YELLOW2 = 4,// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
-			AMBER = 5,	// Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
-			RED = 6		// Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
+			BLUE ,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.	 
+			WHITE ,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.			
+			GREEN,	// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+			YELLOW1,// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
+			YELLOW2,// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+			AMBER,	// Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
+			RED		// Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
 		};
 		Code code() const { return(c); }
 		bool isCodeBlack() const { return(cBlack); }
@@ -1039,27 +1076,27 @@ namespace metaf {
 	};
 
 	enum class ReportType {
-		UNKNOWN = 0,
-		METAR = 1,
-		TAF = 2
+		UNKNOWN,
+		METAR,
+		TAF
 	};
 
 	class Parser {
 	public:
 		enum class Error {
-			NONE = 0,
-			EMPTY_REPORT = 1,
-			EXPECTED_REPORT_TYPE_OR_LOCATION = 2,
-			EXPECTED_LOCATION = 3,
-			EXPECTED_REPORT_TIME = 4,
-			EXPECTED_TIME_SPAN = 5,
-			UNEXPECTED_REPORT_END = 6,
-			UNEXPECTED_GROUP_AFTER_NIL = 7,
-			UNEXPECTED_GROUP_AFTER_CNL = 8,
-			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY = 9,
-			AMD_ALLOWED_IN_TAF_ONLY = 10,
-			CNL_ALLOWED_IN_TAF_ONLY = 11,
-			INTERNAL_PARSER_STATE = 12
+			NONE,
+			EMPTY_REPORT,
+			EXPECTED_REPORT_TYPE_OR_LOCATION,
+			EXPECTED_LOCATION,
+			EXPECTED_REPORT_TIME,
+			EXPECTED_TIME_SPAN,
+			UNEXPECTED_REPORT_END,
+			UNEXPECTED_GROUP_AFTER_NIL,
+			UNEXPECTED_GROUP_AFTER_CNL,
+			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY,
+			AMD_ALLOWED_IN_TAF_ONLY,
+			CNL_ALLOWED_IN_TAF_ONLY,
+			INTERNAL_PARSER_STATE
 		};
 		inline bool parse(const std::string & report, bool keepSourceGroup = false);
 		const std::vector<Group> & getResult() const { return(result); }
@@ -2370,7 +2407,7 @@ namespace metaf {
 		return(std::optional<Amount>());
 	}
 
-	const Distance & CloudGroup::height() const {
+	Distance CloudGroup::height() const {
 		switch(amount()) {
 			case Amount::NOT_REPORTED:
 			case Amount::FEW:

@@ -332,3 +332,100 @@ TEST(RunwayStateGroup, parseNormalWrongFormat) {
 	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21////A//", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21//////A", metaf::ReportPart::METAR));
 }
+
+TEST(RunwayStateGroup, isValidRunwayTrue) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R88/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+	ASSERT_TRUE(rsg1->runway().isValid());
+	EXPECT_TRUE(rsg1->isValid());
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R99/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+	ASSERT_TRUE(rsg2->runway().isValid());
+	EXPECT_TRUE(rsg2->isValid());
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R36/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+	ASSERT_TRUE(rsg3->runway().isValid());
+	EXPECT_TRUE(rsg3->isValid());
+
+	const auto rsg4 = metaf::RunwayStateGroup::parse("R06L/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg4.has_value());
+	ASSERT_TRUE(rsg4->runway().isValid());
+	EXPECT_TRUE(rsg4->isValid());
+}
+
+TEST(RunwayStateGroup, isValidRunwayFalse) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R88R/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+	ASSERT_FALSE(rsg1->runway().isValid());
+	EXPECT_FALSE(rsg1->isValid());
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R99C/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+	ASSERT_FALSE(rsg2->runway().isValid());
+	EXPECT_FALSE(rsg2->isValid());
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R37/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+	ASSERT_FALSE(rsg3->runway().isValid());
+	EXPECT_FALSE(rsg3->isValid());
+}
+
+TEST(RunwayStateGroup, isValidExtentTrue) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R88/00//55", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+	ASSERT_TRUE(rsg1->runway().isValid());
+	EXPECT_TRUE(rsg1->isValid());
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R88/210155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+	ASSERT_TRUE(rsg2->runway().isValid());
+	EXPECT_TRUE(rsg2->isValid());
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R88/220155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+	ASSERT_TRUE(rsg3->runway().isValid());
+	EXPECT_TRUE(rsg3->isValid());
+
+	const auto rsg4 = metaf::RunwayStateGroup::parse("R88/250155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg4.has_value());
+	ASSERT_TRUE(rsg4->runway().isValid());
+	EXPECT_TRUE(rsg4->isValid());
+
+	const auto rsg5 = metaf::RunwayStateGroup::parse("R88/290155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg5.has_value());
+	ASSERT_TRUE(rsg5->runway().isValid());
+	EXPECT_TRUE(rsg5->isValid());
+
+	const auto rsg6 = metaf::RunwayStateGroup::parse("R88/2/0155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg6.has_value());
+	ASSERT_TRUE(rsg6->runway().isValid());
+	EXPECT_TRUE(rsg6->isValid());
+}
+
+TEST(RunwayStateGroup, isValidExtentFalse) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R88/230155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+	ASSERT_TRUE(rsg1->runway().isValid());
+	EXPECT_FALSE(rsg1->isValid());
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R88/240155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+	ASSERT_TRUE(rsg2->runway().isValid());
+	EXPECT_FALSE(rsg2->isValid());
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R88/260155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+	ASSERT_TRUE(rsg3->runway().isValid());
+	EXPECT_FALSE(rsg3->isValid());
+
+	const auto rsg4 = metaf::RunwayStateGroup::parse("R88/270155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg4.has_value());
+	ASSERT_TRUE(rsg4->runway().isValid());
+	EXPECT_FALSE(rsg4->isValid());
+
+	const auto rsg5 = metaf::RunwayStateGroup::parse("R88/280155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg5.has_value());
+	ASSERT_TRUE(rsg5->runway().isValid());
+	EXPECT_FALSE(rsg5->isValid());}

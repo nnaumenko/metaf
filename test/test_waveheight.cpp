@@ -18,6 +18,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceCalmGlassy) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 0.0, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceCalmRippled) {
@@ -28,6 +29,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceCalmRippled) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 0.1, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceSmooth) {
@@ -38,6 +40,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceSmooth) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 0.5, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceSlight) {
@@ -48,6 +51,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceSlight) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 1.2, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceModerate) {
@@ -58,6 +62,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceModerate) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 2.5, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceRough) {
@@ -68,6 +73,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceRough) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 4.0, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceVeryRough) {
@@ -78,6 +84,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceVeryRough) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 6.0, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceHigh) {
@@ -88,6 +95,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceHigh) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 9.0, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceVeryHigh) {
@@ -98,6 +106,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceVeryHigh) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 14.0, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfacePhenomenal) {
@@ -108,6 +117,7 @@ TEST(WaveHeight, fromStringStateOfSurfacePhenomenal) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 14.1, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceNotReported) {
@@ -117,6 +127,7 @@ TEST(WaveHeight, fromStringStateOfSurfaceNotReported) {
 	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::NOT_REPORTED);
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	EXPECT_FALSE(wh->waveHeight().has_value());
+	EXPECT_FALSE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringStateOfSurfaceWrongFormat) {
@@ -135,6 +146,7 @@ TEST(WaveHeight, fromStringWaveHeightThreeDigit) {
 	EXPECT_EQ(wh1->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh1->waveHeight().has_value());
 	EXPECT_NEAR(wh1->waveHeight().value(), 10.5, margin);
+	EXPECT_TRUE(wh1->isReported());
 
 	const auto wh2 = metaf::WaveHeight::fromString("H037");
 	ASSERT_TRUE(wh2.has_value());
@@ -142,6 +154,7 @@ TEST(WaveHeight, fromStringWaveHeightThreeDigit) {
 	EXPECT_EQ(wh2->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh2->waveHeight().has_value());
 	EXPECT_NEAR(wh2->waveHeight().value(), 3.7, margin);
+	EXPECT_TRUE(wh2->isReported());
 
 	const auto wh3 = metaf::WaveHeight::fromString("H008");
 	ASSERT_TRUE(wh3.has_value());
@@ -149,6 +162,7 @@ TEST(WaveHeight, fromStringWaveHeightThreeDigit) {
 	EXPECT_EQ(wh3->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh3->waveHeight().has_value());
 	EXPECT_NEAR(wh3->waveHeight().value(), 0.8, margin);
+	EXPECT_TRUE(wh3->isReported());
 }
 
 TEST(WaveHeight, fromStringWaveHeightTwoDigit) {
@@ -158,6 +172,7 @@ TEST(WaveHeight, fromStringWaveHeightTwoDigit) {
 	EXPECT_EQ(wh1->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh1->waveHeight().has_value());
 	EXPECT_NEAR(wh1->waveHeight().value(), 1.4, margin);
+	EXPECT_TRUE(wh1->isReported());
 
 	const auto wh2 = metaf::WaveHeight::fromString("H07");
 	ASSERT_TRUE(wh2.has_value());
@@ -165,6 +180,7 @@ TEST(WaveHeight, fromStringWaveHeightTwoDigit) {
 	EXPECT_EQ(wh2->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh2->waveHeight().has_value());
 	EXPECT_NEAR(wh2->waveHeight().value(), 0.7, margin);
+	EXPECT_TRUE(wh2->isReported());
 }
 
 TEST(WaveHeight, fromStringWaveHeightOneDigit) {
@@ -174,6 +190,7 @@ TEST(WaveHeight, fromStringWaveHeightOneDigit) {
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	ASSERT_TRUE(wh->waveHeight().has_value());
 	EXPECT_NEAR(wh->waveHeight().value(), 0.8, margin);
+	EXPECT_TRUE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringWaveHeightNotReported) {
@@ -182,6 +199,7 @@ TEST(WaveHeight, fromStringWaveHeightNotReported) {
 	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::WAVE_HEIGHT);
 	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
 	EXPECT_FALSE(wh->waveHeight().has_value());
+	EXPECT_FALSE(wh->isReported());
 }
 
 TEST(WaveHeight, fromStringWaveHeightWrongFormat) {

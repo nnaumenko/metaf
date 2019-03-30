@@ -216,10 +216,10 @@ std::string GroupVisitorExplain::visitTrendGroup(const metaf::TrendGroup & group
 std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (!group.windShearHeight().isReported()) {
-		result << "Surface wind:";
-	} else {
-		result << "Wind shear at height " << explainDistance(group.windShearHeight()) << ':';
+	if (group.isSurfaceWind()) result << "Surface wind:";
+	if (group.isWindShear()) {
+		result << "Wind shear at height ";
+		result << explainDistance(group.windShearHeight()) << ':';
 	}
 	result << lineBreak;
 
@@ -239,10 +239,7 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
 		}
 	}
-	if (group.varSectorBegin().status() != metaf::Direction::Status::OMMITTED ||
-		group.varSectorEnd().status() != metaf::Direction::Status::OMMITTED)
-	{
-		// Variable wind sector information present in this group
+	if (group.hasVariableSector()) {
 		result << "Variable wind direction sector from ";
 		result << explainDirection(group.varSectorBegin()) << " clockwise to ";
 		result << explainDirection(group.varSectorEnd());
@@ -254,11 +251,8 @@ std::string GroupVisitorExplain::visitVisibilityGroup(const metaf::VisibilityGro
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Visibility ("; 
-	if (cardinalDirectionToString(group.direction().cardinal()).empty()) {
-		result << "prevailing";
-	} else {
-		result << explainDirection(group.direction());
-	}
+	if (group.isPrevailing()) result << "prevailing";
+	if (group.isDirectional())result << explainDirection(group.direction());
 	result << ") ";
 	result << explainDistance(group.visibility());
 	return(result.str());
@@ -377,10 +371,12 @@ std::string GroupVisitorExplain::visitRunwayVisualRangeGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visual range of " << explainRunway(group.runway()) << " ";
-	result << explainDistance(group.visualRange());
-	if (group.variableVisualRange().isReported()) {
-		result << " to " << explainDistance(group.variableVisualRange());
+	result << "Visual range of " << explainRunway(group.runway()) << " is ";
+	if (group.isVariableVisualRange()) {
+		result << explainDistance(group.maxVisualRange());
+		result << " to " << explainDistance(group.maxVisualRange());
+	} else {
+		result << explainDistance(group.visualRange());
 	}
 	if (group.trend() != metaf::RunwayVisualRangeGroup::Trend::NONE) {
 		result << ", and the trend is " << rvrTrendToString(group.trend());
@@ -625,23 +621,22 @@ std::string GroupVisitorExplain::explainSpeed(const metaf::Speed & speed) {
 }
 
 std::string GroupVisitorExplain::explainDistance(const metaf::Distance & distance) {
+	if (!distance.isReported()) return("not reported");
 	std::ostringstream result;
-	if (const auto d = distance.toUnit(distance.unit()); d.has_value()) {
-		switch (distance.modifier()) {
-			case metaf::Distance::Modifier::NONE:			break;
-			case metaf::Distance::Modifier::LESS_THAN:		result << "&lt;"; break;
-			case metaf::Distance::Modifier::MORE_THAN:		result << "&gt;"; break;
-			default: result << "unknown modifier, "; break;
-		}
-		if (distance.unit() == metaf::Distance::Unit::STATUTE_MILES) {
-			result << roundTo(*d, 3);
-		} else {
-			result << static_cast<int>(*d);
-		}
-		result << " " << distanceUnitToString(distance.unit());
-	} else {
-		return("not reported");
+	switch (distance.modifier()) {
+		case metaf::Distance::Modifier::NONE:			break;
+		case metaf::Distance::Modifier::LESS_THAN:		result << "&lt;"; break;
+		case metaf::Distance::Modifier::MORE_THAN:		result << "&gt;"; break;
+		default: result << "unknown modifier, "; break;
 	}
+	const auto d = distance.toUnit(distance.unit());
+	if (!d.has_value()) return("[unable to get distance's floating-point value]");
+	if (distance.unit() == metaf::Distance::Unit::STATUTE_MILES) {
+		result << roundTo(*d, 3);
+	} else {
+		result << static_cast<int>(*d);
+	}
+	result << " " << distanceUnitToString(distance.unit());
 	result << " (";
 	if (distance.unit() != metaf::Distance::Unit::METERS) {
 		if (const auto d = distance.toUnit(metaf::Distance::Unit::METERS); d.has_value()) {
@@ -790,7 +785,7 @@ std::string GroupVisitorExplain::explainWaveHeight(const metaf::WaveHeight & wav
 			std::string(stateOfSeaSurfaceToString(waveHeight.stateOfSurface())));
 
 		case metaf::WaveHeight::Type::WAVE_HEIGHT:
-		if (waveHeight.waveHeight().has_value()) {
+		if (waveHeight.isReported()) {
 			std::ostringstream result;
 			result << "wave height: ";
 			if (const auto h = waveHeight.toUnit(metaf::WaveHeight::Unit::METERS); h.has_value()) {

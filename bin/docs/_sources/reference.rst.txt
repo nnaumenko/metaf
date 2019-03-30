@@ -331,9 +331,17 @@ Distance
 
 			:returns: ``true`` if the stored value has only integer component, and ``false`` if the stored value does not have an integer component or has fraction component or is not reported.
 
+		.. cpp:function:: bool hasInteger() const
+
+			:returns: ``true`` if the stored value has integer component, and ``false`` if the stored value does not have an integer component or is not reported. Presence or absence of fraction component is ignored.
+
 		.. cpp:function:: bool isFraction() const
 
 			:returns: ``true`` if the stored value has only fraction component, and ``false`` if the stored value does not have a fraction component or has integer component or is not reported.
+
+		.. cpp:function:: bool hasFraction() const
+
+			:returns: ``true`` if the stored value has fraction component, and ``false`` if the stored value does not have a fraction component or is not reported. Presence or absence of integer component is ignored.
 
 		.. cpp:function:: bool isReported()
 
@@ -880,6 +888,11 @@ WaveHeight
 
 			:returns: Wave height measurement unit which was used with stored value. Currently always returns :cpp:enumerator:`Unit::METERS` since the value is always specified in decimeters.
 
+	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if wave height is reported (either as descriptive state or as actual wave height).
 
 	**Converting to other measurement units**
 
@@ -1091,6 +1104,8 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: locationgroup.svg
 
+Examples of the raw report data are ``UKLL`` and ``K2J3``.
+
 .. cpp:class:: LocationGroup
 
 	Location group stores an ICAO location code of the site where observation was performed or for which the forecast is provided.
@@ -1123,13 +1138,15 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: reporttimegroup.svg
 
+Example of this group is ``302330Z``.
+
 .. cpp:class:: ReportTimeGroup
 
 	Report time stores information about report release date and time.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const MetafTime & time() const
+		.. cpp:function:: MetafTime time() const
 
 			:returns: Time when the report was released (GMT time zone).
 
@@ -1159,6 +1176,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 See :doc:`basics` for more information on weather trends and how they are reported.
 
+Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, ``3100/3124``, ``FM311000``, ``BECMG AT2000``, ``BECMG TL0040``, ``TEMPO FM2200 TL2215``, ``BECMG 3100/3107``, ``PROB30 3100/3104``, ``PROB30 TEMPO 3107/3109``, ``INTER 3100/3102``, etc.
 
 .. cpp:class:: TrendGroup
 
@@ -1257,15 +1275,15 @@ See :doc:`basics` for more information on weather trends and how they are report
 
 			:returns: Specified probability or :cpp:enumerator:`Probability::NONE` if probability was not explicitly specified.
 
-		.. cpp:function:: const std::optional<MetafTime> & timeFrom() const
+		.. cpp:function:: std::optional<MetafTime> timeFrom() const
 
 			:returns: Begin time of trend's time span or empty ``std::optional`` if no time span or no begin time were specified.
 
-		.. cpp:function:: const std::optional<MetafTime> & timeTill() const
+		.. cpp:function:: std::optional<MetafTime> timeTill() const
 
 			:returns: End time of trend's time span or empty ``std::optional`` if no time span or no end time were specified.
 
-		const std::optional<MetafTime> & timeAt() const
+		.. cpp:function:: std::optional<MetafTime> timeAt() const
 
 			:returns: Expected time of event or empty ``std::optional`` if no expected time of event was specified.
 
@@ -1304,6 +1322,8 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: windgroup.svg
 
+Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, and ``WS020/05065KT``.
+
 .. cpp:class:: WindGroup
 
 	Stores information about surface wind (including variable wind direction sector if reported) or wind shear.
@@ -1312,29 +1332,29 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 		.. index:: single: Wind; Direction
 
-		.. cpp:function:: const Direction & direction() const
+		.. cpp:function:: Direction direction() const
 
 			:returns: Wind direction; typicaly a direction value in degrees but also can be variable or non-reported.
 
 		.. index:: single: Wind; Speed
 		
-		.. cpp:function:: const Speed & windSpeed() const
+		.. cpp:function:: Speed windSpeed() const
 		
 			:returns: Wind speed.
 
 		.. index:: single: Wind; Gust speedW
 
-		.. cpp:function:: const Speed & gustSpeed() const
+		.. cpp:function:: Speed gustSpeed() const
 
 			:returns: Wind gust speed.
 
 		.. index:: single: Wind; Variable wind direction sector
 
-		.. cpp:function:: const Direction & varSectorBegin() const
+		.. cpp:function:: Direction varSectorBegin() const
 
 			:returns: Start direction point of variable wind direction sector.
 
-		.. cpp:function:: const Direction & varSectorEnd() const
+		.. cpp:function:: Direction varSectorEnd() const
 
 			:returns: End direction point of variable wind direction sector.
 
@@ -1342,7 +1362,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 		
 		.. index:: single: Wind shear; Height
 
-		.. cpp:function:: const Distance & windShearHeight() const
+		.. cpp:function:: Distance windShearHeight() const
 
 			:returns: Height at which wind shear occurs or a non-reported value if surface wind data are specified.
 
@@ -1353,6 +1373,18 @@ The following syntax corresponds to this group in METAR/TAF reports.
 		.. cpp:function:: bool isCalm() const
 
 			:returns: ``true`` if calm wind (i.e. no wind) is reported. Calm wind is coded as ``00000KT`` or ``00000MPS`` or ``00000KMH``.
+
+		.. cpp:function:: bool isWindShear() const
+
+			:returns: ``true`` if this group contains a wind shear information rather than surface wind information, and ``false`` otherwise.
+
+		.. cpp:function:: bool isSurfaceWind() const
+
+			:returns: ``true`` if this group contains a surface wind information rather than wind shear information, and ``false`` otherwise.
+
+		.. cpp:function:: bool hasVariableSector() const
+
+			:returns: ``true`` if this group contains a variable wind sector  information (with or without surface wind information) , and ``false`` otherwise.
 
 	**Validating**
 
@@ -1380,6 +1412,8 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. note:: Spaces between sequential groups in METAR/TAF report are not shown.
 
+Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, ``1100W``, ``3SM``, ``25SM``, ``1/4SM``, ``2 1/4SM``, ``M1/4SM``, ``P6SM``, ``////SM``.
+
 .. cpp:class:: VisibilityGroup
 
 	Stores information about prevailing visibility or visibility towards cardinal direction.
@@ -1388,7 +1422,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Distance & visibility() const
+		.. cpp:function:: Distance visibility() const
 
 			:returns: Visibility value. Values in meters are integer, values in statute miles may be fractional. May contain 'less than' or 'more than' modifiers or may be non-reported value.
 
@@ -1396,9 +1430,19 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 		.. index:: single: Visibility; Directional
 
-		.. cpp:function:: const Direction & direction() const
+		.. cpp:function:: Direction direction() const
 
 			Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+
+	**Miscellaneous**
+
+		.. cpp:function:: bool isPrevailing() const
+
+			:returns: ``true`` if the group contains prevailing visibility (no direction specified or No Directional Variation) and ``false`` otherwise.
+
+		.. cpp:function:: bool isDirectional() const
+
+			:returns: ``true`` if the group contains directional visibility (cardinal direction specified) and ``false`` otherwise.
 
 	**Validating**
 
@@ -1423,6 +1467,8 @@ CloudGroup
 The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: cloudgroup.svg
+
+Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250``, ``FEW019TCU``, ``FEW013///``, ``//////CB``, ``//////``, ``CLR``, ``SKC``, ``NCD``, ``NSC``, ``VV002``, and ``VV///``.
 
 .. cpp:class:: CloudGroup
 
@@ -1547,19 +1593,33 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 		.. index:: single: Cloud; Base height
 
-		const Distance & height() const
+		Distance height() const
 
 			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
 
-		const Distance & verticalVisibility() const
+		Distance verticalVisibility() const
 
 			:returns: When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.
+
+	**Miscellaneous**
+
+		bool isVerticalVisibility() const
+
+			:returns: ``true`` if this group contains a vertical visibility information (including non-reported vertical visibility value) rather than cloud layer information or 'no clouds' condition, and ``false`` otherwise.
+
+		bool isNoClouds() const
+
+			:returns: ``true`` if this group contains an information related to 'no clouds' conditions, i.e. amount value is :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, :cpp:enumerator:`Amount::NSC`. For any other amount value returns ``false``.
+
+		bool isCloudLayer() const
+
+			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: ``true`` if stored cloud information is valid, and ``false`` otherwise. The information is considered valid if the value of cloud cover height or vertical visibility is valid (if reported).
+			:returns: ``true`` if stored cloud information is valid, and ``false`` otherwise. The information is considered valid if the value of cloud cover height or vertical visibility is valid (if reported). Zero height of cloud cover base or vertical visibility does not make the information invalid.
 
 
 .. index:: single: Group; Weather phenomena
@@ -1574,6 +1634,8 @@ WeatherGroup
 The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: weathergroup.svg
+
+Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, etc.
 
 .. cpp:class:: WeatherGroup
 
@@ -1878,6 +1940,8 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: temperaturegroup.svg
 
+Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02``, ``M00/M00``, ``00/M00``, and ``/////``.
+
 .. cpp:class:: TemperatureGroup
 
 	Stores information about current ambient air temperature and dew point.
@@ -1888,11 +1952,11 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Temperature & airTemperature() const
+		.. cpp:function:: Temperature airTemperature() const
 
 			:returns: Ambient air temperature.
 
-		.. cpp:function:: const Temperature & dewPoint() const
+		.. cpp:function:: Temperature dewPoint() const
 
 			:returns: Dew point.
 
@@ -1916,6 +1980,8 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. note:: Metaf does not verify in which order minimum and maximum temperature forecast is reported.
 
+Examples of the raw report data are ``TX15/3111Z`` and ``TN00/3103Z``.
+
 .. cpp:class:: TemperatureForecastGroup
 
 	Stores information about forecast ambient air temperature along with the time when it is expected.
@@ -1938,11 +2004,11 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 			Temperature point for which the forecast is reported.
 
-		.. cpp:function:: const Temperature & airTemperature() const
+		.. cpp:function:: Temperature airTemperature() const
 
 			Forecast ambient air temperature.
 
-		.. cpp:function:: const MetafTime & time() const
+		.. cpp:function:: MetafTime time() const
 
 			Time when the forecast temperature is expected.
 
@@ -1966,13 +2032,15 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuregroup.svg
 
+Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``.
+
 .. cpp:class:: PressureGroup
 
 	Stores information about current atmopheric pressure.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Pressure & atmosphericPressure() const
+		.. cpp:function:: Pressure atmosphericPressure() const
 
 			:returns: Atmospheric pressure value.
 
@@ -1993,6 +2061,8 @@ RunwayVisualRangeGroup
 The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: runwayvisualrangegroup.svg
+
+Examples of the raw report data are ``R24/P6000FT``, ``R31/0200N``, ``R26/0325N``, ``R23/3000V4500FT/D``, etc.
 
 .. cpp:class:: RunwayVisualRangeGroup
 
@@ -2026,15 +2096,19 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Runway & runway() const
+		.. cpp:function:: Runway runway() const
 
 			:returns: Runway the visual range is provided for.
 
-		.. cpp:function:: const Distance & visualRange() const
+		.. cpp:function:: Distance visualRange() const
 
-			:returns: Runway visual range value (if reported) or low limit of variable visual range.
+			:returns: Runway visual range value (if reported) or non-reported value if variable visual range is reported.
 
-		.. cpp:function:: const Distance & variableVisualRange() const
+		.. cpp:function:: Distance minVisualRange() const
+
+			:returns: Low limit of variable visual range or non-reported value if no variable visual range is reported.
+
+		.. cpp:function:: Distance maxVisualRange() const
 
 			:returns: High limit of variable visual range or non-reported value if no variable visual range is reported.
 
@@ -2063,6 +2137,8 @@ RunwayStateGroup
 The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: runwaystategroup.svg
+
+Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60``, ``R21/SNOCLO``, ``R34L/CLRD70``, etc.
 
 .. cpp:class:: RunwayStateGroup
 
@@ -2192,7 +2268,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Runway & runway() const
+		.. cpp:function:: Runway runway() const
 
 			:returns: Runway for which the state is provided.
 
@@ -2220,13 +2296,13 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 		.. index:: single: Runway state; Deposit depth
 
-		.. cpp:function:: const Precipitation & depositDepth() const
+		.. cpp:function:: Precipitation depositDepth() const
 
 			:returns: Depth of the deposits on the runway or non-reported value. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
 
 		.. index:: single: Runway state; Surface friction
 
-		.. cpp:function:: const SurfaceFriction & surfaceFriction() const
+		.. cpp:function:: SurfaceFriction surfaceFriction() const
 
 		.	:returns: Surface friction or braking action or not reported value. Not reported if the status is :cpp:enumerator:`Status::SNOCLO`.
 
@@ -2234,7 +2310,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 	.. cpp:function:: bool isValid() const
 
-		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid.
+		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid and :cpp:enum:`Extent` returned by :cpp:func:`contaminationExtent()` is not a reserved value.
 
 
 .. index:: single: Rainfall
@@ -2250,21 +2326,23 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: rainfallgroup.svg
 
+Examples of the raw report data are ``RF00.0/000.0``, ``RF00.2/011.2``, ``RF00.0////./``, and ``RF21.5/112.4/031.8``.
+
 .. cpp:class:: RainfallGroup
 
 	Stores information about recent rainfall. This group is only used in Australia.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Precipitation & rainfallLast10Minutes() const
+		.. cpp:function:: Precipitation rainfallLast10Minutes() const
 
 			:returns: Rainfall for the last 10 minutes (or non-reported value).
 
-		.. cpp:function:: const Precipitation & rainfallLast60Minutes() const
+		.. cpp:function:: Precipitation rainfallLast60Minutes() const
 
 			:returns: Rainfall for the last 60 minutes or non-reported value.
 
-		.. cpp:function:: const Precipitation & rainfallSince9AM() const
+		.. cpp:function:: Precipitation rainfallSince9AM() const
 
 			:returns: Rainfall since 9:00AM (09:00) or non-reported value.
 
@@ -2288,17 +2366,19 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: seasurfacegroup.svg
 
+Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6``, ``W///S/``, ``W04/H///``, and ``W///H///``.
+
 .. cpp:class:: SeaSurfaceGroup
 
 	Stores information about temperature of sea surface along with descriptive state of sea surface or wave height. This group is used by oil platforms.
 
 	**Acquiring group data**
 
-		.. cpp:function:: const Temperature & surfaceTemperature() const
+		.. cpp:function:: Temperature surfaceTemperature() const
 
 			:returns: Temperature of the sea surface or non-reported value.
 
-		.. cpp:function:: const WaveHeight & waves() const
+		.. cpp:function:: WaveHeight waves() const
 
 			:returns: Wave height or descriptive state of the sea surface or non-reported value.
 
@@ -2317,6 +2397,8 @@ ColourCodeGroup
 The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: colourcodegroup.svg
+
+Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2``, ``AMB``, ``RED``, ``BLACKBLU``, ``BLACKWHT``, ``BLACKGRN``, ``BLACKYLO1``, ``BLACKYLO2``, ``BLACKAMB``, and ``BLACKRED``. 
 
 .. cpp:class:: ColourCodeGroup
 

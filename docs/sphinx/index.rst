@@ -24,7 +24,7 @@ Indices and tables
 References
 ==========
 
-The syntax diagrams were created using .. _this library by Tab Atkins Jr: https://github.com/tabatkins/railroad-diagrams/
+The syntax diagrams were created using library by Tab Atkins Jr: https://github.com/tabatkins/railroad-diagrams/
 
 The following sources were used for information on METAR and TAF:
 

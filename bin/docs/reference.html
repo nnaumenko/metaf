@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Reference &#8212; Metaf 1.0.0 documentation</title>
+    <title>Reference &#8212; Metaf 1.1.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -34,7 +34,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 1.0.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 1.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -606,6 +606,19 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="_CPPv4NK5metaf8Distance10hasIntegerEv">
+<span id="_CPPv3NK5metaf8Distance10hasIntegerEv"></span><span id="_CPPv2NK5metaf8Distance10hasIntegerEv"></span><span id="metaf::Distance::hasIntegerC"></span>bool <code class="descname">hasInteger</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance10hasIntegerEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value has integer component, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value does not have an integer component or is not reported. Presence or absence of fraction component is ignored.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="_CPPv4NK5metaf8Distance10isFractionEv">
 <span id="_CPPv3NK5metaf8Distance10isFractionEv"></span><span id="_CPPv2NK5metaf8Distance10isFractionEv"></span><span id="metaf::Distance::isFractionC"></span>bool <code class="descname">isFraction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance10isFractionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -613,6 +626,19 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value has only fraction component, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value does not have a fraction component or has integer component or is not reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf8Distance11hasFractionEv">
+<span id="_CPPv3NK5metaf8Distance11hasFractionEv"></span><span id="_CPPv2NK5metaf8Distance11hasFractionEv"></span><span id="metaf::Distance::hasFractionC"></span>bool <code class="descname">hasFraction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf8Distance11hasFractionEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the stored value has fraction component, and <code class="docutils literal notranslate"><span class="pre">false</span></code> if the stored value does not have a fraction component or is not reported. Presence or absence of integer component is ignored.</td>
 </tr>
 </tbody>
 </table>
@@ -1418,6 +1444,22 @@
 </dd></dl>
 
 </div></blockquote>
+<p><strong>Miscellaneous</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf10WaveHeight10isReportedEv">
+<span id="_CPPv3NK5metaf10WaveHeight10isReportedEv"></span><span id="_CPPv2NK5metaf10WaveHeight10isReportedEv"></span><span id="metaf::WaveHeight::isReportedC"></span>bool <code class="descname">isReported</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10WaveHeight10isReportedEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if wave height is reported (either as descriptive state or as actual wave height).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div></blockquote>
 <p><strong>Converting to other measurement units</strong></p>
 <blockquote>
 <div><dl class="function">
@@ -1640,7 +1682,8 @@
 <div class="section" id="locationgroup">
 <span id="index-81"></span><h3>LocationGroup<a class="headerlink" href="#locationgroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/locationgroup.svg" src="_images/locationgroup.svg" /><dl class="class">
+<img alt="_images/locationgroup.svg" src="_images/locationgroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">UKLL</span></code> and <code class="docutils literal notranslate"><span class="pre">K2J3</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf13LocationGroupE">
 <span id="_CPPv3N5metaf13LocationGroupE"></span><span id="_CPPv2N5metaf13LocationGroupE"></span><span id="metaf::LocationGroup"></span><em class="property">class </em><code class="descname">LocationGroup</code><a class="headerlink" href="#_CPPv4N5metaf13LocationGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Location group stores an ICAO location code of the site where observation was performed or for which the forecast is provided.</p>
@@ -1684,7 +1727,8 @@
 <div class="section" id="reporttimegroup">
 <span id="index-83"></span><h3>ReportTimeGroup<a class="headerlink" href="#reporttimegroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/reporttimegroup.svg" src="_images/reporttimegroup.svg" /><dl class="class">
+<img alt="_images/reporttimegroup.svg" src="_images/reporttimegroup.svg" /><p>Example of this group is <code class="docutils literal notranslate"><span class="pre">302330Z</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf15ReportTimeGroupE">
 <span id="_CPPv3N5metaf15ReportTimeGroupE"></span><span id="_CPPv2N5metaf15ReportTimeGroupE"></span><span id="metaf::ReportTimeGroup"></span><em class="property">class </em><code class="descname">ReportTimeGroup</code><a class="headerlink" href="#_CPPv4N5metaf15ReportTimeGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Report time stores information about report release date and time.</p>
@@ -1692,7 +1736,7 @@
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf15ReportTimeGroup4timeEv">
-<span id="_CPPv3NK5metaf15ReportTimeGroup4timeEv"></span><span id="_CPPv2NK5metaf15ReportTimeGroup4timeEv"></span><span id="metaf::ReportTimeGroup::timeC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a> &amp;<code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15ReportTimeGroup4timeEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf15ReportTimeGroup4timeEv"></span><span id="_CPPv2NK5metaf15ReportTimeGroup4timeEv"></span><span id="metaf::ReportTimeGroup::timeC"></span><a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a> <code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15ReportTimeGroup4timeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1736,6 +1780,7 @@
 <p class="last">Spaces between sequential groups in METAR/TAF report are not shown.</p>
 </div>
 <p>See <a class="reference internal" href="basics.html"><span class="doc">Basics</span></a> for more information on weather trends and how they are reported.</p>
+<p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">NOSIG</span></code>, <code class="docutils literal notranslate"><span class="pre">BECMG</span></code>, <code class="docutils literal notranslate"><span class="pre">TEMPO</span></code>, <code class="docutils literal notranslate"><span class="pre">INTER</span></code>, <code class="docutils literal notranslate"><span class="pre">3100/3124</span></code>, <code class="docutils literal notranslate"><span class="pre">FM311000</span></code>, <code class="docutils literal notranslate"><span class="pre">BECMG</span> <span class="pre">AT2000</span></code>, <code class="docutils literal notranslate"><span class="pre">BECMG</span> <span class="pre">TL0040</span></code>, <code class="docutils literal notranslate"><span class="pre">TEMPO</span> <span class="pre">FM2200</span> <span class="pre">TL2215</span></code>, <code class="docutils literal notranslate"><span class="pre">BECMG</span> <span class="pre">3100/3107</span></code>, <code class="docutils literal notranslate"><span class="pre">PROB30</span> <span class="pre">3100/3104</span></code>, <code class="docutils literal notranslate"><span class="pre">PROB30</span> <span class="pre">TEMPO</span> <span class="pre">3107/3109</span></code>, <code class="docutils literal notranslate"><span class="pre">INTER</span> <span class="pre">3100/3102</span></code>, etc.</p>
 <dl class="class">
 <dt id="_CPPv4N5metaf10TrendGroupE">
 <span id="_CPPv3N5metaf10TrendGroupE"></span><span id="_CPPv2N5metaf10TrendGroupE"></span><span id="metaf::TrendGroup"></span><em class="property">class </em><code class="descname">TrendGroup</code><a class="headerlink" href="#_CPPv4N5metaf10TrendGroupE" title="Permalink to this definition">¶</a><br /></dt>
@@ -1851,7 +1896,7 @@
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf10TrendGroup8timeFromEv">
-<span id="_CPPv3NK5metaf10TrendGroup8timeFromEv"></span><span id="_CPPv2NK5metaf10TrendGroup8timeFromEv"></span><span id="metaf::TrendGroup::timeFromC"></span><em class="property">const</em> std::optional&lt;<a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a>&gt; &amp;<code class="descname">timeFrom</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10TrendGroup8timeFromEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf10TrendGroup8timeFromEv"></span><span id="_CPPv2NK5metaf10TrendGroup8timeFromEv"></span><span id="metaf::TrendGroup::timeFromC"></span>std::optional&lt;<a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a>&gt; <code class="descname">timeFrom</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10TrendGroup8timeFromEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1864,7 +1909,7 @@
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf10TrendGroup8timeTillEv">
-<span id="_CPPv3NK5metaf10TrendGroup8timeTillEv"></span><span id="_CPPv2NK5metaf10TrendGroup8timeTillEv"></span><span id="metaf::TrendGroup::timeTillC"></span><em class="property">const</em> std::optional&lt;<a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a>&gt; &amp;<code class="descname">timeTill</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10TrendGroup8timeTillEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf10TrendGroup8timeTillEv"></span><span id="_CPPv2NK5metaf10TrendGroup8timeTillEv"></span><span id="metaf::TrendGroup::timeTillC"></span>std::optional&lt;<a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a>&gt; <code class="descname">timeTill</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10TrendGroup8timeTillEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1875,17 +1920,19 @@
 </table>
 </dd></dl>
 
-<p>const std::optional&lt;MetafTime&gt; &amp; timeAt() const</p>
-<blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
+<dl class="function">
+<dt id="_CPPv4NK5metaf10TrendGroup6timeAtEv">
+<span id="_CPPv3NK5metaf10TrendGroup6timeAtEv"></span><span id="_CPPv2NK5metaf10TrendGroup6timeAtEv"></span><span id="metaf::TrendGroup::timeAtC"></span>std::optional&lt;<a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a>&gt; <code class="descname">timeAt</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf10TrendGroup6timeAtEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">Expected time of event or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if no expected time of event was specified.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Expected time of event or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if no expected time of event was specified.</td>
 </tr>
 </tbody>
 </table>
-</div></blockquote>
+</dd></dl>
+
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Trend group can have <em>either</em> begin time, end time, timespan with begin and end time <em>or</em> expected time of event.</p>
@@ -1918,7 +1965,8 @@
 <div class="section" id="windgroup">
 <span id="index-103"></span><h3>WindGroup<a class="headerlink" href="#windgroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/windgroup.svg" src="_images/windgroup.svg" /><dl class="class">
+<img alt="_images/windgroup.svg" src="_images/windgroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">11003KT</span></code>, <code class="docutils literal notranslate"><span class="pre">23007G14KT</span></code>, <code class="docutils literal notranslate"><span class="pre">VRB01MPS</span></code>, <code class="docutils literal notranslate"><span class="pre">00000KT</span></code>, <code class="docutils literal notranslate"><span class="pre">/////KT</span></code>, <code class="docutils literal notranslate"><span class="pre">29003KT</span> <span class="pre">260V330</span></code>, and <code class="docutils literal notranslate"><span class="pre">WS020/05065KT</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf9WindGroupE">
 <span id="_CPPv3N5metaf9WindGroupE"></span><span id="_CPPv2N5metaf9WindGroupE"></span><span id="metaf::WindGroup"></span><em class="property">class </em><code class="descname">WindGroup</code><a class="headerlink" href="#_CPPv4N5metaf9WindGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about surface wind (including variable wind direction sector if reported) or wind shear.</p>
@@ -1926,7 +1974,7 @@
 <blockquote>
 <div><span class="target" id="index-104"></span><dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup9directionEv">
-<span id="_CPPv3NK5metaf9WindGroup9directionEv"></span><span id="_CPPv2NK5metaf9WindGroup9directionEv"></span><span id="metaf::WindGroup::directionC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> &amp;<code class="descname">direction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9directionEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup9directionEv"></span><span id="_CPPv2NK5metaf9WindGroup9directionEv"></span><span id="metaf::WindGroup::directionC"></span><a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> <code class="descname">direction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9directionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1939,7 +1987,7 @@
 
 <span class="target" id="index-105"></span><dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup9windSpeedEv">
-<span id="_CPPv3NK5metaf9WindGroup9windSpeedEv"></span><span id="_CPPv2NK5metaf9WindGroup9windSpeedEv"></span><span id="metaf::WindGroup::windSpeedC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf5SpeedE" title="metaf::Speed">Speed</a> &amp;<code class="descname">windSpeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9windSpeedEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup9windSpeedEv"></span><span id="_CPPv2NK5metaf9WindGroup9windSpeedEv"></span><span id="metaf::WindGroup::windSpeedC"></span><a class="reference internal" href="#_CPPv4N5metaf5SpeedE" title="metaf::Speed">Speed</a> <code class="descname">windSpeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9windSpeedEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1952,7 +2000,7 @@
 
 <span class="target" id="index-106"></span><dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup9gustSpeedEv">
-<span id="_CPPv3NK5metaf9WindGroup9gustSpeedEv"></span><span id="_CPPv2NK5metaf9WindGroup9gustSpeedEv"></span><span id="metaf::WindGroup::gustSpeedC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf5SpeedE" title="metaf::Speed">Speed</a> &amp;<code class="descname">gustSpeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9gustSpeedEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup9gustSpeedEv"></span><span id="_CPPv2NK5metaf9WindGroup9gustSpeedEv"></span><span id="metaf::WindGroup::gustSpeedC"></span><a class="reference internal" href="#_CPPv4N5metaf5SpeedE" title="metaf::Speed">Speed</a> <code class="descname">gustSpeed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup9gustSpeedEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1965,7 +2013,7 @@
 
 <span class="target" id="index-107"></span><dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup14varSectorBeginEv">
-<span id="_CPPv3NK5metaf9WindGroup14varSectorBeginEv"></span><span id="_CPPv2NK5metaf9WindGroup14varSectorBeginEv"></span><span id="metaf::WindGroup::varSectorBeginC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> &amp;<code class="descname">varSectorBegin</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup14varSectorBeginEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup14varSectorBeginEv"></span><span id="_CPPv2NK5metaf9WindGroup14varSectorBeginEv"></span><span id="metaf::WindGroup::varSectorBeginC"></span><a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> <code class="descname">varSectorBegin</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup14varSectorBeginEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1978,7 +2026,7 @@
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup12varSectorEndEv">
-<span id="_CPPv3NK5metaf9WindGroup12varSectorEndEv"></span><span id="_CPPv2NK5metaf9WindGroup12varSectorEndEv"></span><span id="metaf::WindGroup::varSectorEndC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> &amp;<code class="descname">varSectorEnd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup12varSectorEndEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup12varSectorEndEv"></span><span id="_CPPv2NK5metaf9WindGroup12varSectorEndEv"></span><span id="metaf::WindGroup::varSectorEndC"></span><a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> <code class="descname">varSectorEnd</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup12varSectorEndEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1991,7 +2039,7 @@
 
 <span class="target" id="index-108"></span><dl class="function">
 <dt id="_CPPv4NK5metaf9WindGroup15windShearHeightEv">
-<span id="_CPPv3NK5metaf9WindGroup15windShearHeightEv"></span><span id="_CPPv2NK5metaf9WindGroup15windShearHeightEv"></span><span id="metaf::WindGroup::windShearHeightC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> &amp;<code class="descname">windShearHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup15windShearHeightEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf9WindGroup15windShearHeightEv"></span><span id="_CPPv2NK5metaf9WindGroup15windShearHeightEv"></span><span id="metaf::WindGroup::windShearHeightC"></span><a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> <code class="descname">windShearHeight</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup15windShearHeightEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2013,6 +2061,45 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if calm wind (i.e. no wind) is reported. Calm wind is coded as <code class="docutils literal notranslate"><span class="pre">00000KT</span></code> or <code class="docutils literal notranslate"><span class="pre">00000MPS</span></code> or <code class="docutils literal notranslate"><span class="pre">00000KMH</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9WindGroup11isWindShearEv">
+<span id="_CPPv3NK5metaf9WindGroup11isWindShearEv"></span><span id="_CPPv2NK5metaf9WindGroup11isWindShearEv"></span><span id="metaf::WindGroup::isWindShearC"></span>bool <code class="descname">isWindShear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup11isWindShearEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains a wind shear information rather than surface wind information, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9WindGroup13isSurfaceWindEv">
+<span id="_CPPv3NK5metaf9WindGroup13isSurfaceWindEv"></span><span id="_CPPv2NK5metaf9WindGroup13isSurfaceWindEv"></span><span id="metaf::WindGroup::isSurfaceWindC"></span>bool <code class="descname">isSurfaceWind</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup13isSurfaceWindEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains a surface wind information rather than wind shear information, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf9WindGroup17hasVariableSectorEv">
+<span id="_CPPv3NK5metaf9WindGroup17hasVariableSectorEv"></span><span id="_CPPv2NK5metaf9WindGroup17hasVariableSectorEv"></span><span id="metaf::WindGroup::hasVariableSectorC"></span>bool <code class="descname">hasVariableSector</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf9WindGroup17hasVariableSectorEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains a variable wind sector  information (with or without surface wind information) , and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
 </tr>
 </tbody>
 </table>
@@ -2055,6 +2142,7 @@
 <p class="first admonition-title">Note</p>
 <p class="last">Spaces between sequential groups in METAR/TAF report are not shown.</p>
 </div>
+<p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">3600</span></code>, <code class="docutils literal notranslate"><span class="pre">9999</span></code>, <code class="docutils literal notranslate"><span class="pre">0050</span></code>, <code class="docutils literal notranslate"><span class="pre">9999NDV</span></code>, <code class="docutils literal notranslate"><span class="pre">1100W</span></code>, <code class="docutils literal notranslate"><span class="pre">3SM</span></code>, <code class="docutils literal notranslate"><span class="pre">25SM</span></code>, <code class="docutils literal notranslate"><span class="pre">1/4SM</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">1/4SM</span></code>, <code class="docutils literal notranslate"><span class="pre">M1/4SM</span></code>, <code class="docutils literal notranslate"><span class="pre">P6SM</span></code>, <code class="docutils literal notranslate"><span class="pre">////SM</span></code>.</p>
 <dl class="class">
 <dt id="_CPPv4N5metaf15VisibilityGroupE">
 <span id="_CPPv3N5metaf15VisibilityGroupE"></span><span id="_CPPv2N5metaf15VisibilityGroupE"></span><span id="metaf::VisibilityGroup"></span><em class="property">class </em><code class="descname">VisibilityGroup</code><a class="headerlink" href="#_CPPv4N5metaf15VisibilityGroupE" title="Permalink to this definition">¶</a><br /></dt>
@@ -2064,7 +2152,7 @@
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf15VisibilityGroup10visibilityEv">
-<span id="_CPPv3NK5metaf15VisibilityGroup10visibilityEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup10visibilityEv"></span><span id="metaf::VisibilityGroup::visibilityC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> &amp;<code class="descname">visibility</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup10visibilityEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf15VisibilityGroup10visibilityEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup10visibilityEv"></span><span id="metaf::VisibilityGroup::visibilityC"></span><a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> <code class="descname">visibility</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup10visibilityEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2077,8 +2165,37 @@
 
 <span class="target" id="index-112"></span><span class="target" id="index-113"></span><dl class="function">
 <dt id="_CPPv4NK5metaf15VisibilityGroup9directionEv">
-<span id="_CPPv3NK5metaf15VisibilityGroup9directionEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup9directionEv"></span><span id="metaf::VisibilityGroup::directionC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> &amp;<code class="descname">direction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup9directionEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf15VisibilityGroup9directionEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup9directionEv"></span><span id="metaf::VisibilityGroup::directionC"></span><a class="reference internal" href="#_CPPv4N5metaf9DirectionE" title="metaf::Direction">Direction</a> <code class="descname">direction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup9directionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.</p>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Miscellaneous</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf15VisibilityGroup12isPrevailingEv">
+<span id="_CPPv3NK5metaf15VisibilityGroup12isPrevailingEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup12isPrevailingEv"></span><span id="metaf::VisibilityGroup::isPrevailingC"></span>bool <code class="descname">isPrevailing</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup12isPrevailingEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the group contains prevailing visibility (no direction specified or No Directional Variation) and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf15VisibilityGroup13isDirectionalEv">
+<span id="_CPPv3NK5metaf15VisibilityGroup13isDirectionalEv"></span><span id="_CPPv2NK5metaf15VisibilityGroup13isDirectionalEv"></span><span id="metaf::VisibilityGroup::isDirectionalC"></span>bool <code class="descname">isDirectional</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15VisibilityGroup13isDirectionalEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if the group contains directional visibility (cardinal direction specified) and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div></blockquote>
@@ -2112,7 +2229,8 @@
 <div class="section" id="cloudgroup">
 <span id="index-116"></span><h3>CloudGroup<a class="headerlink" href="#cloudgroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/cloudgroup.svg" src="_images/cloudgroup.svg" /><dl class="class">
+<img alt="_images/cloudgroup.svg" src="_images/cloudgroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">FEW001</span></code>, <code class="docutils literal notranslate"><span class="pre">SCT000</span></code>, <code class="docutils literal notranslate"><span class="pre">BKN300</span></code>, <code class="docutils literal notranslate"><span class="pre">OVC250</span></code>, <code class="docutils literal notranslate"><span class="pre">FEW019TCU</span></code>, <code class="docutils literal notranslate"><span class="pre">FEW013///</span></code>, <code class="docutils literal notranslate"><span class="pre">//////CB</span></code>, <code class="docutils literal notranslate"><span class="pre">//////</span></code>, <code class="docutils literal notranslate"><span class="pre">CLR</span></code>, <code class="docutils literal notranslate"><span class="pre">SKC</span></code>, <code class="docutils literal notranslate"><span class="pre">NCD</span></code>, <code class="docutils literal notranslate"><span class="pre">NSC</span></code>, <code class="docutils literal notranslate"><span class="pre">VV002</span></code>, and <code class="docutils literal notranslate"><span class="pre">VV///</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf10CloudGroupE">
 <span id="_CPPv3N5metaf10CloudGroupE"></span><span id="_CPPv2N5metaf10CloudGroupE"></span><span id="metaf::CloudGroup"></span><em class="property">class </em><code class="descname">CloudGroup</code><a class="headerlink" href="#_CPPv4N5metaf10CloudGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about a single cloud layer, lack of cloud cover or vertical visibility.</p>
@@ -2223,7 +2341,7 @@ cumulus, and no vertical visibility restriction.</p>
 </tbody>
 </table>
 </div></blockquote>
-<p id="index-134">const Distance &amp; height() const</p>
+<p id="index-134">Distance height() const</p>
 <blockquote>
 <div><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2234,13 +2352,49 @@ cumulus, and no vertical visibility restriction.</p>
 </tbody>
 </table>
 </div></blockquote>
-<p>const Distance &amp; verticalVisibility() const</p>
+<p>Distance verticalVisibility() const</p>
 <blockquote>
 <div><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div></blockquote>
+<p><strong>Miscellaneous</strong></p>
+<blockquote>
+<div><p>bool isVerticalVisibility() const</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains a vertical visibility information (including non-reported vertical visibility value) rather than cloud layer information or ‘no clouds’ condition, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>bool isNoClouds() const</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains an information related to ‘no clouds’ conditions, i.e. amount value is <a class="reference internal" href="#_CPPv4N5metaf10CloudGroup6Amount8NONE_CLRE" title="metaf::CloudGroup::Amount::NONE_CLR"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Amount::NONE_CLR</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf10CloudGroup6Amount8NONE_SKCE" title="metaf::CloudGroup::Amount::NONE_SKC"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Amount::NONE_SKC</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf10CloudGroup6Amount3NCDE" title="metaf::CloudGroup::Amount::NCD"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Amount::NCD</span></code></a>, <a class="reference internal" href="#_CPPv4N5metaf10CloudGroup6Amount3NSCE" title="metaf::CloudGroup::Amount::NSC"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Amount::NSC</span></code></a>. For any other amount value returns <code class="docutils literal notranslate"><span class="pre">false</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>bool isCloudLayer() const</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or ‘no clouds’ condition, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</td>
 </tr>
 </tbody>
 </table>
@@ -2255,7 +2409,7 @@ cumulus, and no vertical visibility restriction.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if stored cloud information is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise. The information is considered valid if the value of cloud cover height or vertical visibility is valid (if reported).</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if stored cloud information is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise. The information is considered valid if the value of cloud cover height or vertical visibility is valid (if reported). Zero height of cloud cover base or vertical visibility does not make the information invalid.</td>
 </tr>
 </tbody>
 </table>
@@ -2268,7 +2422,8 @@ cumulus, and no vertical visibility restriction.</p>
 <div class="section" id="weathergroup">
 <span id="index-137"></span><h3>WeatherGroup<a class="headerlink" href="#weathergroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/weathergroup.svg" src="_images/weathergroup.svg" /><dl class="class">
+<img alt="_images/weathergroup.svg" src="_images/weathergroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">+RA</span></code>, <code class="docutils literal notranslate"><span class="pre">IC</span></code>, <code class="docutils literal notranslate"><span class="pre">-SHRASN</span></code>, <code class="docutils literal notranslate"><span class="pre">VCSH</span></code>, <code class="docutils literal notranslate"><span class="pre">FU</span></code>, <code class="docutils literal notranslate"><span class="pre">VCTS</span></code>, <code class="docutils literal notranslate"><span class="pre">RESHRA</span></code>, <code class="docutils literal notranslate"><span class="pre">-FZDZ</span></code>, <code class="docutils literal notranslate"><span class="pre">MIFG</span></code>, <code class="docutils literal notranslate"><span class="pre">BLDU</span></code>, <code class="docutils literal notranslate"><span class="pre">HZ</span></code>, <code class="docutils literal notranslate"><span class="pre">-SHPL</span></code>, <code class="docutils literal notranslate"><span class="pre">+TSRAGR</span></code>, <code class="docutils literal notranslate"><span class="pre">SHRAGS</span></code>, <code class="docutils literal notranslate"><span class="pre">//</span></code>, <code class="docutils literal notranslate"><span class="pre">RE//</span></code>, etc.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf12WeatherGroupE">
 <span id="_CPPv3N5metaf12WeatherGroupE"></span><span id="_CPPv2N5metaf12WeatherGroupE"></span><span id="metaf::WeatherGroup"></span><em class="property">class </em><code class="descname">WeatherGroup</code><a class="headerlink" href="#_CPPv4N5metaf12WeatherGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about recent or current weather phenomena.</p>
@@ -2596,7 +2751,8 @@ observed.</p>
 <div class="section" id="temperaturegroup">
 <span id="index-185"></span><h3>TemperatureGroup<a class="headerlink" href="#temperaturegroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/temperaturegroup.svg" src="_images/temperaturegroup.svg" /><dl class="class">
+<img alt="_images/temperaturegroup.svg" src="_images/temperaturegroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">12/10</span></code>, <code class="docutils literal notranslate"><span class="pre">20/M07</span></code>, <code class="docutils literal notranslate"><span class="pre">10/M00</span></code>, <code class="docutils literal notranslate"><span class="pre">00/M02</span></code>, <code class="docutils literal notranslate"><span class="pre">M00/M00</span></code>, <code class="docutils literal notranslate"><span class="pre">00/M00</span></code>, and <code class="docutils literal notranslate"><span class="pre">/////</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf16TemperatureGroupE">
 <span id="_CPPv3N5metaf16TemperatureGroupE"></span><span id="_CPPv2N5metaf16TemperatureGroupE"></span><span id="metaf::TemperatureGroup"></span><em class="property">class </em><code class="descname">TemperatureGroup</code><a class="headerlink" href="#_CPPv4N5metaf16TemperatureGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about current ambient air temperature and dew point.</p>
@@ -2604,7 +2760,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf16TemperatureGroup14airTemperatureEv">
-<span id="_CPPv3NK5metaf16TemperatureGroup14airTemperatureEv"></span><span id="_CPPv2NK5metaf16TemperatureGroup14airTemperatureEv"></span><span id="metaf::TemperatureGroup::airTemperatureC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<code class="descname">airTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16TemperatureGroup14airTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf16TemperatureGroup14airTemperatureEv"></span><span id="_CPPv2NK5metaf16TemperatureGroup14airTemperatureEv"></span><span id="metaf::TemperatureGroup::airTemperatureC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">airTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16TemperatureGroup14airTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2617,7 +2773,7 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf16TemperatureGroup8dewPointEv">
-<span id="_CPPv3NK5metaf16TemperatureGroup8dewPointEv"></span><span id="_CPPv2NK5metaf16TemperatureGroup8dewPointEv"></span><span id="metaf::TemperatureGroup::dewPointC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<code class="descname">dewPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16TemperatureGroup8dewPointEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf16TemperatureGroup8dewPointEv"></span><span id="_CPPv2NK5metaf16TemperatureGroup8dewPointEv"></span><span id="metaf::TemperatureGroup::dewPointC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">dewPoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16TemperatureGroup8dewPointEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2655,6 +2811,7 @@ observed.</p>
 <p class="first admonition-title">Note</p>
 <p class="last">Metaf does not verify in which order minimum and maximum temperature forecast is reported.</p>
 </div>
+<p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">TX15/3111Z</span></code> and <code class="docutils literal notranslate"><span class="pre">TN00/3103Z</span></code>.</p>
 <dl class="class">
 <dt id="_CPPv4N5metaf24TemperatureForecastGroupE">
 <span id="_CPPv3N5metaf24TemperatureForecastGroupE"></span><span id="_CPPv2N5metaf24TemperatureForecastGroupE"></span><span id="metaf::TemperatureForecastGroup"></span><em class="property">class </em><code class="descname">TemperatureForecastGroup</code><a class="headerlink" href="#_CPPv4N5metaf24TemperatureForecastGroupE" title="Permalink to this definition">¶</a><br /></dt>
@@ -2681,13 +2838,13 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf24TemperatureForecastGroup14airTemperatureEv">
-<span id="_CPPv3NK5metaf24TemperatureForecastGroup14airTemperatureEv"></span><span id="_CPPv2NK5metaf24TemperatureForecastGroup14airTemperatureEv"></span><span id="metaf::TemperatureForecastGroup::airTemperatureC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<code class="descname">airTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf24TemperatureForecastGroup14airTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf24TemperatureForecastGroup14airTemperatureEv"></span><span id="_CPPv2NK5metaf24TemperatureForecastGroup14airTemperatureEv"></span><span id="metaf::TemperatureForecastGroup::airTemperatureC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">airTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf24TemperatureForecastGroup14airTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Forecast ambient air temperature.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf24TemperatureForecastGroup4timeEv">
-<span id="_CPPv3NK5metaf24TemperatureForecastGroup4timeEv"></span><span id="_CPPv2NK5metaf24TemperatureForecastGroup4timeEv"></span><span id="metaf::TemperatureForecastGroup::timeC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a> &amp;<code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf24TemperatureForecastGroup4timeEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf24TemperatureForecastGroup4timeEv"></span><span id="_CPPv2NK5metaf24TemperatureForecastGroup4timeEv"></span><span id="metaf::TemperatureForecastGroup::timeC"></span><a class="reference internal" href="#_CPPv4N5metaf9MetafTimeE" title="metaf::MetafTime">MetafTime</a> <code class="descname">time</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf24TemperatureForecastGroup4timeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Time when the forecast temperature is expected.</p>
 </dd></dl>
 
@@ -2714,7 +2871,8 @@ observed.</p>
 <div class="section" id="pressuregroup">
 <span id="index-192"></span><h3>PressureGroup<a class="headerlink" href="#pressuregroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/pressuregroup.svg" src="_images/pressuregroup.svg" /><dl class="class">
+<img alt="_images/pressuregroup.svg" src="_images/pressuregroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">Q1020</span></code>, <code class="docutils literal notranslate"><span class="pre">A2981</span></code>, <code class="docutils literal notranslate"><span class="pre">Q////</span></code> and <code class="docutils literal notranslate"><span class="pre">A////</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf13PressureGroupE">
 <span id="_CPPv3N5metaf13PressureGroupE"></span><span id="_CPPv2N5metaf13PressureGroupE"></span><span id="metaf::PressureGroup"></span><em class="property">class </em><code class="descname">PressureGroup</code><a class="headerlink" href="#_CPPv4N5metaf13PressureGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about current atmopheric pressure.</p>
@@ -2722,7 +2880,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf13PressureGroup19atmosphericPressureEv">
-<span id="_CPPv3NK5metaf13PressureGroup19atmosphericPressureEv"></span><span id="_CPPv2NK5metaf13PressureGroup19atmosphericPressureEv"></span><span id="metaf::PressureGroup::atmosphericPressureC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf8PressureE" title="metaf::Pressure">Pressure</a> &amp;<code class="descname">atmosphericPressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13PressureGroup19atmosphericPressureEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf13PressureGroup19atmosphericPressureEv"></span><span id="_CPPv2NK5metaf13PressureGroup19atmosphericPressureEv"></span><span id="metaf::PressureGroup::atmosphericPressureC"></span><a class="reference internal" href="#_CPPv4N5metaf8PressureE" title="metaf::Pressure">Pressure</a> <code class="descname">atmosphericPressure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13PressureGroup19atmosphericPressureEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2756,7 +2914,8 @@ observed.</p>
 <div class="section" id="runwayvisualrangegroup">
 <span id="index-194"></span><h3>RunwayVisualRangeGroup<a class="headerlink" href="#runwayvisualrangegroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/runwayvisualrangegroup.svg" src="_images/runwayvisualrangegroup.svg" /><dl class="class">
+<img alt="_images/runwayvisualrangegroup.svg" src="_images/runwayvisualrangegroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">R24/P6000FT</span></code>, <code class="docutils literal notranslate"><span class="pre">R31/0200N</span></code>, <code class="docutils literal notranslate"><span class="pre">R26/0325N</span></code>, <code class="docutils literal notranslate"><span class="pre">R23/3000V4500FT/D</span></code>, etc.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf22RunwayVisualRangeGroupE">
 <span id="_CPPv3N5metaf22RunwayVisualRangeGroupE"></span><span id="_CPPv2N5metaf22RunwayVisualRangeGroupE"></span><span id="metaf::RunwayVisualRangeGroup"></span><em class="property">class </em><code class="descname">RunwayVisualRangeGroup</code><a class="headerlink" href="#_CPPv4N5metaf22RunwayVisualRangeGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about visual range of a single runway.</p>
@@ -2783,7 +2942,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf22RunwayVisualRangeGroup6runwayEv">
-<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup6runwayEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup6runwayEv"></span><span id="metaf::RunwayVisualRangeGroup::runwayC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf6RunwayE" title="metaf::Runway">Runway</a> &amp;<code class="descname">runway</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup6runwayEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup6runwayEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup6runwayEv"></span><span id="metaf::RunwayVisualRangeGroup::runwayC"></span><a class="reference internal" href="#_CPPv4N5metaf6RunwayE" title="metaf::Runway">Runway</a> <code class="descname">runway</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup6runwayEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2796,20 +2955,33 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf22RunwayVisualRangeGroup11visualRangeEv">
-<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup11visualRangeEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup11visualRangeEv"></span><span id="metaf::RunwayVisualRangeGroup::visualRangeC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> &amp;<code class="descname">visualRange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup11visualRangeEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup11visualRangeEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup11visualRangeEv"></span><span id="metaf::RunwayVisualRangeGroup::visualRangeC"></span><a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> <code class="descname">visualRange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup11visualRangeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Runway visual range value (if reported) or low limit of variable visual range.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Runway visual range value (if reported) or non-reported value if variable visual range is reported.</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="_CPPv4NK5metaf22RunwayVisualRangeGroup19variableVisualRangeEv">
-<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup19variableVisualRangeEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup19variableVisualRangeEv"></span><span id="metaf::RunwayVisualRangeGroup::variableVisualRangeC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> &amp;<code class="descname">variableVisualRange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup19variableVisualRangeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dt id="_CPPv4NK5metaf22RunwayVisualRangeGroup14minVisualRangeEv">
+<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup14minVisualRangeEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup14minVisualRangeEv"></span><span id="metaf::RunwayVisualRangeGroup::minVisualRangeC"></span><a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> <code class="descname">minVisualRange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup14minVisualRangeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Low limit of variable visual range or non-reported value if no variable visual range is reported.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf22RunwayVisualRangeGroup14maxVisualRangeEv">
+<span id="_CPPv3NK5metaf22RunwayVisualRangeGroup14maxVisualRangeEv"></span><span id="_CPPv2NK5metaf22RunwayVisualRangeGroup14maxVisualRangeEv"></span><span id="metaf::RunwayVisualRangeGroup::maxVisualRangeC"></span><a class="reference internal" href="#_CPPv4N5metaf8DistanceE" title="metaf::Distance">Distance</a> <code class="descname">maxVisualRange</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22RunwayVisualRangeGroup14maxVisualRangeEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2869,7 +3041,8 @@ observed.</p>
 <div class="section" id="runwaystategroup">
 <span id="index-197"></span><h3>RunwayStateGroup<a class="headerlink" href="#runwaystategroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/runwaystategroup.svg" src="_images/runwaystategroup.svg" /><dl class="class">
+<img alt="_images/runwaystategroup.svg" src="_images/runwaystategroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">R36/090060</span></code>, <code class="docutils literal notranslate"><span class="pre">R01/810365</span></code>, <code class="docutils literal notranslate"><span class="pre">R10/91//60</span></code>, <code class="docutils literal notranslate"><span class="pre">R21/SNOCLO</span></code>, <code class="docutils literal notranslate"><span class="pre">R34L/CLRD70</span></code>, etc.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf16RunwayStateGroupE">
 <span id="_CPPv3N5metaf16RunwayStateGroupE"></span><span id="_CPPv2N5metaf16RunwayStateGroupE"></span><span id="metaf::RunwayStateGroup"></span><em class="property">class </em><code class="descname">RunwayStateGroup</code><a class="headerlink" href="#_CPPv4N5metaf16RunwayStateGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about the state of runway surface and/or accumulation of deposits for a single runway. Alternatively may store information that the deposits of runway ceased to exist or that runway is closed due to snow accumulation.</p>
@@ -2970,7 +3143,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf16RunwayStateGroup6runwayEv">
-<span id="_CPPv3NK5metaf16RunwayStateGroup6runwayEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup6runwayEv"></span><span id="metaf::RunwayStateGroup::runwayC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf6RunwayE" title="metaf::Runway">Runway</a> &amp;<code class="descname">runway</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup6runwayEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf16RunwayStateGroup6runwayEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup6runwayEv"></span><span id="metaf::RunwayStateGroup::runwayC"></span><a class="reference internal" href="#_CPPv4N5metaf6RunwayE" title="metaf::Runway">Runway</a> <code class="descname">runway</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup6runwayEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3025,7 +3198,7 @@ observed.</p>
 
 <span class="target" id="index-205"></span><dl class="function">
 <dt id="_CPPv4NK5metaf16RunwayStateGroup12depositDepthEv">
-<span id="_CPPv3NK5metaf16RunwayStateGroup12depositDepthEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup12depositDepthEv"></span><span id="metaf::RunwayStateGroup::depositDepthC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> &amp;<code class="descname">depositDepth</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup12depositDepthEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf16RunwayStateGroup12depositDepthEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup12depositDepthEv"></span><span id="metaf::RunwayStateGroup::depositDepthC"></span><a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> <code class="descname">depositDepth</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup12depositDepthEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3038,7 +3211,7 @@ observed.</p>
 
 <span class="target" id="index-206"></span><dl class="function">
 <dt id="_CPPv4NK5metaf16RunwayStateGroup15surfaceFrictionEv">
-<span id="_CPPv3NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="metaf::RunwayStateGroup::surfaceFrictionC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf15SurfaceFrictionE" title="metaf::SurfaceFriction">SurfaceFriction</a> &amp;<code class="descname">surfaceFriction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup15surfaceFrictionEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="metaf::RunwayStateGroup::surfaceFrictionC"></span><a class="reference internal" href="#_CPPv4N5metaf15SurfaceFrictionE" title="metaf::SurfaceFriction">SurfaceFriction</a> <code class="descname">surfaceFriction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup15surfaceFrictionEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <p>.       :returns: Surface friction or braking action or not reported value. Not reported if the status is <code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::SNOCLO</span></code>.</p>
@@ -3051,7 +3224,7 @@ observed.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if runway state information is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise. The information is considered valid if the specified runway is valid.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">true</span></code> if runway state information is valid, and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise. The information is considered valid if the specified runway is valid and <a class="reference internal" href="#_CPPv4N5metaf16RunwayStateGroup6ExtentE" title="metaf::RunwayStateGroup::Extent"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">Extent</span></code></a> returned by <a class="reference internal" href="#_CPPv4NK5metaf16RunwayStateGroup19contaminationExtentEv" title="metaf::RunwayStateGroup::contaminationExtent"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">contaminationExtent()</span></code></a> is not a reserved value.</td>
 </tr>
 </tbody>
 </table>
@@ -3063,7 +3236,8 @@ observed.</p>
 <div class="section" id="rainfallgroup">
 <span id="index-209"></span><h3>RainfallGroup<a class="headerlink" href="#rainfallgroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/rainfallgroup.svg" src="_images/rainfallgroup.svg" /><dl class="class">
+<img alt="_images/rainfallgroup.svg" src="_images/rainfallgroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">RF00.0/000.0</span></code>, <code class="docutils literal notranslate"><span class="pre">RF00.2/011.2</span></code>, <code class="docutils literal notranslate"><span class="pre">RF00.0////./</span></code>, and <code class="docutils literal notranslate"><span class="pre">RF21.5/112.4/031.8</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf13RainfallGroupE">
 <span id="_CPPv3N5metaf13RainfallGroupE"></span><span id="_CPPv2N5metaf13RainfallGroupE"></span><span id="metaf::RainfallGroup"></span><em class="property">class </em><code class="descname">RainfallGroup</code><a class="headerlink" href="#_CPPv4N5metaf13RainfallGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about recent rainfall. This group is only used in Australia.</p>
@@ -3071,7 +3245,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf13RainfallGroup21rainfallLast10MinutesEv">
-<span id="_CPPv3NK5metaf13RainfallGroup21rainfallLast10MinutesEv"></span><span id="_CPPv2NK5metaf13RainfallGroup21rainfallLast10MinutesEv"></span><span id="metaf::RainfallGroup::rainfallLast10MinutesC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> &amp;<code class="descname">rainfallLast10Minutes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup21rainfallLast10MinutesEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf13RainfallGroup21rainfallLast10MinutesEv"></span><span id="_CPPv2NK5metaf13RainfallGroup21rainfallLast10MinutesEv"></span><span id="metaf::RainfallGroup::rainfallLast10MinutesC"></span><a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> <code class="descname">rainfallLast10Minutes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup21rainfallLast10MinutesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3084,7 +3258,7 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf13RainfallGroup21rainfallLast60MinutesEv">
-<span id="_CPPv3NK5metaf13RainfallGroup21rainfallLast60MinutesEv"></span><span id="_CPPv2NK5metaf13RainfallGroup21rainfallLast60MinutesEv"></span><span id="metaf::RainfallGroup::rainfallLast60MinutesC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> &amp;<code class="descname">rainfallLast60Minutes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup21rainfallLast60MinutesEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf13RainfallGroup21rainfallLast60MinutesEv"></span><span id="_CPPv2NK5metaf13RainfallGroup21rainfallLast60MinutesEv"></span><span id="metaf::RainfallGroup::rainfallLast60MinutesC"></span><a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> <code class="descname">rainfallLast60Minutes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup21rainfallLast60MinutesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3097,7 +3271,7 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf13RainfallGroup16rainfallSince9AMEv">
-<span id="_CPPv3NK5metaf13RainfallGroup16rainfallSince9AMEv"></span><span id="_CPPv2NK5metaf13RainfallGroup16rainfallSince9AMEv"></span><span id="metaf::RainfallGroup::rainfallSince9AMC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> &amp;<code class="descname">rainfallSince9AM</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup16rainfallSince9AMEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf13RainfallGroup16rainfallSince9AMEv"></span><span id="_CPPv2NK5metaf13RainfallGroup16rainfallSince9AMEv"></span><span id="metaf::RainfallGroup::rainfallSince9AMC"></span><a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> <code class="descname">rainfallSince9AM</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf13RainfallGroup16rainfallSince9AMEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3131,7 +3305,8 @@ observed.</p>
 <div class="section" id="seasurfacegroup">
 <span id="index-212"></span><h3>SeaSurfaceGroup<a class="headerlink" href="#seasurfacegroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/seasurfacegroup.svg" src="_images/seasurfacegroup.svg" /><dl class="class">
+<img alt="_images/seasurfacegroup.svg" src="_images/seasurfacegroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">W02/S6</span></code>, <code class="docutils literal notranslate"><span class="pre">W08/H5</span></code>, <code class="docutils literal notranslate"><span class="pre">W04/S/</span></code>, <code class="docutils literal notranslate"><span class="pre">W///S6</span></code>, <code class="docutils literal notranslate"><span class="pre">W///S/</span></code>, <code class="docutils literal notranslate"><span class="pre">W04/H///</span></code>, and <code class="docutils literal notranslate"><span class="pre">W///H///</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf15SeaSurfaceGroupE">
 <span id="_CPPv3N5metaf15SeaSurfaceGroupE"></span><span id="_CPPv2N5metaf15SeaSurfaceGroupE"></span><span id="metaf::SeaSurfaceGroup"></span><em class="property">class </em><code class="descname">SeaSurfaceGroup</code><a class="headerlink" href="#_CPPv4N5metaf15SeaSurfaceGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores information about temperature of sea surface along with descriptive state of sea surface or wave height. This group is used by oil platforms.</p>
@@ -3139,7 +3314,7 @@ observed.</p>
 <blockquote>
 <div><dl class="function">
 <dt id="_CPPv4NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv">
-<span id="_CPPv3NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv"></span><span id="_CPPv2NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv"></span><span id="metaf::SeaSurfaceGroup::surfaceTemperatureC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<code class="descname">surfaceTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv"></span><span id="_CPPv2NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv"></span><span id="metaf::SeaSurfaceGroup::surfaceTemperatureC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">surfaceTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SeaSurfaceGroup18surfaceTemperatureEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3152,7 +3327,7 @@ observed.</p>
 
 <dl class="function">
 <dt id="_CPPv4NK5metaf15SeaSurfaceGroup5wavesEv">
-<span id="_CPPv3NK5metaf15SeaSurfaceGroup5wavesEv"></span><span id="_CPPv2NK5metaf15SeaSurfaceGroup5wavesEv"></span><span id="metaf::SeaSurfaceGroup::wavesC"></span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf10WaveHeightE" title="metaf::WaveHeight">WaveHeight</a> &amp;<code class="descname">waves</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SeaSurfaceGroup5wavesEv" title="Permalink to this definition">¶</a><br /></dt>
+<span id="_CPPv3NK5metaf15SeaSurfaceGroup5wavesEv"></span><span id="_CPPv2NK5metaf15SeaSurfaceGroup5wavesEv"></span><span id="metaf::SeaSurfaceGroup::wavesC"></span><a class="reference internal" href="#_CPPv4N5metaf10WaveHeightE" title="metaf::WaveHeight">WaveHeight</a> <code class="descname">waves</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15SeaSurfaceGroup5wavesEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3186,7 +3361,8 @@ observed.</p>
 <div class="section" id="colourcodegroup">
 <span id="index-213"></span><h3>ColourCodeGroup<a class="headerlink" href="#colourcodegroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/colourcodegroup.svg" src="_images/colourcodegroup.svg" /><dl class="class">
+<img alt="_images/colourcodegroup.svg" src="_images/colourcodegroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">BLU</span></code>, <code class="docutils literal notranslate"><span class="pre">WHT</span></code>, <code class="docutils literal notranslate"><span class="pre">GRN</span></code>, <code class="docutils literal notranslate"><span class="pre">YLO1</span></code>, <code class="docutils literal notranslate"><span class="pre">YLO2</span></code>, <code class="docutils literal notranslate"><span class="pre">AMB</span></code>, <code class="docutils literal notranslate"><span class="pre">RED</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKBLU</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKWHT</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKGRN</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKYLO1</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKYLO2</span></code>, <code class="docutils literal notranslate"><span class="pre">BLACKAMB</span></code>, and <code class="docutils literal notranslate"><span class="pre">BLACKRED</span></code>.</p>
+<dl class="class">
 <dt id="_CPPv4N5metaf15ColourCodeGroupE">
 <span id="_CPPv3N5metaf15ColourCodeGroupE"></span><span id="_CPPv2N5metaf15ColourCodeGroupE"></span><span id="metaf::ColourCodeGroup"></span><em class="property">class </em><code class="descname">ColourCodeGroup</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores colour code information which allows quick assess of visibility and ceiling conditions. This group is used by military aerodromes of NATO countries.</p>
@@ -3729,7 +3905,7 @@ observed.</p>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 1.0.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 1.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

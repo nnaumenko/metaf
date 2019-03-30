@@ -810,3 +810,74 @@ TEST(Distance, toUnitDenominatorZero) {
 	EXPECT_FALSE(d->toUnit(metaf::Distance::Unit::FEET).has_value());
 }
 
+TEST(Distance, hasIntegerTrue) {
+	const auto d1 = metaf::Distance::fromMeterString("2000");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_TRUE(d1->hasInteger());
+
+	const auto d2 = metaf::Distance::fromMileString("8SM");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_TRUE(d2->hasInteger());
+
+	const auto d3 = metaf::Distance::fromHeightString("020");
+	ASSERT_TRUE(d3.has_value());
+	EXPECT_TRUE(d3->hasInteger());
+
+	const auto d4 = metaf::Distance::fromRvrString("4500", true);
+	ASSERT_TRUE(d4.has_value());
+	EXPECT_TRUE(d4->hasInteger());
+
+	const auto d5 = metaf::Distance::fromMileString("11/2SM");
+	ASSERT_TRUE(d5.has_value());
+	EXPECT_TRUE(d5->hasInteger());
+}
+
+TEST(Distance, hasIntegerFalse) {
+	const auto d1 = metaf::Distance::fromMeterString("////");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_FALSE(d1->hasInteger());
+
+	const auto d2 = metaf::Distance::fromMileString("////SM");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_FALSE(d2->hasInteger());
+
+	const auto d3 = metaf::Distance::fromMileString("1/4SM");
+	ASSERT_TRUE(d3.has_value());
+	EXPECT_FALSE(d3->hasInteger());
+}
+
+TEST(Distance, hasFractionTrue) {
+	const auto d1 = metaf::Distance::fromMileString("11/2SM");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_TRUE(d1->hasFraction());
+
+	const auto d2 = metaf::Distance::fromMileString("1/4SM");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_TRUE(d2->hasFraction());
+}
+
+TEST(Distance, hasFractionFalse) {
+	const auto d1 = metaf::Distance::fromMeterString("2000");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_FALSE(d1->hasFraction());
+
+	const auto d2 = metaf::Distance::fromMileString("8SM");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_FALSE(d2->hasFraction());
+
+	const auto d3 = metaf::Distance::fromHeightString("020");
+	ASSERT_TRUE(d3.has_value());
+	EXPECT_FALSE(d3->hasFraction());
+
+	const auto d4 = metaf::Distance::fromRvrString("4500", true);
+	ASSERT_TRUE(d4.has_value());
+	EXPECT_FALSE(d4->hasFraction());
+
+	const auto d5 = metaf::Distance::fromMeterString("////");
+	ASSERT_TRUE(d5.has_value());
+	EXPECT_FALSE(d5->hasInteger());
+
+	const auto d6 = metaf::Distance::fromMileString("////SM");
+	ASSERT_TRUE(d6.has_value());
+	EXPECT_FALSE(d6->hasInteger());
+}

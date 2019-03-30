@@ -355,3 +355,109 @@ TEST(VisibilityGroup, isValidFalse) {
 	ASSERT_TRUE(vg3.has_value());
 	EXPECT_FALSE(vg3->isValid());
 }
+
+TEST(VisibilityGroup, isPrevailingTrue) {
+	const auto vg1 = metaf::VisibilityGroup::parse("1/2SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_TRUE(vg1->isPrevailing());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("M1/4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_TRUE(vg2->isPrevailing());
+
+	const auto vg3 = metaf::VisibilityGroup::parse("4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_TRUE(vg3->isPrevailing());
+
+	const auto vg4 = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_TRUE(vg4->isPrevailing());
+
+	const auto vg5 = metaf::VisibilityGroup::parse("9999NDV", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg5.has_value());
+	EXPECT_TRUE(vg5->isPrevailing());
+
+	const auto vg6 = metaf::VisibilityGroup::parse("////SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg6.has_value());
+	EXPECT_TRUE(vg6->isPrevailing());
+
+	const auto vg7 = metaf::VisibilityGroup::parse("////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg7.has_value());
+	EXPECT_TRUE(vg7->isPrevailing());
+}
+
+TEST(VisibilityGroup, isPrevailingFalse) {
+	const auto vg1 = metaf::VisibilityGroup::parse("9999W", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_FALSE(vg1->isPrevailing());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("9999NW", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_FALSE(vg2->isPrevailing());
+}
+
+TEST(VisibilityGroup, isPrevailingCombined) {
+	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgIncomplete.has_value());
+	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgFraction.has_value());
+
+	const auto vg = vgIncomplete->combine(vgFraction.value());
+	ASSERT_TRUE(vg.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(vg.value()));
+
+	EXPECT_TRUE(std::get<metaf::VisibilityGroup>(vg.value()).isPrevailing());
+}
+
+TEST(VisibilityGroup, isDirectionalTrue) {
+	const auto vg1 = metaf::VisibilityGroup::parse("9999W", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_TRUE(vg1->isDirectional());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("9999NW", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_TRUE(vg2->isDirectional());
+}
+
+TEST(VisibilityGroup, isDirectionalFalse) {
+	const auto vg1 = metaf::VisibilityGroup::parse("1/2SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_FALSE(vg1->isDirectional());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("M1/4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_FALSE(vg2->isDirectional());
+
+	const auto vg3 = metaf::VisibilityGroup::parse("4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_FALSE(vg3->isDirectional());
+
+	const auto vg4 = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_FALSE(vg4->isDirectional());
+
+	const auto vg5 = metaf::VisibilityGroup::parse("////SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg5.has_value());
+	EXPECT_FALSE(vg5->isDirectional());
+
+	const auto vg6 = metaf::VisibilityGroup::parse("////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg6.has_value());
+	EXPECT_FALSE(vg6->isDirectional());
+
+	const auto vg7 = metaf::VisibilityGroup::parse("9999NDV", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg7.has_value());
+	EXPECT_FALSE(vg7->isDirectional());
+}
+
+TEST(VisibilityGroup, isDirectionalCombined) {
+	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgIncomplete.has_value());
+	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgFraction.has_value());
+
+	const auto vg1 = vgIncomplete->combine(vgFraction.value());
+	ASSERT_TRUE(vg1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(vg1.value()));
+
+	EXPECT_FALSE(std::get<metaf::VisibilityGroup>(vg1.value()).isDirectional());
+}

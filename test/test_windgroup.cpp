@@ -426,3 +426,89 @@ TEST(WindGroup, combineWindSectorGroupAndOther) {
 	EXPECT_FALSE(wgSector->combine(wgWindShear.value()).has_value());
 	EXPECT_FALSE(wgSector->combine(wgSector.value()).has_value());
 }
+
+TEST(WindGroup, isSurfaceWindTrue) {
+	const auto wg1 = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_TRUE(wg1->isSurfaceWind());
+
+	const auto wg2 = metaf::WindGroup::parse("170V190", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_TRUE(wg2->isSurfaceWind());
+}
+
+TEST(WindGroup, isSurfaceWindFalse) {
+	const auto wg = metaf::WindGroup::parse("WS020/18025KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_FALSE(wg->isSurfaceWind());
+}
+
+TEST(WindGroup, isSurfaceWindCombined) {
+	const auto wgWind = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgWind.has_value());
+	const auto wgSector = metaf::WindGroup::parse("170V190", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgSector.has_value());
+
+	const auto combined = wgWind->combine(wgSector.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
+	EXPECT_TRUE(wgCombined.isSurfaceWind());
+}
+
+TEST(WindGroup, isWindShearTrue) {
+	const auto wg = metaf::WindGroup::parse("WS020/18025KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_TRUE(wg->isWindShear());
+}
+
+TEST(WindGroup, isWindShearFalse) {
+	const auto wg1 = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_FALSE(wg1->isWindShear());
+
+	const auto wg2 = metaf::WindGroup::parse("170V190", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_FALSE(wg2->isWindShear());
+}
+
+TEST(WindGroup, isWindShearCombined) {
+	const auto wgWind = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgWind.has_value());
+	const auto wgSector = metaf::WindGroup::parse("170V190", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgSector.has_value());
+
+	const auto combined = wgWind->combine(wgSector.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
+	EXPECT_FALSE(wgCombined.isWindShear());
+}
+
+TEST(WindGroup, hasVariableSectorTrue) {
+	const auto wgWind = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgWind.has_value());
+	const auto wgSector = metaf::WindGroup::parse("170V190", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgSector.has_value());
+
+	const auto combined = wgWind->combine(wgSector.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
+
+	EXPECT_TRUE(wgCombined.hasVariableSector());
+	EXPECT_TRUE(wgSector->hasVariableSector());
+}
+
+TEST(WindGroup, hasVariableSectorFalse) {
+	const auto wg1 = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_FALSE(wg1->hasVariableSector());
+
+	const auto wg2 = metaf::WindGroup::parse("WS020/18025KT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_FALSE(wg1->hasVariableSector());
+}

@@ -389,6 +389,48 @@ void checkRecognisedGroups() {
 	printFlaggedReports(flaggedReports);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+void printSize(string_view name, size_t size) {
+	cout << "Size of " << name << ' ' << size << endl;
+}
+
+void printDataSize(){
+	cout << "Data type sizes:" << endl; 	
+	printSize("Runway", sizeof(metaf::Runway));
+	printSize("MetafTime", sizeof(metaf::MetafTime));
+	printSize("Temperature", sizeof(metaf::Temperature));
+	printSize("Speed", sizeof(metaf::Speed));
+	printSize("Distance", sizeof(metaf::Distance));
+	printSize("Direction", sizeof(metaf::Direction));
+	printSize("Pressure", sizeof(metaf::Pressure));
+	printSize("Precipitation", sizeof(metaf::Precipitation));
+	printSize("SurfaceFriction", sizeof(metaf::SurfaceFriction));
+	printSize("WaveHeight", sizeof(metaf::WaveHeight));
+	cout << endl;
+	printSize("Group", sizeof(metaf::Group));
+	cout << endl;
+	cout << "Group sizes:" << endl; 	
+	printSize(groupName(0), sizeof(variant_alternative_t<0, metaf::Group>));
+	printSize(groupName(1), sizeof(variant_alternative_t<1, metaf::Group>));
+	printSize(groupName(2), sizeof(variant_alternative_t<2, metaf::Group>));
+	printSize(groupName(3), sizeof(variant_alternative_t<3, metaf::Group>));
+	printSize(groupName(4), sizeof(variant_alternative_t<4, metaf::Group>));
+	printSize(groupName(5), sizeof(variant_alternative_t<5, metaf::Group>));
+	printSize(groupName(6), sizeof(variant_alternative_t<6, metaf::Group>));
+	printSize(groupName(7), sizeof(variant_alternative_t<7, metaf::Group>));
+	printSize(groupName(8), sizeof(variant_alternative_t<8, metaf::Group>));
+	printSize(groupName(9), sizeof(variant_alternative_t<9, metaf::Group>));
+	printSize(groupName(10), sizeof(variant_alternative_t<10, metaf::Group>));
+	printSize(groupName(11), sizeof(variant_alternative_t<11, metaf::Group>));
+	printSize(groupName(12), sizeof(variant_alternative_t<12, metaf::Group>));
+	printSize(groupName(13), sizeof(variant_alternative_t<13, metaf::Group>));
+	printSize(groupName(14), sizeof(variant_alternative_t<14, metaf::Group>));
+	printSize(groupName(15), sizeof(variant_alternative_t<15, metaf::Group>));
+	printSize(groupName(16), sizeof(variant_alternative_t<16, metaf::Group>));
+	cout << endl;
+}
+
 int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
 	{
@@ -406,4 +448,5 @@ int main(int argc, char ** argv) {
 		cout << "\n";
 	}
 	checkRecognisedGroups();
+	printDataSize();
 }

@@ -363,7 +363,8 @@ void GroupVisitorJson::visitTrendGroup(const metaf::TrendGroup & group) {
 }
 
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
-	json.startObject(group.windShearHeight().isReported() ? "windShear" : "wind");
+	if (group.isWindShear()) json.startObject("windShear");
+	if (group.isSurfaceWind()) json.startObject("wind");
 	if (!group.isValid()) json.valueBool("valid", false);
 	if (group.isCalm()) json.valueBool("calm", true);
 	distanceToJson(group.windShearHeight(), "windShearHeight", "heightUnit", "heightModifier");
@@ -409,7 +410,7 @@ void GroupVisitorJson::visitCloudGroup(const metaf::CloudGroup & group) {
 	if (const auto as = cloudAmountToString(group.amount()); !as.empty()) {
 		json.valueStr("amount", as);
 	}
-	if (const auto octa = cloudAmountToOcta(group.amount()); 
+	if (const auto octa = cloudAmountToOcta(group.amount());
 		std::get<0>(octa) || std::get<1>(octa)) {
 			json.valueInt("coverMinimumOcta", std::get<0>(octa));
 			json.valueInt("coverMaximumOcta", std::get<1>(octa));
@@ -434,11 +435,18 @@ void GroupVisitorJson::visitCloudGroup(const metaf::CloudGroup & group) {
 		undefinedToJson(static_cast<int>(group.type()), "convectiveType");
 		break;
 	}
-	distanceToJson(group.height(), "baseHeight", "heightUnit", "heightModifier");
-	distanceToJson(group.verticalVisibility(), 
-		"verticalVisibility", 
-		"verticalVisibilityUnit", 
-		"verticalVisibilityModifier");
+	if (group.isCloudLayer()) {
+		distanceToJson(group.height(), 
+			"baseHeight", 
+			"heightUnit", 
+			"heightModifier");
+	}
+	if (group.isVerticalVisibility()) {
+		distanceToJson(group.verticalVisibility(), 
+			"verticalVisibility", 
+			"verticalVisibilityUnit", 
+			"verticalVisibilityModifier");
+	}
 	json.finish();
 }
 
@@ -523,18 +531,18 @@ void GroupVisitorJson::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRang
 	json.startObject();
 	if (!group.isValid()) json.valueBool("valid", false);
 	runwayToJson(group.runway(), "runway", "runwayDesignator", "lastMessageRepetition");
-	if (group.variableVisualRange().isReported()) {
+	if (!group.isVariableVisualRange()) {
 		distanceToJson(group.visualRange(), 
 			"range", 
 			"rangeUnit", 
 			"rangeModifier");
 
-	} else { //if (group.variableVisualRange().isReported())
-		distanceToJson(group.visualRange(), 
+	} else { //if (!group.isVariableVisualRange())
+		distanceToJson(group.minVisualRange(), 
 			"lowLimit", 
 			"lowLimitUnit", 
 			"lowLimitModifier");
-		distanceToJson(group.variableVisualRange(), 
+		distanceToJson(group.maxVisualRange(), 
 			"highLimit", 
 			"highLimitUnit", 
 			"highLimitModifier");

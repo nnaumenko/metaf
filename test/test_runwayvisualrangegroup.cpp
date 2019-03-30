@@ -19,7 +19,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueMeters) {
 	ASSERT_TRUE(rvrg->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg->visualRange().integer().value(), 1100u);
 	EXPECT_EQ(rvrg->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg->isVariableVisualRange());
+	EXPECT_FALSE(rvrg->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -29,7 +31,9 @@ TEST(RunwayVisualRangeGroup, parseRunwayWithDesignator) {
 	EXPECT_EQ(rvrg1->runway().number(), 5u);
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_TRUE(rvrg1->visualRange().isReported());
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R05C/1100", metaf::ReportPart::METAR);
@@ -37,7 +41,9 @@ TEST(RunwayVisualRangeGroup, parseRunwayWithDesignator) {
 	EXPECT_EQ(rvrg2->runway().number(), 5u);
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::CENTER);
 	EXPECT_TRUE(rvrg2->visualRange().isReported());
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R05L/1100", metaf::ReportPart::METAR);
@@ -45,7 +51,9 @@ TEST(RunwayVisualRangeGroup, parseRunwayWithDesignator) {
 	EXPECT_EQ(rvrg3->runway().number(), 5u);
 	EXPECT_EQ(rvrg3->runway().designator(), metaf::Runway::Designator::LEFT);
 	EXPECT_TRUE(rvrg3->visualRange().isReported());
-	EXPECT_FALSE(rvrg3->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg3->isVariableVisualRange());
+	EXPECT_FALSE(rvrg3->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg3->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg3->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -60,7 +68,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueMetersWithModifiers) {
 	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg1->visualRange().integer().value(), 2000u);
 	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R21/M0200", metaf::ReportPart::METAR);
@@ -73,7 +83,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueMetersWithModifiers) {
 	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg2->visualRange().integer().value(), 200u);
 	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -88,7 +100,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueFeet) {
 	ASSERT_TRUE(rvrg->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg->visualRange().integer().value(), 4500u);
 	EXPECT_EQ(rvrg->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg->isVariableVisualRange());
+	EXPECT_FALSE(rvrg->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -103,7 +117,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueFeetWithModifiers) {
 	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg1->visualRange().integer().value(), 6000u);
 	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R12/M0400FT", metaf::ReportPart::METAR);
@@ -116,7 +132,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueFeetWithModifiers) {
 	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg2->visualRange().integer().value(), 400u);
 	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -131,7 +149,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueWithTrends) {
 	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg1->visualRange().integer().value(), 1100u);
 	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::UPWARD);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R05/1000FT/D", metaf::ReportPart::METAR);
@@ -144,7 +164,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueWithTrends) {
 	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg2->visualRange().integer().value(), 1000u);
 	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::DOWNWARD);
 
 	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R05/M1100FT/N", metaf::ReportPart::METAR);
@@ -157,7 +179,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueWithTrends) {
 	ASSERT_TRUE(rvrg3->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg3->visualRange().integer().value(), 1100u);
 	EXPECT_EQ(rvrg3->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_FALSE(rvrg3->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg3->isVariableVisualRange());
+	EXPECT_FALSE(rvrg3->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg3->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg3->trend(), metaf::RunwayVisualRangeGroup::Trend::NEUTRAL);
 
 	const auto rvrg4 = metaf::RunwayVisualRangeGroup::parse("R05/P1000N", metaf::ReportPart::METAR);
@@ -170,7 +194,9 @@ TEST(RunwayVisualRangeGroup, parseSingleValueWithTrends) {
 	ASSERT_TRUE(rvrg4->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg4->visualRange().integer().value(), 1000u);
 	EXPECT_EQ(rvrg4->visualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
-	EXPECT_FALSE(rvrg4->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg4->isVariableVisualRange());
+	EXPECT_FALSE(rvrg4->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg4->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg4->trend(), metaf::RunwayVisualRangeGroup::Trend::NEUTRAL);
 }
 
@@ -180,18 +206,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueMeters) {
 	ASSERT_TRUE(rvrg.has_value());
 	EXPECT_EQ(rvrg->runway().number(), 9u);
 	EXPECT_EQ(rvrg->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg->visualRange().isReported());
-	EXPECT_EQ(rvrg->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg->visualRange().isInteger());
-	ASSERT_TRUE(rvrg->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg->visualRange().integer().value(), 500u);
-	EXPECT_EQ(rvrg->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg->variableVisualRange().integer().value(), 800u);
-	EXPECT_EQ(rvrg->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg->visualRange().isReported());
+	EXPECT_TRUE(rvrg->isVariableVisualRange());
+	EXPECT_TRUE(rvrg->minVisualRange().isReported());
+	EXPECT_EQ(rvrg->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg->minVisualRange().integer().value(), 500u);
+	EXPECT_EQ(rvrg->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg->maxVisualRange().integer().value(), 800u);
+	EXPECT_EQ(rvrg->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -201,18 +229,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueFeet) {
 	ASSERT_TRUE(rvrg.has_value());
 	EXPECT_EQ(rvrg->runway().number(), 14u);
 	EXPECT_EQ(rvrg->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg->visualRange().isReported());
-	EXPECT_EQ(rvrg->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg->visualRange().isInteger());
-	ASSERT_TRUE(rvrg->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg->visualRange().integer().value(), 600u);
-	EXPECT_EQ(rvrg->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg->variableVisualRange().integer().value(), 1200u);
-	EXPECT_EQ(rvrg->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg->visualRange().isReported());
+	EXPECT_TRUE(rvrg->isVariableVisualRange());
+	EXPECT_TRUE(rvrg->minVisualRange().isReported());
+	EXPECT_EQ(rvrg->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg->minVisualRange().integer().value(), 600u);
+	EXPECT_EQ(rvrg->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg->maxVisualRange().integer().value(), 1200u);
+	EXPECT_EQ(rvrg->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -222,18 +252,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueMetersWithModifiers) {
 	ASSERT_TRUE(rvrg1.has_value());
 	EXPECT_EQ(rvrg1->runway().number(), 9u);
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg1->visualRange().isReported());
-	EXPECT_EQ(rvrg1->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg1->visualRange().isInteger());
-	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->visualRange().integer().value(), 500u);
-	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg1->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg1->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->variableVisualRange().integer().value(), 800u);
-	EXPECT_EQ(rvrg1->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg1->visualRange().isReported());
+	EXPECT_TRUE(rvrg1->isVariableVisualRange());
+	EXPECT_TRUE(rvrg1->minVisualRange().isReported());
+	EXPECT_EQ(rvrg1->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg1->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->minVisualRange().integer().value(), 500u);
+	EXPECT_EQ(rvrg1->minVisualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg1->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->maxVisualRange().integer().value(), 800u);
+	EXPECT_EQ(rvrg1->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R09/0500VP0800", 
@@ -241,18 +273,21 @@ TEST(RunwayVisualRangeGroup, parseVariableValueMetersWithModifiers) {
 	ASSERT_TRUE(rvrg2.has_value());
 	EXPECT_EQ(rvrg2->runway().number(), 9u);
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg2->visualRange().isReported());
-	EXPECT_EQ(rvrg2->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg2->visualRange().isInteger());
-	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->visualRange().integer().value(), 500u);
-	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg2->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg2->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->variableVisualRange().integer().value(), 800u);
-	EXPECT_EQ(rvrg2->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg2->visualRange().isReported());
+	EXPECT_TRUE(rvrg2->isVariableVisualRange());
+	EXPECT_TRUE(rvrg2->minVisualRange().isReported());
+	EXPECT_TRUE(rvrg2->minVisualRange().isReported());
+	EXPECT_EQ(rvrg2->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg2->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->minVisualRange().integer().value(), 500u);
+	EXPECT_EQ(rvrg2->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg2->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->maxVisualRange().integer().value(), 800u);
+	EXPECT_EQ(rvrg2->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R09/M0500VP0800", 
@@ -260,18 +295,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueMetersWithModifiers) {
 	ASSERT_TRUE(rvrg3.has_value());
 	EXPECT_EQ(rvrg3->runway().number(), 9u);
 	EXPECT_EQ(rvrg3->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg3->visualRange().isReported());
-	EXPECT_EQ(rvrg3->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg3->visualRange().isInteger());
-	ASSERT_TRUE(rvrg3->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->visualRange().integer().value(), 500u);
-	EXPECT_EQ(rvrg3->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg3->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg3->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->variableVisualRange().integer().value(), 800u);
-	EXPECT_EQ(rvrg3->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg3->visualRange().isReported());
+	EXPECT_TRUE(rvrg3->isVariableVisualRange());
+	EXPECT_TRUE(rvrg3->minVisualRange().isReported());
+	EXPECT_EQ(rvrg3->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg3->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->minVisualRange().integer().value(), 500u);
+	EXPECT_EQ(rvrg3->minVisualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg3->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->maxVisualRange().integer().value(), 800u);
+	EXPECT_EQ(rvrg3->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg3->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -281,18 +318,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueFeetWithModifiers) {
 	ASSERT_TRUE(rvrg1.has_value());
 	EXPECT_EQ(rvrg1->runway().number(), 14u);
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg1->visualRange().isReported());
-	EXPECT_EQ(rvrg1->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg1->visualRange().isInteger());
-	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->visualRange().integer().value(), 600u);
-	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg1->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg1->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->variableVisualRange().integer().value(), 1200u);
-	EXPECT_EQ(rvrg1->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg1->visualRange().isReported());
+	EXPECT_TRUE(rvrg1->isVariableVisualRange());
+	EXPECT_TRUE(rvrg1->minVisualRange().isReported());
+	EXPECT_EQ(rvrg1->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg1->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->minVisualRange().integer().value(), 600u);
+	EXPECT_EQ(rvrg1->minVisualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg1->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->maxVisualRange().integer().value(), 1200u);
+	EXPECT_EQ(rvrg1->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R14/0600VP1200FT", 
@@ -300,18 +339,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueFeetWithModifiers) {
 	ASSERT_TRUE(rvrg2.has_value());
 	EXPECT_EQ(rvrg2->runway().number(), 14u);
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg2->visualRange().isReported());
-	EXPECT_EQ(rvrg2->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg2->visualRange().isInteger());
-	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->visualRange().integer().value(), 600u);
-	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg2->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg2->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->variableVisualRange().integer().value(), 1200u);
-	EXPECT_EQ(rvrg2->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg2->visualRange().isReported());
+	EXPECT_TRUE(rvrg2->isVariableVisualRange());
+	EXPECT_TRUE(rvrg2->minVisualRange().isReported());
+	EXPECT_EQ(rvrg2->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg2->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->minVisualRange().integer().value(), 600u);
+	EXPECT_EQ(rvrg2->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg2->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->maxVisualRange().integer().value(), 1200u);
+	EXPECT_EQ(rvrg2->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R14/M0600VP1200FT", 
@@ -319,18 +360,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueFeetWithModifiers) {
 	ASSERT_TRUE(rvrg3.has_value());
 	EXPECT_EQ(rvrg3->runway().number(), 14u);
 	EXPECT_EQ(rvrg3->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg3->visualRange().isReported());
-	EXPECT_EQ(rvrg3->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg3->visualRange().isInteger());
-	ASSERT_TRUE(rvrg3->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->visualRange().integer().value(), 600u);
-	EXPECT_EQ(rvrg3->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg3->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg3->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->variableVisualRange().integer().value(), 1200u);
-	EXPECT_EQ(rvrg3->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg3->visualRange().isReported());
+	EXPECT_TRUE(rvrg3->isVariableVisualRange());
+	EXPECT_TRUE(rvrg3->minVisualRange().isReported());
+	EXPECT_EQ(rvrg3->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg3->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->minVisualRange().integer().value(), 600u);
+	EXPECT_EQ(rvrg3->minVisualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg3->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->maxVisualRange().integer().value(), 1200u);
+	EXPECT_EQ(rvrg3->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg3->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -340,18 +383,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueWithTrends) {
 	ASSERT_TRUE(rvrg1.has_value());
 	EXPECT_EQ(rvrg1->runway().number(), 17u);
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg1->visualRange().isReported());
-	EXPECT_EQ(rvrg1->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg1->visualRange().isInteger());
-	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->visualRange().integer().value(), 250u);
-	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg1->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg1->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg1->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg1->variableVisualRange().integer().value(), 450u);
-	EXPECT_EQ(rvrg1->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg1->visualRange().isReported());
+	EXPECT_TRUE(rvrg1->isVariableVisualRange());
+	EXPECT_TRUE(rvrg1->minVisualRange().isReported());
+	EXPECT_EQ(rvrg1->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg1->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->minVisualRange().integer().value(), 250u);
+	EXPECT_EQ(rvrg1->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg1->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg1->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg1->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg1->maxVisualRange().integer().value(), 450u);
+	EXPECT_EQ(rvrg1->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NEUTRAL);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R17/M0250VP0450D", 
@@ -359,18 +404,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueWithTrends) {
 	ASSERT_TRUE(rvrg2.has_value());
 	EXPECT_EQ(rvrg2->runway().number(), 17u);
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg2->visualRange().isReported());
-	EXPECT_EQ(rvrg2->visualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg2->visualRange().isInteger());
-	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->visualRange().integer().value(), 250u);
-	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg2->variableVisualRange().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_TRUE(rvrg2->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg2->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg2->variableVisualRange().integer().value(), 450u);
-	EXPECT_EQ(rvrg2->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg2->visualRange().isReported());
+	EXPECT_TRUE(rvrg2->isVariableVisualRange());
+	EXPECT_TRUE(rvrg2->minVisualRange().isReported());
+	EXPECT_EQ(rvrg2->minVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg2->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->minVisualRange().integer().value(), 250u);
+	EXPECT_EQ(rvrg2->minVisualRange().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg2->maxVisualRange().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_TRUE(rvrg2->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg2->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg2->maxVisualRange().integer().value(), 450u);
+	EXPECT_EQ(rvrg2->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::DOWNWARD);
 
 	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R26/2600V3200FT/D", 
@@ -378,18 +425,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueWithTrends) {
 	ASSERT_TRUE(rvrg3.has_value());
 	EXPECT_EQ(rvrg3->runway().number(), 26u);
 	EXPECT_EQ(rvrg3->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg3->visualRange().isReported());
-	EXPECT_EQ(rvrg3->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg3->visualRange().isInteger());
-	ASSERT_TRUE(rvrg3->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->visualRange().integer().value(), 2600u);
-	EXPECT_EQ(rvrg3->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg3->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg3->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg3->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg3->variableVisualRange().integer().value(), 3200u);
-	EXPECT_EQ(rvrg3->variableVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(rvrg3->visualRange().isReported());
+	EXPECT_TRUE(rvrg3->isVariableVisualRange());
+	EXPECT_TRUE(rvrg3->minVisualRange().isReported());
+	EXPECT_EQ(rvrg3->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg3->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->minVisualRange().integer().value(), 2600u);
+	EXPECT_EQ(rvrg3->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg3->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg3->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg3->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg3->maxVisualRange().integer().value(), 3200u);
+	EXPECT_EQ(rvrg3->maxVisualRange().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(rvrg3->trend(), metaf::RunwayVisualRangeGroup::Trend::DOWNWARD);
 
 	const auto rvrg4 = metaf::RunwayVisualRangeGroup::parse("R30/5000VP6000FT/U", 
@@ -397,18 +446,20 @@ TEST(RunwayVisualRangeGroup, parseVariableValueWithTrends) {
 	ASSERT_TRUE(rvrg4.has_value());
 	EXPECT_EQ(rvrg4->runway().number(), 30u);
 	EXPECT_EQ(rvrg4->runway().designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(rvrg4->visualRange().isReported());
-	EXPECT_EQ(rvrg4->visualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg4->visualRange().isInteger());
-	ASSERT_TRUE(rvrg4->visualRange().integer().has_value());
-	EXPECT_EQ(rvrg4->visualRange().integer().value(), 5000u);
-	EXPECT_EQ(rvrg4->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_TRUE(rvrg4->variableVisualRange().isReported());
-	EXPECT_EQ(rvrg4->variableVisualRange().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(rvrg4->variableVisualRange().isInteger());
-	ASSERT_TRUE(rvrg4->variableVisualRange().integer().has_value());
-	EXPECT_EQ(rvrg4->variableVisualRange().integer().value(), 6000u);
-	EXPECT_EQ(rvrg4->variableVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_FALSE(rvrg4->visualRange().isReported());
+	EXPECT_TRUE(rvrg4->isVariableVisualRange());
+	EXPECT_TRUE(rvrg4->minVisualRange().isReported());
+	EXPECT_EQ(rvrg4->minVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg4->minVisualRange().isInteger());
+	ASSERT_TRUE(rvrg4->minVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg4->minVisualRange().integer().value(), 5000u);
+	EXPECT_EQ(rvrg4->minVisualRange().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(rvrg4->maxVisualRange().isReported());
+	EXPECT_EQ(rvrg4->maxVisualRange().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_TRUE(rvrg4->maxVisualRange().isInteger());
+	ASSERT_TRUE(rvrg4->maxVisualRange().integer().has_value());
+	EXPECT_EQ(rvrg4->maxVisualRange().integer().value(), 6000u);
+	EXPECT_EQ(rvrg4->maxVisualRange().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(rvrg4->trend(), metaf::RunwayVisualRangeGroup::Trend::UPWARD);
 }
 
@@ -423,7 +474,9 @@ TEST(RunwayVisualRangeGroup, parseMalformedTrends) {
 	ASSERT_TRUE(rvrg1->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg1->visualRange().integer().value(), 6000u);
 	EXPECT_EQ(rvrg1->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R08/6000FTD", metaf::ReportPart::METAR);
@@ -436,7 +489,9 @@ TEST(RunwayVisualRangeGroup, parseMalformedTrends) {
 	ASSERT_TRUE(rvrg2->visualRange().integer().has_value());
 	EXPECT_EQ(rvrg2->visualRange().integer().value(), 6000u);
 	EXPECT_EQ(rvrg2->visualRange().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::DOWNWARD);
 }
 
@@ -448,7 +503,9 @@ TEST(RunwayVisualRangeGroup, parseValueMetersNotReported) {
 	EXPECT_EQ(rvrg->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg->visualRange().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(rvrg->visualRange().isReported());
-	EXPECT_FALSE(rvrg->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg->isVariableVisualRange());
+	EXPECT_FALSE(rvrg->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -460,7 +517,9 @@ TEST(RunwayVisualRangeGroup, parseValueFeetNotReported) {
 	EXPECT_EQ(rvrg->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg->visualRange().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(rvrg->visualRange().isReported());
-	EXPECT_FALSE(rvrg->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg->isVariableVisualRange());
+	EXPECT_FALSE(rvrg->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg->trend(), metaf::RunwayVisualRangeGroup::Trend::NONE);
 }
 
@@ -472,7 +531,9 @@ TEST(RunwayVisualRangeGroup, parseNotReportedWithTrend) {
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg1->visualRange().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(rvrg1->visualRange().isReported());
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NEUTRAL);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R06R/////FT/N", 
@@ -482,7 +543,9 @@ TEST(RunwayVisualRangeGroup, parseNotReportedWithTrend) {
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg2->visualRange().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(rvrg2->visualRange().isReported());
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NEUTRAL);
 }
 
@@ -494,7 +557,9 @@ TEST(RunwayVisualRangeGroup, parseNotReportedWithTrendNotReported) {
 	EXPECT_EQ(rvrg1->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg1->visualRange().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(rvrg1->visualRange().isReported());
-	EXPECT_FALSE(rvrg1->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->isVariableVisualRange());
+	EXPECT_FALSE(rvrg1->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg1->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg1->trend(), metaf::RunwayVisualRangeGroup::Trend::NOT_REPORTED);
 
 	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R06R/////FT//", 
@@ -504,7 +569,9 @@ TEST(RunwayVisualRangeGroup, parseNotReportedWithTrendNotReported) {
 	EXPECT_EQ(rvrg2->runway().designator(), metaf::Runway::Designator::RIGHT);
 	EXPECT_EQ(rvrg2->visualRange().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(rvrg2->visualRange().isReported());
-	EXPECT_FALSE(rvrg2->variableVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->isVariableVisualRange());
+	EXPECT_FALSE(rvrg2->minVisualRange().isReported());
+	EXPECT_FALSE(rvrg2->maxVisualRange().isReported());
 	EXPECT_EQ(rvrg2->trend(), metaf::RunwayVisualRangeGroup::Trend::NOT_REPORTED);
 }
 
@@ -537,3 +604,43 @@ TEST(RunwayVisualRangeGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::RunwayVisualRangeGroup::parse("R06R////", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::RunwayVisualRangeGroup::parse("R06R///////", metaf::ReportPart::METAR));
 }
+
+TEST(RunwayVisualRangeGroup, isValidTrue) {
+	const auto rvrg1 = metaf::RunwayVisualRangeGroup::parse("R88/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg1.has_value());
+	ASSERT_TRUE(rvrg1->runway().isValid());
+	EXPECT_TRUE(rvrg1->isValid());
+
+	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R99/2600V3200FT/D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg2.has_value());
+	ASSERT_TRUE(rvrg2->runway().isValid());
+	EXPECT_TRUE(rvrg2->isValid());
+
+	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R36R/////FT/N", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg3.has_value());
+	ASSERT_TRUE(rvrg3->runway().isValid());
+	EXPECT_TRUE(rvrg3->isValid());
+
+	const auto rvrg4 = metaf::RunwayVisualRangeGroup::parse("R06L//////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg4.has_value());
+	ASSERT_TRUE(rvrg4->runway().isValid());
+	EXPECT_TRUE(rvrg4->isValid());
+}
+
+TEST(RunwayVisualRangeGroup, isValidFalse) {
+	const auto rvrg1 = metaf::RunwayVisualRangeGroup::parse("R88R/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg1.has_value());
+	EXPECT_FALSE(rvrg1->runway().isValid());
+	EXPECT_FALSE(rvrg1->isValid());
+
+	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R99C/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg2.has_value());
+	ASSERT_FALSE(rvrg2->runway().isValid());
+	EXPECT_FALSE(rvrg2->isValid());
+
+	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R37/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg3.has_value());
+	ASSERT_FALSE(rvrg3->runway().isValid());
+	EXPECT_FALSE(rvrg3->isValid());
+}
+
