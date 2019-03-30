@@ -86,7 +86,7 @@ Then add the following lines to the function ``main()`` before ``return(0);``::
 
 :cpp:func:`metaf::Parser::getResult()` returns a reference to `std::vector<metaf::Group>`. :cpp:type:`metaf::Group` is an ``std::variant`` which holds all concrete group classes as variant alternatives.
 
-.. warning:: Reference obtained by :cpp:func:`metaf::Parser::getResult()` is only valid as long as an instance of :cpp:class:`metaf::Parser` is valid.
+.. warning:: The reference obtained by :cpp:func:`metaf::Parser::getResult()` is only valid as long as an instance of :cpp:class:`metaf::Parser` still exists and no other METAR or TAF report is parsed by the same instance. If :cpp:func:`metaf::Parser::parse()` is executed again, the reference returned by :cpp:func:`metaf::Parser::getResult()` becomes invalid.
 
 
 Checking for errors

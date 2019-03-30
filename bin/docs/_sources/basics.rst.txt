@@ -45,7 +45,7 @@ COR means that report is a correctional one. See also :cpp:enumerator:`metaf::Fi
 
 AUTO means that report was produced by automated station with no human intervention or oversight. See also :cpp:enumerator:`metaf::FixedGroup::Type::AUTO`.
 
-.. index:: single: Report; Nil
+.. index:: single: METAR; Missing report
 
 NIL means missing report. See also :cpp:enumerator:`metaf::FixedGroup::Type::NIL`.
 
@@ -149,6 +149,10 @@ If any part of the report does not follow this format, parser stops and generate
 TAF report typically begins with TAF to indicated the report type. If report type is ommitted from the report, Metaf will try to autodetect it by following the report syntax. See also :cpp:enumerator:`metaf::FixedGroup::Type::TAF`.
 
 COR means correctional report and AMD means amended report. See also :cpp:enumerator:`metaf::FixedGroup::Type::AMD` and :cpp:enumerator:`metaf::FixedGroup::Type::COR`.
+
+.. index:: single: TAF; Cancelled report
+
+.. index:: single: TAF; Missing report
 
 NIL means missing report and CNL means cancelled report. See also :cpp:enumerator:`metaf::FixedGroup::Type::NIL` and :cpp:enumerator:`metaf::FixedGroup::Type::CNL`.
 
