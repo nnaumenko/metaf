@@ -11,7 +11,7 @@ Metaf is a header-only, dependency-free modern c++ library for parsing METAR wea
 
 Metaf is released under MIT license.
 
-This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no extrenal dependencies and can be used in other environments.
+This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no external dependencies and can be used in other environments.
 
 Metaf library requires C++17.
 

@@ -5,47 +5,35 @@
 
 ## Introduction
 
-Metaf is a header-only, dependency-free modern c++ library for parsing [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
+Metaf is a header-only, dependency-free modern C++ library for parsing [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
 
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
-[Example: METAR/TAF report is parsed and converted to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+Metaf can do the following:
 
-[Example: METAR/TAF explained in plain language (English)](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+ * Parse METAR or TAF report and autodetect its type.
+ * Check the validity of the report syntax, detect malformed reports and report errors.
+ * Convert METAR or TAF report into the vector of classes which represent individual bits of info encoded in the weather report or forecast.
 
-### Project status
+[Example: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
 
-Currently this project is work in progress.
+[Example: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
 
-In its current state the parser successfully parses various real-life examples METAR and TAF reports as demonstrated by [tests](blob/master/test/readme.md).
+## License
 
-### Description
+This project is available under MIT license.
+
+## Documentation
 
 Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
 
-METAR or TAF reports consist of groups, lexical tokens sparated by spaces. In this project a METAR or TAF group is represented by type Group. Group is a variant type which can hold structs representing various METAR or TAF groups. For example, consider Group that contains struct LocationGroup which represents report's location (in a form of 4-char ICAO code), or Group that contains struct CloudGroup which represents cloud layer information such as cloud cover, base height and convective type.
-
-A string with raw report is passed to parser which produces a vector or type Group. This vector is stored within parser instance and can be accessed via getter method. A GroupVisitor base class is provided to simplify working with Group and vector of Group.
-
-Report syntax based on type is loosely verified by parser, if malformed report is detected the parsing stops and report is only decoded partially. Parser error can be obtained via getter method.
-
-All groups which parser cannot recognise are included in the decoded report as PlainTextGroup. 
-
-From practice, METAR and TAF reports may contain rare kinds of information used in certain regions, or plain text remarks, or errors and typos. Such groups canot be recognised by parser but have minor effect on report overall. Due to this, when unrecognised group does not break report syntax, parser does not stop report processing and does not report an error. If this is undesirable, the decoded report might be checked after parsing and unrecognised groups can be easily detected.
-
-The report type (METAR or TAF) is autodetected by the parser, autodetected type can be obtained via getter method. There is no need to specify report type before parsing.
-
-### Integrating
-
-To integrate the metaf library into your project, copy the file src/metaf.h to your include directory.
-
-### Limitations
+## Limitations
 
 Remarks (everything after RMK group) are currently decoded as plain text only.
 
 Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
 
-### Prerequisites and dependencies
+## Prerequisites and dependencies
 
 Metaf requires C++17.
 
@@ -55,13 +43,7 @@ Unit tests included with the project use [Google Test](https://github.com/abseil
 
 Since this project focuses on metaf library usage with Webassembly, [Emscripten](emscripten.org) is required to build tests and examples. Running the tests and examples requires a www browser with Webassembly support.
 
-### License
-
-This project is available under MIT license.
-
-See [LICENSE](blob/master/LICENSE) file for details.
-
-## General
+## METAR and TAF
 
 ### What is METAR?
 
@@ -82,182 +64,3 @@ TAF in raw form is also human-readable but requires training to decode.
 Example of a TAF report is as follows:
 
     TAF EICK 091700Z 0918/1018 27012KT 9999 BKN025 BECMG 0920/0923 24007KT BECMG 1002/1005 21007KT BECMG 1009/1012 21015KT TEMPO 1010/1013 -RA BKN012 TEMPO 1010/1018 21018G28KT BECMG 1013/1016 6000 -RA SCT003 BKN010 TEMPO 1014/1018 3000 -RADZ BKN003 PROB40 TEMPO 1015/1018 1200 BR BKN002=
-
-## Setting up and running
-
-### Cloning this repo
-
-This project contains Google Test submodule, make sure to clone recursively to get Google Test as well:
-
-    git clone --recursive https://gitlab.com/nnaumenko/metaf.git
-
-### Building
-
-This project compiles with [Emscripten](emscripten.org), make sure it is installed or follow [Emscripten downloading and installing instructions](https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html#sdk-download-and-install).
-
-Build examples and tests:
-
-    emmake make
-
-This will build tests into directory `bin/tests` and examples into directory `bin/examples`.
-
-Pre-built binary files are also included with this repo.
-
-#### Selective building
-
-Build examples only:
-
-    emmake make examples
-
-Build tests only:
-
-    emmake make tests
-
-Build performance check only:
-
-    emmake make performance
-
-### Running
-
-Open file `bin/index.html` in a www browser (Webassembly support required). 
-
-[Or try it on Gitlab Pages](https://nnaumenko.gitlab.io/metaf/).
-
-The page open in browser contains links to tests and examples.
-
-[More information on tests](tree/master/test/readme.md).
-
-[More information on examples](tree/master/examples/readme.md).
-
-[More information on performance check](tree/master/performance/readme.md).
-
-## Usage examples
-
-### Example 1: Converting METAR or TAF report to JSON
-
-[Run this example at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
-
-To run this example locally, open file `bin/examples/to_json.html` in a browser.
-
-Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and parsed report in JSON format is displayed in "Conversion result" text area. 
-
-Checking "Formatted result" displays JSON formatted for easier reading. Unchecking "Formatted result" displays minified JSON.
-
-For example entering the following METAR report: 
-
-    NZSP 042250Z 08008KT 9999 FEW005 FEW030 M29/ A2869 RMK FG DSNT GRID S CLN AIR 09009KT ALL WNDS GRID SDG/HDG
- 
-produces the following JSON (providing that "Formatted result" is checked):
-
-<details>
-    <summary>Click to show/hide result</summary>
-    <pre>
-        <code>
-{
-  "kind": "metaf",
-  "report": {
-    "type": "METAR",
-    "partial": false,
-    "timeZone": "GMT",
-    "icaoLocation": "NZSP",
-    "reportReleaseDay": 4,
-    "reportReleaseTime": "22:50",
-    "wind": {
-      "direction": 80,
-      "directionUnit": "degrees",
-      "directionCardinal": "east",
-      "windSpeed": 8,
-      "windSpeedUnit": "knots"
-    },
-    "visibility": [
-      {
-        "visibility": 10000,
-        "visibilityUnit": "meters",
-        "visibilityModifier": ">"
-      }
-    ],
-    "cloudLayers": [
-      {
-        "amount": "few",
-        "coverMinimumOcta": 1,
-        "coverMaximumOcta": 2,
-        "convectiveType": null,
-        "baseHeight": 500,
-        "heightUnit": "feet"
-      },
-      {
-        "amount": "few",
-        "coverMinimumOcta": 1,
-        "coverMaximumOcta": 2,
-        "convectiveType": null,
-        "baseHeight": 3000,
-        "heightUnit": "feet"
-      }
-    ],
-    "airTemperature": -29,
-    "airTemperatureUnit": "C",
-    "airTemperatureFreezing": true,
-    "dewPoint": -29,
-    "dewPointUnit": "C",
-    "dewPointFreezing": true,
-    "atmosphericPressure": 28.69,
-    "atmosphericPressureUnit": "inHg",
-    "remarks": {
-      "plainText0": "FG",
-      "plainText1": "DSNT",
-      "plainText2": "GRID",
-      "plainText3": "S",
-      "plainText4": "CLN",
-      "plainText5": "AIR",
-      "plainText6": "09009KT",
-      "plainText7": "ALL",
-      "plainText8": "WNDS",
-      "plainText9": "GRID",
-      "plainText10": "SDG/HDG"
-    }
-  }
-}
-        </code>
-    </pre>
-</details>
-
-### Example 2: Explaining METAR or TAF report in plain language
-
-[Run this example at Gitlab Pages](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
-
-To run this example locally, open file `bin/examples/explain.html` in a browser.
-
-Copy and paste (or manually enter) METAR or TAF report in the "Enter METAR or TAF here" text area, and decoded report in plain language is displayed under Report Explanation. 
-
-For example entering the following METAR report: 
-
-    NZSP 042250Z 08008KT 9999 FEW005 FEW030 M29/ A2869 RMK FG DSNT GRID S CLN AIR 09009KT ALL WNDS GRID SDG/HDG
-
-produces the following plain language explanation:
-
-<details>
-    <summary>Click to show/hide result</summary>
-    <pre>
-Detected report type: METAR (weather observation)
-NZSP : ICAO code for location: NZSP
-042250Z : Day and time of report issue: day 4, 22:50 GMT
-08008KT : Surface wind: Wind direction: 80 degrees(east) Wind speed: 8 knots (4.1 m/s / 14.8 km/h / 9.2 mph)
-9999 : Visibility (prevailing) >10000 meters (6.213 statute miles / 32808 feet)
-FEW005 : Few clouds (1/8 to 2/8 sky covered) Base height 500 feet (152 meters / 0.094 statute miles)
-FEW030 : Few clouds (1/8 to 2/8 sky covered) Base height 3000 feet (914 meters / 0.568 statute miles)
-M29/ : Air temperature: -29 °C / -20 °F Dew point: not reported
-A2869 : Atmospheric pressure: 971 hPa / 28.68 inHg
-RMK : The remarks are as follows Note: this version does not recognise or decode remarks
-FG : This group is not recognised by parser: FG
-DSNT : This group is not recognised by parser: DSNT
-GRID : This group is not recognised by parser: GRID
-S : This group is not recognised by parser: S
-CLN : This group is not recognised by parser: CLN
-AIR : This group is not recognised by parser: AIR
-09009KT : This group is not recognised by parser: 09009KT
-ALL : This group is not recognised by parser: ALL
-WNDS : This group is not recognised by parser: WNDS
-GRID : This group is not recognised by parser: GRID
-SDG/HDG : This group is not recognised by parser: SDG/HDG
-    </pre>
-</details>

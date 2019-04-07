@@ -3,14 +3,43 @@
   <head>
     <meta charset="utf-8">
     <title>Metaf example: METAR & TAF reports explained</title>
+    <link rel="stylesheet" type="text/css" href="../style.css">
     <style type="text/css">
-    body { background-color:lightblue; color:black; text-align:center;}
-    table { margin-left:auto; margin-right:auto; 
-      border:1px solid black; border-collapse: collapse;}
-    th {border:1px solid black; font-weight:bold; text-align:left; padding:0.33em; background-color:blue; color:white;}
-    td {border:1px solid black; text-align:left; padding:0.33em;}
-    tr:hover {background-color:darkblue; color:white;}
-    td {text-align:left;}
+      body {
+        text-align:center;
+      }
+
+      table {
+        margin-left:auto;
+        margin-right:auto; 
+        border:1px solid #000000;
+        border-collapse: collapse;
+      }
+
+      th {
+        border:1px solid #000000;
+        font-weight:bold;
+        text-align:left;
+        padding:0.33em;
+        background-color:#557a95;
+        color:white;
+      }
+
+      td {
+        border:1px solid #000000;
+        text-align:left;
+        padding:0.33em;
+      }
+      
+      tr:hover {
+        background-color:#b1a296;
+        color:white;
+      }
+      
+      td {
+        text-align:left;
+      }
+
     </style>
     <script>
 
@@ -57,10 +86,17 @@
 
     </script>
     {{{ SCRIPT }}}
-  </head>
-  <body onload="setSampleInput()">
+</head>
+<body onload="setSampleInput()">
+  <ul class="navbar">
+    <li class="navitem"><a href="../index.html">About</a></li>
+    <li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
+    <li class="navitem navactive"><a href="../examples.html">Examples</a></li>
+    <li class="navitem"><a href="../docs/index.html" target="_blank">Documentation</a></li>
+  </ul>
+  <div class="content">
       <h1>METAR &amp; TAF reports explained</h1>
-  	  Enter METAR or TAF here:<br>
+  	  Enter or paste METAR or TAF here:<br>
       <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>
       <br><br>
       Report explanation:<br>
@@ -72,5 +108,6 @@
         <tbody>
         </tbody>
       </table>
+  </div>
   </body>
 </html>

@@ -1178,6 +1178,8 @@ See :doc:`basics` for more information on weather trends and how they are report
 
 Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, ``3100/3124``, ``FM311000``, ``BECMG AT2000``, ``BECMG TL0040``, ``TEMPO FM2200 TL2215``, ``BECMG 3100/3107``, ``PROB30 3100/3104``, ``PROB30 TEMPO 3107/3109``, ``INTER 3100/3102``, etc.
 
+.. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
+
 .. cpp:class:: TrendGroup
 
 	Stores information about weather trends which may be stored in one or several METAR or TAF groups.

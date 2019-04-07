@@ -2,51 +2,33 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Metaf: Webassembly parser for METAR weather report and TAF weather forecast</title>
-	<style type="text/css">
-	body { background-color:lightblue; color:black; text-align:justify;}
-</style>
+	<title>About Metaf</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-	<h1>Metaf project</h1>
-	Metaf is a dependency-free modern c++ library for parsing <a href="https://en.wikipedia.org/wiki/METAR">METAR weather report</a> and <a href="https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast">TAF weather forecast</a> used in aviation.<br>
-	<br>
-	This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.<br>
-	<br><br>
-	<h2>Repository</h2>
-	<a href="https://gitlab.com/nnaumenko/metaf">Repository on Gitlab</a><br>
-	<br>
-	Metaf is available under MIT license.<br>
-	<br><br>
-	<h2>Documentation</h2>
-	<a href="docs/index.html">Please find the project documentation here</a><br>
-	<br><br>
-	<h2>Examples</h2>
-	<a href="examples/to_json.html">Run example 1: parse METAR or TAF and convert to JSON</a><br>
-	<a href="examples/explain.html">Run example 2: explain METAR or TAF in plain language</a><br>
-	<br><br>
-	<h2>Tests</h2>
-	<a href="test/main.html">Run unit tests</a><br>
-	<br><br>
-	<h2>Performance check</h2>
-	<a href="performance/check.html">Run performance check</a><br>
-	<br><br>
-	<h2>METAR and TAF</h2>
-	<h3>What is METAR?</h3>
-	METAR is current weather report format used in aviation. Typical METAR report contains information such as location, report issue time, wind, visibility, clouds, weather phenomena, temperature, dewpoint and atmospheric pressure.<br>
-	<br>
-	METAR in raw form is human-readable though it might look cryptic for untrained person.<br>
-	<br>
-	Example of a simple METAR report is as follows: <br>
-    METAR EICK 092100Z 23007KT 9999 FEW038 BKN180 11/08 Q1019 NOSIG=<br>
-    <br><br>
-	<h3>What is TAF?</h3>
-	TAF (Terminal Aerodrome Forecast) is a weather forecast report format used in aviation. TAF report is quite similar to METAR and reports trends and changes in visibility, wind, clouds, weather, etc over periods of time.<br>
-	<br>
-	TAF in raw form is also human-readable but requires training to decode.<br>
-	<br>
-	Example of a TAF report is as follows:<br>
-    TAF EICK 091700Z 0918/1018 27012KT 9999 BKN025 BECMG 0920/0923 24007KT BECMG 1002/1005 21007KT BECMG 1009/1012 21015KT TEMPO 1010/1013 -RA BKN012 TEMPO 1010/1018 21018G28KT BECMG 1013/1016 6000 -RA SCT003 BKN010 TEMPO 1014/1018 3000 -RADZ BKN003 PROB40 TEMPO 1015/1018 1200 BR BKN002=<br>
+	<ul class="navbar">
+	  <li class="navitem navactive"><a href="#">About</a></li>
+	  <li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
+	  <li class="navitem"><a href="examples.html">Examples</a></li>
+	  <li class="navitem"><a href="docs/index.html" target="_blank">Documentation</a></li>
+	</ul>
+	<div class="content">
+		<h1>About Metaf project</h1>
+			Metaf is a header-only, dependency-free modern C++ library for parsing <a href="https://en.wikipedia.org/wiki/METAR" target="_blank">METAR weather report</a> and <a href="https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast" target="_blank">TAF weather forecast</a> used in aviation.<br>
+			<br>
+			Metaf is available under MIT license.<br>
+			<br>
+			Metaf library requires C++17.<br>
+			<br>
+			This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.<br>
+			<br>
+			Metaf can do the following:<br>
+			<ul>
+				<li>Parse METAR or TAF report and autodetect its type.</li>
+	 			<li>Check the validity of the report syntax, detect malformed reports and report errors.</li>
+	 			<li>Convert METAR or TAF report into the vector of classes which represent individual bits of info encoded in the weather report or forecast.</li>
+	 		</ul>
+	</div>
 </body>
 </html>
 
