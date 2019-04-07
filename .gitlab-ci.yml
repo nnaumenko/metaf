@@ -5,6 +5,8 @@ build:
     GIT_SUBMODULE_STRATEGY: normal
   script:
   - emmake make all
+  - pip install -U sphinx
+  - emmake make docs
   - mkdir ci-build
   - cp -r bin/* ci-build
   artifacts:

@@ -71,7 +71,7 @@ $(TESTBUILDDIR)/gtest_all.o: googletest/googletest/src/gtest-all.cc
 docs:
 	rm -r -f bin/docs/*
 	mkdir -p "$(BUILDDIR)/sphinx"
-	sphinx-build -b html "docs/sphinx" "bin/docs" -j auto -d "$(BUILDDIR)/sphinx"
+	sphinx-build -b html -j auto -d "$(BUILDDIR)/sphinx" "docs/sphinx" "bin/docs"
 
 .PHONY: clean
 clean:
