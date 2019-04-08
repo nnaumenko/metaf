@@ -18,13 +18,14 @@
 #include <optional>
 #include <regex>
 #include <cctype>
+#include <cmath>
 
 namespace metaf {
 
 	// Metaf library version
 	struct Version {
 		static const int major = 1;
-		static const int minor = 1;
+		static const int minor = 2;
 		static const int patch = 0;
 	};
 
@@ -42,6 +43,7 @@ namespace metaf {
 	class PressureGroup;
 	class RunwayVisualRangeGroup;
 	class RunwayStateGroup;
+	class WindShearLowLayerGroup;
 	class RainfallGroup;
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
@@ -62,6 +64,7 @@ namespace metaf {
 		PressureGroup,
 		RunwayVisualRangeGroup,
 		RunwayStateGroup,
+		WindShearLowLayerGroup,
 		RainfallGroup,
 		SeaSurfaceGroup,
 		ColourCodeGroup
@@ -101,6 +104,11 @@ namespace metaf {
 
 		Runway() = default;
 		static inline std::optional<Runway> fromString(const std::string & s);
+		static Runway makeAllRunways() {
+			Runway rw;
+			rw.rNumber = allRunwaysNumber;
+			return(rw);
+		}
 
 	private:
 		static inline std::optional<Designator> designatorFromChar(char c);
@@ -506,7 +514,9 @@ namespace metaf {
 			R_SNOCLO,
 			CAVOK,
 			NSW,
-			RMK
+			RMK,
+			WSCONDS,
+			MAINTENANCE_INDICATOR
 		};
 		Type type() const { return(t); }
 		bool isValid() const { return(true); }
@@ -796,6 +806,7 @@ namespace metaf {
 	public:
 		Temperature airTemperature() const { return(t); }
 		Temperature dewPoint() const { return(dp); }
+		inline std::optional<float> relativeHumidity() const;
 		inline bool isValid() const;
 
 		TemperatureGroup() = default;
@@ -813,10 +824,10 @@ namespace metaf {
 			MINIMUM,
 			MAXIMUM
 		};
-		bool isValid() const { return(tm.isValid()); }
 		Point point() const { return(p); }
 		Temperature airTemperature() const { return(t); }
 		MetafTime time() const { return(tm); }
+		bool isValid() const { return(tm.isValid()); }
 
 		TemperatureForecastGroup() = default;
 		static inline std::optional<TemperatureForecastGroup> parse(const std::string & group, 
@@ -837,10 +848,10 @@ namespace metaf {
 
 	class PressureGroup {
 	public:
-		PressureGroup() = default;
 		Pressure atmosphericPressure() const { return(p); }
 		bool isValid() const { return(true); }
 
+		PressureGroup() = default;
 		static inline std::optional<PressureGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
@@ -954,6 +965,25 @@ namespace metaf {
 		static inline std::optional<Extent> extentFromString(const std::string & s);
 	};
 
+	class WindShearLowLayerGroup {
+	public:
+		Runway runway() const { return(rw); }
+		bool isValid() const { return(rw.isValid() && status == Status::COMPLETE); }
+
+		WindShearLowLayerGroup() = default; 
+		static inline std::optional<WindShearLowLayerGroup> parse(
+			const std::string & group, ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+	private:
+		enum class Status {
+			COMPLETE,
+			INCOMPLETE_WS,
+			INCOMPLETE_WS_ALL,
+		};
+		Runway rw;
+		Status status = Status::INCOMPLETE_WS;
+	};
+
 	class RainfallGroup {
 	public:
 		Precipitation rainfallLast10Minutes() const { return(last10m); }
@@ -1024,7 +1054,8 @@ namespace metaf {
 		TIME_SPAN,
 		CNL,
 		NIL,
-		RMK
+		RMK,
+		MAINTENANCE_INDICATOR
 	};
 
 	inline SyntaxGroup getSyntaxGroup(const Group & group);
@@ -1093,9 +1124,11 @@ namespace metaf {
 			UNEXPECTED_REPORT_END,
 			UNEXPECTED_GROUP_AFTER_NIL,
 			UNEXPECTED_GROUP_AFTER_CNL,
+			UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR,
 			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY,
 			AMD_ALLOWED_IN_TAF_ONLY,
 			CNL_ALLOWED_IN_TAF_ONLY,
+			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
 			INTERNAL_PARSER_STATE
 		};
 		inline bool parse(const std::string & report, bool keepSourceGroup = false);
@@ -1121,7 +1154,9 @@ namespace metaf {
 			REPORT_BODY_METAR,
 			REPORT_BODY_BEGIN_TAF,
 			REPORT_BODY_TAF,
-			REMARK,
+			REMARK_METAR,
+			REMARK_TAF,
+			MAINTENANCE_INDICATOR,
 			NIL,
 			CNL,
 			ERROR
@@ -1153,6 +1188,7 @@ namespace metaf {
 		virtual T visitPressureGroup(const PressureGroup & group) = 0;
 		virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
 		virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
+		virtual T visitWindShearLowLayerGroup(const WindShearLowLayerGroup & group) = 0;
 		virtual T visitRainfallGroup(const RainfallGroup & group) = 0;
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
@@ -1202,6 +1238,9 @@ namespace metaf {
 		}
 		if (std::holds_alternative<RunwayStateGroup>(group)) {
 			return(this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group)));
+		}
+		if (std::holds_alternative<WindShearLowLayerGroup>(group)) {
+			return(this->visitWindShearLowLayerGroup(std::get<WindShearLowLayerGroup>(group)));
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
 			return(this->visitRainfallGroup(std::get<RainfallGroup>(group)));
@@ -1271,6 +1310,10 @@ namespace metaf {
 		}
 		if (std::holds_alternative<RunwayStateGroup>(group)) {
 			this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<WindShearLowLayerGroup>(group)) {
+			this->visitWindShearLowLayerGroup(std::get<WindShearLowLayerGroup>(group));
 			return;
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
@@ -1949,11 +1992,16 @@ namespace metaf {
 			if (group == "SNOCLO") return(FixedGroup(Type::R_SNOCLO));
 			if (group == "R/SNOCLO") return(FixedGroup(Type::R_SNOCLO));
 		}
+		if (reportPart == ReportPart::TAF) {
+			if (group == "WSCONDS") return(FixedGroup(Type::WSCONDS));
+		}
+
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 			if (group == "CAVOK") return(FixedGroup(Type::CAVOK));
 			if (group == "NSW") return(FixedGroup(Type::NSW));
 			if (group == "RMK") return(FixedGroup(Type::RMK));
 		}
+		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
 	}
 
@@ -2562,6 +2610,20 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
+	std::optional<float> TemperatureGroup::relativeHumidity() const {
+		const auto temperatureC = airTemperature().toUnit(Temperature::Unit::C);
+		const auto dewPointC = dewPoint().toUnit(Temperature::Unit::C);
+		if (!temperatureC.has_value() || !dewPointC.has_value()) {
+			return(std::optional<float>());
+		}
+		if (*temperatureC < *dewPointC) return(100.0);
+		const auto saturationVapourPressure = 
+			6.11 * powf(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
+		const auto actualVapourPressure = 
+			6.11 * powf(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
+		return (100.0 * actualVapourPressure / saturationVapourPressure);
+	}
+
 	bool TemperatureGroup::isValid() const {
 		// Either temperature or dew point not reported: always valid
 		if (!airTemperature().temperature().has_value() || 
@@ -2790,6 +2852,53 @@ namespace metaf {
 		}
 	}
 
+	///////////////////////////////////////////////////////////////////////////////
+
+	std::optional<WindShearLowLayerGroup> WindShearLowLayerGroup::parse(
+			const std::string & group,
+			ReportPart reportPart)
+	{
+		static const std::optional<WindShearLowLayerGroup> notRecognised;
+		if (reportPart != ReportPart::METAR) return(notRecognised);
+		if (group == "WS") return(WindShearLowLayerGroup());
+		return(notRecognised);
+	}
+
+	std::optional<Group> WindShearLowLayerGroup::combine(const Group & nextGroup) const { 
+		static const std::optional<WindShearLowLayerGroup> notCombined;
+		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
+		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
+		WindShearLowLayerGroup combinedGroup = *this;
+
+		switch (status) {
+			case Status::COMPLETE:
+			return(notCombined);
+
+			case Status::INCOMPLETE_WS:
+			if (nextGroupStr == "ALL") {
+				combinedGroup.status = Status::INCOMPLETE_WS_ALL;
+				return(combinedGroup);
+			}
+			if (const auto runway = Runway::fromString(nextGroupStr); runway.has_value()) {
+				combinedGroup.status = Status::COMPLETE;
+				combinedGroup.rw = *runway;
+				return(combinedGroup);
+			} 
+			return(notCombined);
+
+			case Status::INCOMPLETE_WS_ALL:
+			if (nextGroupStr == "RWY") {
+				combinedGroup.status = Status::COMPLETE;
+				combinedGroup.rw = Runway::makeAllRunways();
+				return(combinedGroup);
+			}
+			return(notCombined);
+
+			default:
+			return(notCombined);
+		}
+	}
+
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<RainfallGroup> RainfallGroup::parse(const std::string & group, 
@@ -2876,24 +2985,19 @@ namespace metaf {
 	SyntaxGroup getSyntaxGroup(const Group & group) {
 		if (auto fixedGroup = std::get_if<FixedGroup>(&group)) {
 			switch (fixedGroup->type()) {
-				case FixedGroup::Type::METAR:
-				return(SyntaxGroup::METAR);
-				case FixedGroup::Type::SPECI:
-				return(SyntaxGroup::SPECI);
-				case FixedGroup::Type::TAF:
-				return(SyntaxGroup::TAF);
-				case FixedGroup::Type::COR:
-				return(SyntaxGroup::COR);
-				case FixedGroup::Type::AMD:
-				return(SyntaxGroup::AMD);
-				case FixedGroup::Type::NIL:
-				return(SyntaxGroup::NIL);
-				case FixedGroup::Type::CNL:
-				return(SyntaxGroup::CNL);
-				case FixedGroup::Type::RMK:
-				return(SyntaxGroup::RMK);
-				default:
-				return(SyntaxGroup::OTHER);
+				case FixedGroup::Type::METAR:	return(SyntaxGroup::METAR);
+				case FixedGroup::Type::SPECI:	return(SyntaxGroup::SPECI);
+				case FixedGroup::Type::TAF:		return(SyntaxGroup::TAF);
+				case FixedGroup::Type::COR:		return(SyntaxGroup::COR);
+				case FixedGroup::Type::AMD:		return(SyntaxGroup::AMD);
+				case FixedGroup::Type::NIL:		return(SyntaxGroup::NIL);
+				case FixedGroup::Type::CNL:		return(SyntaxGroup::CNL);
+				case FixedGroup::Type::RMK:		return(SyntaxGroup::RMK);
+				
+				case FixedGroup::Type::MAINTENANCE_INDICATOR:
+				return(SyntaxGroup::MAINTENANCE_INDICATOR);
+				
+				default:						return(SyntaxGroup::OTHER);
 			}
 		}
 		if (std::get_if<LocationGroup>(&group)) return(SyntaxGroup::LOCATION);
@@ -3029,11 +3133,13 @@ namespace metaf {
 			case State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE:
 			if (group == SyntaxGroup::NIL) return(State::NIL);
 			if (group == SyntaxGroup::CNL) return(parseError(Error::CNL_ALLOWED_IN_TAF_ONLY));
-			if (group == SyntaxGroup::RMK) return(State::REMARK);
+			if (group == SyntaxGroup::RMK) return(State::REMARK_METAR);
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
 			return(State::REPORT_BODY_METAR);
 
 			case State::REPORT_BODY_METAR:
-			if (group == SyntaxGroup::RMK) return(State::REMARK);
+			if (group == SyntaxGroup::RMK) return(State::REMARK_METAR);
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
 			if (group == SyntaxGroup::NIL || group == SyntaxGroup::CNL) {
 				return(parseError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY));
 			}
@@ -3042,18 +3148,34 @@ namespace metaf {
 			case State::REPORT_BODY_BEGIN_TAF:
 			if (group == SyntaxGroup::NIL) return(State::NIL);
 			if (group == SyntaxGroup::CNL) return(State::CNL);
-			if (group == SyntaxGroup::RMK) return(State::REMARK);
-			return(State::REPORT_BODY_TAF);
-
-			case State::REPORT_BODY_TAF:
-			if (group == SyntaxGroup::RMK) return(State::REMARK);
-			if (group == SyntaxGroup::NIL || group == SyntaxGroup::CNL) {
-				return(parseError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY));
+			if (group == SyntaxGroup::RMK) return(State::REMARK_TAF);
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
+				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
 			}
 			return(State::REPORT_BODY_TAF);
 
-			case State::REMARK:
-			return(State::REMARK);
+			case State::REPORT_BODY_TAF:
+			if (group == SyntaxGroup::RMK) return(State::REMARK_TAF);
+			if (group == SyntaxGroup::NIL || group == SyntaxGroup::CNL) {
+				return(parseError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY));
+			}
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
+				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
+			}
+			return(State::REPORT_BODY_TAF);
+
+			case State::REMARK_METAR:
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
+			return(State::REMARK_METAR);
+
+			case State::REMARK_TAF:
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
+				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
+			}
+			return(State::REMARK_TAF);
+
+			case State::MAINTENANCE_INDICATOR:
+			return(parseError(Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR));
 
 			case State::NIL:
 			return(parseError(Error::UNEXPECTED_GROUP_AFTER_NIL));
@@ -3082,7 +3204,9 @@ namespace metaf {
 			std::make_pair(State::REPORT_BODY_METAR, ReportPart::METAR),
 			std::make_pair(State::REPORT_BODY_BEGIN_TAF, ReportPart::TAF),
 			std::make_pair(State::REPORT_BODY_TAF, ReportPart::TAF),
-			std::make_pair(State::REMARK, ReportPart::RMK),
+			std::make_pair(State::REMARK_METAR, ReportPart::RMK),
+			std::make_pair(State::REMARK_TAF, ReportPart::RMK),
+			std::make_pair(State::MAINTENANCE_INDICATOR, ReportPart::UNKNOWN),
 			std::make_pair(State::NIL, ReportPart::UNKNOWN),
 			std::make_pair(State::CNL, ReportPart::UNKNOWN),
 			std::make_pair(State::ERROR, ReportPart::UNKNOWN)
@@ -3097,7 +3221,9 @@ namespace metaf {
 		switch (state) {
 			case State::REPORT_BODY_METAR:
 			case State::REPORT_BODY_TAF:
-			case State::REMARK:
+			case State::REMARK_METAR:
+			case State::REMARK_TAF:
+			case State::MAINTENANCE_INDICATOR:
 			case State::NIL:
 			case State::CNL:
 			case State::ERROR:

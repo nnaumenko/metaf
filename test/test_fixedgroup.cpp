@@ -206,6 +206,46 @@ TEST(FixedGroup, parseRmk) {
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK).has_value());
 }
 
+TEST(FixedGroup, parseMaintenanceIndicator) {
+	static const char gs[] = "$";
+	static const auto type = metaf::FixedGroup::Type::MAINTENANCE_INDICATOR;
+
+	auto fg1 = metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN);
+	ASSERT_TRUE(fg1.has_value());
+	EXPECT_EQ(fg1->type(), type);
+
+	auto fg2 = metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER);
+	ASSERT_TRUE(fg2.has_value());
+	EXPECT_EQ(fg2->type(), type);
+
+	auto fg3 = metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR);
+	ASSERT_TRUE(fg3.has_value());
+	EXPECT_EQ(fg3->type(), type);
+
+	auto fg4 = metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF);
+	ASSERT_TRUE(fg4.has_value());
+	EXPECT_EQ(fg4->type(), type);
+
+	auto fg5 = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg5.has_value());
+	EXPECT_EQ(fg5->type(), type);
+
+}
+
+TEST(FixedGroup, parseWsconds) {
+	static const char gs[] = "WSCONDS";
+	static const auto type = metaf::FixedGroup::Type::WSCONDS;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK).has_value());
+}
+
 TEST(FixedGroup, parseOther) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::FixedGroup::parse("METAF", metaf::ReportPart::HEADER).has_value());
@@ -261,4 +301,8 @@ TEST(FixedGroup, isValid) {
 	const auto fg12 = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
 	ASSERT_TRUE(fg12.has_value());
 	EXPECT_TRUE(fg12->isValid());
+
+	const auto fg13 = metaf::FixedGroup::parse("WSCONDS", metaf::ReportPart::TAF);
+	ASSERT_TRUE(fg13.has_value());
+	EXPECT_TRUE(fg13->isValid());
 }

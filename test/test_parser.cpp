@@ -118,6 +118,12 @@ static bool isRmk(const metaf::Group & group) {
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::RMK);
 }
 
+static bool isMaintenanceIndicator(const metaf::Group & group) {
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	return (std::get<metaf::FixedGroup>(group).type() == 
+		metaf::FixedGroup::Type::MAINTENANCE_INDICATOR);
+}
+
 static bool isLocation(const metaf::Group & group) {
 	return (std::holds_alternative<metaf::LocationGroup>(group));
 }
@@ -1145,6 +1151,108 @@ TEST(ParserSyntaxDesignatorsAndSeparators, strayTextAfterReportEndDesignator) {
 	EXPECT_TRUE(isWind(parser2.getResult().at(4)));
 	EXPECT_TRUE(isVisibility(parser2.getResult().at(5)));
 	EXPECT_TRUE(isCloud(parser2.getResult().at(6)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfMetar) {
+	metaf::Parser parser;
+	EXPECT_TRUE(parser.parse(
+		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
+		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfMetarRemark) {
+	metaf::Parser parser;
+	EXPECT_TRUE(parser.parse(
+		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
+		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, 
+	maintenanceIndicatorAtTheEndOfMetarRemarkWithReportEndDesignator)
+{
+	metaf::Parser parser;
+	EXPECT_TRUE(parser.parse(
+		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
+		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $="));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::NONE);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfTaf) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035 $"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::TAF);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfTafRemark) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035 RMK TEST $"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::TAF);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfMetar) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR $ 02/00 A2954"
+		" RMK AO2 SLP989 T00150003 58001 PNO TSNO"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfMetarRemark) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
+		" RMK AO2 SLP989 T00150003 $ 58001 PNO TSNO"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfTaf) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"TAF ENLE 101100Z 1012/1021 24028KT 9999 $ FEW020TCU BKN035"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::TAF);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfTafRemark) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse(
+		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035 RMK TEST $ TEST"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::TAF);
+	EXPECT_EQ(parser.getError(), 
+		metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+	EXPECT_TRUE(isMaintenanceIndicator(parser.getResult().back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAfterNil) {
+	metaf::Parser parser;
+	EXPECT_FALSE(parser.parse("METAR ZZZZ 041115Z NIL $"));
+	EXPECT_EQ(parser.getReportType(), metaf::ReportType::METAR);
+	EXPECT_EQ(parser.getError(), metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_NIL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

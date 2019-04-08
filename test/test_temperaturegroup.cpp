@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.h"
 
+static const auto rhMargin = 0.1;
+
 TEST(Temperature, parseTemperatureAndDewPoint) {
 	const auto tg = metaf::TemperatureGroup::parse("25/18", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
@@ -174,4 +176,30 @@ TEST(Temperature, isValidFalse) {
 	const auto tg2 = metaf::TemperatureGroup::parse("M00/00", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_FALSE(tg2->isValid());
+}
+
+TEST(Temperature, relativeHumidity) {
+	const auto tg1 = metaf::TemperatureGroup::parse("25/25", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg1.has_value());
+	ASSERT_TRUE(tg1->isValid());
+	const auto rh1 = tg1->relativeHumidity();
+	EXPECT_NEAR(*rh1, 100.0, rhMargin);
+
+	const auto tg2 = metaf::TemperatureGroup::parse("25/26", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg2.has_value());
+	ASSERT_FALSE(tg2->isValid());
+	const auto rh2 = tg2->relativeHumidity();
+	EXPECT_NEAR(*rh2, 100.0, rhMargin);
+
+	const auto tg3 = metaf::TemperatureGroup::parse("35/05", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg3.has_value());
+	ASSERT_TRUE(tg3->isValid());
+	const auto rh3 = tg3->relativeHumidity();
+	EXPECT_NEAR(*rh3, 15.6, rhMargin);
+
+	const auto tg4 = metaf::TemperatureGroup::parse("17/08", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg4.has_value());
+	ASSERT_TRUE(tg4->isValid());
+	const auto rh4 = tg4->relativeHumidity();
+	EXPECT_NEAR(*rh4, 55.4, rhMargin);
 }

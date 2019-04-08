@@ -111,3 +111,7 @@ TEST(Runway, isValidSpecialCodesIncorrectDesignator) {
 	EXPECT_FALSE(metaf::Runway::fromString("R99C").value().isValid());
 	EXPECT_FALSE(metaf::Runway::fromString("R99L").value().isValid());
 }
+
+TEST(Runway, makeAllRunways) {
+	EXPECT_TRUE(metaf::Runway::makeAllRunways().isAllRunways());
+}

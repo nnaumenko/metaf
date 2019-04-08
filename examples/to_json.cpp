@@ -146,6 +146,7 @@ private:
 	virtual void visitPressureGroup(const metaf::PressureGroup & group);
 	virtual void visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group);
 	virtual void visitRunwayStateGroup(const metaf::RunwayStateGroup & group);
+	virtual void visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group);
 	virtual void visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group);
@@ -305,6 +306,18 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		isTrend = false;
 		json.startObject("remarks");
 		break;
+
+		case metaf::FixedGroup::Type::MAINTENANCE_INDICATOR:
+		if (isTrend) {
+			json.finish(); //Current trend object
+			json.finish(); //Trends array
+		}
+		isTrend = false;
+		json.valueBool("stationMaintenanceRequired", true);
+		break;
+
+		case metaf::FixedGroup::Type::WSCONDS:
+		json.valueBool("conditionsForWindShearPresent", true);
 
 		default:
 		json.startObject("fixedGroup");
@@ -499,6 +512,10 @@ void GroupVisitorJson::visitTemperatureGroup(const metaf::TemperatureGroup & gro
 		"dewPoint", 
 		"dewPointUnit", 
 		"dewPointFreezing");
+	if (auto rh = group.relativeHumidity(); rh.has_value()) {
+		json.valueFloat("airRelativeHumidify", *rh);
+		json.valueStr("airRelativeHumidifyUnit", "percent");
+	}
 	if (!group.isValid()) {
 		json.valueBool("airTemperatureValid", false);
 		json.valueBool("dewPointValid", false);
@@ -596,6 +613,16 @@ void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & gro
 			json.valueStr("status", undefinedToString(static_cast<int>(group.status())));
 	}
 	json.finish();
+}
+
+void GroupVisitorJson::visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
+	if (!group.isValid()) json.valueBool("windShearInLowerLayersValid", false);
+	if (group.isValid()) {
+		runwayToJson(group.runway(), 
+		"windShearInLowerLayersAtRunway", 
+		"windShearInLowerLayersAtRunwayDesignator", 
+		"windShearInLowerLayersLastMessageRepetition");
+	}
 }
 
 void GroupVisitorJson::visitRainfallGroup(const metaf::RainfallGroup & group) {

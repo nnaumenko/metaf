@@ -56,6 +56,12 @@ TEST(getSyntaxGroup, RMK) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::RMK);
 }
 
+TEST(getSyntaxGroup, maintenanceIndicator) {
+	const auto g = metaf::FixedGroup::parse("$", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::MAINTENANCE_INDICATOR);
+}
+
 TEST(getSyntaxGroup, LOCATION) {
 	const auto g = metaf::LocationGroup::parse("UKLL", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(g.has_value());
@@ -94,6 +100,12 @@ TEST(getSyntaxGroup, OTHER_CAVOK) {
 
 TEST(getSyntaxGroup, OTHER_NSW) {
 	const auto g = metaf::FixedGroup::parse("NSW", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_WSCONDS) {
+	const auto g = metaf::FixedGroup::parse("WSCONDS", metaf::ReportPart::TAF);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

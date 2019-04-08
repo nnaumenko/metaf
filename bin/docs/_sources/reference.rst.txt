@@ -907,7 +907,7 @@ WaveHeight
 Group
 -----
 
-.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
+.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, WindShearLowLayerGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:func:`metaf::Parser::getResult()`).
 
@@ -1072,6 +1072,12 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 			This group is only used in trends and indicates the end of a significant weather phenomena.
 
+		.. index:: single: Wind Shear; Forecast conditions
+
+		.. cpp:enumerator:: WSCONDS
+
+			This group indicates that potential wind shear conditions are present but there's not enough information to reliably forecast height, direction and speed of wind shear.
+
 		.. index:: single: Remarks
 
 		.. cpp:enumerator:: RMK
@@ -1079,6 +1085,13 @@ The following syntax corresponds to this group in METAR/TAF reports.
 			This group designates the beginning of the remarks.
 
 			Remarks are currently interpreted as plain text.
+
+		.. index:: single: Maintenance indicator
+
+		.. cpp:enumerator:: MAINTENANCE_INDICATOR
+
+			This group indicates that one ore more systems of automated station require maintenance.
+
 
 	**Acquiring group data**
 
@@ -1962,6 +1975,10 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 
 			:returns: Dew point.
 
+		.. cpp:function:: std::optional<float> relativeHumidity() const
+
+			:returns: Relative humidity value based on ambient air temperature and dew point or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
+
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
@@ -2314,6 +2331,37 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid and :cpp:enum:`Extent` returned by :cpp:func:`contaminationExtent()` is not a reserved value.
 
+.. index:: single: Wind Shear; Lower Layers
+
+.. index:: single: Group; Wind shear in the lower layers
+
+WindShearLowLayerGroup
+^^^^^^^^^^^^^^^^^^^^^^
+
+The following syntax corresponds to this group in METAR reports.
+
+.. image:: windshearlowlayergroup.svg
+
+Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
+
+.. cpp:class:: WindShearLowLayerGroup
+
+	Stores information on the existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations.
+
+	**Acquiring group data**
+
+	.. cpp:function:: Runway runway() const
+
+		:returns: Runway for which the wind shear in the lower layers is specified or 'all runways' for ``WS ALL RWY``.
+
+		..warning:: If :cpp:func:`isValid()` returns ``false`` then runway value returned by the method runway() is not valid and should be disregarded.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: ``true`` if the specified runway is valid and the complete sequence of groups following syntax diagram above was specified, and ``false`` otherwise. For example sequences of groups such as ``WS X32``, ``WS ALL``, and ``WS WS`` result in the invalid groups of this type.
+
 
 .. index:: single: Rainfall
 
@@ -2591,6 +2639,11 @@ Parser
 			.. note: CNL means canceled report, thus including groups in report body are not allowed.
 
 
+		.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR
+
+			This error occurs if any group is encountered after maintenance indicator '$'. (see :cpp:enumerator:`metaf::FixedGroup::MAINTENANCE_INDICATOR`).
+
+
 		.. cpp:enumerator:: UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY
 
 			This error occurs if NIL or CNL are found in the middle of non-empty reports (see :cpp:enumerator:`metaf::FixedGroup::NIL` and :cpp:enumerator:`metaf::FixedGroup::CNL`).
@@ -2604,6 +2657,7 @@ Parser
 
 			.. note: COR (see :cpp:enumerator:`metaf::FixedGroup::COR`) may be used in both METAR and TAF reports.
 
+
 		.. cpp:enumerator:: CNL_ALLOWED_IN_TAF_ONLY
 
 			Group CNL which designates canceled report (see :cpp:enumerator:`metaf::FixedGroup::CNL`) is only used in TAF reports. 
@@ -2611,6 +2665,14 @@ Parser
 			Since METAR reports contain the actual weather observation, canceling a METAR report is a semantic error.
 
 			This error occurs if CNL is encountered in a METAR report in place of NIL.
+
+
+		.. cpp:enumerator:: MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
+
+			Maintenance indicator is used for weather reports produced by automated station and cannot be included in TAF.
+
+			This error occurs if maintenance indicator ($) is encountered in a TAF report.
+
 
 		.. cpp:enumerator:: INTERNAL_PARSER_STATE
 

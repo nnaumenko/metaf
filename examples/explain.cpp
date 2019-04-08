@@ -37,6 +37,7 @@ private:
 	virtual std::string visitPressureGroup(const metaf::PressureGroup & group);
 	virtual std::string visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group);
 	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group);
+	virtual std::string visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group);
 	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group);
@@ -75,7 +76,6 @@ private:
 	static unsigned int colourCodeVisibility(metaf::ColourCodeGroup::Code code);
 	static unsigned int colourCodeCeiling(metaf::ColourCodeGroup::Code code);
 
-	static float calculateRelHumidity(float temperatureC, float dewPointC);
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
 
 	static const inline std::string lineBreak = std::string("<br>");
@@ -149,6 +149,12 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		case metaf::FixedGroup::Type::RMK:
 		result << "The remarks are as follows" << lineBreak;
 		result << "Note: this version does not recognise or decode remarks";
+		break;
+
+		case metaf::FixedGroup::Type::WSCONDS:
+		result << "Potential wind shear conditions are present ";
+		result << "but there's not enough information to reliably forecast ";
+		result << "height, direction and speed of wind shear";
 		break;
 
 		default:
@@ -325,13 +331,8 @@ std::string GroupVisitorExplain::visitTemperatureGroup(const metaf::TemperatureG
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Air temperature: " << explainTemperature(group.airTemperature()) << lineBreak;
 	result << "Dew point: " << explainTemperature(group.dewPoint()) << lineBreak;
-	if (const auto [t, dp] = std::pair(	
-			group.airTemperature().toUnit(metaf::Temperature::Unit::C),
-			group.dewPoint().toUnit(metaf::Temperature::Unit::C));
-		t.has_value() && dp.has_value())
-	{
-		const auto rh = calculateRelHumidity(*t, *dp);
-		result << "Relative humidity: " << static_cast<int>(rh) << " percent";
+	if (const auto rh = group.relativeHumidity(); rh.has_value()) {
+		result << "Relative humidity: " << static_cast<int>(*rh) << " percent"; 
 	}
 	return(result.str());
 }
@@ -417,6 +418,19 @@ std::string GroupVisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateG
 	}
 	return(result.str());
 }
+
+std::string GroupVisitorExplain::visitWindShearLowLayerGroup(
+	const metaf::WindShearLowLayerGroup & group)
+{
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	result << "Wind shear significant to aircraft operations is present along ";
+	result << "the take-off path or approach path ";
+	result << "between runway level and 500 metres (1 600 ft)";
+	if (group.isValid()) result << " at " << explainRunway(group.runway());
+	return(result.str());
+}
+
 
 std::string GroupVisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group) {
 	std::ostringstream result;
@@ -1279,15 +1293,6 @@ unsigned int GroupVisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code
 		case metaf::ColourCodeGroup::Code::RED:		return(200);
 		default:									return(0);
 	}
-}
-
-float GroupVisitorExplain::calculateRelHumidity(float temperatureC, float dewPointC) {
-	if (temperatureC < dewPointC) return(100);
-	const auto saturationVapourPressure = 
-		6.11 * powf(10, 7.5 * temperatureC / (237.7 + temperatureC));
-	const auto actualVapourPressure = 
-		6.11 * powf(10, 7.5 * dewPointC / (237.7 + dewPointC));
-	return (100 * actualVapourPressure / saturationVapourPressure);
 }
 
 std::string GroupVisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint) {
