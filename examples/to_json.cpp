@@ -1085,6 +1085,9 @@ std::string GroupVisitorJson::parserErrorToString(metaf::Parser::Error error) {
 				
 		case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_CNL:
 		return("unexpected group after CNL");
+
+		case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
+		return("unexpected group after maintenance indicator");
 				
 		case metaf::Parser::Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 		return("unexpected NIL or CNL in report body");
@@ -1094,7 +1097,10 @@ std::string GroupVisitorJson::parserErrorToString(metaf::Parser::Error error) {
 				
 		case metaf::Parser::Error::CNL_ALLOWED_IN_TAF_ONLY:
 		return("CNL is allowed only in TAF reports");
-				
+
+		case metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
+		return("Maintenance indicator is allowed only in METAR reports");
+
 		case metaf::Parser::Error::INTERNAL_PARSER_STATE:
 		return("internal error: unknown parser state");
 				
