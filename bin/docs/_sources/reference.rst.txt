@@ -960,9 +960,13 @@ PlainTextGroup
 FixedGroup
 ^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
+The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
 
 .. image:: fixedgroup.svg
+
+The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
+
+.. image:: fixedgrouprmk.svg
 
 .. cpp:class:: FixedGroup
 
@@ -1084,7 +1088,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 			This group designates the beginning of the remarks.
 
-			Remarks are currently interpreted as plain text.
+			Remarks may contain plain-language, manual and automatically generated texts. Remarks typically augment information provided in the METAR or TAF report body.
 
 		.. index:: single: Maintenance indicator
 
@@ -1092,6 +1096,71 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 			This group indicates that one ore more systems of automated station require maintenance.
 
+		.. index:: single: Automated report; without precipitation discriminator
+
+		.. cpp:enumerator:: AO1
+
+			Indicates an automated station without precipitation discriminator.
+
+		.. index:: single: Automated report; with precipitation discriminator
+
+		.. cpp:enumerator:: AO2
+
+			Indicates an automated station with precipitation discriminator.
+
+		.. index:: single: Report; No SPECI reports
+
+		.. cpp:enumerator:: NOSPECI
+
+			Indicates a manual station where SPECI (unscheduled) reports are not issued.
+
+		.. index:: single: Atmospheric pressure; Falling rapidly
+
+		.. cpp:enumerator:: PRESFR
+
+			Pressure is rapidly falling at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
+
+		.. index:: single: Atmospheric pressure; Rising rapidly
+
+		.. cpp:enumerator:: PRESRR
+
+			Pressure is rapidly rising at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
+
+		.. index:: single: Runway visual range; Missing
+
+		.. cpp:enumerator:: RVRNO
+
+			Runway visual range should be reported but is missing.
+
+		.. index:: single: Automated report; Weather identifier failure
+
+		.. cpp:enumerator:: PWINO
+
+			Indicates that automated station is equipped with present weather identifier and this sensor is not operating.
+
+		.. index:: single: Automated report; Tipping bucket rain gauge failure
+
+		.. cpp:enumerator:: PNO
+
+			Indicates that automated station is equipped with tipping bucket rain gauge and this sensor is not operating.
+
+		.. index:: single: Automated report; Freezing rain sensor failure
+
+		.. cpp:enumerator:: FZRANO
+
+			Indicates that automated station is equipped with freezing rain sensor and this sensor is not operating.
+
+		.. index:: single: Automated report; Lightning detector failure
+
+		.. cpp:enumerator:: TSNO
+
+			Indicates that automated station is equipped with lightning detector and this sensor is not operating.
+
+		.. index:: single: Atmospheric pressure; Sea-level pressure not available
+
+		.. cpp:enumerator:: SLPNO
+
+			Mean sea-level pressure information is not available.
 
 	**Acquiring group data**
 
@@ -2005,15 +2074,15 @@ Examples of the raw report data are ``TX15/3111Z`` and ``TN00/3103Z``.
 
 	Stores information about forecast ambient air temperature along with the time when it is expected.
 
-		..cpp:enum-class:: Point
+		.. cpp:enum-class:: Point
 
 			Temperature point for which the forecast is reported.
 			
-			..cpp:enumerator:: MINIMUM
+			.. cpp:enumerator:: MINIMUM
 
 				Forecast for minimum temperature is reported.
 
-			..cpp:enumerator:: MAXIMUM
+			.. cpp:enumerator:: MAXIMUM
 
 				Forecast for maximum temperature is reported.
 
@@ -2051,13 +2120,31 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuregroup.svg
 
-Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``.
+Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``, ``QNH2981INS``.
 
 .. cpp:class:: PressureGroup
 
-	Stores information about current atmopheric pressure.
+	Stores information about observed or forecast atmospheric pressure.
+
+	.. cpp:enum-class:: Type
+
+		.. index:: single: Atmospheric pressure; Mean sea-level pressure
+
+		.. cpp:enumerator:: OBSERVED_QNH
+
+			Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. ``Q1020`` or ``A2981``).
+
+		.. index:: single: Atmospheric pressure; Lowest sea-level pressure forecast
+
+		.. cpp:enumerator:: FORECAST_LOWEST_QNH
+
+			Indicates that group contains a forecast lowest sea level pressure, (e.g. ``QNH2981INS``). This group is reported by military aerodromes of NATO countries.
 
 	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of the pressure value (observed or forecast).
 
 		.. cpp:function:: Pressure atmosphericPressure() const
 
@@ -2089,27 +2176,27 @@ Examples of the raw report data are ``R24/P6000FT``, ``R31/0200N``, ``R26/0325N`
 
 	.. index:: single: Runway visual range; Trend
 
-	..cpp:enum-class:: Trend
+	.. cpp:enum-class:: Trend
 		
 		Trend of runway visual range variation.
 
-		..cpp:enumerator:: NONE
+		.. cpp:enumerator:: NONE
 
 			Trend is not specified in group.
 
-		..cpp:enumerator:: NOT_REPORTED
+		.. cpp:enumerator:: NOT_REPORTED
 
 			Trend is specified as not reported.
 
-		..cpp:enumerator:: UPWARD
+		.. cpp:enumerator:: UPWARD
 
 			Trend is upward (runway visual range increases / improves).
 
-		..cpp:enumerator:: NEUTRAL
+		.. cpp:enumerator:: NEUTRAL
 
 			Trend is neutral (no significant changes to runway visual range).
 
-		..cpp:enumerator:: DOWNWARD
+		.. cpp:enumerator:: DOWNWARD
 
 			Trend is downward (runway visual range decreases / deteriorates).
 
@@ -2169,19 +2256,19 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		Option for the type of runway state reported: normal group with all values, CLRD group with surface friction value only, and SNOCLO group without any values.
 
-		..cpp:enumerator:: NORMAL
+		.. cpp:enumerator:: NORMAL
 
 			Normal type of runway state group. Runway deposits, runway contamination extent, deposit depth, and surface friction are specified in this group (any value or values may be non-reported).
 
 		.. index:: single: Runway state; Deposits cleared
 
-		..cpp:enumerator:: CLRD
+		.. cpp:enumerator:: CLRD
 
 			Runway state group indicating that previously present deposits on runway were cleared or ceased to exist. Only surface friction is specified (as an actual value or non-reported value).
 
 		.. index:: single: Runway state; Runway closed due to snow accumulation
 
-		..cpp:enumerator:: SNOCLO
+		.. cpp:enumerator:: SNOCLO
 
 			Runway state group indicating that the runway is closed due to snow accumulation. No further values are specified.
 
@@ -2191,47 +2278,47 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		Deposits on the runway.
 
-		..cpp:enumerator:: CLEAR_AND_DRY
+		.. cpp:enumerator:: CLEAR_AND_DRY
 
 			No deposits; runway is clear and dry.
 
-		..cpp:enumerator:: DAMP
+		.. cpp:enumerator:: DAMP
 
 			Runway is damp.
 
-		..cpp:enumerator:: WET_AND_WATER_PATCHES
+		.. cpp:enumerator:: WET_AND_WATER_PATCHES
 
 			Runway is wet and water patches are present.
 
-		..cpp:enumerator:: RIME_AND_FROST_COVERED
+		.. cpp:enumerator:: RIME_AND_FROST_COVERED
 
 			Runway is covered in frost / rime.
 
-		..cpp:enumerator:: DRY_SNOW
+		.. cpp:enumerator:: DRY_SNOW
 
 			Dry snow on runway.
 
-		..cpp:enumerator:: WET_SNOW
+		.. cpp:enumerator:: WET_SNOW
 
 			Wet snow on runway.
 
-		..cpp:enumerator:: SLUSH
+		.. cpp:enumerator:: SLUSH
 
 			Slush on runway.
 
-		..cpp:enumerator:: ICE
+		.. cpp:enumerator:: ICE
 
 			Ice on runway.
 
-		..cpp:enumerator:: COMPACTED_OR_ROLLED_SNOW
+		.. cpp:enumerator:: COMPACTED_OR_ROLLED_SNOW
 
 			Compacted or rolled snow on runway.
 
-		..cpp:enumerator:: FROZEN_RUTS_OR_RIDGES
+		.. cpp:enumerator:: FROZEN_RUTS_OR_RIDGES
 
 			Runway covered in frozen mass of snow or ice with ruts and riges.
 
-		..cpp:enumerator:: NOT_REPORTED
+		.. cpp:enumerator:: NOT_REPORTED
 
 			Deposits on runway are not reported.
 
@@ -2241,47 +2328,47 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		The extent of runway contamination with the deposits (:cpp:enum:`Deposits`). Represents how much of total runway surface is contaminated. 
 
-		..cpp:enumerator:: NONE
+		.. cpp:enumerator:: NONE
 
 			No deposits on the runway.
 
-		..cpp:enumerator:: LESS_THAN_10_PERCENT
+		.. cpp:enumerator:: LESS_THAN_10_PERCENT
 
 			Less than 10% of runway contaminated.
 
-		..cpp:enumerator:: FROM_11_TO_25_PERCENT
+		.. cpp:enumerator:: FROM_11_TO_25_PERCENT
 
 			Less than 11% to 25% of runway contaminated.
 
-		..cpp:enumerator:: RESERVED_3
+		.. cpp:enumerator:: RESERVED_3
 
 			Reserved value; should not be used.
 
-		..cpp:enumerator:: RESERVED_4
+		.. cpp:enumerator:: RESERVED_4
 
 			Reserved value; should not be used.
 
-		..cpp:enumerator:: FROM_26_TO_50_PERCENT
+		.. cpp:enumerator:: FROM_26_TO_50_PERCENT
 
 			From 26% to 50% of runway contaminated.
 
-		..cpp:enumerator:: RESERVED_6
+		.. cpp:enumerator:: RESERVED_6
 
 			Reserved value; should not be used.
 
-		..cpp:enumerator:: RESERVED_7
+		.. cpp:enumerator:: RESERVED_7
 
 			Reserved value; should not be used.
 
-		..cpp:enumerator:: RESERVED_8
+		.. cpp:enumerator:: RESERVED_8
 
 			Reserved value; should not be used.
 
-		..cpp:enumerator:: MORE_THAN_51_PERCENT
+		.. cpp:enumerator:: MORE_THAN_51_PERCENT
 
 			More than 51% of runway surface 
 
-		..cpp:enumerator:: NOT_REPORTED
+		.. cpp:enumerator:: NOT_REPORTED
 
 			Contamination extent not reported.
 
@@ -2456,47 +2543,47 @@ Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2`
 
 	.. index:: single: Colour code
 
-	..cpp:enum-class: Code
+	.. cpp:enum-class: Code
 
 		.. index:: single: Colour code; Blue
 
-		..cpp:enumerator:: BLUE
+		.. cpp:enumerator:: BLUE
 
 			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
 		
 		.. index:: single: Colour code; White
 
-		..cpp:enumerator:: WHITE
+		.. cpp:enumerator:: WHITE
 
 			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
 
 		.. index:: single: Colour code; Green
 
-		..cpp:enumerator:: GREEN
+		.. cpp:enumerator:: GREEN
 
 			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
 
 		.. index:: single: Colour code; Yellow1
 
-		..cpp:enumerator:: YELLOW1
+		.. cpp:enumerator:: YELLOW1
 
 			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
 
 		.. index:: single: Colour code; Yellow2
 
-		..cpp:enumerator:: YELLOW2
+		.. cpp:enumerator:: YELLOW2
 
 			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
 
 		.. index:: single: Colour code; Amber
 
-		..cpp:enumerator:: AMBER
+		.. cpp:enumerator:: AMBER
 
 			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
 
 		.. index:: single: Colour code; Red
 
-		..cpp:enumerator:: RED
+		.. cpp:enumerator:: RED
 
 			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
 

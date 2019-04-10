@@ -124,6 +124,10 @@ static bool isMaintenanceIndicator(const metaf::Group & group) {
 		metaf::FixedGroup::Type::MAINTENANCE_INDICATOR);
 }
 
+static bool isFixedGroup(const metaf::Group & group) {
+	return (std::holds_alternative<metaf::FixedGroup>(group));
+}
+
 static bool isLocation(const metaf::Group & group) {
 	return (std::holds_alternative<metaf::LocationGroup>(group));
 }
@@ -1311,7 +1315,7 @@ TEST(Parser, keepSourceGroups) {
 	EXPECT_TRUE(isRmk(parser.getResult().at(10)));
 	EXPECT_EQ(parser.getSourceGroups().at(10), "RMK");
 
-	EXPECT_TRUE(isPlainText(parser.getResult().at(11), "AO2"));
+	EXPECT_TRUE(isFixedGroup(parser.getResult().at(11)));
 	EXPECT_EQ(parser.getSourceGroups().at(11), "AO2");
 
 	EXPECT_TRUE(isPlainText(parser.getResult().at(12), "SFC"));

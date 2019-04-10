@@ -110,6 +110,72 @@ TEST(getSyntaxGroup, OTHER_WSCONDS) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_AO1) {
+	const auto g = metaf::FixedGroup::parse("AO1", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_AO2) {
+	const auto g = metaf::FixedGroup::parse("AO2", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_NOSPECI) {
+	const auto g = metaf::FixedGroup::parse("NOSPECI", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PRESFR) {
+	const auto g = metaf::FixedGroup::parse("PRESFR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PRESRR) {
+	const auto g = metaf::FixedGroup::parse("PRESRR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_RVRNO) {
+	const auto g = metaf::FixedGroup::parse("RVRNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PWINO) {
+	const auto g = metaf::FixedGroup::parse("PWINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PNO) {
+	const auto g = metaf::FixedGroup::parse("PNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_FZRANO) {
+	const auto g = metaf::FixedGroup::parse("FZRANO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_TSNO) {
+	const auto g = metaf::FixedGroup::parse("TSNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_SLPNO) {
+	const auto g = metaf::FixedGroup::parse("SLPNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_NOSIG) {
 	const auto g = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());

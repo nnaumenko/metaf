@@ -298,6 +298,10 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueBool("ceilingAndVisibilityOK", true);
 		break;
 
+		case metaf::FixedGroup::Type::WSCONDS:
+		json.valueBool("conditionsForWindShearPresent", true);
+		break;
+
 		case metaf::FixedGroup::Type::RMK:
 		if (isTrend) {
 			json.finish(); //Current trend object
@@ -316,8 +320,51 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueBool("stationMaintenanceRequired", true);
 		break;
 
-		case metaf::FixedGroup::Type::WSCONDS:
-		json.valueBool("conditionsForWindShearPresent", true);
+		case metaf::FixedGroup::Type::AO1:
+		json.valueBool("automatedStation", true);
+		json.valueBool("stationHasPrecipitationDiscriminator", false);
+		break;
+
+		case metaf::FixedGroup::Type::AO2:
+		json.valueBool("automatedStation", true);
+		json.valueBool("stationHasPrecipitationDiscriminator", true);
+		break;
+
+		case metaf::FixedGroup::Type::NOSPECI:
+		json.valueBool("stationIssuesSpeciReports", false);
+		break;
+
+		case metaf::FixedGroup::Type::PRESFR:
+		json.valueBool("atmosphericPressureFallingRapidly", true);
+		break;
+
+		case metaf::FixedGroup::Type::PRESRR:
+		json.valueBool("atmosphericPressureRisingRapidly", true);
+		break;
+
+		case metaf::FixedGroup::Type::RVRNO:
+		json.valueNull("runwayVisualRange");
+		break;
+
+		case metaf::FixedGroup::Type::PWINO:
+		json.valueBool("presentWeatherIdentifierOperating", false);
+		break;
+
+		case metaf::FixedGroup::Type::PNO:
+		json.valueBool("tippingBucketRainGaugeOperating", false);
+		break;
+
+		case metaf::FixedGroup::Type::FZRANO:
+		json.valueBool("freezingRainSensorOperating", false);
+		break;
+
+		case metaf::FixedGroup::Type::TSNO:
+		json.valueBool("lightningDetectorOperating", false);
+		break;
+
+		case metaf::FixedGroup::Type::SLPNO:
+		json.valueNull("atmosphericPressureAdditionalSeaLevelPressure");
+		break;
 
 		default:
 		json.startObject("fixedGroup");
@@ -539,9 +586,23 @@ void GroupVisitorJson::visitTemperatureForecastGroup(
 
 void GroupVisitorJson::visitPressureGroup(const metaf::PressureGroup & group) {
 	if (!group.isValid()) json.valueBool("atmosphericPressureValid", false);
+	std::string pressureStr = "unknownPressure";
+	switch (group.type()) {
+		case metaf::PressureGroup::Type::OBSERVED_QNH:
+		pressureStr = "observedMeanSeaLevelPressure";
+		break;
+
+		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
+		pressureStr = "forecastLowestSeaLevelPressure";
+		break;
+
+		default:
+		break;
+	}
+	const std::string unitStr = pressureStr + "Unit";
 	pressureToJson(group.atmosphericPressure(), 
-		"atmosphericPressure", 
-		"atmosphericPressureUnit");
+		pressureStr, 
+		unitStr);
 }
 
 void GroupVisitorJson::visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group) {
@@ -616,13 +677,12 @@ void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & gro
 }
 
 void GroupVisitorJson::visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
+	json.startObject();
 	if (!group.isValid()) json.valueBool("windShearInLowerLayersValid", false);
 	if (group.isValid()) {
-		runwayToJson(group.runway(), 
-		"windShearInLowerLayersAtRunway", 
-		"windShearInLowerLayersAtRunwayDesignator", 
-		"windShearInLowerLayersLastMessageRepetition");
+		runwayToJson(group.runway(), "runway", "runwayDesignator", "lastMessageRepetition");
 	}
+	json.finish();
 }
 
 void GroupVisitorJson::visitRainfallGroup(const metaf::RainfallGroup & group) {
@@ -689,6 +749,11 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 			json.finish(); //json.startArray("runwayState");
 	}
 
+	if (!std::holds_alternative<metaf::WindShearLowLayerGroup>(group) && 
+		std::holds_alternative<metaf::WindShearLowLayerGroup>(lastGroup))	{
+			json.finish(); //json.startArray("windShearInLowerLayers");
+	}
+
 	if (std::holds_alternative<metaf::VisibilityGroup>(group) && 
 		!std::holds_alternative<metaf::VisibilityGroup>(lastGroup)) {
 			json.startArray("visibility");
@@ -709,7 +774,10 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 		!std::holds_alternative<metaf::RunwayStateGroup>(lastGroup)) {
 			json.startArray("runwayState");
 	}
-
+	if (std::holds_alternative<metaf::WindShearLowLayerGroup>(group) && 
+		!std::holds_alternative<metaf::WindShearLowLayerGroup>(lastGroup)) {
+			json.startArray("windShearInLowerLayers");
+	}
 }
 
 void GroupVisitorJson::undefinedToJson(int value, std::string_view name) {

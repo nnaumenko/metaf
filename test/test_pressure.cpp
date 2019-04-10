@@ -57,6 +57,24 @@ TEST(Pressure, fromStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromString("A/////"));
 }
 
+TEST(Pressure, fromForecastString) {
+	static const auto margin = 0.01 / 2;
+	const auto p = metaf::Pressure::fromForecastString("QNH2979INS");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_EQ(p->unit(), metaf::Pressure::Unit::INCHES_HG);
+	ASSERT_TRUE(p->pressure().has_value());
+	EXPECT_NEAR(p->pressure().value(), 29.79, margin);
+}
+
+TEST(Pressure, fromForecastStringWrongFormat) {
+	EXPECT_FALSE(metaf::Pressure::fromForecastString(""));
+	EXPECT_FALSE(metaf::Pressure::fromForecastString("XNH2979INS"));
+	EXPECT_FALSE(metaf::Pressure::fromForecastString("QNH2979ANS"));
+	EXPECT_FALSE(metaf::Pressure::fromForecastString("QNH297INS"));
+	EXPECT_FALSE(metaf::Pressure::fromForecastString("QNH02979INS"));
+	EXPECT_FALSE(metaf::Pressure::fromForecastString("QNH////INS"));
+}
+
 TEST(Pressure, toUnitSameUnit) {
 	const auto p1 = metaf::Pressure::fromString("A2934");
 	ASSERT_TRUE(p1.has_value());

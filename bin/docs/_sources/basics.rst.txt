@@ -255,6 +255,4 @@ Remarks
 
 .. index:: single: Group; Plain text
 
-Remarks are currently parsed as plain text only.
-
-See also :cpp:class:`metaf::PlainTextGroup`.
+Remarks may contain plain-language, manual and automatically generated texts. Remarks typically augment information provided in the METAR or TAF report body.

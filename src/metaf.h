@@ -25,7 +25,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 1;
-		static const int minor = 2;
+		static const int minor = 3;
 		static const int patch = 0;
 	};
 
@@ -321,10 +321,13 @@ namespace metaf {
 
 		Pressure() = default;
 		static inline std::optional<Pressure> fromString(const std::string & s);
+		static inline std::optional<Pressure> fromForecastString(const std::string & s);
 
 	private:
 		std::optional<float> pressureValue;
 		Unit pressureUnit = Unit::HECTOPASCAL;
+
+		static inline const float inHgDecimalPointShift = 0.01;
 	};
 
 	class Precipitation {
@@ -516,7 +519,18 @@ namespace metaf {
 			NSW,
 			RMK,
 			WSCONDS,
-			MAINTENANCE_INDICATOR
+			MAINTENANCE_INDICATOR,
+			AO1,
+			AO2,
+			NOSPECI,
+			PRESFR,
+			PRESRR,
+			RVRNO,
+			PWINO,
+			PNO,
+			FZRANO,
+			TSNO,
+			SLPNO
 		};
 		Type type() const { return(t); }
 		bool isValid() const { return(true); }
@@ -848,6 +862,11 @@ namespace metaf {
 
 	class PressureGroup {
 	public:
+		enum class Type {
+			OBSERVED_QNH,			//Observed mean sea level pressure (METAR)
+			FORECAST_LOWEST_QNH		//Forecast lowest sea level pressure
+		};
+		Type type() const { return(t); }
 		Pressure atmosphericPressure() const { return(p); }
 		bool isValid() const { return(true); }
 
@@ -856,6 +875,7 @@ namespace metaf {
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
+		Type t = Type::OBSERVED_QNH;
 		Pressure p;
 	};
 
@@ -1739,7 +1759,7 @@ namespace metaf {
 		static const std::regex rgx("([QA])(?:(\\d\\d\\d\\d)|////)");
 		static const auto matchUnit = 1, matchValue = 2;
 		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Pressure>());
+		if (!std::regex_match(s, match, rgx)) return(error);
 		std::optional<float> val;
 		if (match.length(matchValue)) val = stof(match.str(matchValue));
 		if (match.str(matchUnit) == "Q") {
@@ -1751,12 +1771,22 @@ namespace metaf {
 		if (match.str(matchUnit) == "A") {
 			Pressure pressure;
 			pressure.pressureUnit = Unit::INCHES_HG;
-			static const float inHgDecimalPointShift = 0.01;
 			if (val.has_value()) val = val.value() * inHgDecimalPointShift;
 			pressure.pressureValue = val;
 			return(pressure);
 		}
 		return(error);
+	}
+
+	std::optional<Pressure> Pressure::fromForecastString(const std::string & s) {
+		static const std::regex rgx("QNH(\\d\\d\\d\\d)INS");
+		static const auto matchValue = 1;
+		std::smatch match;
+		if (!std::regex_match(s, match, rgx)) return(std::optional<Pressure>());
+		Pressure pressure;
+		pressure.pressureUnit = Unit::INCHES_HG;
+		pressure.pressureValue = stoi(match.str(matchValue)) * inHgDecimalPointShift;
+		return(pressure);
 	}
 
 	std::optional<float> Pressure::toUnit(Unit unit) const {
@@ -1995,11 +2025,23 @@ namespace metaf {
 		if (reportPart == ReportPart::TAF) {
 			if (group == "WSCONDS") return(FixedGroup(Type::WSCONDS));
 		}
-
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 			if (group == "CAVOK") return(FixedGroup(Type::CAVOK));
 			if (group == "NSW") return(FixedGroup(Type::NSW));
 			if (group == "RMK") return(FixedGroup(Type::RMK));
+		}
+		if (reportPart == ReportPart::RMK) {
+			if (group == "AO1") return(FixedGroup(Type::AO1));
+			if (group == "AO2") return(FixedGroup(Type::AO2));
+			if (group == "NOSPECI") return(FixedGroup(Type::NOSPECI));
+			if (group == "PRESFR") return(FixedGroup(Type::PRESFR));
+			if (group == "PRESRR") return(FixedGroup(Type::PRESRR));
+			if (group == "RVRNO") return(FixedGroup(Type::RVRNO));
+			if (group == "PWINO") return(FixedGroup(Type::PWINO));
+			if (group == "PNO") return(FixedGroup(Type::PNO));
+			if (group == "FZRANO") return(FixedGroup(Type::FZRANO));
+			if (group == "TSNO") return(FixedGroup(Type::TSNO));
+			if (group == "SLPNO") return(FixedGroup(Type::SLPNO));
 		}
 		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
@@ -2697,12 +2739,23 @@ namespace metaf {
 		ReportPart reportPart)
 	{
 		static const std::optional<PressureGroup> notRecognised;
-		if (reportPart != metaf::ReportPart::METAR) return(notRecognised);
-		const auto pressure = metaf::Pressure::fromString(group);
-		if (!pressure.has_value()) return(notRecognised);
-		PressureGroup result;
-		result.p = pressure.value();
-		return(result);
+		if (reportPart == metaf::ReportPart::METAR) {
+			const auto pressure = metaf::Pressure::fromString(group);
+			if (!pressure.has_value()) return(notRecognised);
+			PressureGroup result;
+			result.p = pressure.value();
+			result.t = Type::OBSERVED_QNH;
+			return(result);
+		} 
+		if (reportPart == metaf::ReportPart::TAF) {
+			const auto pressure = metaf::Pressure::fromForecastString(group);
+			if (!pressure.has_value()) return(notRecognised);
+			PressureGroup result;
+			result.p = pressure.value();
+			result.t = Type::FORECAST_LOWEST_QNH;
+			return(result);
+		}
+		return(notRecognised);
 	}
 
 	std::optional<Group> PressureGroup::combine(const Group & nextGroup) const { 

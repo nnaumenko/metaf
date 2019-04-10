@@ -16,7 +16,7 @@
                                 ['string'],   // argument types
                                 [inputStr]);  // arguments
       Module.ccall('freeMemory', null, null, null);
-
+      console.log(result);
       //Prettify the result
       resultObj = JSON.parse(result);
       const spacing = 2;

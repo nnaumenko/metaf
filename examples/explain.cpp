@@ -146,19 +146,73 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		result << "no significant weather phenomena";
 		break;
 
-		case metaf::FixedGroup::Type::RMK:
-		result << "The remarks are as follows" << lineBreak;
-		result << "Note: this version does not recognise or decode remarks";
-		break;
-
 		case metaf::FixedGroup::Type::WSCONDS:
 		result << "Potential wind shear conditions are present ";
 		result << "but there's not enough information to reliably forecast ";
 		result << "height, direction and speed of wind shear";
 		break;
 
+		case metaf::FixedGroup::Type::RMK:
+		result << "The remarks are as follows" << lineBreak;
+		result << "Note: this version does not recognise or decode remarks";
+		break;
+
 		case metaf::FixedGroup::Type::MAINTENANCE_INDICATOR:
 		result << "Automated station requires maintenance";
+		break;
+
+		case metaf::FixedGroup::Type::AO1:
+		result << "This automated station is not equipped with a precipitation discriminator";
+		break;
+
+		case metaf::FixedGroup::Type::AO2:
+		result << "This automated station is equipped with a precipitation discriminator";
+		break;
+
+		case metaf::FixedGroup::Type::NOSPECI:
+		result << "This manual station does not issue SPECI (unscheduled) reports";
+		break;
+
+		case metaf::FixedGroup::Type::PRESFR:
+		result << "Pressure is rapidly falling at a rate of at least 0.06 inch of mercury ";
+		result << "(2.03 hectopascal) per hour and the pressure change totals ";
+		result << "0.02 inch of mercury (0.68 hectopascal) or more ";
+		result << "at the time of the observation";
+		break;
+
+		case metaf::FixedGroup::Type::PRESRR:
+		result << "Pressure is rapidly rising at a rate of at least 0.06 inch of mercury ";
+		result << "(2.03 hectopascal) per hour and the pressure change totals ";
+		result << "0.02 inch of mercury (0.68 hectopascal) or more ";
+		result << "at the time of the observation";
+		break;
+
+		case metaf::FixedGroup::Type::RVRNO:
+		result << "Runway visual range should be reported but is missing";
+		break;
+
+		case metaf::FixedGroup::Type::PWINO:
+		result << "This automated station is equipped with present weather identifier ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::FixedGroup::Type::PNO:
+		result << "This automated station is equipped with tipping bucket rain gauge ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::FixedGroup::Type::FZRANO:
+		result << "This automated station is equipped with freezing rain sensor ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::FixedGroup::Type::TSNO:
+		result << "This automated station is equipped with lightning detector ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::FixedGroup::Type::SLPNO:
+		result << "Mean sea-level pressure information is not available";
 		break;
 
 		default:
@@ -367,7 +421,20 @@ std::string GroupVisitorExplain::visitTemperatureForecastGroup(
 std::string GroupVisitorExplain::visitPressureGroup(const metaf::PressureGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Atmospheric pressure: " << explainPressure(group.atmosphericPressure());
+	switch(group.type()) {
+		case metaf::PressureGroup::Type::OBSERVED_QNH:
+		result << "Observed atmospheric pressure (mean sea level pressure)";
+		break;
+
+		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
+		result << "Forecast lowest sea level pressure";
+		break;
+
+		default:
+		result << "Unknown pressure value";
+		break;
+	}
+	result << ": " << explainPressure(group.atmosphericPressure());
 	return(result.str());
 }
 
