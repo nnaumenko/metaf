@@ -26,7 +26,8 @@ namespace metaf {
 	struct Version {
 		static const int major = 1;
 		static const int minor = 3;
-		static const int patch = 0;
+		static const int patch = 1;
+		inline static const char tag [] = "";
 	};
 
 	class PlainTextGroup;
@@ -1080,50 +1081,28 @@ namespace metaf {
 
 	inline SyntaxGroup getSyntaxGroup(const Group & group);
 
-	class GroupParser {
+	template <class GroupVariant, class FallbackAlternative>
+	class GenericGroupParser {
 	public:
-		// Total number of groups in Group variant.
-		static const auto groups_total = std::variant_size_v<Group>;
-		static Group parse(const std::string & group, ReportPart reportPart) {
-			// Start cycling through types within Group variant
-			return(ParseGroupHelper<0, std::variant_alternative_t<0, Group>>::parse(
-				group, 
-				reportPart));
+		using GroupType = GroupVariant;
+		static GroupVariant parse(const std::string & group, ReportPart reportPart) {
+			return(parseAlternative<0>(group, reportPart));
 		}
 	private:
-		template <size_t I, class T> 
-		struct ParseGroupHelper {
-			static inline Group parse(const std::string & group, ReportPart reportPart) {
-				// Skip PlainTextGroup regardless of its position, it will be 
-				// used if everything else fails (i.e. no type can recognise a 
-				// string).
-				if (!std::is_same<T, PlainTextGroup>::value) {
-					auto temporaryGroup = T::parse(group, reportPart);
-					if (temporaryGroup.has_value()) return(temporaryGroup.value());
-				}
-				// Pick next type within Group variant and repeat recursively.
-				return(ParseGroupHelper<I+1, std::variant_alternative_t<I+1, Group>>::parse(
-					group, 
-					reportPart));
+		template <size_t I>
+		static GroupVariant parseAlternative(const std::string & group, 
+			ReportPart reportPart)
+		{
+			using Alternative = std::variant_alternative_t<I, GroupVariant>;
+			if constexpr (!std::is_same<Alternative, FallbackAlternative>::value) {
+				const auto parsed = Alternative::parse(group, reportPart);
+				if (parsed.has_value()) return(parsed.value());
 			}
-		};
-
-		template <class T> 
-		struct ParseGroupHelper<groups_total-1, T> {
-			static inline Group parse(const std::string & group, ReportPart reportPart) {
-				// Attempt to parse last type in Group; if last type is 
-				// PlainTextGroup then temporaryGroup is guaranteed to have 
-				// value anyway. If last type is not PlainTextGroup it may 
-				// return an empty optional, then parsing using PlainTextGroup
-				// is attempted.
-				auto temporaryGroup = T::parse(group, reportPart);
-				if (temporaryGroup.has_value()) return(temporaryGroup.value());
-				// At this point no type within Group variant was able to 
-				// recognise the group string.
-				// In this case the group is parsed as PlainTextGroup.
-				return(PlainTextGroup(group));
-			}
-		};
+			if constexpr (I < std::variant_size_v<GroupVariant> - 1) {
+				return(parseAlternative<I+1>(group, reportPart));
+			} 
+			return(FallbackAlternative(group));
+		} 
 	};
 
 	enum class ReportType {
@@ -1132,7 +1111,9 @@ namespace metaf {
 		TAF
 	};
 
-	class Parser {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	class GenericParser {
 	public:
 		enum class Error {
 			NONE,
@@ -1151,14 +1132,15 @@ namespace metaf {
 			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
 			INTERNAL_PARSER_STATE
 		};
+		using GroupType = typename GenericGroupParser::GroupType;
 		inline bool parse(const std::string & report, bool keepSourceGroup = false);
-		const std::vector<Group> & getResult() const { return(result); }
+		const std::vector<GroupType> & getResult() const { return(result); }
 		const std::vector<std::string> & getSourceGroups() const { return(sourceGroups); }
 		inline void resetResult();
 		ReportType getReportType() const { return(reportType); }
 		Error getError() const { return(error); }
 	private:
-		std::vector<Group> result;
+		std::vector<GroupType> result;
 		std::vector<std::string> sourceGroups;
 		ReportType reportType = ReportType::UNKNOWN;
 		Error error = Error::NONE;
@@ -1186,6 +1168,9 @@ namespace metaf {
 		inline State parseError(Error e) { error = e; return(State::ERROR); }
 		static inline ReportPart reportPartFromState(State state);
 	};
+
+	using GroupParser = GenericGroupParser<Group, PlainTextGroup>;
+	using Parser = GenericParser<GroupParser, getSyntaxGroup>;
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -3064,7 +3049,12 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	bool Parser::parse(const std::string & metarTafString, bool keepSourceGroup) {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	bool GenericParser<GenericGroupParser, SyntaxGroupGetter>::parse(
+		const std::string & metarTafString, 
+		bool keepSourceGroup)
+	{
 		static const std::regex delimiterRegex("\\s+");
 		std::sregex_token_iterator iter(metarTafString.begin(), 
 			metarTafString.end(), 
@@ -3083,19 +3073,20 @@ namespace metaf {
 			}
 
 			if (groupString.length()) {
-				Group group;
+				GroupType group;
 
 				do {
-					group = GroupParser::parse(groupString, reportPartFromState(state));
-					state = transition(state, getSyntaxGroup(group));
+					group = GenericGroupParser::parse(
+						groupString, reportPartFromState(state));
+					state = transition(state, SyntaxGroupGetter(group));
 				} while(state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
 				
 				const auto combinedGroup = result.size() ? 
 					std::visit([](auto&& previousGroup, auto && currentGroup) -> 
-						std::optional<Group> {
+						std::optional<GroupType> {
 							return (previousGroup.combine(currentGroup));
 						}, result.back(), group) : 
-					std::optional<Group>();
+					std::optional<GroupType>();
 
 				if (!combinedGroup.has_value()) {
 					//Current group is not related to previously saved group.
@@ -3118,14 +3109,23 @@ namespace metaf {
 		return(error == Error::NONE);
 	}
 
-	void Parser::resetResult() {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::resetResult()
+	{
 		std::vector<Group>().swap(result);
 		std::vector<std::string>().swap(sourceGroups);
 		reportType = ReportType::UNKNOWN;
 		error = Error::NONE;
 	}
 
-	Parser::State Parser::transition(State state, SyntaxGroup group) {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::State 
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::transition(
+		State state, 
+		SyntaxGroup group)
+	{
 		switch (state) {
 			case State::REPORT_TYPE_OR_LOCATION:
 			reportType = ReportType::UNKNOWN;
@@ -3244,7 +3244,11 @@ namespace metaf {
 		}
 	}
 
-	ReportPart Parser::reportPartFromState(State state) {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	ReportPart GenericParser<GenericGroupParser, SyntaxGroupGetter>::reportPartFromState(
+		State state)
+	{
 		using StateReportPart = std::pair<State, ReportPart>;
 		static const std::vector<StateReportPart> stateReportParts = {
 			std::make_pair(State::REPORT_TYPE_OR_LOCATION, ReportPart::HEADER),
@@ -3270,7 +3274,12 @@ namespace metaf {
 		return(ReportPart::UNKNOWN);
 	}
 
-	Parser::State Parser::finalTransition(State state) {
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::State 
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::finalTransition(
+		State state) 
+	{
 		switch (state) {
 			case State::REPORT_BODY_METAR:
 			case State::REPORT_BODY_TAF:
