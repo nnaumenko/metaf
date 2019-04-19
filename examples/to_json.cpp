@@ -1444,12 +1444,11 @@ std::string GroupVisitorJson::colourCodeToString(metaf::ColourCodeGroup::Code co
 std::string result;
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE toJson(const char * input) {
-	metaf::Parser parser;
-	parser.parse(std::string(input));
+	const auto parseResult = metaf::Parser::parse(std::string(input));
 
 	std::ostringstream output;
 	GroupVisitorJson visitor(output);
-	visitor.toJson(parser.getReportType(), parser.getError(), parser.getResult());
+	visitor.toJson(parseResult.reportType, parseResult.error, parseResult.groups);
 
 	result = output.str(); //involves copying operation but will do for this example
 	return(result.c_str());

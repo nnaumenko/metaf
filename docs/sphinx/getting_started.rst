@@ -46,15 +46,13 @@ Edit function ``main()`` as follows: ::
 
 	int main(int argc, char ** argv) {
 		(void) argc; (void) argv;
-		cout << "Parsing report: " << report << "\n";
-		metaf::Parser parser;
-		if (!parser.parse(report)) std::cout << "Error occurred while parsing the report\n";
-		return(0);
+		std::cout << "Parsing report: " << report << "\n";
+		const auto result = metaf::Parser::parse(report);
 	}
 
-An instance of a :cpp:class:`metaf::Parser` parses a METAR or TAF report and then holds the result of the parsing. If :cpp:class:`metaf::Parser` instance is destroyed, the result of parsing is no longer available.
+Here we use static method :cpp:func:`metaf::Parser::parse()` which parses a METAR or TAF report and returns the result of the parsing.
 
-:cpp:func:`metaf::Parser::parse()` method is used to parse the report. It returns true if the report is parsed with no errors and false if error occurred. When the error occurrs the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
+If the report is malformed and an error occurrs during parsing the parser stops; in this case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
 
 
 Getting the result of parsing
@@ -77,16 +75,14 @@ Add the following function before ``main()``: ::
 
 Then add the following lines to the function ``main()`` before ``return(0);``::
 
-	std::cout << "Detected report type: " << reportTypeMessage(parser.getReportType()) << "\n";
-	std::cout << parser.getResult().size() << " groups\n";
+	std::cout << "Detected report type: " << reportTypeMessage(result.reportType) << "\n";
+	std::cout << result.groups.size() << " groups\n";
 
 :cpp:enum:`metaf::ReportType` is an enum for a report type autodetected by parser. :cpp:enumerator:`metaf::ReportType::UNKNOWN` is used when the parser is unable to detect the report type (e.g. due to malformed report).
 
-:cpp:func:`metaf::Parser::getReportType()` returns an autodetected type of the last report parsed by the instance of metaf::Parser.
+:cpp:var:`metaf::Parser::Result::reportType` contains an autodetected type of the report.
 
-:cpp:func:`metaf::Parser::getResult()` returns a reference to `std::vector<metaf::Group>`. :cpp:type:`metaf::Group` is an ``std::variant`` which holds all concrete group classes as variant alternatives.
-
-.. warning:: The reference obtained by :cpp:func:`metaf::Parser::getResult()` is only valid as long as an instance of :cpp:class:`metaf::Parser` still exists and no other METAR or TAF report is parsed by the same instance. If :cpp:func:`metaf::Parser::parse()` is executed again, the reference returned by :cpp:func:`metaf::Parser::getResult()` becomes invalid.
+:cpp:var:`metaf::Parser::Result::groups` is ``vector`` of :cpp:type:`metaf::Group`. Accordingly, :cpp:type:`metaf::Group` is an ``std::variant`` which holds all concrete group classes as variant alternatives.
 
 
 Checking for errors
@@ -122,6 +118,9 @@ Add the following function before ``main()``: ::
 					
 			case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_CNL:
 			return("unexpected group after CNL");
+
+			case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
+			return("unexpected group after maintenance indicator");
 					
 			case metaf::Parser::Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 			return("unexpected NIL or CNL in report body");
@@ -132,6 +131,9 @@ Add the following function before ``main()``: ::
 			case metaf::Parser::Error::CNL_ALLOWED_IN_TAF_ONLY:
 			return("CNL is allowed in TAF only");
 					
+			case metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
+			return("Maintenance indicator is allowed only in METAR reports");
+					
 			case metaf::Parser::Error::INTERNAL_PARSER_STATE:
 			return("internal error, unknown parser state");
 		}
@@ -139,9 +141,12 @@ Add the following function before ``main()``: ::
 
 Then add the following line to the function ``main()`` before ``return(0);``::
 
-	std::cout << "Detected error: " << errorMessage(parser.getError()) << "\n";
+	if (result.error != metaf::Parser::Error::NONE) {
+		std::cout << "Detected error: " << errorMessage(result.error) << "\n";	
+	}
 
-:cpp:func:`metaf::Parser::getError()` returns an autodetected type of the last report parsed by this instance of :cpp:class:`metaf::Parser`.
+:cpp:var:`metaf::Parser::Result::error` contains an error that occurred during parsing of the report or :cpp:enumerator:`metaf::Parser::Error::NONE` if there was no error during parsing.
+
 
 Handling the results of parsing
 -------------------------------
@@ -155,7 +160,7 @@ Add to the ``tutorial.cpp`` file a class that inherits :cpp:class:`GroupVisitor`
 	class MyVisitor : public metaf::GroupVisitor<std::string> {
 	};
 
-Since MyVisitor is inherited from ``GroupVisitor<std::string>``, this means that group handling methods  return std::string. Also ``GroupVisitor<void>`` can be used if group handling methods do not return a value.
+Since MyVisitor is inherited from ``GroupVisitor<std::string>``, this means that group handling methods return std::string. Also ``GroupVisitor<void>`` can be used if group handling methods do not return a value.
 
 Now add to class MyVisitor the group handling methods (to keep it simple we just print the type of group here; to avoid unused parameter warnings we cast parameters to ``void``): ::
 
@@ -201,6 +206,9 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
 		(void)group; return("RunwayStateGroup");
 	}
+	virtual std::string visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
+		(void)group; return("WindShearLowLayerGroup");
+	}
 	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group) {
 		(void)group; return("RainfallGroup");
 	}
@@ -218,7 +226,7 @@ Since all these virtual methods are pure in :cpp:class:`GroupVisitor` there is n
 
 Now add the following lines to the function ``main()`` before ``return(0);``::
 
-	for (const auto group : parser.getResult()) {
+	for (const auto group : result.groups) {
 		std::cout << "Group parsed: " << visitor.visit(group) << "\n";
 	}
 
@@ -277,6 +285,9 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 					
 			case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_CNL:
 			return("unexpected group after CNL");
+
+			case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
+			return("unexpected group after maintenance indicator");
 					
 			case metaf::Parser::Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 			return("unexpected NIL or CNL in report body");
@@ -286,6 +297,9 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 					
 			case metaf::Parser::Error::CNL_ALLOWED_IN_TAF_ONLY:
 			return("CNL is allowed in TAF only");
+					
+			case metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
+			return("Maintenance indicator is allowed only in METAR reports");
 					
 			case metaf::Parser::Error::INTERNAL_PARSER_STATE:
 			return("internal error, unknown parser state");
@@ -335,6 +349,9 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 		virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
 			(void)group; return("RunwayStateGroup");
 		}
+		virtual std::string visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
+			(void)group; return("WindShearLowLayerGroup");
+		}
 		virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group) {
 			(void)group; return("RainfallGroup");
 		}
@@ -352,15 +369,16 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 	int main(int argc, char ** argv) {
 		(void) argc; (void) argv;
 		std::cout << "Parsing report: " << report << "\n";
-		metaf::Parser parser;
-		if (!parser.parse(report)) std::cout << "Error occurred while parsing the report\n";
-		std::cout << "Detected report type: " << reportTypeMessage(parser.getReportType()) << "\n";
-		std::cout << parser.getResult().size() << " groups\n";
+		const auto result = metaf::Parser::parse(report);
+		std::cout << "Detected report type: " << reportTypeMessage(result.reportType) << "\n";
+		std::cout << result.groups.size() << " groups\n";
+		if (result.error != metaf::Parser::Error::NONE) {
+			std::cout << "Detected error: " << errorMessage(result.error) << "\n";	
+		}
 		MyVisitor visitor;
-		for (const auto group : parser.getResult()) {
+		for (const auto group : result.groups) {
 			std::cout << "Group parsed: " << visitor.visit(group) << "\n";
 		}
-		std::cout << "Detected error: " << errorMessage(parser.getError()) << "\n";
 		return(0);
 	}
 
@@ -380,9 +398,9 @@ Compile it and run; it will print the following:
 | Group parsed: TemperatureGroup
 | Group parsed: PressureGroup
 | Group parsed: SeaSurfaceGroup
-| Detected error: no error
+
 
 Further reading
 ---------------
 
-Please refer to the examples and API reference for more information.
+Please refer to the examples and reference for more information.

@@ -16,6 +16,7 @@
 #include <utility>
 #include <functional>
 #include <regex>
+#include <sstream>
 
 using namespace std;
 
@@ -160,17 +161,16 @@ protected:
 };
 
 int ParserPerformanceChecker::process() {
-	metaf::Parser parser;
 	auto reportCount = 0;
 	for (const auto & data : testdata::realDataSet) {
 		//Not using strlen to determine empty reports in order exclude strlen 
 		//from performance check
  		if (data.metar[0]) {
-			parser.parse(data.metar);
+			metaf::Parser::parse(data.metar);
 			reportCount++;
 		}
 		if (data.taf[0]) {
-			parser.parse(data.taf);
+			metaf::Parser::parse(data.taf);
 			reportCount++;
 		}
 	}
@@ -194,8 +194,10 @@ private:
 int GroupPerformanceChecker::process() {
 	int groupCount = 0;
 	for (auto src : *sources) {
-		auto parseResult = metaf::GroupParser::parse(get<string>(src), get<metaf::ReportPart>(src));
-		if (parseResult.index() != index) return(0);
+		const auto parseResult = metaf::GroupParser::parse(get<string>(src), get<metaf::ReportPart>(src));
+		(void)parseResult;
+		(void)index;
+		//if (parseResult.index() != index) return(0);
 		groupCount++;
 	}
 	return(groupCount);
@@ -223,48 +225,30 @@ public:
 	void runPerformanceTests(ostream & output);
 private:
 	vector <vector<pair<string, metaf::ReportPart>>> testSet;
-	void getGroupsFromReport(const std::string & report, bool isTaf);
+	void getGroupsFromReport(const std::string & report);
 };
 
 GroupsTestSet::GroupsTestSet() {
 	testSet.resize(variant_size_v<metaf::Group>);
 	for (const auto & data : testdata::realDataSet) {
- 		if (strlen(data.metar)) getGroupsFromReport(data.metar, false);
-		if (strlen(data.taf)) getGroupsFromReport(data.taf, true);
+ 		if (strlen(data.metar)) getGroupsFromReport(data.metar);
+		if (strlen(data.taf)) getGroupsFromReport(data.taf);
 	}
 }
 
-void GroupsTestSet::getGroupsFromReport(const std::string & report, bool isTaf)
+void GroupsTestSet::getGroupsFromReport(const std::string & report)
 {
-	static const regex delimiterRegex("\\s+");
-	sregex_token_iterator iter(report.begin(), report.end(), delimiterRegex, -1);
-	bool reportEnd = false;
-	bool remark = false;
-	while (iter!=sregex_token_iterator() && !reportEnd) {
-		static const char reportEndChar = '=';
-		string groupString = *iter;
-		if (groupString.back() == reportEndChar) {
-			reportEnd = true;
-			groupString.pop_back();
-		}
-		if (groupString.length()) {
-			auto reportPart = isTaf ? metaf::ReportPart::TAF : metaf::ReportPart::METAR;
-			if (remark) reportPart = metaf::ReportPart::RMK;
-			auto group = metaf::GroupParser::parse(groupString, reportPart);
-			if (holds_alternative<metaf::PlainTextGroup>(group) && !remark) {
-				// If not recognised in report body, try recognising as header
-				auto hdrGroup = metaf::GroupParser::parse(groupString, metaf::ReportPart::HEADER);
-				if (!holds_alternative<metaf::PlainTextGroup>(hdrGroup)) {
-					group = move(hdrGroup);
-					reportPart = metaf::ReportPart::HEADER;
-				}
-			}
-			auto resultPair = make_pair(std::move(groupString), reportPart);
-			const auto index = group.index();
+	const auto parseResult = metaf::Parser::extendedParse(report);
+	for (const auto extgr : parseResult.extgroups) {
+		std::istringstream iss(std::get<std::string>(extgr));
+		std::vector<std::string> individualGroups(
+			std::istream_iterator<std::string>{iss},
+            std::istream_iterator<std::string>());
+		for (const auto grstr : individualGroups) {
+			auto resultPair = make_pair(grstr,std::get<metaf::ReportPart>(extgr));
+			const auto index = std::get<metaf::Group>(extgr).index();
 			testSet.at(index).push_back(resultPair);
 		}
-		if (groupString == "RMK") remark = true;
-		iter++;
 	}
 }
 
@@ -363,24 +347,23 @@ void checkRecognisedGroups() {
 	cout << "Detecting non-recognised groups in testdata::realDataSet" << endl;
 	vector< pair<int, string> > flaggedGroups;	
 	vector< pair<int, string> > flaggedReports;
-	metaf::Parser parser;
 	auto metarTotalGroupCount = 0;
 	auto tafTotalGroupCount = 0;
 	auto metarUnrecognisedGroupCount = 0;
 	auto tafUnrecognisedGroupCount = 0;
 	for (const auto & data : testdata::realDataSet) {
  		if (strlen(data.metar)) {
-			parser.parse(data.metar);
-			auto count = addPlainTextGroups(parser.getResult(), flaggedGroups);
+			const auto parseResult = metaf::Parser::parse(data.metar);
+			auto count = addPlainTextGroups(parseResult.groups, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.metar));
-			metarTotalGroupCount += parser.getResult().size();
+			metarTotalGroupCount += parseResult.groups.size();
 			metarUnrecognisedGroupCount += count;
 		}
 		if (strlen(data.taf)) {
-			parser.parse(data.taf);
-			auto count = addPlainTextGroups(parser.getResult(), flaggedGroups);
+			const auto parseResult = metaf::Parser::parse(data.metar);
+			auto count = addPlainTextGroups(parseResult.groups, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.taf));
-			tafTotalGroupCount += parser.getResult().size();
+			tafTotalGroupCount += parseResult.groups.size();
 			tafUnrecognisedGroupCount += count;
 		}
 	}

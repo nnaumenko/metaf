@@ -24,9 +24,9 @@ namespace metaf {
 
 	// Metaf library version
 	struct Version {
-		static const int major = 1;
-		static const int minor = 3;
-		static const int patch = 1;
+		static const int major = 2;
+		static const int minor = 0;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -1115,6 +1115,7 @@ namespace metaf {
 		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
 	class GenericParser {
 	public:
+		using GroupType = typename GenericGroupParser::GroupType;
 		enum class Error {
 			NONE,
 			EMPTY_REPORT,
@@ -1132,41 +1133,109 @@ namespace metaf {
 			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
 			INTERNAL_PARSER_STATE
 		};
-		using GroupType = typename GenericGroupParser::GroupType;
-		inline bool parse(const std::string & report, bool keepSourceGroup = false);
-		const std::vector<GroupType> & getResult() const { return(result); }
-		const std::vector<std::string> & getSourceGroups() const { return(sourceGroups); }
-		inline void resetResult();
-		ReportType getReportType() const { return(reportType); }
-		Error getError() const { return(error); }
-	private:
-		std::vector<GroupType> result;
-		std::vector<std::string> sourceGroups;
-		ReportType reportType = ReportType::UNKNOWN;
-		Error error = Error::NONE;
-
-		enum class State { // States of state machine used to check syntax of METAR/TAF reports
-			REPORT_TYPE_OR_LOCATION,
-			CORRECTION,
-			LOCATION,
-			REPORT_TIME,
-			TIME_SPAN,
-			REPORT_BODY_BEGIN_METAR,
-			REPORT_BODY_BEGIN_METAR_REPEAT_PARSE,
-			REPORT_BODY_METAR,
-			REPORT_BODY_BEGIN_TAF,
-			REPORT_BODY_TAF,
-			REMARK_METAR,
-			REMARK_TAF,
-			MAINTENANCE_INDICATOR,
-			NIL,
-			CNL,
-			ERROR
+		struct Result {
+			ReportType reportType;
+			Error error;
+			std::vector<GroupType> groups;
 		};
-		inline State transition(State state, SyntaxGroup group);
-		inline State finalTransition(State state);
-		inline State parseError(Error e) { error = e; return(State::ERROR); }
-		static inline ReportPart reportPartFromState(State state);
+
+		struct ExtendedResult {
+			ReportType reportType;
+			Error error;
+			std::vector< std::tuple<GroupType, ReportPart, std::string> > extgroups;
+		};
+
+		static Result parse (const std::string & report) {
+			const auto result = parseInternal(report, false);
+			return(std::get<Result>(result));
+		}
+		static ExtendedResult extendedParse(const std::string & report) {
+			const auto result = parseInternal(report, true);
+			return(std::get<ExtendedResult>(result));
+		}
+	private:
+		using ParseInternalResult = std::variant<Result, ExtendedResult>;
+		static inline ParseInternalResult parseInternal(
+			const std::string & report, 
+			bool extendedReport);
+		static inline std::optional<GroupType> combineWithLastGroup(
+			const std::optional<GroupType> & lastGroup,
+			const GroupType & group);
+		static inline std::optional<GroupType> getLastGroup(const Result & result);
+		static inline std::optional<GroupType> getLastGroup(const ExtendedResult & result);
+
+		static inline void saveToResult(Result & result, 
+			GroupType group,
+			const std::optional<GroupType> & combinedGroup);
+
+		static inline void saveToResult(ExtendedResult & extresult, 
+			GroupType group,
+			const std::optional<GroupType> & combinedGroup, 
+			ReportPart reportPart,
+			const std::string & groupString);
+
+		static inline void saveToResult(
+			Result & result, 
+			ReportType reportType, 
+			Error error);
+
+		static inline void saveToResult(
+			ExtendedResult & extresult, 
+			ReportType reportType, 
+			Error error);
+
+		class Status {
+		public:
+			Status() : 
+				state(State::REPORT_TYPE_OR_LOCATION), 
+				reportType(ReportType::UNKNOWN),
+				error(Error::NONE) {}
+			ReportType getReportType() { return(reportType); }
+			Error getError() { return(error); }
+			bool isError() { return(error != Error::NONE); }
+			inline ReportPart getReportPart();
+			inline void transition(SyntaxGroup group);
+			inline void finalTransition();
+			bool isReparseRequired() { 
+				return(state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
+			}
+		private:
+			enum class State {
+				// States of state machine used to check syntax of METAR/TAF reports
+				REPORT_TYPE_OR_LOCATION,
+				CORRECTION,
+				LOCATION,
+				REPORT_TIME,
+				TIME_SPAN,
+				REPORT_BODY_BEGIN_METAR,
+				REPORT_BODY_BEGIN_METAR_REPEAT_PARSE,
+				REPORT_BODY_METAR,
+				REPORT_BODY_BEGIN_TAF,
+				REPORT_BODY_TAF,
+				REMARK_METAR,
+				REMARK_TAF,
+				MAINTENANCE_INDICATOR,
+				NIL,
+				CNL,
+				ERROR
+			};
+
+			void setState(State s) { state = s; }
+			void setError(Error e) { state = State::ERROR; error = e; }
+			void setReportType(ReportType rt) { reportType = rt; }
+
+			inline void transitionFromReportTypeOrLocation(SyntaxGroup group);
+			inline void transitionFromCorrecton(SyntaxGroup group);
+			inline void transitionFromReportTime(SyntaxGroup group);
+			inline void transitionFromTimeSpan(SyntaxGroup group);
+			inline void transitionFromReportBodyBeginMetar(SyntaxGroup group);
+			inline void transitionFromReportBodyMetar(SyntaxGroup group);
+			inline void transitionFromReportBodyBeginTaf(SyntaxGroup group);
+			inline void transitionFromReportBodyTaf(SyntaxGroup group);
+			State state;
+			ReportType reportType;
+			Error error;
+		};
 	};
 
 	using GroupParser = GenericGroupParser<Group, PlainTextGroup>;
@@ -3051,204 +3120,149 @@ namespace metaf {
 
 	template <class GenericGroupParser, 
 		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
-	bool GenericParser<GenericGroupParser, SyntaxGroupGetter>::parse(
-		const std::string & metarTafString, 
-		bool keepSourceGroup)
+	typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::ParseInternalResult 
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::parseInternal(
+		const std::string & report, 
+		bool extendedResult)
 	{
 		static const std::regex delimiterRegex("\\s+");
-		std::sregex_token_iterator iter(metarTafString.begin(), 
-			metarTafString.end(), 
+		std::sregex_token_iterator iter(report.begin(), report.end(), 
 			delimiterRegex, 
 			-1);
 		bool reportEnd = false;
-		State state = State::REPORT_TYPE_OR_LOCATION;
-		resetResult();
-		while (iter != std::sregex_token_iterator() && !reportEnd && state != State::ERROR) {
-			static const char reportEndChar = '=';
-			std::string groupString = *iter;
+		Status status;
+	
+		Result result;
+		ExtendedResult extresult;
 
-			if (groupString.back() == reportEndChar) {
+		while (iter != std::sregex_token_iterator() && !reportEnd && !status.isError()) {
+			std::string groupString = *iter;
+			if (const char endChar = '='; groupString.back() == endChar) {
 				reportEnd = true;
 				groupString.pop_back();
 			}
-
 			if (groupString.length()) {
 				GroupType group;
-
+				const auto reportPart = status.getReportPart();
 				do {
-					group = GenericGroupParser::parse(
-						groupString, reportPartFromState(state));
-					state = transition(state, SyntaxGroupGetter(group));
-				} while(state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
-				
-				const auto combinedGroup = result.size() ? 
-					std::visit([](auto&& previousGroup, auto && currentGroup) -> 
-						std::optional<GroupType> {
-							return (previousGroup.combine(currentGroup));
-						}, result.back(), group) : 
-					std::optional<GroupType>();
-
-				if (!combinedGroup.has_value()) {
-					//Current group is not related to previously saved group.
-					result.push_back(group);
-					if (keepSourceGroup) sourceGroups.push_back(groupString);
+					group = GenericGroupParser::parse(groupString, status.getReportPart());
+					status.transition(SyntaxGroupGetter(group));
+				} while(status.isReparseRequired());
+				const auto lastGroup = 
+					(!extendedResult) ? getLastGroup(result) : getLastGroup(extresult);
+				const auto combinedGroup = combineWithLastGroup(lastGroup, group);
+				if (!extendedResult) {
+					saveToResult(result, group, combinedGroup);	
 				} else {
-					//Current group was combined with previously saved group.
-					result.pop_back();
-					result.push_back(combinedGroup.value());
-					if (keepSourceGroup) {
-						sourceGroups.back() += std::string(" ");
-						sourceGroups.back() += groupString;
-					}
+					saveToResult(extresult, group, combinedGroup, reportPart, groupString);
 				}
+				
 			}
 			iter++;
 		}
-
-		state = finalTransition(state);
-		return(error == Error::NONE);
-	}
-
-	template <class GenericGroupParser, 
-		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
-	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::resetResult()
-	{
-		std::vector<Group>().swap(result);
-		std::vector<std::string>().swap(sourceGroups);
-		reportType = ReportType::UNKNOWN;
-		error = Error::NONE;
-	}
-
-	template <class GenericGroupParser, 
-		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
-	typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::State 
-	GenericParser<GenericGroupParser, SyntaxGroupGetter>::transition(
-		State state, 
-		SyntaxGroup group)
-	{
-		switch (state) {
-			case State::REPORT_TYPE_OR_LOCATION:
-			reportType = ReportType::UNKNOWN;
-			if (group == SyntaxGroup::METAR || group == SyntaxGroup::SPECI) {
-				reportType = ReportType::METAR;
-				return(State::CORRECTION);
-			}
-			if (group == SyntaxGroup::TAF) {
-				reportType = ReportType::TAF;
-				return(State::CORRECTION);
-			}
-			if (group == SyntaxGroup::LOCATION) {
-				return(State::REPORT_TIME);
-			}
-			return(parseError(Error::EXPECTED_REPORT_TYPE_OR_LOCATION));
-
-			case State::CORRECTION:
-			if (group == SyntaxGroup::AMD) {
-				if (reportType != ReportType::TAF) {
-					return(parseError(Error::AMD_ALLOWED_IN_TAF_ONLY));
-				}
-				return(State::LOCATION);
-			}
-			if (group == SyntaxGroup::COR) return(State::LOCATION);
-			if (group == SyntaxGroup::LOCATION) {
-				return(State::REPORT_TIME);
-			}
-			return(parseError(Error::EXPECTED_LOCATION));
-
-			case State::LOCATION:
-			if (group == SyntaxGroup::LOCATION) return(State::REPORT_TIME);
-			return(parseError(Error::EXPECTED_LOCATION));
-
-			case State::REPORT_TIME:
-			if (group == SyntaxGroup::REPORT_TIME) {
-				if (reportType == ReportType::METAR) return(State::REPORT_BODY_BEGIN_METAR);
-				return(State::TIME_SPAN);
-			}
-			if (group == SyntaxGroup::TIME_SPAN && reportType == ReportType::TAF) {
-				return(State::REPORT_BODY_BEGIN_TAF);
-			}
-			if (group == SyntaxGroup::NIL) return(State::NIL);
-			return(parseError(Error::EXPECTED_REPORT_TIME));
-
-			case State::TIME_SPAN:
-			if (group == SyntaxGroup::TIME_SPAN) {
-				reportType = ReportType::TAF;
-				return(State::REPORT_BODY_BEGIN_TAF);
-			}
-			if (group == SyntaxGroup::NIL) return(State::NIL);
-			if (reportType == ReportType::UNKNOWN) {
-				reportType = ReportType::METAR;
-				return(State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
-			}
-			return(parseError(Error::EXPECTED_TIME_SPAN));
-
-			case State::REPORT_BODY_BEGIN_METAR:
-			case State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE:
-			if (group == SyntaxGroup::NIL) return(State::NIL);
-			if (group == SyntaxGroup::CNL) return(parseError(Error::CNL_ALLOWED_IN_TAF_ONLY));
-			if (group == SyntaxGroup::RMK) return(State::REMARK_METAR);
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
-			return(State::REPORT_BODY_METAR);
-
-			case State::REPORT_BODY_METAR:
-			if (group == SyntaxGroup::RMK) return(State::REMARK_METAR);
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
-			if (group == SyntaxGroup::NIL || group == SyntaxGroup::CNL) {
-				return(parseError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY));
-			}
-			return(State::REPORT_BODY_METAR);
-
-			case State::REPORT_BODY_BEGIN_TAF:
-			if (group == SyntaxGroup::NIL) return(State::NIL);
-			if (group == SyntaxGroup::CNL) return(State::CNL);
-			if (group == SyntaxGroup::RMK) return(State::REMARK_TAF);
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
-				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
-			}
-			return(State::REPORT_BODY_TAF);
-
-			case State::REPORT_BODY_TAF:
-			if (group == SyntaxGroup::RMK) return(State::REMARK_TAF);
-			if (group == SyntaxGroup::NIL || group == SyntaxGroup::CNL) {
-				return(parseError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY));
-			}
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
-				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
-			}
-			return(State::REPORT_BODY_TAF);
-
-			case State::REMARK_METAR:
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) return(State::MAINTENANCE_INDICATOR);
-			return(State::REMARK_METAR);
-
-			case State::REMARK_TAF:
-			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
-				return(parseError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY));
-			}
-			return(State::REMARK_TAF);
-
-			case State::MAINTENANCE_INDICATOR:
-			return(parseError(Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR));
-
-			case State::NIL:
-			return(parseError(Error::UNEXPECTED_GROUP_AFTER_NIL));
-
-			case State::CNL:
-			return(parseError(Error::UNEXPECTED_GROUP_AFTER_CNL));
-
-			case State::ERROR:
-			return(State::ERROR);
-
-			default:
-			return(parseError(Error::INTERNAL_PARSER_STATE));
+		status.finalTransition();
+		if (!extendedResult) {
+			saveToResult(result, status.getReportType(), status.getError());
+			return(result);
+		} else {
+			saveToResult(extresult, status.getReportType(), status.getError());
+			return(extresult);
 		}
 	}
 
 	template <class GenericGroupParser, 
-		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
-	ReportPart GenericParser<GenericGroupParser, SyntaxGroupGetter>::reportPartFromState(
-		State state)
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	std::optional<typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::GroupType>
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::combineWithLastGroup(
+		const std::optional<GroupType> & lastGroup,
+		const GroupType & group)
 	{
+		if (!lastGroup.has_value()) return(std::optional<GroupType>());
+		return(std::visit([](auto&& previousGroup, auto && currentGroup) -> 
+			std::optional<GroupType> { return (previousGroup.combine(currentGroup)); }, 
+				*lastGroup, group));
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	std::optional<typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::GroupType>
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::getLastGroup(
+		const Result & result)
+	{
+		if (result.groups.empty()) return(std::optional<GroupType>());
+		return(result.groups.back());
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	std::optional<typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::GroupType>
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::getLastGroup(
+		const ExtendedResult & extresult)
+	{
+		if (extresult.extgroups.empty()) return(std::optional<GroupType>());
+		return(std::get<GroupType>(extresult.extgroups.back()));
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::saveToResult(
+		Result & result, 
+		GroupType group, 
+		const std::optional<GroupType> & combinedGroup)
+	{
+		if (combinedGroup.has_value()) {
+			result.groups.back() = combinedGroup.value();
+		} else {
+			result.groups.push_back(std::move(group));
+		}
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::saveToResult(
+		ExtendedResult & extresult, 
+		GroupType group, 
+		const std::optional<GroupType> & combinedGroup, 
+		ReportPart reportPart, 
+		const std::string & groupString)
+	{
+		if (combinedGroup.has_value()) {
+			const auto newGroupStr = 
+				std::get<std::string>(extresult.extgroups.back()) + " " + groupString;
+			extresult.extgroups.back() = 
+				std::tuple(combinedGroup.value(), reportPart, newGroupStr);
+		} else {
+			extresult.extgroups.push_back(std::tuple(std::move(group), reportPart, groupString));
+		}
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::saveToResult(
+		Result & result, 
+		ReportType reportType, 
+		Error error)
+	{
+		result.reportType = reportType;
+		result.error = error;
+	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::saveToResult(
+		ExtendedResult & extresult, 
+		ReportType reportType, 
+		Error error)
+	{
+		extresult.reportType = reportType;
+		extresult.error = error;
+	}
+
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	ReportPart
+	GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::getReportPart() {
 		using StateReportPart = std::pair<State, ReportPart>;
 		static const std::vector<StateReportPart> stateReportParts = {
 			std::make_pair(State::REPORT_TYPE_OR_LOCATION, ReportPart::HEADER),
@@ -3276,10 +3290,298 @@ namespace metaf {
 
 	template <class GenericGroupParser, 
 		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
-	typename GenericParser<GenericGroupParser, SyntaxGroupGetter>::State 
-	GenericParser<GenericGroupParser, SyntaxGroupGetter>::finalTransition(
-		State state) 
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transition(
+		SyntaxGroup group)
 	{
+		switch (state) {
+			case State::REPORT_TYPE_OR_LOCATION:
+			transitionFromReportTypeOrLocation(group);
+			break;
+
+			case State::CORRECTION:
+			transitionFromCorrecton(group);
+			break;
+
+			case State::LOCATION:
+			if (group == SyntaxGroup::LOCATION) {setState(State::REPORT_TIME); break;} 
+			setError(Error::EXPECTED_LOCATION);
+			break;
+
+			case State::REPORT_TIME:
+			transitionFromReportTime(group);
+			break;
+
+			case State::TIME_SPAN:
+			transitionFromTimeSpan(group);
+			break;
+
+			case State::REPORT_BODY_BEGIN_METAR:
+			case State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE:
+			transitionFromReportBodyBeginMetar(group);
+			break;
+
+			case State::REPORT_BODY_METAR:
+			transitionFromReportBodyMetar(group);
+			break;
+
+			case State::REPORT_BODY_BEGIN_TAF:
+			transitionFromReportBodyBeginTaf(group);
+			break;
+
+			case State::REPORT_BODY_TAF:
+			transitionFromReportBodyTaf(group);
+			break;
+
+			case State::REMARK_METAR:
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
+				setState(State::MAINTENANCE_INDICATOR);
+			}
+			break;
+
+			case State::REMARK_TAF:
+			if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
+				setError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+			}
+			break;
+
+			case State::MAINTENANCE_INDICATOR:
+			setError(Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
+			break;
+
+			case State::NIL:
+			setError(Error::UNEXPECTED_GROUP_AFTER_NIL);
+			break;
+
+			case State::CNL:
+			setError(Error::UNEXPECTED_GROUP_AFTER_CNL);
+			break;
+
+			case State::ERROR:
+			break;
+
+			default:
+			setError(Error::INTERNAL_PARSER_STATE);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportTypeOrLocation(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::METAR:
+			case SyntaxGroup::SPECI:
+			setReportType(ReportType::METAR);
+			setState(State::CORRECTION);
+			break;
+
+			case SyntaxGroup::TAF:
+			setReportType(ReportType::TAF);
+			setState(State::CORRECTION);
+			break;
+
+			case SyntaxGroup::LOCATION:
+			setState(State::REPORT_TIME);
+			break;
+
+			default:
+			setError(Error::EXPECTED_REPORT_TYPE_OR_LOCATION);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromCorrecton(
+		SyntaxGroup group)
+	{
+		switch (group) {
+			case SyntaxGroup::AMD:
+			setState(State::LOCATION);
+			if (getReportType() != ReportType::TAF) setError(Error::AMD_ALLOWED_IN_TAF_ONLY);
+			break;
+
+			case SyntaxGroup::COR:
+			setState(State::LOCATION);
+			break;
+
+			case SyntaxGroup::LOCATION:
+			setState(State::REPORT_TIME);
+			break;
+
+			default:
+			setError(Error::EXPECTED_LOCATION);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportTime(
+		SyntaxGroup group)
+	{
+		switch (group) {
+			case SyntaxGroup::REPORT_TIME:
+			if (reportType == ReportType::METAR) {
+				setState(State::REPORT_BODY_BEGIN_METAR);
+				break;
+			}
+			setState(State::TIME_SPAN);
+			break;
+
+			case SyntaxGroup::TIME_SPAN:
+			if (getReportType() == ReportType::TAF) {
+				setState(State::REPORT_BODY_BEGIN_TAF);
+				break;	
+			}
+			setError(Error::EXPECTED_REPORT_TIME);
+			break;
+
+			case SyntaxGroup::NIL:
+			setState(State::NIL);
+			break;
+
+			default:
+			setError(Error::EXPECTED_REPORT_TIME);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromTimeSpan(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::TIME_SPAN:
+			setReportType(ReportType::TAF);
+			setState(State::REPORT_BODY_BEGIN_TAF);
+			break;
+
+			case SyntaxGroup::NIL:
+			setState(State::NIL);
+			break;
+
+			default:
+			if (getReportType() == ReportType::UNKNOWN) {
+				setReportType(ReportType::METAR);
+				setState(State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
+				break;
+			}
+			setError(Error::EXPECTED_TIME_SPAN);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportBodyBeginMetar(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::NIL: 
+			setState(State::NIL);
+			break;
+
+			case SyntaxGroup::CNL:
+			setError(Error::CNL_ALLOWED_IN_TAF_ONLY);
+			break;
+
+			case SyntaxGroup::RMK:
+			setState(State::REMARK_METAR);
+			break;
+
+			case SyntaxGroup::MAINTENANCE_INDICATOR:
+			setState(State::MAINTENANCE_INDICATOR);
+			break;
+
+			default:
+			setState(State::REPORT_BODY_METAR);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportBodyMetar(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::RMK:
+			setState(State::REMARK_METAR);
+			break;
+
+			case SyntaxGroup::MAINTENANCE_INDICATOR:
+			setState(State::MAINTENANCE_INDICATOR);
+			break;
+
+			case SyntaxGroup::NIL:
+			case SyntaxGroup::CNL:
+			setError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY);
+			break;
+
+			default:
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportBodyBeginTaf(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::NIL: 
+			setState(State::NIL);
+			break;
+
+			case SyntaxGroup::CNL: 
+			setState(State::CNL);
+			break;
+
+			case SyntaxGroup::RMK: 
+			setState(State::REMARK_TAF);
+			break;
+
+			case SyntaxGroup::MAINTENANCE_INDICATOR:
+			setError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+			break;
+
+			default:
+			setState(State::REPORT_BODY_TAF);
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::transitionFromReportBodyTaf(
+		SyntaxGroup group)
+	{
+		switch(group) {
+			case SyntaxGroup::RMK:
+			setState(State::REMARK_TAF);
+			break;
+
+			case SyntaxGroup::NIL:
+			case SyntaxGroup::CNL:
+			setError(Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY);
+			break;
+
+			case SyntaxGroup::MAINTENANCE_INDICATOR:
+			setError(Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+			break;
+
+			default:
+			break;
+		}
+	}
+
+	template <class GenericGroupParser, 
+		SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::Status::finalTransition() {
 		switch (state) {
 			case State::REPORT_BODY_METAR:
 			case State::REPORT_BODY_TAF:
@@ -3289,10 +3591,11 @@ namespace metaf {
 			case State::NIL:
 			case State::CNL:
 			case State::ERROR:
-			return(state);
+			break;
 
 			case State::REPORT_TYPE_OR_LOCATION:
-			return(parseError(Error::EMPTY_REPORT));
+			setError(Error::EMPTY_REPORT);
+			break;
 			
 			case State::CORRECTION:
 			case State::LOCATION:
@@ -3301,10 +3604,12 @@ namespace metaf {
 			case State::REPORT_BODY_BEGIN_METAR:
 			case State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE:
 			case State::REPORT_BODY_BEGIN_TAF:
-			return(parseError(Error::UNEXPECTED_REPORT_END));
+			setError(Error::UNEXPECTED_REPORT_END);
+			break;
 
 			default:
-			return(parseError(Error::INTERNAL_PARSER_STATE));
+			setError(Error::INTERNAL_PARSER_STATE);
+			break;
 		}
 	}
 

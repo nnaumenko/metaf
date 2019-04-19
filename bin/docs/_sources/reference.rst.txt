@@ -909,7 +909,7 @@ Group
 
 .. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, WindShearLowLayerGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
 
-	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:func:`metaf::Parser::getResult()`).
+	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:struct:`metaf::Parser::Result` and :cpp:struct:`metaf::Parser::ExtendedResult`).
 
 
 
@@ -1232,8 +1232,6 @@ Example of this group is ``302330Z``.
 
 			:returns: Time when the report was released (GMT time zone).
 
-		.. warning:: The reference to time value is only valid as long as :cpp:class:`ReportTimeGroup` instance exists. Once :cpp:class:`ReportTimeGroup` instance is destroyed, the previously acquired reference to :cpp:class:`MetafTime` is no longer valid.
-
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
@@ -1372,9 +1370,6 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 			:returns: Expected time of event or empty ``std::optional`` if no expected time of event was specified.
 
 		.. note:: Trend group can have *either* begin time, end time, timespan with begin and end time *or* expected time of event. 
-
-		.. warning:: The reference to time values are only valid as long as :cpp:class:`TrendGroup` instance exists. Once :cpp:class:`TrendGroup` instance is destroyed, the previously acquired references to :cpp:class:`MetafTime` is no longer valid.
-
 
 	**Validating**
 
@@ -2594,6 +2589,28 @@ Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2`
 		:returns: Always returns ``true``.
 
 
+.. index:: single: Report type
+
+ReportType
+----------
+
+.. cpp:enum-class:: ReportType
+
+		Autodetected METAR or TAF report type.
+
+		.. cpp:enumerator:: UNKNOWN
+
+			Unable to detect a report type (e.g. due to malformed report).
+
+		.. cpp:enumerator:: METAR
+
+			Report is METAR.
+
+		.. cpp:enumerator:: TAF
+
+			Report is TAF.
+
+
 .. index:: single: Report part
 
 ReportPart
@@ -2631,7 +2648,7 @@ GroupParser
 
 .. cpp:class:: GroupParser
 
-	The purpose of this class is to parse a single METAR or TAF group. To parse entire METAR or TAF report use :cpp:class:`metaf::Parser`.
+	The purpose of this class is to parse a single METAR or TAF group. To parse entire METAR 	or TAF report use :cpp:class:`metaf::Parser`.
 
 	.. cpp:function:: static Group parse(const std::string & group, ReportPart reportPart)
 
@@ -2768,54 +2785,62 @@ Parser
 			.. note: If such error is ever encountered please report it to author at `Gitlab <https://gitlab.com/nnaumenko/metaf>` or `Github <https://github.com/nnaumenko/metaf>` along with the source report string that has caused it.
 
 
-		.. cpp:function:: bool parse(const std::string & report, bool keepSourceGroup = false)
+		.. cpp:struct:: Result
+
+			Contains result of report parsing using :cpp:func:`parse()` method.
+
+			.. cpp:var:: ReportType reportType
+
+				Contains report type (:cpp:enumerator:`metaf::ReportType::METAR` or :cpp:enumerator:`metaf::ReportType::TAF`) autodetected by parser during parse of the last report. :cpp:enumerator:`metaf::ReportType::UNKNOWN` is used if the report is malformed and it is not possible to autodetect its type.
+
+			.. cpp:var:: Error error
+
+				Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully.
+
+			.. cpp:var::std::vector<GroupType> groups
+
+				A vector of parsed individual groups from METAR or TAF report.
+
+		.. cpp:function:: Result parse (const std::string & report)
 
 			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately.
 
-			After calling this method, the results are stored within ``Parser`` class. Use :cpp:func:`getReportType()`, :cpp:func:`getError()`, :cpp:func:`getResult()` and :cpp:func:`getSourceGroups()` to access the parsed report or :cpp:func:`resetResult()` to release memory occupied by the results of the parse and reset the results of the parse to default state.
-
-			.. note:: There is no need to call :cpp:func:`resetResult()` before parsing the next METAR or TAF report.
-
-			:returns: ``true`` if METAR or TAF report was parsed successfully and ``false`` if syntax error was encountered and only the part of the METAR or TAF report before syntax error was parsed.
+			:returns: :cpp:struct:`metaf::Parser::Result` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of individual :cpp:type:`metaf::Group` corresponding to METAR or TAF groups. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
 
 			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
-			.. note:: Use :cpp:func:`getError()` to check for exact error.
+			:param report: String which contains a METAR or TAF report.
+
+		.. cpp:struct:: ExtendedResult
+
+			Contains result of report parsing using :cpp:func:`extendedParse()` method.
+
+			.. cpp:var:: ReportType reportType
+
+				Contains report type (:cpp:enumerator:`metaf::ReportType::METAR` or :cpp:enumerator:`metaf::ReportType::TAF`) autodetected by parser during parse of the last report. :cpp:enumerator:`metaf::ReportType::UNKNOWN` is used if the report is malformed and it is not possible to autodetect its type.
+
+			.. cpp:var:: Error error
+
+				Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully.
+
+			.. cpp:var::std::vector< std::tuple<std::tuple<Group, ReportPart, std::string>> > extgroups
+
+				A vector of parsed individual groups from METAR or TAF report with additional information.
+
+				In each tuple :cpp:type:`Group` contains information of individual group from METAR or TAF report, :cpp:enum:`ReportPart` contains part of the report where this group was encountered, and ``std::string`` contains a source string which was parsed into :cpp:type:`Group`.
+
+				.. note:: If the groups were combined, then multiple group string separated by a single space are stored in ``std::string`` element of tuple. For example, groups ``1`` and ``1/2SM`` will be combined and group string ``1 1/2SM`` will be kept.
+
+		.. cpp:function:: ExtendedResult extendedParse(const std::string & report)
+
+			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately. The groups are stored along with their source string and report part where they have occurred.
+
+			:returns: :cpp:struct:`metaf::Parser::ExtendedResult` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of tuples which contains individual :cpp:type:`metaf::Group` corresponding to METAR or TAF groups, report parts where they occurred and their original source strings. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
+
+			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
 			:param report: String which contains a METAR or TAF report.
 
-			:param keepSourceGroups: if ``true`` then the parser will also keep the unparsed string for each METAR/TAF group. If the groups are combined, the strings for both groups are concanenated (groups separated by a single space). For example, groups ``1`` and ``1/2SM`` will be combined and source string ``1 1/2SM`` will be kept.
-
-
-		.. cpp:function:: Error getError() const
-
-			:returns: Syntax error encountered by parser during parse of last report or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully. If no report was previously parsed or :cpp:func:`resetResult()` was previously called, :cpp:enumerator:`metaf::Parser::Error::NONE` is returned.
-
-
-		.. cpp:function:: ReportType getReportType() const
-
-			:returns: Report type (:cpp:enumerator:`metaf::ReportType::METAR` or :cpp:enumerator:`metaf::ReportType::TAF`) autodetected by parser during parse of the last report. If no report was previously parsed or :cpp:func:`resetResult()` was previously called, :cpp:enumerator:`metaf::ReportType::UNKNOWN` is returned.
-
-
-		.. cpp:function:: const std::vector<Group> & getResult() const
-
-			:returns: A reference to vector of parsed individual groups from last parsed METAR or TAF report. If no report was previously parsed or :cpp:func:`resetResult()` was previously called, an empty vector is returned.
-
-			.. warning:: The reference obtained by this method is only valid as long as an instance of :cpp:class:`metaf::Parser` still exists and no other METAR or TAF report is parsed by the same instance. If :cpp:func:`metaf::Parser::parse()` is executed again, the reference returned by this method becomes invalid.
-
-
-		.. cpp:function:: const std::vector<std::string> & getSourceGroups() const
-
-			:returns: A reference to vector of unparsed individual group strings from last parsed METAR or TAF report. If no report was previously parsed or :cpp:func:`resetResult()` was previously called or during last , an empty vector is returned.
-
-			.. warning:: The reference obtained by this method is only valid as long as an instance of :cpp:class:`metaf::Parser` still exists and no other METAR or TAF report is parsed by the same instance. If :cpp:func:`metaf::Parser::parse()` is executed again, the reference returned by this method becomes invalid.
-
-
-		.. cpp:function:: void resetResult()
-
-			Resets last parse result. After this method is called, the parse result obtained by :cpp:func:`getReportType()`, :cpp:func:`getError()`, :cpp:func:`getResult()` and :cpp:func:`getSourceGroups()`. 
-
-			The report type will be set to :cpp:enumerator:`metaf::ReportType::UNKNOWN`, the parse error set to :cpp:enumerator:`metaf::Parser::Error::NONE` and Result and SourceGroups vectors are emptied and memory occupied by their contents is released.
 
 .. index:: single: Group visitor
 
@@ -2840,54 +2865,40 @@ See :doc:`getting_started` for more information.
 
 	.. cpp:function:: protected virtual T visitPlainTextGroup(const PlainTextGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitFixedGroup(const FixedGroup & group) = 0
-
 
 	.. cpp:function:: protected virtual T visitLocationGroup(const LocationGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitReportTimeGroup(const ReportTimeGroup & group) = 0
-
 
 	.. cpp:function:: protected virtual T visitTrendGroup(const TrendGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitWindGroup(const WindGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitVisibilityGroup(const VisibilityGroup & group) = 0
-	
 
 	.. cpp:function:: protected virtual T visitCloudGroup(const CloudGroup & group) = 0
-	
 
 	.. cpp:function:: protected virtual T visitWeatherGroup(const WeatherGroup & group) = 0
-	
 
 	.. cpp:function:: protected virtual T visitTemperatureGroup(const TemperatureGroup & group) = 0
-	
 
 	.. cpp:function:: protected virtual T visitTemperatureForecastGroup(const TemperatureForecastGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitPressureGroup(const PressureGroup & group) = 0
-	
 
-	.. cpp:function:: protected virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0	
-
+	.. cpp:function:: protected virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0
-	
+
+	.. cpp:function:: protected virtual T visitWindShearLowLayerGroup(const WindShearLowLayerGroup & group) = 0
 
 	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group) = 0
 
-
 	.. cpp:function:: protected virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0
-	
 
 	.. cpp:function:: protected virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0
-	
+
 
 	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
 

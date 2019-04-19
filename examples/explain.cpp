@@ -1397,21 +1397,17 @@ void addResult(const std::string & group, const std::string & explanation) {
 }
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
-	metaf::Parser parser;
-	parser.parse(std::string(input), true);
+	const auto parseResult = metaf::Parser::extendedParse(std::string(input));
 	addResult("", "Detected report type: "s + 
-		std::string(GroupVisitorExplain::reportTypeToString(parser.getReportType())));
-	if (parser.getError() != metaf::Parser::Error::NONE) {
+		std::string(GroupVisitorExplain::reportTypeToString(parseResult.reportType)));
+	if (parseResult.error != metaf::Parser::Error::NONE) {
 		addResult("", "Parsing error: "s + 
-			std::string(GroupVisitorExplain::reportErrorToString(parser.getError())));
+			std::string(GroupVisitorExplain::reportErrorToString(parseResult.error)));
 	}
-	for (auto i=0u; i<parser.getResult().size(); i++) {
-		std::string source = std::string("");
-		if (i < parser.getSourceGroups().size()) {
-			source = parser.getSourceGroups().at(i);
-		}
+	for (const auto extgr : parseResult.extgroups) {
 		GroupVisitorExplain visitor;
-		addResult(source, visitor.visit(parser.getResult().at(i)));
+		addResult(std::get<std::string>(extgr), 
+			visitor.visit(std::get<metaf::Group>(extgr)));
 	}
 	//remove last delimiter which is always added at the end 
 	//of the last explanation string
