@@ -5,7 +5,10 @@ build:
     GIT_SUBMODULE_STRATEGY: normal
   script:
   - emmake make all
-  - pip install -U sphinx
+  - apt-get update
+  - apt-get -y install python3
+  - apt-get -y install python3-pip
+  - pip3 install -U sphinx
   - emmake make docs
   - mkdir ci-build
   - cp -r bin/* ci-build
