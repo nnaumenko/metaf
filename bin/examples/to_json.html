@@ -1,4 +1,4 @@
-<!doctypehtml><html lang=en><head><meta charset=utf-8><title>Metaf Usage Examples</title><link href=../style.css rel=stylesheet><style>body{text-align:center}</style><script>function convertToJson() {
+<!doctypehtml><html lang=en><head><meta charset=utf-8><meta content="Metaf library usage example: decode METAR/TAF report and convert the contents to JSON."name=description><title>Metaf example: Convert METAR & TAF reports to JSON</title><link href=../style.css rel=stylesheet><style>body{text-align:center}</style><script>function convertToJson() {
       var inputStr = document.getElementById("input").value;
       var result = Module.ccall('toJson',     // name of C function 
                                 'string',     // return type
@@ -19,4 +19,4 @@
       if (document.getElementById("input").value.length == 0) {
         document.getElementById("input").value = sampleMetarStr;
       }
-    }</script><script async src=to_json.js></script></head><body onload=setSampleInput()><ul class=navbar><li class=navitem><a href=../index.html>About</a></li><li class=navitem><a href=https://gitlab.com/nnaumenko/metaf/ target=_blank>Repository</a></li><li class="navitem navactive"><a href=../examples.html>Examples</a></li><li class=navitem><a href=../docs/index.html target=_blank>Documentation</a></li></ul><div class=content><h1>Convert METAR & TAF to JSON</h1>Enter or paste METAR or TAF here:<br><textarea cols=80 id=input rows=8 oninput=convertToJson()></textarea><br><br><br>Conversion result:<br><textarea cols=80 id=result rows=8 readonly></textarea><br></div></body></html>
+    }</script><script async src=to_json.js></script></head><body onload=setSampleInput()><ul class=navbar><li class=navitem><a href=../index.html>About</a></li><li class=navitem><a href=https://gitlab.com/nnaumenko/metaf/ target=_blank>Repository</a></li><li class="navitem navactive"><a href=../examples.html>Examples</a></li><li class=navitem><a href=../docs/index.html target=_blank>Documentation</a></li></ul><div class=content><h1>Convert METAR & TAF reports to JSON</h1>Enter or paste METAR or TAF here:<br><textarea cols=80 id=input rows=8 oninput=convertToJson()></textarea><br><br><br>Conversion result:<br><textarea cols=80 id=result rows=8 readonly></textarea><br></div></body></html>
