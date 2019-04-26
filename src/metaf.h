@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 0;
-		static const int patch = 0;
+		static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 

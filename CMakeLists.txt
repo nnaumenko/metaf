@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.12)
 
 project(metaf)
 
@@ -41,10 +41,7 @@ add_executable(example_json examples/to_json.cpp)
 set_target_properties(example_json PROPERTIES 
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
 	OUTPUT_NAME "to_json.html"
-)
-
-target_link_options(example_json PRIVATE
-	--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/to_json_shell.html -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']"
+	LINK_FLAGS "--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/to_json_shell.html -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\""
 )
 
 
@@ -56,10 +53,7 @@ add_executable(example_explain examples/explain.cpp)
 set_target_properties(example_explain PROPERTIES 
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
 	OUTPUT_NAME "explain.html"
-)
-
-target_link_options(example_explain PRIVATE
-	--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/explain_shell.html -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']"
+	LINK_FLAGS "--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/explain_shell.html -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\""
 )
 
 
@@ -106,13 +100,9 @@ target_include_directories(tests PRIVATE
 set_target_properties(tests PROPERTIES 
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/test
 	OUTPUT_NAME "main.html"
+	LINK_FLAGS "-s DISABLE_EXCEPTION_CATCHING=0 --emrun"
 )
 
 target_compile_options(tests PRIVATE
 	-s DISABLE_EXCEPTION_CATCHING=0 
-)
-
-target_link_options(tests PRIVATE
-	-s DISABLE_EXCEPTION_CATCHING=0 
-	--emrun
 )
