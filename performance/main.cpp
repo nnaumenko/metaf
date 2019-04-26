@@ -201,7 +201,7 @@ int GroupPerformanceChecker::process() {
 		groupCount++;
 	}
 	return(groupCount);
-};
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

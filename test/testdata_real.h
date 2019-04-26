@@ -30,6 +30,6 @@ namespace testdata {
 	/// structures and group variants
 	extern const std::vector<MetarTafRealData> realDataSet;
 
-}; // namespace test
+} // namespace test
 
 #endif // #ifndef TESTDATA_REAL_H 

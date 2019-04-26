@@ -1,64 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites tests="739" failures="0" disabled="0" errors="0" timestamp="2019-04-20T18:56:00" time="31.502" name="AllTests">
-  <testsuite name="SurfaceFriction" tests="17" failures="0" disabled="0" errors="0" time="0.115">
-    <testcase name="fromStringFrictionCoefficient" status="run" time="0.002" classname="SurfaceFriction" />
-    <testcase name="fromStringBrakingActionPoor" status="run" time="0.001" classname="SurfaceFriction" />
-    <testcase name="fromStringBrakingActionMediumPoor" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringBrakingActionMedium" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringBrakingActionMediumGood" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringBrakingActionGood" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringReservedValues" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringUnreliable" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringNotReported" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="fromStringWrongFormat" status="run" time="0.001" classname="SurfaceFriction" />
-    <testcase name="brakingActionPoor" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionMediumPoor" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionMedium" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionMediumGood" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionGood" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionUnreliable" status="run" time="0" classname="SurfaceFriction" />
-    <testcase name="brakingActionNotReported" status="run" time="0" classname="SurfaceFriction" />
+<testsuites tests="739" failures="0" disabled="0" errors="0" timestamp="2019-04-26T22:49:30" time="33.799" name="AllTests">
+  <testsuite name="WaveHeight" tests="30" failures="0" disabled="0" errors="0" time="0.222">
+    <testcase name="fromStringStateOfSurfaceCalmGlassy" status="run" time="0.001" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceCalmRippled" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceSmooth" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceSlight" status="run" time="0.001" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceModerate" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceRough" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceVeryRough" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceHigh" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceVeryHigh" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfacePhenomenal" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceNotReported" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringStateOfSurfaceWrongFormat" status="run" time="0.001" classname="WaveHeight" />
+    <testcase name="fromStringWaveHeightThreeDigit" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringWaveHeightTwoDigit" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringWaveHeightOneDigit" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringWaveHeightNotReported" status="run" time="0" classname="WaveHeight" />
+    <testcase name="fromStringWaveHeightWrongFormat" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceCalmGlassy" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceCalmRippled" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceSmooth" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceSlight" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceModerate" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceRough" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceVeryRough" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceHigh" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfaceVeryHigh" status="run" time="0" classname="WaveHeight" />
+    <testcase name="stateOfSurfacePhenomenal" status="run" time="0.002" classname="WaveHeight" />
+    <testcase name="waveHeightToUnitMeters" status="run" time="0" classname="WaveHeight" />
+    <testcase name="waveHeightToUnitFeet" status="run" time="0" classname="WaveHeight" />
+    <testcase name="waveHeightToUnitNotReported" status="run" time="0" classname="WaveHeight" />
   </testsuite>
-  <testsuite name="WindGroup" tests="37" failures="0" disabled="0" errors="0" time="0.382">
-    <testcase name="parseKnotsMetar" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseKnotsTaf" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseMps" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseKmh" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseGusts" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseWindThreeDigits" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseGustsThreeDigits" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseWindAndGustsThreeDigits" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseVariableDirection" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseNotReported" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseWindShear" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseVariableWindSectorMetar" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseVariableWindSectorTaf" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="WindGroup" />
-    <testcase name="parseWrongFormat" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isCalmTrueKnots" status="run" time="0" classname="WindGroup" />
-    <testcase name="isCalmTrueMps" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isCalmTrueKmh" status="run" time="0" classname="WindGroup" />
-    <testcase name="isCalmFalse" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isValidTrueSurfaceWind" status="run" time="0" classname="WindGroup" />
-    <testcase name="isValidFalseSurfaceWind" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isValidTrueWindShear" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isValidFalseWindShear" status="run" time="0" classname="WindGroup" />
-    <testcase name="isValidTrueVariableWindSector" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="isValidFalseVariableWindSector" status="run" time="0" classname="WindGroup" />
-    <testcase name="combineWindGroupAndWindSectorGroup" status="run" time="0" classname="WindGroup" />
-    <testcase name="combineWindGroupAndOther" status="run" time="0.001" classname="WindGroup" />
-    <testcase name="combineWindShearGroupAndOther" status="run" time="0" classname="WindGroup" />
-    <testcase name="combineWindSectorGroupAndOther" status="run" time="0" classname="WindGroup" />
-    <testcase name="isSurfaceWindTrue" status="run" time="0" classname="WindGroup" />
-    <testcase name="isSurfaceWindFalse" status="run" time="0" classname="WindGroup" />
-    <testcase name="isSurfaceWindCombined" status="run" time="0" classname="WindGroup" />
-    <testcase name="isWindShearTrue" status="run" time="0" classname="WindGroup" />
-    <testcase name="isWindShearFalse" status="run" time="0" classname="WindGroup" />
-    <testcase name="isWindShearCombined" status="run" time="0" classname="WindGroup" />
-    <testcase name="hasVariableSectorTrue" status="run" time="0" classname="WindGroup" />
-    <testcase name="hasVariableSectorFalse" status="run" time="0.001" classname="WindGroup" />
-  </testsuite>
-  <testsuite name="RunwayVisualRangeGroup" tests="20" failures="0" disabled="0" errors="0" time="0.349">
+  <testsuite name="RunwayVisualRangeGroup" tests="20" failures="0" disabled="0" errors="0" time="0.318">
     <testcase name="parseSingleValueMeters" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseRunwayWithDesignator" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseSingleValueMetersWithModifiers" status="run" time="0" classname="RunwayVisualRangeGroup" />
@@ -68,8 +42,8 @@
     <testcase name="parseVariableValueMeters" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseVariableValueFeet" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseVariableValueMetersWithModifiers" status="run" time="0" classname="RunwayVisualRangeGroup" />
-    <testcase name="parseVariableValueFeetWithModifiers" status="run" time="0" classname="RunwayVisualRangeGroup" />
-    <testcase name="parseVariableValueWithTrends" status="run" time="0.001" classname="RunwayVisualRangeGroup" />
+    <testcase name="parseVariableValueFeetWithModifiers" status="run" time="0.001" classname="RunwayVisualRangeGroup" />
+    <testcase name="parseVariableValueWithTrends" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseMalformedTrends" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseValueMetersNotReported" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="parseValueFeetNotReported" status="run" time="0" classname="RunwayVisualRangeGroup" />
@@ -80,86 +54,239 @@
     <testcase name="isValidTrue" status="run" time="0" classname="RunwayVisualRangeGroup" />
     <testcase name="isValidFalse" status="run" time="0" classname="RunwayVisualRangeGroup" />
   </testsuite>
-  <testsuite name="Distance" tests="70" failures="0" disabled="0" errors="0" time="1.603">
-    <testcase name="constructor" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString6500" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString1000" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString0400" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString0150" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString0050" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString0000" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterStringNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterString9999" status="run" time="0" classname="Distance" />
-    <testcase name="fromMeterStringWrongFormat" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileString4SM" status="run" time="0.001" classname="Distance" />
-    <testcase name="fromMileString16SM" status="run" time="0.001" classname="Distance" />
-    <testcase name="fromMileString0SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileString1_2SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileString3_16SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringM1_8SM" status="run" time="0.001" classname="Distance" />
-    <testcase name="fromMileStringM1SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringP6SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringP15SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringP3_4SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileString21_4SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringM11_2SM" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="fromMileStringWrongFormat" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightString370" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightString145" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightString044" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightString001" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightString000" status="run" time="0" classname="Distance" />
-    <testcase name="fromHeightStringNotReported" status="run" time="0.001" classname="Distance" />
-    <testcase name="fromHeightStringWrongFormat" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString3500" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString3500feet" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString0800" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString0200" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrStringM0200" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrStringP2000" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString9999" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrString0000" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrStringNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="fromRvrStringWrongFormat" status="run" time="0" classname="Distance" />
-    <testcase name="fromIntegerAndFraction" status="run" time="0.001" classname="Distance" />
-    <testcase name="fromIntegerAndFractionWrongCombination" status="run" time="0.002" classname="Distance" />
-    <testcase name="isIntegerTrue" status="run" time="0" classname="Distance" />
-    <testcase name="isIntegerFalseNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="isIntegerFalseFraction" status="run" time="0" classname="Distance" />
-    <testcase name="isFractionTrue" status="run" time="0" classname="Distance" />
-    <testcase name="isFractionFalseNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="isFractionFalseInteger" status="run" time="0" classname="Distance" />
-    <testcase name="isReportedTrue" status="run" time="0" classname="Distance" />
-    <testcase name="isReportedFalse" status="run" time="0" classname="Distance" />
-    <testcase name="isValidTrueMeters" status="run" time="0" classname="Distance" />
-    <testcase name="isValidTrueMiles" status="run" time="0" classname="Distance" />
-    <testcase name="isValidTrueHeight" status="run" time="0" classname="Distance" />
-    <testcase name="isValidTrueRvr" status="run" time="0" classname="Distance" />
-    <testcase name="isValidFalse" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitSameUnit" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitNotReported" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitMetersToMiles" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitMetersToFeet" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitMilesToMeters" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitMilesToFeet" status="run" time="0.001" classname="Distance" />
-    <testcase name="toUnitFeetToMeters" status="run" time="0.001" classname="Distance" />
-    <testcase name="toUnitFeetToMiles" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitFraction" status="run" time="0" classname="Distance" />
-    <testcase name="toUnitDenominatorZero" status="run" time="0" classname="Distance" />
-    <testcase name="hasIntegerTrue" status="run" time="0" classname="Distance" />
-    <testcase name="hasIntegerFalse" status="run" time="0" classname="Distance" />
-    <testcase name="hasFractionTrue" status="run" time="0" classname="Distance" />
-    <testcase name="hasFractionFalse" status="run" time="0.001" classname="Distance" />
+  <testsuite name="SeaSurfaceGroup" tests="14" failures="0" disabled="0" errors="0" time="0.214">
+    <testcase name="parseStateOfSeaSurface" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseStateOfSeaSurfaceTemperatureNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseStateOfSeaSurfaceStateNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseStateOfSeaSurfaceTemperatureAndStateNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseStateOfSeaSurfaceWrongReportPart" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseStateOfSeaSurfaceWrongFormat" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightOneDigit" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightTwoDigits" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightThreeDigits" status="run" time="0.001" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightTemperatureNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightWaveHeightNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightTemperatureAndWaveHeightNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightWrongReportPart" status="run" time="0" classname="SeaSurfaceGroup" />
+    <testcase name="parseWaveHeightWrongFormat" status="run" time="0" classname="SeaSurfaceGroup" />
   </testsuite>
-  <testsuite name="WeatherGroup" tests="55" failures="0" disabled="0" errors="0" time="1.386">
-    <testcase name="parseWeatherDz" status="run" time="0" classname="WeatherGroup" />
+  <testsuite name="Speed" tests="24" failures="0" disabled="0" errors="0" time="0.49">
+    <testcase name="unitToStringKnots" status="run" time="0.001" classname="Speed" />
+    <testcase name="unitToStringMetersPerSecond" status="run" time="0" classname="Speed" />
+    <testcase name="unitToStringKilometersPerHour" status="run" time="0" classname="Speed" />
+    <testcase name="unitToStringWrongUnit" status="run" time="0" classname="Speed" />
+    <testcase name="fromStringTwoDigit" status="run" time="0" classname="Speed" />
+    <testcase name="fromStringThreeDigit" status="run" time="0" classname="Speed" />
+    <testcase name="fromStringNotReported" status="run" time="0" classname="Speed" />
+    <testcase name="fromStringEmpty" status="run" time="0.001" classname="Speed" />
+    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Speed" />
+    <testcase name="speedNotReported" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitSameUnit" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitNotReported" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKnotsToMps" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKnotsToKmh" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKnotsToMph" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitMpsToKnots" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitMpsToKmh" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitMpsToMph" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKmhToKnots" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKmhToMps" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitKmhToMph" status="run" time="0.001" classname="Speed" />
+    <testcase name="toUnitMphToKnots" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitMphToMps" status="run" time="0" classname="Speed" />
+    <testcase name="toUnitMphToKmh" status="run" time="0" classname="Speed" />
+  </testsuite>
+  <testsuite name="SurfaceFriction" tests="17" failures="0" disabled="0" errors="0" time="0.531">
+    <testcase name="fromStringFrictionCoefficient" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringBrakingActionPoor" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringBrakingActionMediumPoor" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringBrakingActionMedium" status="run" time="0.001" classname="SurfaceFriction" />
+    <testcase name="fromStringBrakingActionMediumGood" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringBrakingActionGood" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringReservedValues" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringUnreliable" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringNotReported" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="fromStringWrongFormat" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionPoor" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionMediumPoor" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionMedium" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionMediumGood" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionGood" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionUnreliable" status="run" time="0" classname="SurfaceFriction" />
+    <testcase name="brakingActionNotReported" status="run" time="0" classname="SurfaceFriction" />
+  </testsuite>
+  <testsuite name="Temperature" tests="22" failures="0" disabled="0" errors="0" time="0.465">
+    <testcase name="fromStringPositive" status="run" time="0" classname="Temperature" />
+    <testcase name="fromStringNegative" status="run" time="0" classname="Temperature" />
+    <testcase name="fromStringAboveZero" status="run" time="0" classname="Temperature" />
+    <testcase name="fromStringBelowZero" status="run" time="0" classname="Temperature" />
+    <testcase name="fromStringNotReported" status="run" time="0" classname="Temperature" />
+    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Temperature" />
+    <testcase name="toUnitSameUnit" status="run" time="0" classname="Temperature" />
+    <testcase name="toUnitCtoF" status="run" time="0" classname="Temperature" />
+    <testcase name="toUnitNotReported" status="run" time="0" classname="Temperature" />
+    <testcase name="parseTemperatureAndDewPoint" status="run" time="0.001" classname="Temperature" />
+    <testcase name="parseTemperatureAndDewPointNegativeValues" status="run" time="0" classname="Temperature" />
+    <testcase name="parseTemperatureAndDewPointZero" status="run" time="0" classname="Temperature" />
+    <testcase name="parseTemperatureOnly" status="run" time="0" classname="Temperature" />
+    <testcase name="parseDewPointNotReported" status="run" time="0.001" classname="Temperature" />
+    <testcase name="parseNotReported" status="run" time="0" classname="Temperature" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="Temperature" />
+    <testcase name="parseWrongFormat" status="run" time="0" classname="Temperature" />
+    <testcase name="isValidNotReported" status="run" time="0" classname="Temperature" />
+    <testcase name="isValidTrue" status="run" time="0" classname="Temperature" />
+    <testcase name="isValidTrueZero" status="run" time="0.001" classname="Temperature" />
+    <testcase name="isValidFalse" status="run" time="0" classname="Temperature" />
+    <testcase name="relativeHumidity" status="run" time="0.001" classname="Temperature" />
+  </testsuite>
+  <testsuite name="TemperatureForecastGroup" tests="8" failures="0" disabled="0" errors="0" time="0.19">
+    <testcase name="parseMinimum" status="run" time="0.001" classname="TemperatureForecastGroup" />
+    <testcase name="parseMinimumNegative" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="parseMaximum" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="parseMaximumNegative" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="parseWrongFormat" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="isValidTrue" status="run" time="0" classname="TemperatureForecastGroup" />
+    <testcase name="isValidFalse" status="run" time="0" classname="TemperatureForecastGroup" />
+  </testsuite>
+  <testsuite name="TrendGroup" tests="63" failures="0" disabled="0" errors="0" time="1.5">
+    <testcase name="parseProb30" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseProb40" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseProbWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseProbWrongFormat" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseNosig" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseNosigWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseBecmg" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseBecmgWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTempo" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTempoWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseInter" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseInterWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseWrongFixedGroup" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseFm" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseFmWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseFmWrongFormat" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTimeSpan" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="parseTimeSpanWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTimeSpanWrongFormat" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeFm" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeFmWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeTl" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeTlWrongReportPart" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeAt" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseTrendTimeAtWrongReportPart" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="parseTrendTimeWrongFormat" status="run" time="0" classname="TrendGroup" />
+    <testcase name="parseEmptyString" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbabilityFollowedByTempo" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="combineProbabilityFollowedByInter" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbabilityFollowedByTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbabilityFollowedByOther" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbabilityFollowedByFixedGroup" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendFollowedByTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendFollowedByTrendTimeSingle" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="combineTrendFollowedByTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendFollowedByOther" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbTrendFollowedByTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbTrendFollowedByTrendTimeSingle" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineProbTrendFollowedByTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineFrom" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="combineNosig" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendTimeFromTill" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendTimeTillFrom" status="run" time="0" classname="TrendGroup" />
+    <testcase name="combineTrendTimeWrongCombinations" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isTimeSpanGroupTrue" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isTimeSpanGroupFalseCombinedTrendTime" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isTimeSpanGroupFalseCombinedTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isTimeSpanFalseCombinedProbabilityAndTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isTimeSpanFalseOther" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueNosigBecmgTempoInter" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueFrom" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueCombinedProbAndTrendType" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueCombinedProbAndTimeSpan" status="run" time="0.001" classname="TrendGroup" />
+    <testcase name="isValidTrueCombinedProbAndTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueCombinedTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidTrueCombinedTrendTypeAndTrendTime" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseInvalidTimeSpan" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseInvalidTimeFrom" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseInvalidTrendTime" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseTrendTimeSingle" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
+    <testcase name="isValidFalseProbabilityGroup" status="run" time="0" classname="TrendGroup" />
+  </testsuite>
+  <testsuite name="VisibilityGroup" tests="37" failures="0" disabled="0" errors="0" time="1.012">
+    <testcase name="parseMetersMetar" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersTaf" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersNDV" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionNorth" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionSouth" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionWest" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionEast" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionNorthWest" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionNorthEast" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionSouthWest" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersDirectionSouthEast" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersNotReported" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMetersWrongFormat" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesInteger" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="parseMilesIntegerTwoDigit" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesIntegerWithModifier" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesFraction" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesFractionWithModifier" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesIntegerNotReported" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesWrongFormat" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesIncomplete" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="parseMilesIncompleteWrongFormat" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="combineIncompleteAndFraction" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="combineIncompleteAndOther" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="combineFractionAndIncomplete" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="combineOtherAndFraction" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="combineInvalidFraction" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isValidTrueSingle" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isValidTrueCombined" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isValidFalse" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isPrevailingTrue" status="run" time="0.001" classname="VisibilityGroup" />
+    <testcase name="isPrevailingFalse" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isPrevailingCombined" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isDirectionalTrue" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isDirectionalFalse" status="run" time="0" classname="VisibilityGroup" />
+    <testcase name="isDirectionalCombined" status="run" time="0" classname="VisibilityGroup" />
+  </testsuite>
+  <testsuite name="RunwayStateGroup" tests="24" failures="0" disabled="0" errors="0" time="0.814">
+    <testcase name="parseSnoclo" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseSnocloRunwayWithDesignator" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseSnocloWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseSnocloWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseClrdSurfaceFrictionReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseClrdSurfaceFrictionNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseClrdRunwayWithDesignator" status="run" time="0.001" classname="RunwayStateGroup" />
+    <testcase name="parseClrdWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseClrdWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormal" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalDepositDepthNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalSurfaceFrictionNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalDepositValues" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalDepositsNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalExtentValues" status="run" time="0.001" classname="RunwayStateGroup" />
+    <testcase name="parseNormalExtentNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalAllNotReported" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalRunwayWithDesignator" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="parseNormalWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="isValidRunwayTrue" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="isValidRunwayFalse" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="isValidExtentTrue" status="run" time="0" classname="RunwayStateGroup" />
+    <testcase name="isValidExtentFalse" status="run" time="0" classname="RunwayStateGroup" />
+  </testsuite>
+  <testsuite name="WeatherGroup" tests="55" failures="0" disabled="0" errors="0" time="1.789">
+    <testcase name="parseWeatherDz" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseWeatherRa" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherSn" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherSg" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherIc" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherPl" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseWeatherGr" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseWeatherGr" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseWeatherGs" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherUp" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherBr" status="run" time="0" classname="WeatherGroup" />
@@ -167,33 +294,33 @@
     <testcase name="parseWeatherFu" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherVa" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherDu" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseWeatherSa" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseWeatherSa" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherHz" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherPy" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseWeatherPo" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseWeatherPo" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherSq" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherFc" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherSs" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseWeatherDs" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseWeatherDs" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherNotReported" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseWeatherMultiplePhenomena" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseWeatherMultiplePhenomena" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseDescriptorMi" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseDescriptorPr" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseDescriptorBc" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseDescriptorDr" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseDescriptorDr" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseDescriptorBl" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseDescriptorSh" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseDescriptorSh" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseDescriptorShMultiplePhenomena" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseDescriptorTs" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseDescriptorTsStandalone" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseDescriptorFz" status="run" time="0.001" classname="WeatherGroup" />
-    <testcase name="parseDescriptorFzMultiplePhenomena" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseDescriptorFz" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseDescriptorFzMultiplePhenomena" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseQualifierLightPrecipitation" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseQualifierLightWithDescriptor" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseQualifierLightWithDescriptor" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierLightMultiplePhenomena" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierLightMultiplePhenomenaWithDescriptor" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseQualifierHeavy" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseQualifierHeavyWithDescriptor" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseQualifierHeavy" status="run" time="0.001" classname="WeatherGroup" />
+    <testcase name="parseQualifierHeavyWithDescriptor" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierHeavyOtherPhenomena" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierHeavyMultiplePhenomena" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierHeavyMultiplePhenomenaWithDescriptor" status="run" time="0" classname="WeatherGroup" />
@@ -202,22 +329,81 @@
     <testcase name="parseQualifierVicinityDescriptorAndWeather" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierRecentWeather" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierRecentWeatherWithDescriptor" status="run" time="0" classname="WeatherGroup" />
-    <testcase name="parseQualifierRecentWeatherDescriptorOnly" status="run" time="0" classname="WeatherGroup" />
+    <testcase name="parseQualifierRecentWeatherDescriptorOnly" status="run" time="0.001" classname="WeatherGroup" />
     <testcase name="parseRecentWeatherNotReported" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseQualifierModerateRainAndHail" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWeatherTaf" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWrongReportPart" status="run" time="0" classname="WeatherGroup" />
     <testcase name="parseWrongFormat" status="run" time="0" classname="WeatherGroup" />
   </testsuite>
-  <testsuite name="ColourCodeGroup" tests="18" failures="0" disabled="0" errors="0" time="0.419">
+  <testsuite name="WindGroup" tests="37" failures="0" disabled="0" errors="0" time="1.343">
+    <testcase name="parseKnotsMetar" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseKnotsTaf" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseMps" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseKmh" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseGusts" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseWindThreeDigits" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseGustsThreeDigits" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseWindAndGustsThreeDigits" status="run" time="0.001" classname="WindGroup" />
+    <testcase name="parseVariableDirection" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseNotReported" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseWindShear" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseVariableWindSectorMetar" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseVariableWindSectorTaf" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="WindGroup" />
+    <testcase name="parseWrongFormat" status="run" time="0.001" classname="WindGroup" />
+    <testcase name="isCalmTrueKnots" status="run" time="0" classname="WindGroup" />
+    <testcase name="isCalmTrueMps" status="run" time="0" classname="WindGroup" />
+    <testcase name="isCalmTrueKmh" status="run" time="0" classname="WindGroup" />
+    <testcase name="isCalmFalse" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidTrueSurfaceWind" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidFalseSurfaceWind" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidTrueWindShear" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidFalseWindShear" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidTrueVariableWindSector" status="run" time="0" classname="WindGroup" />
+    <testcase name="isValidFalseVariableWindSector" status="run" time="0" classname="WindGroup" />
+    <testcase name="combineWindGroupAndWindSectorGroup" status="run" time="0" classname="WindGroup" />
+    <testcase name="combineWindGroupAndOther" status="run" time="0" classname="WindGroup" />
+    <testcase name="combineWindShearGroupAndOther" status="run" time="0" classname="WindGroup" />
+    <testcase name="combineWindSectorGroupAndOther" status="run" time="0" classname="WindGroup" />
+    <testcase name="isSurfaceWindTrue" status="run" time="0" classname="WindGroup" />
+    <testcase name="isSurfaceWindFalse" status="run" time="0" classname="WindGroup" />
+    <testcase name="isSurfaceWindCombined" status="run" time="0" classname="WindGroup" />
+    <testcase name="isWindShearTrue" status="run" time="0.001" classname="WindGroup" />
+    <testcase name="isWindShearFalse" status="run" time="0" classname="WindGroup" />
+    <testcase name="isWindShearCombined" status="run" time="0" classname="WindGroup" />
+    <testcase name="hasVariableSectorTrue" status="run" time="0" classname="WindGroup" />
+    <testcase name="hasVariableSectorFalse" status="run" time="0" classname="WindGroup" />
+  </testsuite>
+  <testsuite name="WindShearLowLayerGroup" tests="9" failures="0" disabled="0" errors="0" time="0.34">
+    <testcase name="parseWs" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseWsAll" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseWsAllRwy" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseWsR32" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseWsR27C" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseInvalidRunway" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="combineOther" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="WindShearLowLayerGroup" />
+    <testcase name="parseOtherParts" status="run" time="0" classname="WindShearLowLayerGroup" />
+  </testsuite>
+  <testsuite name="MetafTime" tests="7" failures="0" disabled="0" errors="0" time="0.326">
+    <testcase name="fromStringDDHHMMwithDay" status="run" time="0" classname="MetafTime" />
+    <testcase name="fromStringDDHHMMwithoutDay" status="run" time="0" classname="MetafTime" />
+    <testcase name="fromStringDDHHMM_wrongFormat" status="run" time="0" classname="MetafTime" />
+    <testcase name="fromStringDDHH" status="run" time="0" classname="MetafTime" />
+    <testcase name="fromStringDDHH_wrongFormat" status="run" time="0" classname="MetafTime" />
+    <testcase name="isValidCorrect" status="run" time="0" classname="MetafTime" />
+    <testcase name="isValidIncorrect" status="run" time="0" classname="MetafTime" />
+  </testsuite>
+  <testsuite name="ColourCodeGroup" tests="18" failures="0" disabled="0" errors="0" time="0.832">
     <testcase name="parseBlue" status="run" time="0" classname="ColourCodeGroup" />
-    <testcase name="parseWhite" status="run" time="0" classname="ColourCodeGroup" />
+    <testcase name="parseWhite" status="run" time="0.001" classname="ColourCodeGroup" />
     <testcase name="parseGreen" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseYellow1" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseYellow2" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseAmber" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseRed" status="run" time="0" classname="ColourCodeGroup" />
-    <testcase name="parseBlackBlue" status="run" time="0.001" classname="ColourCodeGroup" />
+    <testcase name="parseBlackBlue" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseBlackWhite" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseBlackGreen" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="parseBlackYellow1" status="run" time="0" classname="ColourCodeGroup" />
@@ -229,78 +415,7 @@
     <testcase name="isValidNoCodeBlack" status="run" time="0" classname="ColourCodeGroup" />
     <testcase name="isValidCodeBlack" status="run" time="0" classname="ColourCodeGroup" />
   </testsuite>
-  <testsuite name="Runway" tests="16" failures="0" disabled="0" errors="0" time="0.386">
-    <testcase name="fromStringWithoutDesignator" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringWithDesignatorL" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringWithDesignatorC" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringWithDesignatorR" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringAllRunways" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringLastMessageRepetition" status="run" time="0" classname="Runway" />
-    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Runway" />
-    <testcase name="isAllRunwaysTrue" status="run" time="0" classname="Runway" />
-    <testcase name="isAllRunwaysFalse" status="run" time="0" classname="Runway" />
-    <testcase name="isMessageRepetitionTrue" status="run" time="0" classname="Runway" />
-    <testcase name="isMessageRepetitionFalse" status="run" time="0" classname="Runway" />
-    <testcase name="isValidRunwayNumberCorrect" status="run" time="0.001" classname="Runway" />
-    <testcase name="isValidRunwayNumberIncorrect" status="run" time="0" classname="Runway" />
-    <testcase name="isValidSpecialCodes" status="run" time="0" classname="Runway" />
-    <testcase name="isValidSpecialCodesIncorrectDesignator" status="run" time="0" classname="Runway" />
-    <testcase name="makeAllRunways" status="run" time="0" classname="Runway" />
-  </testsuite>
-  <testsuite name="Speed" tests="24" failures="0" disabled="0" errors="0" time="0.614">
-    <testcase name="unitToStringKnots" status="run" time="0" classname="Speed" />
-    <testcase name="unitToStringMetersPerSecond" status="run" time="0" classname="Speed" />
-    <testcase name="unitToStringKilometersPerHour" status="run" time="0" classname="Speed" />
-    <testcase name="unitToStringWrongUnit" status="run" time="0" classname="Speed" />
-    <testcase name="fromStringTwoDigit" status="run" time="0" classname="Speed" />
-    <testcase name="fromStringThreeDigit" status="run" time="0" classname="Speed" />
-    <testcase name="fromStringNotReported" status="run" time="0" classname="Speed" />
-    <testcase name="fromStringEmpty" status="run" time="0" classname="Speed" />
-    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Speed" />
-    <testcase name="speedNotReported" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitSameUnit" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitNotReported" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitKnotsToMps" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitKnotsToKmh" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitKnotsToMph" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitMpsToKnots" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitMpsToKmh" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitMpsToMph" status="run" time="0.001" classname="Speed" />
-    <testcase name="toUnitKmhToKnots" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitKmhToMps" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitKmhToMph" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitMphToKnots" status="run" time="0.001" classname="Speed" />
-    <testcase name="toUnitMphToMps" status="run" time="0" classname="Speed" />
-    <testcase name="toUnitMphToKmh" status="run" time="0" classname="Speed" />
-  </testsuite>
-  <testsuite name="Precipitation" tests="18" failures="0" disabled="0" errors="0" time="0.497">
-    <testcase name="fromRainfallString" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRainfallStringNotSpecified" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRainfallStringNotReported" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRainfallStringWrongFormat" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsValue" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecialReserved" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial10cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial15cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial20cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial25cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial30cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial35cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecial40cm" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsSpecialRunwayNotOperational" status="run" time="0" classname="Precipitation" />
-    <testcase name="fromRunwayDepositsNotReported" status="run" time="0" classname="Precipitation" />
-    <testcase name="toUnitSameUnit" status="run" time="0" classname="Precipitation" />
-    <testcase name="toUnitNotReported" status="run" time="0" classname="Precipitation" />
-    <testcase name="toUnitMmToInches" status="run" time="0" classname="Precipitation" />
-  </testsuite>
-  <testsuite name="LocationGroup" tests="5" failures="0" disabled="0" errors="0" time="0.141">
-    <testcase name="parseLocationWithoutNumber" status="run" time="0" classname="LocationGroup" />
-    <testcase name="parseLocationWithNumber" status="run" time="0" classname="LocationGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="LocationGroup" />
-    <testcase name="parseWrongFormat" status="run" time="0" classname="LocationGroup" />
-    <testcase name="isValid" status="run" time="0" classname="LocationGroup" />
-  </testsuite>
-  <testsuite name="Direction" tests="32" failures="0" disabled="0" errors="0" time="0.952">
+  <testsuite name="Direction" tests="32" failures="0" disabled="0" errors="0" time="1.433">
     <testcase name="fromCardinalStringN" status="run" time="0" classname="Direction" />
     <testcase name="fromCardinalStringNW" status="run" time="0" classname="Direction" />
     <testcase name="fromCardinalStringW" status="run" time="0" classname="Direction" />
@@ -325,40 +440,188 @@
     <testcase name="ardinalNorthEast" status="run" time="0" classname="Direction" />
     <testcase name="ardinalEast" status="run" time="0" classname="Direction" />
     <testcase name="ardinalSouthEast" status="run" time="0" classname="Direction" />
-    <testcase name="ardinalSouth" status="run" time="0" classname="Direction" />
+    <testcase name="ardinalSouth" status="run" time="0.001" classname="Direction" />
     <testcase name="toCardinalSouthWest" status="run" time="0" classname="Direction" />
     <testcase name="ardinalWest" status="run" time="0" classname="Direction" />
     <testcase name="ardinalNorthWest" status="run" time="0" classname="Direction" />
     <testcase name="ardinalTrueDirectionsDisabled" status="run" time="0" classname="Direction" />
     <testcase name="ardinalTrueDirectionsEnabled" status="run" time="0" classname="Direction" />
     <testcase name="ardinalNdv" status="run" time="0" classname="Direction" />
-    <testcase name="ardinalNone" status="run" time="0" classname="Direction" />
+    <testcase name="ardinalNone" status="run" time="0.001" classname="Direction" />
   </testsuite>
-  <testsuite name="Temperature" tests="22" failures="0" disabled="0" errors="0" time="0.685">
-    <testcase name="fromStringPositive" status="run" time="0" classname="Temperature" />
-    <testcase name="fromStringNegative" status="run" time="0" classname="Temperature" />
-    <testcase name="fromStringAboveZero" status="run" time="0" classname="Temperature" />
-    <testcase name="fromStringBelowZero" status="run" time="0" classname="Temperature" />
-    <testcase name="fromStringNotReported" status="run" time="0" classname="Temperature" />
-    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Temperature" />
-    <testcase name="toUnitSameUnit" status="run" time="0" classname="Temperature" />
-    <testcase name="toUnitCtoF" status="run" time="0" classname="Temperature" />
-    <testcase name="toUnitNotReported" status="run" time="0" classname="Temperature" />
-    <testcase name="parseTemperatureAndDewPoint" status="run" time="0" classname="Temperature" />
-    <testcase name="parseTemperatureAndDewPointNegativeValues" status="run" time="0" classname="Temperature" />
-    <testcase name="parseTemperatureAndDewPointZero" status="run" time="0" classname="Temperature" />
-    <testcase name="parseTemperatureOnly" status="run" time="0" classname="Temperature" />
-    <testcase name="parseDewPointNotReported" status="run" time="0" classname="Temperature" />
-    <testcase name="parseNotReported" status="run" time="0" classname="Temperature" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="Temperature" />
-    <testcase name="parseWrongFormat" status="run" time="0" classname="Temperature" />
-    <testcase name="isValidNotReported" status="run" time="0" classname="Temperature" />
-    <testcase name="isValidTrue" status="run" time="0" classname="Temperature" />
-    <testcase name="isValidTrueZero" status="run" time="0" classname="Temperature" />
-    <testcase name="isValidFalse" status="run" time="0" classname="Temperature" />
-    <testcase name="relativeHumidity" status="run" time="0" classname="Temperature" />
+  <testsuite name="Distance" tests="70" failures="0" disabled="0" errors="0" time="3.479">
+    <testcase name="constructor" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString6500" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString1000" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString0400" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString0150" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString0050" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString0000" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterStringNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterString9999" status="run" time="0" classname="Distance" />
+    <testcase name="fromMeterStringWrongFormat" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString4SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString16SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString0SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString1_2SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString3_16SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringM1_8SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringM1SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringP6SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringP15SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringP3_4SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileString21_4SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringM11_2SM" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="fromMileStringWrongFormat" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightString370" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightString145" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightString044" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightString001" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightString000" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightStringNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="fromHeightStringWrongFormat" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString3500" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString3500feet" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString0800" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString0200" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrStringM0200" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrStringP2000" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString9999" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrString0000" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrStringNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="fromRvrStringWrongFormat" status="run" time="0" classname="Distance" />
+    <testcase name="fromIntegerAndFraction" status="run" time="0" classname="Distance" />
+    <testcase name="fromIntegerAndFractionWrongCombination" status="run" time="0" classname="Distance" />
+    <testcase name="isIntegerTrue" status="run" time="0" classname="Distance" />
+    <testcase name="isIntegerFalseNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="isIntegerFalseFraction" status="run" time="0" classname="Distance" />
+    <testcase name="isFractionTrue" status="run" time="0" classname="Distance" />
+    <testcase name="isFractionFalseNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="isFractionFalseInteger" status="run" time="0" classname="Distance" />
+    <testcase name="isReportedTrue" status="run" time="0" classname="Distance" />
+    <testcase name="isReportedFalse" status="run" time="0" classname="Distance" />
+    <testcase name="isValidTrueMeters" status="run" time="0" classname="Distance" />
+    <testcase name="isValidTrueMiles" status="run" time="0" classname="Distance" />
+    <testcase name="isValidTrueHeight" status="run" time="0" classname="Distance" />
+    <testcase name="isValidTrueRvr" status="run" time="0" classname="Distance" />
+    <testcase name="isValidFalse" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitSameUnit" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitNotReported" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitMetersToMiles" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitMetersToFeet" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitMilesToMeters" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitMilesToFeet" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitFeetToMeters" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitFeetToMiles" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitFraction" status="run" time="0" classname="Distance" />
+    <testcase name="toUnitDenominatorZero" status="run" time="0" classname="Distance" />
+    <testcase name="hasIntegerTrue" status="run" time="0" classname="Distance" />
+    <testcase name="hasIntegerFalse" status="run" time="0" classname="Distance" />
+    <testcase name="hasFractionTrue" status="run" time="0" classname="Distance" />
+    <testcase name="hasFractionFalse" status="run" time="0" classname="Distance" />
   </testsuite>
-  <testsuite name="CloudGroup" tests="31" failures="0" disabled="0" errors="0" time="1.051">
+  <testsuite name="FixedGroup" tests="28" failures="0" disabled="0" errors="0" time="1.401">
+    <testcase name="parseMetar" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseSpeci" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseTaf" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseAmd" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseNil" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseCnl" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseCor" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseAuto" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseSnoclo" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseRsnoclo" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseCavok" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseNsw" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseRmk" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseMaintenanceIndicator" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseWsconds" status="run" time="0.001" classname="FixedGroup" />
+    <testcase name="parseAo1" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseAo2" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseNospeci" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parsePresfr" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parsePresrr" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseRvrno" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parsePwino" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parsePno" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseFzrano" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseTsno" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseSlpno" status="run" time="0" classname="FixedGroup" />
+    <testcase name="parseOther" status="run" time="0" classname="FixedGroup" />
+    <testcase name="isValid" status="run" time="0" classname="FixedGroup" />
+  </testsuite>
+  <testsuite name="getSyntaxGroup" tests="54" failures="0" disabled="0" errors="0" time="3.019">
+    <testcase name="METAR" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="SPECI" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="TAF" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="COR" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="AMD" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="NIL" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="CNL" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="RMK" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="maintenanceIndicator" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="LOCATION" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="REPORT_TIME" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="TIME_SPAN" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_AUTO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_R_SNOCLO" status="run" time="0.001" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CAVOK" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_NSW" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_WSCONDS" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_AO1" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_AO2" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_NOSPECI" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PRESFR" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PRESRR" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_RVRNO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PWINO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PNO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_FZRANO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TSNO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_SLPNO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_NOSIG" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TEMPO" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_BECMG" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_INTER" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TrendFrom" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TrendTime" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_Probability" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PlainTextGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_WindGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_VarWindGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_VisibilityGroup" status="run" time="0.001" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudClr" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudSkc" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudNsc" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudNcd" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_CloudVerticalVisibility" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_WeatherGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TemperatureGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_TemperatureForecastGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_PressureGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_RunwayVisualRangeGroup" status="run" time="0.001" classname="getSyntaxGroup" />
+    <testcase name="OTHER_RunwayStateGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_RainfallGroup" status="run" time="0.001" classname="getSyntaxGroup" />
+    <testcase name="OTHER_SeaSurfaceGroup" status="run" time="0" classname="getSyntaxGroup" />
+    <testcase name="OTHER_ColourCodeGroup" status="run" time="0" classname="getSyntaxGroup" />
+  </testsuite>
+  <testsuite name="Group" tests="1" failures="0" disabled="0" errors="0" time="0.054">
+    <testcase name="is_standard_layout" status="run" time="0" classname="Group" />
+  </testsuite>
+  <testsuite name="GroupParser" tests="2" failures="0" disabled="0" errors="0" time="0.104">
+    <testcase name="parse" status="run" time="0" classname="GroupParser" />
+    <testcase name="parseUnrecognised" status="run" time="0" classname="GroupParser" />
+  </testsuite>
+  <testsuite name="LocationGroup" tests="5" failures="0" disabled="0" errors="0" time="0.279">
+    <testcase name="parseLocationWithoutNumber" status="run" time="0" classname="LocationGroup" />
+    <testcase name="parseLocationWithNumber" status="run" time="0" classname="LocationGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="LocationGroup" />
+    <testcase name="parseWrongFormat" status="run" time="0" classname="LocationGroup" />
+    <testcase name="isValid" status="run" time="0" classname="LocationGroup" />
+  </testsuite>
+  <testsuite name="CloudGroup" tests="31" failures="0" disabled="0" errors="0" time="1.808">
     <testcase name="parseCloudLayerMetar" status="run" time="0" classname="CloudGroup" />
     <testcase name="parseCloudLayerTaf" status="run" time="0" classname="CloudGroup" />
     <testcase name="parseCloudLayerFew" status="run" time="0" classname="CloudGroup" />
@@ -391,30 +654,21 @@
     <testcase name="isVerticalVisibilityTrue" status="run" time="0" classname="CloudGroup" />
     <testcase name="isVerticalVisibilityFalse" status="run" time="0" classname="CloudGroup" />
   </testsuite>
-  <testsuite name="ReportTimeGroup" tests="7" failures="0" disabled="0" errors="0" time="0.246">
-    <testcase name="parseReportTime" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="parseWrongFormat" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="isValidCorrect" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="isValidDayIncorrect" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="isValidHourIncorrect" status="run" time="0" classname="ReportTimeGroup" />
-    <testcase name="isValidMinuteIncorrect" status="run" time="0" classname="ReportTimeGroup" />
+  <testsuite name="Parser" tests="2" failures="0" disabled="0" errors="0" time="0.387">
+    <testcase name="RealDataParsingMETAR" status="run" time="0.128" classname="Parser" />
+    <testcase name="RealDataParsingTAF" status="run" time="0.148" classname="Parser" />
   </testsuite>
-  <testsuite name="Parser" tests="2" failures="0" disabled="0" errors="0" time="0.319">
-    <testcase name="RealDataParsingMETAR" status="run" time="0.105" classname="Parser" />
-    <testcase name="RealDataParsingTAF" status="run" time="0.141" classname="Parser" />
-  </testsuite>
-  <testsuite name="ParserSyntaxMalformedReports" tests="8" failures="0" disabled="0" errors="0" time="0.296">
+  <testsuite name="ParserSyntaxMalformedReports" tests="8" failures="0" disabled="0" errors="0" time="0.483">
     <testcase name="emptyReport" status="run" time="0" classname="ParserSyntaxMalformedReports" />
-    <testcase name="location" status="run" time="0" classname="ParserSyntaxMalformedReports" />
+    <testcase name="location" status="run" time="0.001" classname="ParserSyntaxMalformedReports" />
     <testcase name="typeLocation" status="run" time="0" classname="ParserSyntaxMalformedReports" />
     <testcase name="locationTime" status="run" time="0" classname="ParserSyntaxMalformedReports" />
     <testcase name="typeLocationTime" status="run" time="0" classname="ParserSyntaxMalformedReports" />
     <testcase name="strayGroupInPlaceOfReportTime" status="run" time="0" classname="ParserSyntaxMalformedReports" />
-    <testcase name="strayGroupInPlaceOfTimeSpan" status="run" time="0.001" classname="ParserSyntaxMalformedReports" />
+    <testcase name="strayGroupInPlaceOfTimeSpan" status="run" time="0" classname="ParserSyntaxMalformedReports" />
     <testcase name="tafReportTypeAndTimeNotSpecified" status="run" time="0" classname="ParserSyntaxMalformedReports" />
   </testsuite>
-  <testsuite name="ParserSyntaxNilReports" tests="14" failures="0" disabled="0" errors="0" time="0.566">
+  <testsuite name="ParserSyntaxNilReports" tests="14" failures="0" disabled="0" errors="0" time="0.849">
     <testcase name="locationNil" status="run" time="0" classname="ParserSyntaxNilReports" />
     <testcase name="typeLocationNil" status="run" time="0" classname="ParserSyntaxNilReports" />
     <testcase name="corAmdLocationNil" status="run" time="0" classname="ParserSyntaxNilReports" />
@@ -425,46 +679,46 @@
     <testcase name="locationTimeNil" status="run" time="0" classname="ParserSyntaxNilReports" />
     <testcase name="typeLocationTimeNil" status="run" time="0" classname="ParserSyntaxNilReports" />
     <testcase name="typeCorAmdLocationTimeNil" status="run" time="0" classname="ParserSyntaxNilReports" />
-    <testcase name="strayGroupAfterNil" status="run" time="0" classname="ParserSyntaxNilReports" />
-    <testcase name="strayNilInReportBody" status="run" time="0" classname="ParserSyntaxNilReports" />
-    <testcase name="typeLocationTimeTimespanNil" status="run" time="0.001" classname="ParserSyntaxNilReports" />
-    <testcase name="typeCorAmdLocationTimeTimespanNil" status="run" time="0" classname="ParserSyntaxNilReports" />
+    <testcase name="strayGroupAfterNil" status="run" time="0.001" classname="ParserSyntaxNilReports" />
+    <testcase name="strayNilInReportBody" status="run" time="0.001" classname="ParserSyntaxNilReports" />
+    <testcase name="typeLocationTimeTimespanNil" status="run" time="0" classname="ParserSyntaxNilReports" />
+    <testcase name="typeCorAmdLocationTimeTimespanNil" status="run" time="0.001" classname="ParserSyntaxNilReports" />
   </testsuite>
-  <testsuite name="ParserSyntaxCancelledReports" tests="7" failures="0" disabled="0" errors="0" time="0.271">
+  <testsuite name="ParserSyntaxCancelledReports" tests="7" failures="0" disabled="0" errors="0" time="0.422">
     <testcase name="typeLocationCnl" status="run" time="0" classname="ParserSyntaxCancelledReports" />
-    <testcase name="typeLocationTimeCnl" status="run" time="0" classname="ParserSyntaxCancelledReports" />
-    <testcase name="strayGroupAfterCnl" status="run" time="0.001" classname="ParserSyntaxCancelledReports" />
-    <testcase name="strayCnlInReportBody" status="run" time="0.001" classname="ParserSyntaxCancelledReports" />
+    <testcase name="typeLocationTimeCnl" status="run" time="0.001" classname="ParserSyntaxCancelledReports" />
+    <testcase name="strayGroupAfterCnl" status="run" time="0" classname="ParserSyntaxCancelledReports" />
+    <testcase name="strayCnlInReportBody" status="run" time="0" classname="ParserSyntaxCancelledReports" />
     <testcase name="strayCnlInMetar" status="run" time="0" classname="ParserSyntaxCancelledReports" />
     <testcase name="typeLocationTimeTimespanCnl" status="run" time="0" classname="ParserSyntaxCancelledReports" />
     <testcase name="typeCorAmdLocationTimeTimespanCnl" status="run" time="0" classname="ParserSyntaxCancelledReports" />
   </testsuite>
-  <testsuite name="ParserSyntaxValidMetarReports" tests="5" failures="0" disabled="0" errors="0" time="0.208">
-    <testcase name="plainReports" status="run" time="0.002" classname="ParserSyntaxValidMetarReports" />
+  <testsuite name="ParserSyntaxValidMetarReports" tests="5" failures="0" disabled="0" errors="0" time="0.3">
+    <testcase name="plainReports" status="run" time="0.001" classname="ParserSyntaxValidMetarReports" />
     <testcase name="correctionalReports" status="run" time="0" classname="ParserSyntaxValidMetarReports" />
-    <testcase name="reportsWithRemarks" status="run" time="0.001" classname="ParserSyntaxValidMetarReports" />
-    <testcase name="reportTypeNotSpecified" status="run" time="0" classname="ParserSyntaxValidMetarReports" />
+    <testcase name="reportsWithRemarks" status="run" time="0" classname="ParserSyntaxValidMetarReports" />
+    <testcase name="reportTypeNotSpecified" status="run" time="0.001" classname="ParserSyntaxValidMetarReports" />
     <testcase name="reportWithTrend" status="run" time="0" classname="ParserSyntaxValidMetarReports" />
   </testsuite>
-  <testsuite name="ParserSyntaxValidTafReports" tests="7" failures="0" disabled="0" errors="0" time="0.297">
-    <testcase name="plainReport" status="run" time="0.001" classname="ParserSyntaxValidTafReports" />
+  <testsuite name="ParserSyntaxValidTafReports" tests="7" failures="0" disabled="0" errors="0" time="0.433">
+    <testcase name="plainReport" status="run" time="0" classname="ParserSyntaxValidTafReports" />
     <testcase name="amendedAndCorrectionalReports" status="run" time="0" classname="ParserSyntaxValidTafReports" />
     <testcase name="reportsWithTemperatureForecasts" status="run" time="0" classname="ParserSyntaxValidTafReports" />
     <testcase name="reportWithRemarks" status="run" time="0" classname="ParserSyntaxValidTafReports" />
     <testcase name="reportWithTrends" status="run" time="0" classname="ParserSyntaxValidTafReports" />
-    <testcase name="reportTypeNotSpecified" status="run" time="0.001" classname="ParserSyntaxValidTafReports" />
+    <testcase name="reportTypeNotSpecified" status="run" time="0" classname="ParserSyntaxValidTafReports" />
     <testcase name="reportTimeNotSpecified" status="run" time="0" classname="ParserSyntaxValidTafReports" />
   </testsuite>
-  <testsuite name="ParserSyntaxDesignatorsAndSeparators" tests="3" failures="0" disabled="0" errors="0" time="0.122">
+  <testsuite name="ParserSyntaxDesignatorsAndSeparators" tests="3" failures="0" disabled="0" errors="0" time="0.211">
     <testcase name="noReportEndDesignator" status="run" time="0" classname="ParserSyntaxDesignatorsAndSeparators" />
-    <testcase name="variousGroupSeparators" status="run" time="0.001" classname="ParserSyntaxDesignatorsAndSeparators" />
+    <testcase name="variousGroupSeparators" status="run" time="0" classname="ParserSyntaxDesignatorsAndSeparators" />
     <testcase name="strayTextAfterReportEndDesignator" status="run" time="0" classname="ParserSyntaxDesignatorsAndSeparators" />
   </testsuite>
-  <testsuite name="ParserSyntaxMaintenanceIndicator" tests="10" failures="0" disabled="0" errors="0" time="0.543">
-    <testcase name="maintenanceIndicatorAtTheEndOfMetar" status="run" time="0.001" classname="ParserSyntaxMaintenanceIndicator" />
+  <testsuite name="ParserSyntaxMaintenanceIndicator" tests="10" failures="0" disabled="0" errors="0" time="0.63">
+    <testcase name="maintenanceIndicatorAtTheEndOfMetar" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorAtTheEndOfMetarRemark" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorAtTheEndOfMetarRemarkWithReportEndDesignator" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
-    <testcase name="maintenanceIndicatorAtTheEndOfTaf" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
+    <testcase name="maintenanceIndicatorAtTheEndOfTaf" status="run" time="0.001" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorAtTheEndOfTafRemark" status="run" time="0.001" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorInTheMiddleOfMetar" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorInTheMiddleOfMetarRemark" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
@@ -472,202 +726,58 @@
     <testcase name="maintenanceIndicatorInTheMiddleOfTafRemark" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
     <testcase name="maintenanceIndicatorAfterNil" status="run" time="0" classname="ParserSyntaxMaintenanceIndicator" />
   </testsuite>
-  <testsuite name="ParserCombined" tests="1" failures="0" disabled="0" errors="0" time="0.043">
+  <testsuite name="ParserCombined" tests="1" failures="0" disabled="0" errors="0" time="0.064">
     <testcase name="combinedGroups" status="run" time="0.001" classname="ParserCombined" />
   </testsuite>
-  <testsuite name="ParserExtendedParse" tests="6" failures="0" disabled="0" errors="0" time="0.258">
+  <testsuite name="ParserExtendedParse" tests="6" failures="0" disabled="0" errors="0" time="0.38">
     <testcase name="metar" status="run" time="0.001" classname="ParserExtendedParse" />
-    <testcase name="taf" status="run" time="0.001" classname="ParserExtendedParse" />
-    <testcase name="autodetectMetar" status="run" time="0.001" classname="ParserExtendedParse" />
+    <testcase name="taf" status="run" time="0" classname="ParserExtendedParse" />
+    <testcase name="autodetectMetar" status="run" time="0" classname="ParserExtendedParse" />
     <testcase name="autodetectTaf" status="run" time="0" classname="ParserExtendedParse" />
-    <testcase name="error" status="run" time="0.001" classname="ParserExtendedParse" />
-    <testcase name="combinedGroups" status="run" time="0.002" classname="ParserExtendedParse" />
+    <testcase name="error" status="run" time="0" classname="ParserExtendedParse" />
+    <testcase name="combinedGroups" status="run" time="0" classname="ParserExtendedParse" />
   </testsuite>
-  <testsuite name="GroupParser" tests="2" failures="0" disabled="0" errors="0" time="0.085">
-    <testcase name="parse" status="run" time="0" classname="GroupParser" />
-    <testcase name="parseUnrecognised" status="run" time="0" classname="GroupParser" />
+  <testsuite name="PlainTextGroup" tests="5" failures="0" disabled="0" errors="0" time="0.315">
+    <testcase name="constructorFromString" status="run" time="0" classname="PlainTextGroup" />
+    <testcase name="parse" status="run" time="0" classname="PlainTextGroup" />
+    <testcase name="parseTruncate" status="run" time="0" classname="PlainTextGroup" />
+    <testcase name="isValidTrue" status="run" time="0" classname="PlainTextGroup" />
+    <testcase name="isValidFalse" status="run" time="0" classname="PlainTextGroup" />
   </testsuite>
-  <testsuite name="TemperatureForecastGroup" tests="8" failures="0" disabled="0" errors="0" time="0.346">
-    <testcase name="parseMinimum" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="parseMinimumNegative" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="parseMaximum" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="parseMaximumNegative" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="parseWrongFormat" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="isValidTrue" status="run" time="0" classname="TemperatureForecastGroup" />
-    <testcase name="isValidFalse" status="run" time="0" classname="TemperatureForecastGroup" />
+  <testsuite name="Precipitation" tests="18" failures="0" disabled="0" errors="0" time="1.186">
+    <testcase name="fromRainfallString" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRainfallStringNotSpecified" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRainfallStringNotReported" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRainfallStringWrongFormat" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsValue" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecialReserved" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial10cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial15cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial20cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial25cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial30cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial35cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecial40cm" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsSpecialRunwayNotOperational" status="run" time="0" classname="Precipitation" />
+    <testcase name="fromRunwayDepositsNotReported" status="run" time="0" classname="Precipitation" />
+    <testcase name="toUnitSameUnit" status="run" time="0" classname="Precipitation" />
+    <testcase name="toUnitNotReported" status="run" time="0" classname="Precipitation" />
+    <testcase name="toUnitMmToInches" status="run" time="0" classname="Precipitation" />
   </testsuite>
-  <testsuite name="VisibilityGroup" tests="37" failures="0" disabled="0" errors="0" time="1.719">
-    <testcase name="parseMetersMetar" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersTaf" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersNDV" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionNorth" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionSouth" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionWest" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionEast" status="run" time="0.001" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionNorthWest" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionNorthEast" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionSouthWest" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersDirectionSouthEast" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersNotReported" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMetersWrongFormat" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesInteger" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesIntegerTwoDigit" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesIntegerWithModifier" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesFraction" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesFractionWithModifier" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesIntegerNotReported" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesWrongFormat" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesIncomplete" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="parseMilesIncompleteWrongFormat" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="combineIncompleteAndFraction" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="combineIncompleteAndOther" status="run" time="0.001" classname="VisibilityGroup" />
-    <testcase name="combineFractionAndIncomplete" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="combineOtherAndFraction" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="combineInvalidFraction" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isValidTrueSingle" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isValidTrueCombined" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isValidFalse" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isPrevailingTrue" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isPrevailingFalse" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isPrevailingCombined" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isDirectionalTrue" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isDirectionalFalse" status="run" time="0" classname="VisibilityGroup" />
-    <testcase name="isDirectionalCombined" status="run" time="0" classname="VisibilityGroup" />
-  </testsuite>
-  <testsuite name="Pressure" tests="11" failures="0" disabled="0" errors="0" time="0.524">
+  <testsuite name="Pressure" tests="11" failures="0" disabled="0" errors="0" time="0.75">
     <testcase name="fromStringHectopascal" status="run" time="0" classname="Pressure" />
     <testcase name="fromStringHectopascalNotReported" status="run" time="0" classname="Pressure" />
     <testcase name="fromStringInHg" status="run" time="0" classname="Pressure" />
     <testcase name="fromStringInHgNotReported" status="run" time="0" classname="Pressure" />
     <testcase name="fromStringWrongFormat" status="run" time="0" classname="Pressure" />
-    <testcase name="fromForecastString" status="run" time="0" classname="Pressure" />
+    <testcase name="fromForecastString" status="run" time="0.001" classname="Pressure" />
     <testcase name="fromForecastStringWrongFormat" status="run" time="0" classname="Pressure" />
     <testcase name="toUnitSameUnit" status="run" time="0" classname="Pressure" />
     <testcase name="toUnitNotReported" status="run" time="0" classname="Pressure" />
     <testcase name="toUnitHectopascalToInHg" status="run" time="0" classname="Pressure" />
     <testcase name="toUnitInHgToHectopascal" status="run" time="0" classname="Pressure" />
   </testsuite>
-  <testsuite name="MetafTime" tests="7" failures="0" disabled="0" errors="0" time="0.339">
-    <testcase name="fromStringDDHHMMwithDay" status="run" time="0" classname="MetafTime" />
-    <testcase name="fromStringDDHHMMwithoutDay" status="run" time="0" classname="MetafTime" />
-    <testcase name="fromStringDDHHMM_wrongFormat" status="run" time="0" classname="MetafTime" />
-    <testcase name="fromStringDDHH" status="run" time="0" classname="MetafTime" />
-    <testcase name="fromStringDDHH_wrongFormat" status="run" time="0" classname="MetafTime" />
-    <testcase name="isValidCorrect" status="run" time="0" classname="MetafTime" />
-    <testcase name="isValidIncorrect" status="run" time="0" classname="MetafTime" />
-  </testsuite>
-  <testsuite name="WindShearLowLayerGroup" tests="9" failures="0" disabled="0" errors="0" time="0.441">
-    <testcase name="parseWs" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseWsAll" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseWsAllRwy" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseWsR32" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseWsR27C" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseInvalidRunway" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="combineOther" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseWrongReportPart" status="run" time="0" classname="WindShearLowLayerGroup" />
-    <testcase name="parseOtherParts" status="run" time="0.001" classname="WindShearLowLayerGroup" />
-  </testsuite>
-  <testsuite name="Group" tests="1" failures="0" disabled="0" errors="0" time="0.048">
-    <testcase name="is_standard_layout" status="run" time="0" classname="Group" />
-  </testsuite>
-  <testsuite name="RainfallGroup" tests="2" failures="0" disabled="0" errors="0" time="0.098">
-    <testcase name="parseTwoValues" status="run" time="0" classname="RainfallGroup" />
-    <testcase name="parseThreeValues" status="run" time="0" classname="RainfallGroup" />
-  </testsuite>
-  <testsuite name="TrendGroup" tests="63" failures="0" disabled="0" errors="0" time="3.363">
-    <testcase name="parseProb30" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseProb40" status="run" time="0.001" classname="TrendGroup" />
-    <testcase name="parseProbWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseProbWrongFormat" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseNosig" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseNosigWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseBecmg" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseBecmgWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTempo" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTempoWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseInter" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseInterWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseWrongFixedGroup" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseFm" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseFmWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseFmWrongFormat" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTimeSpanWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTimeSpanWrongFormat" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeFm" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeFmWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeTl" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeTlWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeAt" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeAtWrongReportPart" status="run" time="0" classname="TrendGroup" />
-    <testcase name="parseTrendTimeWrongFormat" status="run" time="0.001" classname="TrendGroup" />
-    <testcase name="parseEmptyString" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbabilityFollowedByTempo" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbabilityFollowedByInter" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbabilityFollowedByTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbabilityFollowedByOther" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbabilityFollowedByFixedGroup" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendFollowedByTimeSpan" status="run" time="0.001" classname="TrendGroup" />
-    <testcase name="combineTrendFollowedByTrendTimeSingle" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendFollowedByTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendFollowedByOther" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbTrendFollowedByTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbTrendFollowedByTrendTimeSingle" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineProbTrendFollowedByTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineFrom" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineNosig" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendTimeFromTill" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendTimeTillFrom" status="run" time="0" classname="TrendGroup" />
-    <testcase name="combineTrendTimeWrongCombinations" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isTimeSpanGroupTrue" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isTimeSpanGroupFalseCombinedTrendTime" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isTimeSpanGroupFalseCombinedTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isTimeSpanFalseCombinedProbabilityAndTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isTimeSpanFalseOther" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueNosigBecmgTempoInter" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueFrom" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueCombinedProbAndTrendType" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueCombinedProbAndTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueCombinedProbAndTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueCombinedTrendTypeAndTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidTrueCombinedTrendTypeAndTrendTime" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseInvalidTimeSpan" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseInvalidTimeFrom" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseInvalidTrendTime" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseTrendTimeSingle" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseTrendTimeCombined" status="run" time="0" classname="TrendGroup" />
-    <testcase name="isValidFalseProbabilityGroup" status="run" time="0" classname="TrendGroup" />
-  </testsuite>
-  <testsuite name="RunwayStateGroup" tests="24" failures="0" disabled="0" errors="0" time="1.374">
-    <testcase name="parseSnoclo" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseSnocloRunwayWithDesignator" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseSnocloWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseSnocloWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseClrdSurfaceFrictionReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseClrdSurfaceFrictionNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseClrdRunwayWithDesignator" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseClrdWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseClrdWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormal" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalDepositDepthNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalSurfaceFrictionNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalDepositValues" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalDepositsNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalExtentValues" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalExtentNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalAllNotReported" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalRunwayWithDesignator" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalWrongReportPart" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="parseNormalWrongFormat" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="isValidRunwayTrue" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="isValidRunwayFalse" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="isValidExtentTrue" status="run" time="0" classname="RunwayStateGroup" />
-    <testcase name="isValidExtentFalse" status="run" time="0" classname="RunwayStateGroup" />
-  </testsuite>
-  <testsuite name="PressureGroup" tests="9" failures="0" disabled="0" errors="0" time="0.526">
+  <testsuite name="PressureGroup" tests="9" failures="0" disabled="0" errors="0" time="0.595">
     <testcase name="parseObservedInHg" status="run" time="0" classname="PressureGroup" />
     <testcase name="parseObservedInHgNotReported" status="run" time="0" classname="PressureGroup" />
     <testcase name="parseObservedHectopascal" status="run" time="0" classname="PressureGroup" />
@@ -678,145 +788,35 @@
     <testcase name="parseForecastWrongReportPart" status="run" time="0" classname="PressureGroup" />
     <testcase name="parseForecastWrongFormat" status="run" time="0" classname="PressureGroup" />
   </testsuite>
-  <testsuite name="PlainTextGroup" tests="5" failures="0" disabled="0" errors="0" time="0.31">
-    <testcase name="constructorFromString" status="run" time="0" classname="PlainTextGroup" />
-    <testcase name="parse" status="run" time="0" classname="PlainTextGroup" />
-    <testcase name="parseTruncate" status="run" time="0" classname="PlainTextGroup" />
-    <testcase name="isValidTrue" status="run" time="0" classname="PlainTextGroup" />
-    <testcase name="isValidFalse" status="run" time="0" classname="PlainTextGroup" />
+  <testsuite name="RainfallGroup" tests="2" failures="0" disabled="0" errors="0" time="0.132">
+    <testcase name="parseTwoValues" status="run" time="0" classname="RainfallGroup" />
+    <testcase name="parseThreeValues" status="run" time="0" classname="RainfallGroup" />
   </testsuite>
-  <testsuite name="getSyntaxGroup" tests="54" failures="0" disabled="0" errors="0" time="3.269">
-    <testcase name="METAR" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="SPECI" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="TAF" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="COR" status="run" time="0.001" classname="getSyntaxGroup" />
-    <testcase name="AMD" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="NIL" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="CNL" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="RMK" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="maintenanceIndicator" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="LOCATION" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="REPORT_TIME" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="TIME_SPAN" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_AUTO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_R_SNOCLO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CAVOK" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_NSW" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_WSCONDS" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_AO1" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_AO2" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_NOSPECI" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PRESFR" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PRESRR" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_RVRNO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PWINO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PNO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_FZRANO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TSNO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_SLPNO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_NOSIG" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TEMPO" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_BECMG" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_INTER" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TrendFrom" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TrendTime" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_Probability" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PlainTextGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_WindGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_VarWindGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_VisibilityGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudClr" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudSkc" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudNsc" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudNcd" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_CloudVerticalVisibility" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_WeatherGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TemperatureGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_TemperatureForecastGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_PressureGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_RunwayVisualRangeGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_RunwayStateGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_RainfallGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_SeaSurfaceGroup" status="run" time="0" classname="getSyntaxGroup" />
-    <testcase name="OTHER_ColourCodeGroup" status="run" time="0" classname="getSyntaxGroup" />
+  <testsuite name="ReportTimeGroup" tests="7" failures="0" disabled="0" errors="0" time="0.555">
+    <testcase name="parseReportTime" status="run" time="0" classname="ReportTimeGroup" />
+    <testcase name="parseWrongReportPart" status="run" time="0" classname="ReportTimeGroup" />
+    <testcase name="parseWrongFormat" status="run" time="0" classname="ReportTimeGroup" />
+    <testcase name="isValidCorrect" status="run" time="0" classname="ReportTimeGroup" />
+    <testcase name="isValidDayIncorrect" status="run" time="0.001" classname="ReportTimeGroup" />
+    <testcase name="isValidHourIncorrect" status="run" time="0" classname="ReportTimeGroup" />
+    <testcase name="isValidMinuteIncorrect" status="run" time="0" classname="ReportTimeGroup" />
   </testsuite>
-  <testsuite name="FixedGroup" tests="28" failures="0" disabled="0" errors="0" time="1.817">
-    <testcase name="parseMetar" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseSpeci" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseTaf" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseAmd" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseNil" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseCnl" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseCor" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseAuto" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseSnoclo" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseRsnoclo" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseCavok" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseNsw" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseRmk" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseMaintenanceIndicator" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseWsconds" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseAo1" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseAo2" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseNospeci" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parsePresfr" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parsePresrr" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseRvrno" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parsePwino" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parsePno" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseFzrano" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseTsno" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseSlpno" status="run" time="0" classname="FixedGroup" />
-    <testcase name="parseOther" status="run" time="0" classname="FixedGroup" />
-    <testcase name="isValid" status="run" time="0" classname="FixedGroup" />
-  </testsuite>
-  <testsuite name="SeaSurfaceGroup" tests="14" failures="0" disabled="0" errors="0" time="0.908">
-    <testcase name="parseStateOfSeaSurface" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseStateOfSeaSurfaceTemperatureNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseStateOfSeaSurfaceStateNotReported" status="run" time="0.001" classname="SeaSurfaceGroup" />
-    <testcase name="parseStateOfSeaSurfaceTemperatureAndStateNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseStateOfSeaSurfaceWrongReportPart" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseStateOfSeaSurfaceWrongFormat" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightOneDigit" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightTwoDigits" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightThreeDigits" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightTemperatureNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightWaveHeightNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightTemperatureAndWaveHeightNotReported" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightWrongReportPart" status="run" time="0" classname="SeaSurfaceGroup" />
-    <testcase name="parseWaveHeightWrongFormat" status="run" time="0" classname="SeaSurfaceGroup" />
-  </testsuite>
-  <testsuite name="WaveHeight" tests="30" failures="0" disabled="0" errors="0" time="2.084">
-    <testcase name="fromStringStateOfSurfaceCalmGlassy" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceCalmRippled" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceSmooth" status="run" time="0.001" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceSlight" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceModerate" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceRough" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceVeryRough" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceHigh" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceVeryHigh" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfacePhenomenal" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceNotReported" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringStateOfSurfaceWrongFormat" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringWaveHeightThreeDigit" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringWaveHeightTwoDigit" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringWaveHeightOneDigit" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringWaveHeightNotReported" status="run" time="0" classname="WaveHeight" />
-    <testcase name="fromStringWaveHeightWrongFormat" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceCalmGlassy" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceCalmRippled" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceSmooth" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceSlight" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceModerate" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceRough" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceVeryRough" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceHigh" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfaceVeryHigh" status="run" time="0" classname="WaveHeight" />
-    <testcase name="stateOfSurfacePhenomenal" status="run" time="0" classname="WaveHeight" />
-    <testcase name="waveHeightToUnitMeters" status="run" time="0" classname="WaveHeight" />
-    <testcase name="waveHeightToUnitFeet" status="run" time="0" classname="WaveHeight" />
-    <testcase name="waveHeightToUnitNotReported" status="run" time="0" classname="WaveHeight" />
+  <testsuite name="Runway" tests="16" failures="0" disabled="0" errors="0" time="1.167">
+    <testcase name="fromStringWithoutDesignator" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringWithDesignatorL" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringWithDesignatorC" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringWithDesignatorR" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringAllRunways" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringLastMessageRepetition" status="run" time="0" classname="Runway" />
+    <testcase name="fromStringWrongFormat" status="run" time="0" classname="Runway" />
+    <testcase name="isAllRunwaysTrue" status="run" time="0" classname="Runway" />
+    <testcase name="isAllRunwaysFalse" status="run" time="0" classname="Runway" />
+    <testcase name="isMessageRepetitionTrue" status="run" time="0" classname="Runway" />
+    <testcase name="isMessageRepetitionFalse" status="run" time="0" classname="Runway" />
+    <testcase name="isValidRunwayNumberCorrect" status="run" time="0" classname="Runway" />
+    <testcase name="isValidRunwayNumberIncorrect" status="run" time="0" classname="Runway" />
+    <testcase name="isValidSpecialCodes" status="run" time="0" classname="Runway" />
+    <testcase name="isValidSpecialCodesIncorrectDesignator" status="run" time="0" classname="Runway" />
+    <testcase name="makeAllRunways" status="run" time="0" classname="Runway" />
   </testsuite>
 </testsuites>
