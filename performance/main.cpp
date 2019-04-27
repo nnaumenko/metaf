@@ -193,12 +193,16 @@ private:
 
 int GroupPerformanceChecker::process() {
 	int groupCount = 0;
-	for (auto src : *sources) {
-		const auto parseResult = metaf::GroupParser::parse(get<string>(src), get<metaf::ReportPart>(src));
-		(void)parseResult;
-		(void)index;
-		//if (parseResult.index() != index) return(0);
-		groupCount++;
+	static const auto testRepetitions = 300;
+	for (auto i = 0; i < testRepetitions; i++) {
+		for (auto src : *sources) {
+			const auto parseResult = 
+				metaf::GroupParser::parse(get<string>(src), get<metaf::ReportPart>(src));
+			(void)parseResult;
+			(void)index;
+			//if (parseResult.index() != index) return(0);
+			groupCount++;
+		}
 	}
 	return(groupCount);
 }
@@ -289,10 +293,6 @@ void addGroup(const string & group, vector< pair<int, string> > & dst) {
 
 int addPlainTextGroups(const vector<metaf::Group> & src, vector< pair<int, string> > & dst){
 	auto count = 0;	for (const auto & group : src) {
-		if (holds_alternative<metaf::FixedGroup>(group)) {
-			auto fixedGroup = get_if<metaf::FixedGroup>(&group);
-			if (fixedGroup->type() == metaf::FixedGroup::Type::RMK) return (count);
-		}
 		if (holds_alternative<metaf::PlainTextGroup>(group)) {
 			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&group);
 			if (plainTextGroup) addGroup(plainTextGroup->toString(), dst);

@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 0;
-		static const int patch = 1;
+		static const int patch = 2;
 		inline static const char tag [] = "";
 	};
 
@@ -78,6 +78,10 @@ namespace metaf {
 		TAF,
 		RMK
 	};
+
+	inline std::optional<unsigned int> strToUint(const std::string & str,
+		std::size_t startPos,
+		std::size_t digits);
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -245,7 +249,7 @@ namespace metaf {
 
 		static const unsigned int heightFactor = 100; //height unit is 100s of feet
 
-		static inline std::optional<Modifier> modifierFromString(const std::string & s);
+		static inline std::optional<Modifier> modifierFromChar(char c);
 		static inline std::optional<float> metersToUnit(float value, Unit unit);
 		static inline std::optional<float> milesToUnit(float value, Unit unit);
 		static inline std::optional<float> feetToUnit(float value, Unit unit);
@@ -463,13 +467,13 @@ namespace metaf {
 
 	private:
 		Type whType = Type::STATE_OF_SURFACE;
-		std::optional<int> whValue; //in decimeters, muliply by 0.1 to get value in meters
+		std::optional<unsigned int> whValue; //in decimeters, muliply by 0.1 to get value in meters
 		static const inline auto waveHeightDecimalPointShift = 0.1;
 		static const Unit whUnit = Unit::METERS;
 	private:
-		static inline std::optional<float> waveHeightFromStateOfSurfaceString(
-			const std::string & s);
+		static inline std::optional<unsigned int> waveHeightFromStateOfSurfaceChar(char c);
 	private:
+		//Values below are in decimeters, muliply by 0.1 to get value in meters
 		static const inline auto maxWaveHeightCalmGlassy = 0;
 		static const inline auto maxWaveHeightCalmRippled = 1;
 		static const inline auto maxWaveHeightSmooth = 5;
@@ -1412,19 +1416,36 @@ namespace metaf {
 
 namespace metaf {
 
+	std::optional<unsigned int> strToUint(const std::string & str, 
+		std::size_t startPos,
+		std::size_t digits)
+	{
+		std::optional<unsigned int> error;
+		if (str.empty() || !digits || startPos + digits > str.length()) return(error);
+		unsigned int value = 0;
+		for (auto [i,c] = std::pair(0u, str.c_str() + startPos); i < digits; i++, c++) {
+			if (*c < '0' || *c > '9') return(error);
+			static const auto decimalRadix = 10u;
+			value = value * decimalRadix + (*c - '0');
+		}
+		return(value);
+	}
+
+
 	std::optional<Runway> Runway::fromString(const std::string & s) {
+		//static const std::regex rgx("R(\\d\\d)([RLC])?");
 		static const std::optional<Runway> error;
-		static const std::regex rgx("R(\\d\\d)([RLC])?");
-		static const auto matchNumber = 1, matchDesignator = 2;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(error);
+		if (s.length() != 3 && s.length() != 4) return(error);
+		if (s[0] != 'R') return(error);
+		const auto rwyNum = strToUint(s, 1, 2);
+		if (!rwyNum.has_value()) return(error);
 		Runway runway;
-		runway.rNumber = static_cast<unsigned int>(std::stoi(match.str(matchNumber)));
-		if (match.length(matchDesignator)) {
-			const auto designator = designatorFromChar(match.str(matchDesignator).at(0));
+		runway.rNumber = rwyNum.value();
+		if (s.length() == 4) {
+			const auto designator = designatorFromChar(s[3]);
 			if (!designator.has_value()) return(error);
 			runway.rDesignator = designator.value();
-		}
+		} 
 		return(runway);
 	}
 
@@ -1440,29 +1461,41 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<MetafTime> MetafTime::fromStringDDHHMM(const std::string & s) {
-		static const std::regex rgx ("(\\d\\d)?(\\d\\d)(\\d\\d)");
-		static const auto matchDay = 1, matchHour = 2, matchMinute = 3;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<MetafTime>());
-		MetafTime metafTime;
-		if (match.length(matchDay)) {
-			metafTime.dayValue = static_cast<unsigned int>(std::stoi(match.str(matchDay)));
+		//static const std::regex rgx ("(\\d\\d)?(\\d\\d)(\\d\\d)");
+		static const std::optional<MetafTime> error;
+		if (s.length() == 4) {
+			const auto hour = strToUint(s, 0, 2);
+			const auto minute = strToUint(s, 2, 2);
+			if (!hour.has_value() || !minute.has_value()) return(error);
+			MetafTime metafTime;
+			metafTime.hourValue = hour.value();
+			metafTime.minuteValue = minute.value();
+			return(metafTime);
 		}
-		metafTime.hourValue = static_cast<unsigned int>(std::stoi(match.str(matchHour)));
-		metafTime.minuteValue = static_cast<unsigned int>(std::stoi(match.str(matchMinute)));
-		return(metafTime);
+		if (s.length() == 6) {
+			const auto day = strToUint(s, 0, 2);
+			const auto hour = strToUint(s, 2, 2);
+			const auto minute = strToUint(s, 4, 2);
+			if (!day.has_value() || !hour.has_value() || !minute.has_value()) return(error);
+			MetafTime metafTime;
+			metafTime.dayValue = day.value();
+			metafTime.hourValue = hour.value();
+			metafTime.minuteValue = minute.value();
+			return(metafTime);
+		}
+		return(error);
 	}
 
 	std::optional<MetafTime> MetafTime::fromStringDDHH(const std::string & s) {
-		static const std::regex rgx ("(\\d\\d)(\\d\\d)");
-		std::smatch match;
-		if (!regex_match(s, match, rgx)) return(std::optional<MetafTime>());
+		//static const std::regex rgx ("(\\d\\d)(\\d\\d)");
+		static const std::optional<MetafTime> error;
+		if (s.length() != 4) return(error);
+		const auto day = strToUint(s, 0, 2);
+		const auto hour = strToUint(s, 2, 2);
+		if (!day.has_value() || !hour.has_value()) return(error);
 		MetafTime metafTime;
-		static const auto matchDay = 1;
-		metafTime.dayValue = static_cast<unsigned int>(std::stoi(match.str(matchDay)));
-		static const auto matchHour = 2;
-		metafTime.hourValue = static_cast<unsigned int>(std::stoi(match.str(matchHour)));
-		metafTime.minuteValue = 0;
+		metafTime.dayValue = day.value();
+		metafTime.hourValue = hour.value();
 		return(metafTime);
 	}
 
@@ -1476,19 +1509,26 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Temperature> Temperature::fromString(const std::string & s) {
-		static const std::regex rgx ("(?:(M)?(\\d\\d))|//");
-		static const auto matchM = 1, matchValue = 2;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Temperature>());
-		Temperature temperature;
-		if (!match.length(matchValue)) return(temperature);
-		auto value = std::stoi(match.str(matchValue));
-		if (match.length(matchM)) {
-			value = -value;
+		//static const std::regex rgx ("(?:(M)?(\\d\\d))|//");
+		std::optional<Temperature> error;
+		if (s == "//") return(Temperature());
+		if (s.length() == 3) {
+			if (s[0] != 'M') return(error);
+			const auto t = strToUint(s, 1, 2);
+			if (!t.has_value()) return(error);
+			Temperature temperature;
+			temperature.tempValue = - t.value();
 			temperature.freezing = true;
+			return(temperature);
 		}
-		temperature.tempValue = value;
-		return(temperature);
+		if (s.length() == 2) {
+			const auto t = strToUint(s, 0, 2);
+			if (!t.has_value()) return(error);
+			Temperature temperature;
+			temperature.tempValue = t.value();
+			return(temperature);
+		}
+		return(error);
 	}
 
 	std::optional<float> Temperature::toUnit(Unit unit) const {
@@ -1503,16 +1543,16 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Speed> Speed::fromString(const std::string & s, Unit unit) {
-		if (s.empty()) return(Speed());
-		static const std::regex rgx ("([1-9]?\\d\\d)|//");
-		static const auto matchValue = 1;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Speed>());
+		//static const std::regex rgx ("([1-9]?\\d\\d)|//");
+		static const std::optional<Speed> error;
+		if (s.empty() || s == "//") return(Speed());
+		if (s.length() != 2 && s.length() != 3) return(error);
+		if (s.length() == 3 && s[0] == '0') return(error);
+		const auto spd = strToUint(s, 0, s.length());
+		if (!spd.has_value()) return(error);	
 		Speed speed;
 		speed.speedUnit = unit;
-		if (match.length(matchValue)) {
-			speed.speedValue = static_cast<unsigned int>(std::stoi(match.str(matchValue)));
-		}
+		speed.speedValue = spd.value();
 		return(speed);
 	}
 
@@ -1577,90 +1617,108 @@ namespace metaf {
 	////////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Distance> Distance::fromMeterString(const std::string & s) {
-		static const std::regex rgx ("(\\d\\d\\d\\d)|////");
-		static const auto matchValue = 1;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Distance>());
+		//static const std::regex rgx ("(\\d\\d\\d\\d)|////");
+		static const std::optional<Distance> error;
+		if (s.length() != 4) return(error);
 		Distance distance;
 		distance.distUnit = Unit::METERS;
-		if (match.length(matchValue)) {
-			const auto value = static_cast<unsigned int>(stoi(match.str(matchValue)));
-			static const auto valueMoreThan10km = 9999;
-			static const auto value10km = 10000;
-			distance.distValueInt = value;
-			if (value == valueMoreThan10km) {
-				distance.distModifier = Modifier::MORE_THAN;
-				distance.distValueInt = value10km;
-			}
+		if (s == "////") return(distance);
+
+		const auto dist = strToUint(s, 0, 4);
+		if (!dist.has_value()) return(error);
+		distance.distValueInt = dist.value();
+
+		if (const auto valueMoreThan10km = 9999u; distance.distValueInt == valueMoreThan10km) {
+			static const auto value10km = 10000u; 
+			distance.distValueInt = value10km;
+			distance.distModifier = Modifier::MORE_THAN;
 		}
 		return(distance);
 	}
 
 	std::optional<Distance> Distance::fromMileString(const std::string & s) {
+		//static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?SM|////SM");
 		static const std::optional<Distance> error;
-		static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?SM|////SM");
-		static const auto matchModifier = 1, matchNumerator = 2, matchDenominator = 3;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(error);
-
+		static const auto unitStr = std::string ("SM"); 
+		static const auto unitLength = unitStr.length();
+		if (s.length() < unitLength + 1) return(error); //1 digit minimum
 		Distance distance;
 		distance.distUnit = Unit::STATUTE_MILES;
-
-		if (!match.length(matchNumerator)) return(distance); //not reported
-
-		auto modifier = modifierFromString(match.str(matchModifier));
-		if (!modifier.has_value()) return(error);
-		distance.distModifier = modifier.value();
-
-		const auto num = static_cast<unsigned int>(stoi(match.str(matchNumerator)));
-		if (!match.length(matchDenominator)) distance.distValueInt = num;
-
-		if (match.length(matchDenominator)) {
-			const auto den = static_cast<unsigned int>(stoi(match.str(matchDenominator)));
-			distance.distValueNum = num;
-			distance.distValueDen = den;
-			if (den <= num && num >= 10) {
+		if (s == "////SM") return(distance);
+		if (s.substr(s.length() - unitLength, unitLength) != unitStr) return(error); //s.endsWith(unitStr)
+		const auto modifier = modifierFromChar(s[0]);
+		if (const auto slashPos = s.find('/'); slashPos == std::string::npos) {
+			//Integer value
+			int intPos = 0, intLength = s.length() - unitLength;
+			if (modifier.has_value()) {
+				distance.distModifier = modifier.value();
+				intPos++;
+				intLength--;
+			}
+			if (intLength <= 0 || intLength > 2) return (error);
+			const auto dist = strToUint(s, intPos, intLength);
+			if (!dist.has_value()) return(error);
+			distance.distValueInt = dist.value();
+		} else {
+			//Fraction value
+			int numPos = 0, numLength = slashPos;
+			if (modifier.has_value()) {
+				distance.distModifier = modifier.value();
+				numPos++;
+				numLength--;
+			}
+			int denPos = slashPos + 1, denLength = s.length() - unitLength - denPos;
+			if (numLength < 0 || numLength > 2 || denLength < 0 || denLength > 2 || denPos < 0) return(error);
+			const auto distNum = strToUint(s, numPos, numLength);
+			const auto distDen = strToUint(s, denPos, denLength);
+			if (!distNum.has_value() || !distDen.has_value()) return(error);
+			distance.distValueNum = distNum.value();
+			distance.distValueDen = distDen.value();
+			if (distNum.value() >= distDen.value()) {
 				static const auto decimalRadix = 10u;
-				distance.distValueInt = num / decimalRadix;
-				distance.distValueNum = num % decimalRadix;
+				distance.distValueInt = distNum.value() / decimalRadix;
+				distance.distValueNum = distNum.value() % decimalRadix;
 			}
 		}
 		return(distance);
 	}
 
 	std::optional<Distance> Distance::fromHeightString(const std::string & s) {
-		static const std::regex rgx ("(\\d\\d\\d)|///");
-		static const auto matchValue = 1;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Distance>());
+		//static const std::regex rgx ("(\\d\\d\\d)|///");
+		static const std::optional<Distance> error;
+		if (s.length() != 3) return(error);
 		Distance distance;
 		distance.distUnit = Unit::FEET;
-		if (match.length(matchValue)) {
-			distance.distValueInt = 
-				static_cast<unsigned int>(std::stoi(match.str(matchValue))) * heightFactor;
-		}
+		if (s == "///") return(distance);
+		const auto h = strToUint(s, 0, 3);
+		if (!h.has_value())	return(error);	
+		distance.distValueInt = h.value() * heightFactor;
 		return(distance);
 	}
 
 	std::optional<Distance> Distance::fromRvrString(const std::string & s, bool unitFeet)
 	{
+		//static const std::regex rgx ("([PM])?(\\d\\d\\d\\d)|////");
 		static const std::optional<Distance> error;
-		static const std::regex rgx ("([PM])?(\\d\\d\\d\\d)|////");
-		static const auto matchModifier = 1, matchValue = 2;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Distance>());
 		Distance distance;
 		distance.distUnit = unitFeet ? Unit::FEET : Unit::METERS;
-
-		auto modifier = modifierFromString(match.str(matchModifier));
-		if (!modifier.has_value()) return(error);
-		distance.distModifier = modifier.value();
-
-		if (match.length(matchValue)) {
-			auto value = static_cast<unsigned int>(stoi(match.str(matchValue)));
-			distance.distValueInt = value;
+		if (s.length() == 4) {
+			if (s == "////") return(distance);
+			const auto dist = strToUint(s, 0, 4);
+			if (!dist.has_value()) return(error);
+			distance.distValueInt = dist.value();
+			return(distance);
 		}
-		return(distance);
+		if (s.length() == 5) {
+			auto modifier = modifierFromChar(s[0]);
+			if (!modifier.has_value()) return(error);
+			distance.distModifier = modifier.value();
+			const auto dist = strToUint(s, 1, 4);
+			if (!dist.has_value()) return(error);
+			distance.distValueInt = dist.value();
+			return(distance);
+		}
+		return(error);
 	}
 
 	std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer, 
@@ -1694,10 +1752,9 @@ namespace metaf {
 		}
 	}
 
-	std::optional<Distance::Modifier> Distance::modifierFromString(const std::string & s) {
-		if (s.empty()) return(Modifier::NONE);
-		if (s == "M") return(Modifier::LESS_THAN);
-		if (s == "P") return(Modifier::MORE_THAN);
+	std::optional<Distance::Modifier> Distance::modifierFromChar(char c) {
+		if (c == 'M') return(Modifier::LESS_THAN);
+		if (c == 'P') return(Modifier::MORE_THAN);
 		return(std::optional<Modifier>());
 	}
 
@@ -1758,27 +1815,28 @@ namespace metaf {
 	}
 
 	std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
+		std::optional<Direction> error;
+		Direction direction;
 		if (s.empty()) {
-			Direction dir;
-			dir.dirStatus = Status::OMMITTED;
-			return(dir);
+			direction.dirStatus = Status::OMMITTED;
+			return(direction);
 		}
+		if (s.length() != 3) return(error);
 		if (s == "///") {
-			Direction dir;
-			dir.dirStatus = Status::NOT_REPORTED;
-			return(dir);
+			direction.dirStatus = Status::NOT_REPORTED;
+			return(direction);
 		}
 		if (s == "VRB") {
-			Direction dir;
-			dir.dirStatus = Status::VARIABLE;
-			return(dir);
+			direction.dirStatus = Status::VARIABLE;
+			return(direction);
 		}
-		static const std::regex rgx("\\d\\d0");
-		if (!std::regex_match(s, rgx)) return (std::optional<Direction>());
-		Direction dir;
-		dir.dirStatus = Status::VALUE_DEGREES;
-		dir.dirDegrees = static_cast<unsigned int>(stoi(s));
-		return(dir);
+		//static const std::regex rgx("\\d\\d0");
+		if (s[2] != '0') return(error);
+		const auto dir = strToUint(s, 0, 3);
+		if (!dir.has_value()) return(error);
+		direction.dirStatus = Status::VALUE_DEGREES;
+		direction.dirDegrees = dir.value();
+		return(direction);
 	}
 
 	Direction::Cardinal Direction::cardinal(bool trueDirections) const {
@@ -1809,37 +1867,45 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Pressure> Pressure::fromString(const std::string & s) {
+		//static const std::regex rgx("([QA])(?:(\\d\\d\\d\\d)|////)");
 		static const std::optional<Pressure> error;
-		static const std::regex rgx("([QA])(?:(\\d\\d\\d\\d)|////)");
-		static const auto matchUnit = 1, matchValue = 2;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(error);
-		std::optional<float> val;
-		if (match.length(matchValue)) val = stof(match.str(matchValue));
-		if (match.str(matchUnit) == "Q") {
-			Pressure pressure;
-			pressure.pressureUnit = Unit::HECTOPASCAL;
-			pressure.pressureValue = val;
-			return(pressure);
-		}
-		if (match.str(matchUnit) == "A") {
-			Pressure pressure;
+		if (s.length() != 5) return(error);
+		Pressure pressure;
+		if (s == "A////") {
 			pressure.pressureUnit = Unit::INCHES_HG;
-			if (val.has_value()) val = val.value() * inHgDecimalPointShift;
-			pressure.pressureValue = val;
 			return(pressure);
 		}
-		return(error);
+		if (s == "Q////") {
+			pressure.pressureUnit = Unit::HECTOPASCAL;
+			return(pressure);
+		}
+		const auto pr = strToUint(s, 1, 4);
+		if (!pr.has_value()) return(error);
+		switch (s[0]) {
+			case 'A': 
+				pressure.pressureUnit = Unit::INCHES_HG;
+				pressure.pressureValue = pr.value() * inHgDecimalPointShift;
+				break;
+			case 'Q':
+				pressure.pressureUnit = Unit::HECTOPASCAL;
+				pressure.pressureValue = pr.value();
+				break;
+			default:  return(error);
+		}
+		return(pressure);
 	}
 
 	std::optional<Pressure> Pressure::fromForecastString(const std::string & s) {
-		static const std::regex rgx("QNH(\\d\\d\\d\\d)INS");
-		static const auto matchValue = 1;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(std::optional<Pressure>());
+		//static const std::regex rgx("QNH(\\d\\d\\d\\d)INS");
+		static const std::optional<Pressure> error;
+		if (s.length() != 10) return(error);
+		if (s[0] != 'Q' || s[1] != 'N' || s[2] != 'H') return(error);
+		if (s[7] != 'I' || s[8] != 'N' || s[9] != 'S') return(error);
+		const auto pr = strToUint(s, 3, 4);
+		if (!pr.has_value()) return(error);
 		Pressure pressure;
 		pressure.pressureUnit = Unit::INCHES_HG;
-		pressure.pressureValue = stoi(match.str(matchValue)) * inHgDecimalPointShift;
+		pressure.pressureValue = pr.value() * inHgDecimalPointShift;
 		return(pressure);
 	}
 
@@ -1860,24 +1926,34 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Precipitation> Precipitation::fromRainfallString(const std::string & s) {
+		//static const std::regex rgx("\\d?\\d\\d\\.\\d");
+		static const std::optional<Precipitation> error;
 		if (s.empty() || s == "///./" || s == "//./") return(Precipitation());
-		static const std::regex rgx("\\d?\\d\\d\\.\\d");
-		if (!std::regex_match(s, rgx)) return(std::optional<Precipitation>());
+		if (s.length() != 4 && s.length() != 5) return(error);
+		if (s[s.length()-2] != '.') return(error);
+		const auto fractPart = strToUint(s, s.length() - 1, 1);
+		if (!fractPart.has_value()) return(error);
+		const auto intPart = strToUint(s, 0, s.length() - 2);
+		if (!intPart.has_value()) return(error);
 		Precipitation precipitation;
 		precipitation.precipStatus = Precipitation::Status::REPORTED;
-		precipitation.precipValue = std::stof(s);
+		precipitation.precipValue = intPart.value() + 0.1 *fractPart.value();
 		return(precipitation);
 	}
 
 	std::optional<Precipitation> Precipitation::fromRunwayDeposits(const std::string & s) {
+		//static const std::regex rgx("\\d\\d");
+		std::optional<Precipitation> error;
+		if (s.length() != 2) return(error);
 		if (s == "//") return(Precipitation());
-		static const std::regex rgx("\\d\\d");
-		if (!std::regex_match(s, rgx)) return(std::optional<Precipitation>());
-		auto value = static_cast<unsigned int>(stoi(s));
+		const auto dep = strToUint(s, 0, 2);
+		if (!dep.has_value()) return(error);
+
+		auto value = dep.value();
 		Precipitation precipitation;
 		precipitation.precipStatus = Status::REPORTED;
 		switch (value) {
-			case Reserved::RESERVED: return(std::optional<Precipitation>());
+			case Reserved::RESERVED: return(error);
 
 			case Reserved::DEPTH_10CM: value = 100; break;
 			case Reserved::DEPTH_15CM: value = 150; break;
@@ -1909,11 +1985,15 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<SurfaceFriction> SurfaceFriction::fromString(const std::string & s) {
+		//static const std::regex rgx("\\d\\d");
+		static const std::optional<SurfaceFriction> error;
+		if (s.length() != 2) return(error);
 		if (s == "//") return(SurfaceFriction());
-		static const std::regex rgx("\\d\\d");
-		if (!std::regex_match(s, rgx)) return(std::optional<SurfaceFriction>());
+		const auto sfVal = strToUint(s, 0, 2);
+		if (!sfVal.has_value()) return(error);
+
 		SurfaceFriction sf;
-		auto coefficient = static_cast<unsigned int>(stoi(s));
+		auto coefficient = sfVal.value();
 		switch (coefficient) {
 			case Reserved::BRAKING_ACTION_POOR:
 			sf.sfStatus = Status::BRAKING_ACTION_REPORTED;
@@ -1970,33 +2050,31 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<WaveHeight> WaveHeight::fromString(const std::string & s) {
+		//static const std::regex rgx("S(\\d)|H(\\d?\\d?\\d)");
 		static const std::optional<WaveHeight> error;
+		if (s.length() < 2 || s.length() > 4) return(error);
+		WaveHeight wh;
 		if (s == "H///") {
-			WaveHeight wh;
 			wh.whType = Type::WAVE_HEIGHT;
 			return(wh);
 		}
 		if (s == "S/") {
-			WaveHeight wh;
 			wh.whType = Type::STATE_OF_SURFACE;
 			return(wh);
 		}
-		static const std::regex rgx("S(\\d)|H(\\d?\\d?\\d)");
-		static const auto matchStateOfSurface = 1, matchWaveHeight = 2;
-		std::smatch match;
-		if (!std::regex_match(s, match, rgx)) return(error);
-		if (match.length(matchStateOfSurface)) {
-			auto h = waveHeightFromStateOfSurfaceString(match.str(matchStateOfSurface));
+		if (s[0] == 'S') {
+			if (s.length() != 2) return(error);
+			auto h = waveHeightFromStateOfSurfaceChar(s[1]);
 			if (!h.has_value()) return(error);
-			WaveHeight wh;
 			wh.whType = Type::STATE_OF_SURFACE;
 			wh.whValue = h.value();
 			return(wh);
 		}
-		if (match.length(matchWaveHeight)) {
-			WaveHeight wh;
+		if (s[0] == 'H') {
+			auto h = strToUint(s, 1, s.length() - 1);			
+			if (!h.has_value()) return(error);
 			wh.whType = Type::WAVE_HEIGHT;
-			wh.whValue = static_cast<unsigned int>(stoi(match.str(matchWaveHeight)));
+			wh.whValue = h.value();
 			return(wh);
 		}
 		return(error);
@@ -2031,18 +2109,20 @@ namespace metaf {
 		return(StateOfSurface::PHENOMENAL);
 	}
 
-	std::optional<float> WaveHeight::waveHeightFromStateOfSurfaceString(const std::string & s) {
-		if (s == "0") return(maxWaveHeightCalmGlassy);
-		if (s == "1") return(maxWaveHeightCalmRippled);
-		if (s == "2") return(maxWaveHeightSmooth);
-		if (s == "3") return(maxWaveHeightSlight);
-		if (s == "4") return(maxWaveHeightModerate);
-		if (s == "5") return(maxWaveHeightRough);
-		if (s == "6") return(maxWaveHeightVeryRough);
-		if (s == "7") return(maxWaveHeightHigh);
-		if (s == "8") return(maxWaveHeightVeryHigh);
-		if (s == "9") return(minWaveHeightPhenomenal);
-		return(std::optional<float>());
+	std::optional<unsigned int> WaveHeight::waveHeightFromStateOfSurfaceChar(char c) {
+		switch (c) {
+			case '0': return(maxWaveHeightCalmGlassy);
+			case '1': return(maxWaveHeightCalmRippled);
+			case '2': return(maxWaveHeightSmooth);
+			case '3': return(maxWaveHeightSlight);
+			case '4': return(maxWaveHeightModerate);
+			case '5': return(maxWaveHeightRough);
+			case '6': return(maxWaveHeightVeryRough);
+			case '7': return(maxWaveHeightHigh);
+			case '8': return(maxWaveHeightVeryHigh);
+			case '9': return(minWaveHeightPhenomenal);
+			default:  return(std::optional<unsigned int>());
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -2855,7 +2935,7 @@ namespace metaf {
 	std::optional<RunwayVisualRangeGroup::Trend> RunwayVisualRangeGroup::trendFromString(
 		const std::string & s)
 	{
-		if (!s.length()) return(Trend::NONE);
+		if (s.empty()) return(Trend::NONE);
 		if (s == "/") return(Trend::NOT_REPORTED);
 		if (s == "U") return(Trend::UPWARD);
 		if (s == "N") return(Trend::NEUTRAL);
