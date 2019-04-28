@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 0;
-		static const int patch = 2;
+		static const int patch = 3;
 		inline static const char tag [] = "";
 	};
 
@@ -108,7 +108,7 @@ namespace metaf {
 		}
 
 		Runway() = default;
-		static inline std::optional<Runway> fromString(const std::string & s);
+		static inline std::optional<Runway> fromString(const std::string & s, bool enableRwy = false);
 		static Runway makeAllRunways() {
 			Runway rw;
 			rw.rNumber = allRunwaysNumber;
@@ -1432,17 +1432,21 @@ namespace metaf {
 	}
 
 
-	std::optional<Runway> Runway::fromString(const std::string & s) {
-		//static const std::regex rgx("R(\\d\\d)([RLC])?");
+	std::optional<Runway> Runway::fromString(const std::string & s, bool enableRwy) {
+		//static const std::regex rgx("R(?:WY)?(\\d\\d)([RLC])?");
 		static const std::optional<Runway> error;
-		if (s.length() != 3 && s.length() != 4) return(error);
+		if (s.length() < 3) return(error);
 		if (s[0] != 'R') return(error);
-		const auto rwyNum = strToUint(s, 1, 2);
+		auto numPos = 1u;
+		if (enableRwy && s[1] == 'W' && s[2] == 'Y') numPos += 2;
+		const auto rwyNum = strToUint(s, numPos, 2);
 		if (!rwyNum.has_value()) return(error);
+		const auto dsgPos = numPos + 2;
+		if (s.length() > dsgPos + 1) return(error);
 		Runway runway;
 		runway.rNumber = rwyNum.value();
-		if (s.length() == 4) {
-			const auto designator = designatorFromChar(s[3]);
+		if ( s.length() > dsgPos) {
+			const auto designator = designatorFromChar(s[dsgPos]);
 			if (!designator.has_value()) return(error);
 			runway.rDesignator = designator.value();
 		} 
@@ -3066,7 +3070,7 @@ namespace metaf {
 				combinedGroup.status = Status::INCOMPLETE_WS_ALL;
 				return(combinedGroup);
 			}
-			if (const auto runway = Runway::fromString(nextGroupStr); runway.has_value()) {
+			if (const auto runway = Runway::fromString(nextGroupStr, true); runway.has_value()) {
 				combinedGroup.status = Status::COMPLETE;
 				combinedGroup.rw = *runway;
 				return(combinedGroup);

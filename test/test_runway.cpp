@@ -56,10 +56,85 @@ TEST(Runway, fromStringWrongFormat){
 	EXPECT_FALSE(metaf::Runway::fromString("R").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("R0A").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("RR00").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RW00").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("R00X").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("R00/").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("R00R/").has_value());
 	EXPECT_FALSE(metaf::Runway::fromString("R//").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R0").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R0C").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY0").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY0C").has_value());
+}
+
+TEST(Runway, fromStringRwy){
+	EXPECT_FALSE(metaf::Runway::fromString("RWY00").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY00R").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY00C").has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY00L").has_value());
+}
+
+TEST(Runway, fromStringWithRwyOptionR) {
+	const auto r1 = metaf::Runway::fromString("R36", true);
+	ASSERT_TRUE(r1.has_value());
+	EXPECT_EQ(r1->number(), 36u);
+	EXPECT_EQ(r1->designator(), metaf::Runway::Designator::NONE);
+
+	const auto r2 = metaf::Runway::fromString("R36R", true);
+	ASSERT_TRUE(r2.has_value());
+	EXPECT_EQ(r2->number(), 36u);
+	EXPECT_EQ(r2->designator(), metaf::Runway::Designator::RIGHT);
+
+	const auto r3 = metaf::Runway::fromString("R36C", true);
+	ASSERT_TRUE(r3.has_value());
+	EXPECT_EQ(r3->number(), 36u);
+	EXPECT_EQ(r3->designator(), metaf::Runway::Designator::CENTER);
+
+	const auto r4 = metaf::Runway::fromString("R36L", true);
+	ASSERT_TRUE(r4.has_value());
+	EXPECT_EQ(r4->number(), 36u);
+	EXPECT_EQ(r4->designator(), metaf::Runway::Designator::LEFT);
+}
+
+TEST(Runway, fromStringWithRwyOptionRWY) {
+	const auto r1 = metaf::Runway::fromString("RWY36", true);
+	ASSERT_TRUE(r1.has_value());
+	EXPECT_EQ(r1->number(), 36u);
+	EXPECT_EQ(r1->designator(), metaf::Runway::Designator::NONE);
+
+	const auto r2 = metaf::Runway::fromString("RWY36R", true);
+	ASSERT_TRUE(r2.has_value());
+	EXPECT_EQ(r2->number(), 36u);
+	EXPECT_EQ(r2->designator(), metaf::Runway::Designator::RIGHT);
+
+	const auto r3 = metaf::Runway::fromString("RWY36C", true);
+	ASSERT_TRUE(r3.has_value());
+	EXPECT_EQ(r3->number(), 36u);
+	EXPECT_EQ(r3->designator(), metaf::Runway::Designator::CENTER);
+
+	const auto r4 = metaf::Runway::fromString("RWY36L", true);
+	ASSERT_TRUE(r4.has_value());
+	EXPECT_EQ(r4->number(), 36u);
+	EXPECT_EQ(r4->designator(), metaf::Runway::Designator::LEFT);
+}
+
+TEST(Runway, fromStringWrongFormatWithRwyOption){
+	EXPECT_FALSE(metaf::Runway::fromString("", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("00", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R0A", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RR00", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RW00", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R00X", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R00/", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R00R/", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R//", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R0", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("R0C", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY0", true).has_value());
+	EXPECT_FALSE(metaf::Runway::fromString("RWY0C", true).has_value());
 }
 
 TEST(Runway, isAllRunwaysTrue) {

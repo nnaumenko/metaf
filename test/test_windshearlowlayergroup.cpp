@@ -83,6 +83,38 @@ TEST(WindShearLowLayerGroup, parseWsR27C) {
 	EXPECT_EQ(wsR27c.runway().designator(), metaf::Runway::Designator::CENTER);
 }
 
+TEST(WindShearLowLayerGroup, parseWsRWY32) {
+	const auto ws = metaf::WindShearLowLayerGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ws.has_value());
+
+	const auto r32 = metaf::PlainTextGroup::parse("RWY32", metaf::ReportPart::METAR);
+	ASSERT_TRUE(r32.has_value());
+
+	const auto combined = ws->combine(r32.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindShearLowLayerGroup>(combined.value()));
+	const auto wsR32 = std::get<metaf::WindShearLowLayerGroup>(combined.value());
+	EXPECT_TRUE(wsR32.isValid());
+	EXPECT_EQ(wsR32.runway().number(), 32u);
+	EXPECT_EQ(wsR32.runway().designator(), metaf::Runway::Designator::NONE);
+}
+
+TEST(WindShearLowLayerGroup, parseWsRWY27C) {
+	const auto ws = metaf::WindShearLowLayerGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ws.has_value());
+
+	const auto r27c = metaf::PlainTextGroup::parse("RWY27C", metaf::ReportPart::METAR);
+	ASSERT_TRUE(r27c.has_value());
+
+	const auto combined = ws->combine(r27c.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindShearLowLayerGroup>(combined.value()));
+	const auto wsR27c = std::get<metaf::WindShearLowLayerGroup>(combined.value());
+	EXPECT_TRUE(wsR27c.isValid());
+	EXPECT_EQ(wsR27c.runway().number(), 27u);
+	EXPECT_EQ(wsR27c.runway().designator(), metaf::Runway::Designator::CENTER);
+}
+
 TEST(WindShearLowLayerGroup, parseInvalidRunway) {
 	const auto ws = metaf::WindShearLowLayerGroup::parse("WS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(ws.has_value());
