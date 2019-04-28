@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 0;
-		static const int patch = 3;
+		static const int minor = 1;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -318,7 +318,8 @@ namespace metaf {
 	public:
 		enum class Unit {
 			HECTOPASCAL,
-			INCHES_HG
+			INCHES_HG,
+			MM_HG
 		};
 		std::optional<float> pressure() const { return(pressureValue); }
 		Unit unit() const { return(pressureUnit); }
@@ -327,6 +328,8 @@ namespace metaf {
 		Pressure() = default;
 		static inline std::optional<Pressure> fromString(const std::string & s);
 		static inline std::optional<Pressure> fromForecastString(const std::string & s);
+		static inline std::optional<Pressure> fromSlpString(const std::string & s);
+		static inline std::optional<Pressure> fromQfeString(const std::string & s);
 
 	private:
 		std::optional<float> pressureValue;
@@ -869,7 +872,8 @@ namespace metaf {
 	public:
 		enum class Type {
 			OBSERVED_QNH,			//Observed mean sea level pressure (METAR)
-			FORECAST_LOWEST_QNH		//Forecast lowest sea level pressure
+			FORECAST_LOWEST_QNH,	//Forecast lowest sea level pressure
+			OBSERVED_QFE			//Observed actual (non-normalised) pressure
 		};
 		Type type() const { return(t); }
 		Pressure atmosphericPressure() const { return(p); }
@@ -1913,16 +1917,64 @@ namespace metaf {
 		return(pressure);
 	}
 
+	std::optional<Pressure> Pressure::fromSlpString(const std::string & s) {
+		//SLP982 = 998.2 hPa, SLP015 = 1001.5 hPa, SLP221 = 1022.1 hPa
+		//static const std::regex rgx("SLP(\\d\\d\\d)");
+		static const std::optional<Pressure> error;
+		if (s.length() != 6) return(error);
+		if (s[0] != 'S' || s[1] != 'L' || s[2] != 'P') return(error);
+		const auto pr = strToUint(s, 3, 3);
+		if (!pr.has_value()) return(error);
+		static const auto slpDecimalPointShift = 0.1;
+		const auto base = (pr.value() < 500) ? 1000 : 900;
+		Pressure pressure;
+		pressure.pressureUnit = Unit::HECTOPASCAL;
+		pressure.pressureValue = pr.value() * slpDecimalPointShift + base;
+		return(pressure);
+	}
+
+	std::optional<Pressure> Pressure::fromQfeString(const std::string & s) {
+		//static const std::regex rgx("QFE(\\d\\d\\d)(/\\d\\d\\d\\d)?");
+		static const std::optional<Pressure> error;
+		if (s.length() != 6 && s.length() != 11) return(error);
+		if (s[0] != 'Q' || s[1] != 'F' || s[2] != 'E') return(error);
+		const auto mmHg = strToUint(s, 3, 3);
+		if (!mmHg.has_value()) return(error);
+		if (s.length() == 11) {
+			const auto hPa = strToUint(s, 7, 4);
+			if (!hPa.has_value() || s[6] != '/') return(error);	
+			//Value in hPa is ignored (parsed only for group syntax check)
+		} 
+		Pressure pressure;
+		pressure.pressureUnit = Unit::MM_HG;
+		pressure.pressureValue = mmHg.value();
+		return(pressure);
+	}
+
 	std::optional<float> Pressure::toUnit(Unit unit) const {
 		if (!pressureValue.has_value()) return(std::optional<float>());
 		auto v = pressureValue.value();
 		if (pressureUnit == unit) return(v);
 		static const auto hpaPerInHg = 33.8639;
+		static const auto hpaPerMmHg = 1.3332;
+		static const auto mmPerInch = 25.4;
 		if (pressureUnit == Unit::HECTOPASCAL && unit == Unit::INCHES_HG) {
 			return(v / hpaPerInHg);
 		}
+		if (pressureUnit == Unit::HECTOPASCAL && unit == Unit::MM_HG) {
+			return(v / hpaPerMmHg);
+		}
 		if (pressureUnit == Unit::INCHES_HG && unit == Unit::HECTOPASCAL) {
 			return(v * hpaPerInHg);
+		}
+		if (pressureUnit == Unit::INCHES_HG && unit == Unit::MM_HG) {
+			return(v * mmPerInch);
+		}
+		if (pressureUnit == Unit::MM_HG && unit == Unit::HECTOPASCAL) {
+			return(v * hpaPerMmHg);
+		}
+		if (pressureUnit == Unit::MM_HG && unit == Unit::INCHES_HG) {
+			return(v / mmPerInch);
 		}
 		return(std::optional<float>());
 	}
@@ -2892,6 +2944,21 @@ namespace metaf {
 			result.p = pressure.value();
 			result.t = Type::FORECAST_LOWEST_QNH;
 			return(result);
+		}
+		if (reportPart == metaf::ReportPart::RMK) {
+			if (const auto pr = metaf::Pressure::fromSlpString(group); pr.has_value()) {
+				PressureGroup result;
+				result.p = pr.value();
+				result.t = Type::OBSERVED_QNH;
+				return(result);
+			}
+			if (const auto pr = metaf::Pressure::fromQfeString(group); pr.has_value()) {
+				PressureGroup result;
+				result.p = pr.value();
+				result.t = Type::OBSERVED_QFE;
+				return(result);
+			}
+			return(notRecognised);
 		}
 		return(notRecognised);
 	}

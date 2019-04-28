@@ -154,7 +154,6 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 
 		case metaf::FixedGroup::Type::RMK:
 		result << "The remarks are as follows" << lineBreak;
-		result << "Note: this version does not recognise or decode remarks";
 		break;
 
 		case metaf::FixedGroup::Type::MAINTENANCE_INDICATOR:
@@ -423,11 +422,15 @@ std::string GroupVisitorExplain::visitPressureGroup(const metaf::PressureGroup &
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch(group.type()) {
 		case metaf::PressureGroup::Type::OBSERVED_QNH:
-		result << "Observed atmospheric pressure (mean sea level pressure)";
+		result << "Observed mean atmospheric pressure (normalised to sea level)";
 		break;
 
 		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
 		result << "Forecast lowest sea level pressure";
+		break;
+
+		case metaf::PressureGroup::Type::OBSERVED_QFE:
+		result << "Observed actual atmospheric pressure";
 		break;
 
 		default:
@@ -802,7 +805,7 @@ std::string GroupVisitorExplain::explainPressure(const metaf::Pressure & pressur
 	if (!pressure.pressure().has_value()) return("not reported");
 	std::ostringstream result;
 	if (const auto phpa = pressure.toUnit(metaf::Pressure::Unit::HECTOPASCAL); phpa.has_value()) {
-		result << static_cast<int>(*phpa) << " hPa";
+		result << roundTo(*phpa, 1) << " hPa";
 	} else {
 		result << "[unable to convert pressure to hPa]";
 	}
@@ -812,6 +815,13 @@ std::string GroupVisitorExplain::explainPressure(const metaf::Pressure & pressur
 	} else {
 		result << "[unable to convert pressure to inHg]";
 	}
+	result << " / ";
+	if (const auto pmmhg = pressure.toUnit(metaf::Pressure::Unit::MM_HG); pmmhg.has_value()) {
+		result << roundTo(*pmmhg, 1) << " mmHg";
+	} else {
+		result << "[unable to convert pressure to mmHg]";
+	}
+
 	return(result.str());
 }
 

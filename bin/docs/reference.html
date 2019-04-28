@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Reference &#8212; Metaf 2.0.3 documentation</title>
+    <title>Reference &#8212; Metaf 2.1.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -887,6 +887,12 @@
 <dt id="_CPPv4N5metaf8Pressure4Unit9INCHES_HGE">
 <span id="_CPPv3N5metaf8Pressure4Unit9INCHES_HGE"></span><span id="_CPPv2N5metaf8Pressure4Unit9INCHES_HGE"></span><em class="property">enumerator </em><code class="descname">INCHES_HG</code><a class="headerlink" href="#_CPPv4N5metaf8Pressure4Unit9INCHES_HGE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Inches mercury.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf8Pressure4Unit5MM_HGE">
+<span id="_CPPv3N5metaf8Pressure4Unit5MM_HGE"></span><span id="_CPPv2N5metaf8Pressure4Unit5MM_HGE"></span><em class="property">enumerator </em><code class="descname">MM_HG</code><a class="headerlink" href="#_CPPv4N5metaf8Pressure4Unit5MM_HGE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Millimeters mercury.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2706,7 +2712,7 @@ observed.</p>
 <div class="section" id="pressuregroup">
 <span id="index-205"></span><h3>PressureGroup<a class="headerlink" href="#pressuregroup" title="Permalink to this headline">¶</a></h3>
 <p>The following syntax corresponds to this group in METAR/TAF reports.</p>
-<img alt="_images/pressuregroup.svg" src="_images/pressuregroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">Q1020</span></code>, <code class="docutils literal notranslate"><span class="pre">A2981</span></code>, <code class="docutils literal notranslate"><span class="pre">Q////</span></code> and <code class="docutils literal notranslate"><span class="pre">A////</span></code>, <code class="docutils literal notranslate"><span class="pre">QNH2981INS</span></code>.</p>
+<img alt="_images/pressuregroup.svg" src="_images/pressuregroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">Q1020</span></code>, <code class="docutils literal notranslate"><span class="pre">A2981</span></code>, <code class="docutils literal notranslate"><span class="pre">Q////</span></code> and <code class="docutils literal notranslate"><span class="pre">A////</span></code>, <code class="docutils literal notranslate"><span class="pre">QNH2981INS</span></code>, <code class="docutils literal notranslate"><span class="pre">SLP960</span></code>, <code class="docutils literal notranslate"><span class="pre">QFE761/1015</span></code>, and <code class="docutils literal notranslate"><span class="pre">QFE741</span></code>.</p>
 <dl class="class">
 <dt id="_CPPv4N5metaf13PressureGroupE">
 <span id="_CPPv3N5metaf13PressureGroupE"></span><span id="_CPPv2N5metaf13PressureGroupE"></span><span id="metaf::PressureGroup"></span><em class="property">class </em><code class="descname">PressureGroup</code><a class="headerlink" href="#_CPPv4N5metaf13PressureGroupE" title="Permalink to this definition">¶</a><br /></dt>
@@ -2717,13 +2723,19 @@ observed.</p>
 <dd><span class="target" id="index-206"></span><dl class="enumerator">
 <dt id="_CPPv4N5metaf13PressureGroup4Type12OBSERVED_QNHE">
 <span id="_CPPv3N5metaf13PressureGroup4Type12OBSERVED_QNHE"></span><span id="_CPPv2N5metaf13PressureGroup4Type12OBSERVED_QNHE"></span><em class="property">enumerator </em><code class="descname">OBSERVED_QNH</code><a class="headerlink" href="#_CPPv4N5metaf13PressureGroup4Type12OBSERVED_QNHE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. <code class="docutils literal notranslate"><span class="pre">Q1020</span></code> or <code class="docutils literal notranslate"><span class="pre">A2981</span></code>).</p>
+<dd><p>Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. <code class="docutils literal notranslate"><span class="pre">Q1020</span></code>, <code class="docutils literal notranslate"><span class="pre">A2981</span></code>, or remark <code class="docutils literal notranslate"><span class="pre">SLP960</span></code>).</p>
 </dd></dl>
 
 <span class="target" id="index-207"></span><dl class="enumerator">
 <dt id="_CPPv4N5metaf13PressureGroup4Type19FORECAST_LOWEST_QNHE">
 <span id="_CPPv3N5metaf13PressureGroup4Type19FORECAST_LOWEST_QNHE"></span><span id="_CPPv2N5metaf13PressureGroup4Type19FORECAST_LOWEST_QNHE"></span><em class="property">enumerator </em><code class="descname">FORECAST_LOWEST_QNH</code><a class="headerlink" href="#_CPPv4N5metaf13PressureGroup4Type19FORECAST_LOWEST_QNHE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Indicates that group contains a forecast lowest sea level pressure, (e.g. <code class="docutils literal notranslate"><span class="pre">QNH2981INS</span></code>). This group is reported by military aerodromes of NATO countries.</p>
+<dd><p>Indicates that group contains a forecast lowest sea level pressure, (e.g. <code class="docutils literal notranslate"><span class="pre">QNH2981INS</span></code>). This group may be reported by military aerodromes of NATO countries.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf13PressureGroup4Type12OBSERVED_QFEE">
+<span id="_CPPv3N5metaf13PressureGroup4Type12OBSERVED_QFEE"></span><span id="_CPPv2N5metaf13PressureGroup4Type12OBSERVED_QFEE"></span><em class="property">enumerator </em><code class="descname">OBSERVED_QFE</code><a class="headerlink" href="#_CPPv4N5metaf13PressureGroup4Type12OBSERVED_QFEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates that group contains an observed actual atmospheric pressure (e.g. remark <code class="docutils literal notranslate"><span class="pre">QFE761/1015</span></code> or <code class="docutils literal notranslate"><span class="pre">QFE741</span></code>). This group is used by some countries which were part of Soviet Union.</p>
 </dd></dl>
 
 </dd></dl>
@@ -3809,7 +3821,7 @@ observed.</p>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.1.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -90,3 +90,80 @@ TEST(PressureGroup, parseForecastWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("QNH02979INS", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("QNH////INS", metaf::ReportPart::TAF).has_value());
 }
+
+TEST(PressureGroup, parseSlpRemark) {
+	const auto pg = metaf::PressureGroup::parse("SLP982", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_NEAR(pg->atmosphericPressure().pressure().value(), 998.2, margin);
+	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+}
+
+TEST(PressureGroup, parseSlpRemarkWrongReportPart) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP982", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP982", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP982", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP982", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(PressureGroup, parseSlpRemarkWrongFormat) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("SL0015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("XLP215", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLPA15", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP01A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP///", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP215A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP2", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP21", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLP0215", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(PressureGroup, parseQfeRemark) {
+	const auto pg1 = metaf::PressureGroup::parse("QFE750", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_NEAR(pg1->atmosphericPressure().pressure().value(), 750.0, margin);
+	EXPECT_EQ(pg1->atmosphericPressure().unit(), metaf::Pressure::Unit::MM_HG);
+	EXPECT_EQ(pg1->type(), metaf::PressureGroup::Type::OBSERVED_QFE);
+
+	const auto pg2 = metaf::PressureGroup::parse("QFE761/1015", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_NEAR(pg2->atmosphericPressure().pressure().value(), 761.0, margin);
+	EXPECT_EQ(pg2->atmosphericPressure().unit(), metaf::Pressure::Unit::MM_HG);
+	EXPECT_EQ(pg2->type(), metaf::PressureGroup::Type::OBSERVED_QFE);
+}
+
+TEST(PressureGroup, parseQfeRemarkWrongReportPart) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE750", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE750", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE750", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE750", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(PressureGroup, parseQfeRemarkWrongFormat) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QF0755", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("XFE755", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFEA55", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE75A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE///", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE75A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE7", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE75", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755/", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755/999", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755/01000", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755.1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE0755:1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE////1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE755/////", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE////////", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE76A/1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFEA61/1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761/A015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761/101A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761Q/1015", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761/1015Q", metaf::ReportPart::RMK).has_value());
+}

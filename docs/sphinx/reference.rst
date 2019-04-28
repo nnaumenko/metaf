@@ -567,6 +567,10 @@ Pressure
 
 			Inches mercury.
 
+		.. cpp:enumerator:: MM_HG
+
+			Millimeters mercury.
+
 	**Acquiring the data**
 
 		.. cpp:function:: std::optional<float> pressure() const
@@ -2115,7 +2119,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuregroup.svg
 
-Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``, ``QNH2981INS``.
+Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``, ``QNH2981INS``, ``SLP960``, ``QFE761/1015``, and ``QFE741``.
 
 .. cpp:class:: PressureGroup
 
@@ -2127,13 +2131,17 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////`
 
 		.. cpp:enumerator:: OBSERVED_QNH
 
-			Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. ``Q1020`` or ``A2981``).
+			Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. ``Q1020``, ``A2981``, or remark ``SLP960``).
 
 		.. index:: single: Atmospheric pressure; Lowest sea-level pressure forecast
 
 		.. cpp:enumerator:: FORECAST_LOWEST_QNH
 
-			Indicates that group contains a forecast lowest sea level pressure, (e.g. ``QNH2981INS``). This group is reported by military aerodromes of NATO countries.
+			Indicates that group contains a forecast lowest sea level pressure, (e.g. ``QNH2981INS``). This group may be reported by military aerodromes of NATO countries.
+
+		.. cpp:enumerator:: OBSERVED_QFE
+
+			Indicates that group contains an observed actual atmospheric pressure (e.g. remark ``QFE761/1015`` or ``QFE741``). This group is used by some countries which were part of Soviet Union.
 
 	**Acquiring group data**
 

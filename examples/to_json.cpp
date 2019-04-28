@@ -596,6 +596,10 @@ void GroupVisitorJson::visitPressureGroup(const metaf::PressureGroup & group) {
 		pressureStr = "forecastLowestSeaLevelPressure";
 		break;
 
+		case metaf::PressureGroup::Type::OBSERVED_QFE:
+		pressureStr = "observedActualPressure";
+		break;
+
 		default:
 		break;
 	}
@@ -966,6 +970,10 @@ void GroupVisitorJson::pressureToJson(const metaf::Pressure & pressure,
 			break;
 
 			case metaf::Pressure::Unit::INCHES_HG:
+			json.valueStr(unitName, "inHg");
+			break;
+
+			case metaf::Pressure::Unit::MM_HG:
 			json.valueStr(unitName, "inHg");
 			break;
 

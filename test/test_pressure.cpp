@@ -9,6 +9,7 @@
 #include "metaf.h"
 
 static const auto margin = 0.01 / 2;
+static const auto slpMargin = 0.1 / 2;
 
 
 TEST(Pressure, fromStringHectopascal) {
@@ -27,7 +28,6 @@ TEST(Pressure, fromStringHectopascalNotReported) {
 }
 
 TEST(Pressure, fromStringInHg) {
-	static const auto margin = 0.01 / 2;
 	const auto p = metaf::Pressure::fromString("A2934");
 	ASSERT_TRUE(p.has_value());
 	EXPECT_EQ(p->unit(), metaf::Pressure::Unit::INCHES_HG);
@@ -58,7 +58,6 @@ TEST(Pressure, fromStringWrongFormat) {
 }
 
 TEST(Pressure, fromForecastString) {
-	static const auto margin = 0.01 / 2;
 	const auto p = metaf::Pressure::fromForecastString("QNH2979INS");
 	ASSERT_TRUE(p.has_value());
 	EXPECT_EQ(p->unit(), metaf::Pressure::Unit::INCHES_HG);
@@ -75,6 +74,94 @@ TEST(Pressure, fromForecastStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromForecastString("QNH////INS"));
 }
 
+TEST(Pressure, fromSlpString) {
+	const auto p1 = metaf::Pressure::fromSlpString("SLP982");
+	ASSERT_TRUE(p1.has_value());
+	EXPECT_EQ(p1->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p1->pressure().has_value());
+	EXPECT_NEAR(p1->pressure().value(), 998.2, slpMargin);
+
+	const auto p2 = metaf::Pressure::fromSlpString("SLP015");
+	ASSERT_TRUE(p2.has_value());
+	EXPECT_EQ(p2->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p2->pressure().has_value());
+	EXPECT_NEAR(p2->pressure().value(), 1001.5, slpMargin);
+
+	const auto p3 = metaf::Pressure::fromSlpString("SLP221");
+	ASSERT_TRUE(p3.has_value());
+	EXPECT_EQ(p3->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p3->pressure().has_value());
+	EXPECT_NEAR(p3->pressure().value(), 1022.1, slpMargin);
+
+	const auto p4 = metaf::Pressure::fromSlpString("SLP499");
+	ASSERT_TRUE(p4.has_value());
+	EXPECT_EQ(p4->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p4->pressure().has_value());
+	EXPECT_NEAR(p4->pressure().value(), 1049.9, slpMargin);
+
+	const auto p5 = metaf::Pressure::fromSlpString("SLP500");
+	ASSERT_TRUE(p5.has_value());
+	EXPECT_EQ(p5->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p5->pressure().has_value());
+	EXPECT_NEAR(p5->pressure().value(), 950.0, slpMargin);
+}
+
+TEST(Pressure, fromSlpStringWrongFormat) {
+	EXPECT_FALSE(metaf::Pressure::fromSlpString(""));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SL0015"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("XLP215"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLPA15"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP01A"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP///"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP215A"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP2"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP21"));
+	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP0215"));
+}
+
+TEST(Pressure, fromQfeString) {
+	const auto p1 = metaf::Pressure::fromQfeString("QFE750");
+	ASSERT_TRUE(p1.has_value());
+	EXPECT_EQ(p1->unit(), metaf::Pressure::Unit::MM_HG);
+	ASSERT_TRUE(p1->pressure().has_value());
+	EXPECT_NEAR(p1->pressure().value(), 750.0, margin);
+
+	const auto p2 = metaf::Pressure::fromQfeString("QFE761/1015");
+	ASSERT_TRUE(p2.has_value());
+	EXPECT_EQ(p2->unit(), metaf::Pressure::Unit::MM_HG);
+	ASSERT_TRUE(p2->pressure().has_value());
+	EXPECT_NEAR(p2->pressure().value(), 761.0, margin);
+}
+
+TEST(Pressure, fromQfeStringWrongFormat) {
+	EXPECT_FALSE(metaf::Pressure::fromQfeString(""));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QF0755"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("XFE755"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFEA55"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE75A"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE///"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE75A"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE7"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE75"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755/"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755/999"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755/01000"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755.1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE0755:1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE////1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE755/////"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE////////"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE76A/1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFEA61/1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761/A015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761/101A"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761Q/1015"));
+	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761/1015Q"));
+}
+
 TEST(Pressure, toUnitSameUnit) {
 	const auto p1 = metaf::Pressure::fromString("A2934");
 	ASSERT_TRUE(p1.has_value());
@@ -89,6 +176,13 @@ TEST(Pressure, toUnitSameUnit) {
 	EXPECT_EQ(p2->unit(), metaf::Pressure::Unit::HECTOPASCAL);
 	EXPECT_TRUE(p2->toUnit(p2->unit()).has_value());
 	EXPECT_EQ(p2->pressure().value(), p2->toUnit(p2->unit()).value());
+
+	const auto p3 = metaf::Pressure::fromQfeString("QFE750");
+	ASSERT_TRUE(p3.has_value());
+	ASSERT_TRUE(p3->pressure().has_value());
+	EXPECT_EQ(p3->unit(), metaf::Pressure::Unit::MM_HG);
+	EXPECT_TRUE(p3->toUnit(p3->unit()).has_value());
+	EXPECT_EQ(p3->pressure().value(), p3->toUnit(p3->unit()).value());
 }
 
 TEST(Pressure, toUnitNotReported) {
@@ -112,9 +206,37 @@ TEST(Pressure, toUnitHectopascalToInHg) {
 	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::INCHES_HG).value(), 29.53, margin);
 }
 
+TEST(Pressure, toUnitHectopascalToMmHg) {
+	const auto p = metaf::Pressure::fromString("Q1000");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::MM_HG).has_value());
+	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::MM_HG).value(), 750.075, margin);
+}
+
 TEST(Pressure, toUnitInHgToHectopascal) {
 	const auto p = metaf::Pressure::fromString("A2953");
 	ASSERT_TRUE(p.has_value());
 	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::HECTOPASCAL).has_value());
 	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::HECTOPASCAL).value(), 1000, margin);
+}
+
+TEST(Pressure, toUnitInHgToMmHg) {
+	const auto p = metaf::Pressure::fromString("A2953");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::MM_HG).has_value());
+	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::MM_HG).value(), 750.06, margin);
+}
+
+TEST(Pressure, toUnitMmHgToHectopascal) {
+	const auto p = metaf::Pressure::fromQfeString("QFE765");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::HECTOPASCAL).has_value());
+	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::HECTOPASCAL).value(), 1019.90, margin);
+}
+
+TEST(Pressure, toUnitMmHgToInHg) {
+	const auto p = metaf::Pressure::fromQfeString("QFE765");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::INCHES_HG).has_value());
+	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::INCHES_HG).value(), 30.12, margin);
 }

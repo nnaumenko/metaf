@@ -1162,7 +1162,7 @@ TEST(ParserCombined, combinedGroups) {
 	EXPECT_TRUE(isPlainText(result.groups.at(12), "SFC"));
 	EXPECT_TRUE(isPlainText(result.groups.at(13), "VIS"));
 	EXPECT_TRUE(isPlainText(result.groups.at(14), "4"));
-	EXPECT_TRUE(isPlainText(result.groups.at(15), "SLP198"));
+	EXPECT_TRUE(isPressure(result.groups.at(15)));
 	EXPECT_TRUE(isPlainText(result.groups.at(16), "T02330206"));
 }
 
@@ -1473,7 +1473,7 @@ TEST(ParserExtendedParse, combinedGroups) {
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(14)), 
 		metaf::ReportPart::RMK);
 
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(15)), "SLP198"));
+	EXPECT_TRUE(isPressure(std::get<metaf::Group>(result.extgroups.at(15))));
 	EXPECT_EQ(std::get<std::string>(result.extgroups.at(15)), "SLP198");
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(15)), 
 		metaf::ReportPart::RMK);
