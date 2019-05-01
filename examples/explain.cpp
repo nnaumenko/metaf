@@ -651,16 +651,18 @@ std::string GroupVisitorExplain::explainMetafTime(const metaf::MetafTime & metaf
 std::string GroupVisitorExplain::explainTemperature(const metaf::Temperature & temperature) {
 	if (!temperature.temperature().has_value()) return("not reported");
 	std::ostringstream result;
-	if (!temperature.temperature().value() && temperature.isFreezing()) result << "slightly less than ";
-	if (!temperature.temperature().value() && !temperature.isFreezing()) result << "slightly more than ";
+	if (!temperature.temperature().value() && !temperature.isPrecise()) {
+		if (temperature.isFreezing()) result << "slightly less than ";
+		if (!temperature.isFreezing()) result << "slightly more than ";
+	}
 	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::C); t.has_value()) {
-		result << static_cast<int>(*t) << " &deg;C";
+		result << roundTo(*t, 1) << " &deg;C";
 	} else {
 		result << "[unable to convert temperature to &deg;C]";
 	}
 	result << " / ";
 	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::F); t.has_value()) {
-		result << static_cast<int>(*t) << " &deg;F";
+		result << roundTo(*t, 1) << " &deg;F";
 	} else {
 		result << "[unable to convert temperature to &deg;F]";
 	}

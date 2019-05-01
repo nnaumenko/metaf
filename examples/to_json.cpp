@@ -832,7 +832,11 @@ void GroupVisitorJson::temperatureToJson(const metaf::Temperature & temperature,
 	std::string_view freezingName)
 {
 	if (const auto t = temperature.temperature(); t.has_value()) {
-		json.valueInt(valueName, *t);
+		if (temperature.isPrecise()) {
+			json.valueFloat(valueName, *t);
+		} else {
+			json.valueInt(valueName, *t);
+		}
 		switch (temperature.unit()) {
 			case metaf::Temperature::Unit::C: json.valueStr(unitName, "C"); break;
 			case metaf::Temperature::Unit::F: json.valueStr(unitName, "F"); break;

@@ -148,7 +148,9 @@ Temperature
 
 	Stores a temperature value. Temperature value may be not reported (i.e. no value).
 
-	If the temperature value is rounded to zero, an additional information can be acquired whether the value represents a freezing or non-freezing temperature (i.e. slightly above or slightly below zero).
+	Depending on the reported type, a temperature value may be precise (i.e. in tenth of degrees Celsius) or non-precise (i.e. rounded to integer value in degrees Celsius).
+
+	If the non-precise temperature value is rounded to zero, an additional information can be acquired whether the value represents a freezing or non-freezing temperature (i.e. slightly above or slightly below zero).
 
 	.. index:: single: Temperature; Measurement units
 
@@ -169,7 +171,7 @@ Temperature
 
 	**Acquiring the data**
 
-		.. cpp:function:: std::optional<int> temperature() const
+		.. cpp:function:: std::optional<float> temperature() const
 
 			:returns: Stored temperature value or empty ``std::optional`` if temperature value is not reported.
 
@@ -198,6 +200,11 @@ Temperature
 				- if the original temperature value was in range (0.0 .. -0.5) which is encoded in METAR/TAF report as ``M00``, then ``isFreezing()`` returns ``true``;
 
 				- if the original temperature value was in range (0.5 .. 0.0] which is encoded in METAR/TAF report as ``00``, then ``isFreezing()`` returns ``false``;
+
+
+		.. cpp:function:: bool isPrecise() const
+
+			:returns: ``true`` if the value is in tenth of degree Celsius, ``false`` if the value is rounded to integer.
 
 
 .. index:: single: Speed
@@ -2023,7 +2030,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: temperaturegroup.svg
 
-Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02``, ``M00/M00``, ``00/M00``, and ``/////``.
+Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02``, ``M00/M00``, ``00/M00``, ``/////``, ``T02330206``, ``T10171028``, and ``T0261``.
 
 .. cpp:class:: TemperatureGroup
 
@@ -2119,7 +2126,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuregroup.svg
 
-Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////`` and ``A////``, ``QNH2981INS``, ``SLP960``, ``QFE761/1015``, and ``QFE741``.
+Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, ``QNH2981INS``, ``SLP960``, ``QFE761/1015``, and ``QFE741``.
 
 .. cpp:class:: PressureGroup
 

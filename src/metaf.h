@@ -25,7 +25,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 1;
+		static const int minor = 2;
 		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -153,17 +153,23 @@ namespace metaf {
 			C,
 			F,
 		};
-		std::optional<int> temperature() const { return(tempValue); }
+		std::optional<float> temperature() const {
+			if (!tempValue.has_value()) return(tempValue); 
+			return(precise ? (tempValue.value() * preciseValuePrecision) : tempValue.value());
+		}
 		Unit unit() const { return(tempUnit); }
 		std::optional<float> inline toUnit(Unit unit) const;
 		bool isFreezing() const { return(freezing); }
-
+		bool isPrecise() const { return(precise); }
 		Temperature () = default;
 		static inline std::optional<Temperature> fromString(const std::string & s);
+		static inline std::optional<Temperature> fromRemarkString(const std::string & s);
 	private:
 		std::optional<int> tempValue;
 		bool freezing = false;
 		static const Unit tempUnit = Unit::C;
+		bool precise = false; //True = tenth of degrees C, false = degrees C
+		static inline const float preciseValuePrecision = 0.1;
 	};
 
 	class Speed {
@@ -1539,6 +1545,20 @@ namespace metaf {
 		return(error);
 	}
 
+	std::optional<Temperature> Temperature::fromRemarkString(const std::string & s) {
+		//static const std::regex ("([01])(\\d\\d\\d)");
+		std::optional<Temperature> error;
+		if (s.length() != 4) return(error);
+		if (s[0] != '0' && s[0] != '1') return(error);
+		const auto t = strToUint(s, 1, 3);
+		if (!t.has_value()) return(error);
+		Temperature temperature;
+		temperature.tempValue = (s[0] != '1') ? t.value() : - t.value();
+		temperature.precise = true;
+		temperature.freezing = (s[0] == '1');
+		return(temperature);
+	}
+
 	std::optional<float> Temperature::toUnit(Unit unit) const {
 		std::optional<float> error;
 		auto v = temperature();
@@ -2873,21 +2893,36 @@ namespace metaf {
 		ReportPart reportPart)
 	{
 		static const std::optional<TemperatureGroup> notRecognised;
-		if (reportPart != ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx("(M?\\d\\d|//)/(M?\\d\\d|//)?");
 		static const auto matchTemperature = 1, matchDewPoint = 2;
+		static const std::regex rmkRgx("T([01]\\d\\d\\d)([01]\\d\\d\\d)?");
+		static const auto rmkMatchTemperature = 1, rmkMatchDewPoint = 2;
 		std::smatch match;
-		if (!regex_match(group, match, rgx)) return(notRecognised);
-		const auto t = Temperature::fromString(match.str(matchTemperature));
-		if (!t.has_value()) return(notRecognised);
-		TemperatureGroup result;
-		result.t = t.value();
-		if (match.length(matchDewPoint)) {
-			const auto dp = Temperature::fromString(match.str(matchDewPoint));
-			if (!dp.has_value()) return(notRecognised);
-			result.dp = dp.value();
+		if (reportPart == ReportPart::METAR && regex_match(group, match, rgx)) {
+			const auto t = Temperature::fromString(match.str(matchTemperature));
+			if (!t.has_value()) return(notRecognised);
+			TemperatureGroup result;
+			result.t = t.value();
+			if (match.length(matchDewPoint)) {
+				const auto dp = Temperature::fromString(match.str(matchDewPoint));
+				if (!dp.has_value()) return(notRecognised);
+				result.dp = dp.value();
+			}
+			return(result);
+		} 
+		if (reportPart == ReportPart::RMK && regex_match(group, match, rmkRgx)) {
+			const auto t = Temperature::fromRemarkString(match.str(rmkMatchTemperature));
+			if (!t.has_value()) return(notRecognised);
+			TemperatureGroup result;
+			result.t = t.value();
+			if (match.length(matchDewPoint)) {
+				const auto dp = Temperature::fromRemarkString(match.str(rmkMatchDewPoint));
+				if (!dp.has_value()) return(notRecognised);
+				result.dp = dp.value();
+			}
+			return(result);
 		}
-		return(result);
+		return(notRecognised);
 	}
 
 	std::optional<Group> TemperatureGroup::combine(const Group & nextGroup) const { 
