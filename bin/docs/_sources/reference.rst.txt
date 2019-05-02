@@ -2034,7 +2034,7 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 
 .. cpp:class:: TemperatureGroup
 
-	Stores information about current ambient air temperature and dew point.
+	Stores information about current ambient air temperature and dew point. Group which reports values rounded to integer of degrees Celsius (e.g. ``10/M00``) is included in METAR report body. Group which reports values in tength of degrees Celsius (e.g. ``T02330206``) is used in North America and is included in remarks.
 
 	.. index:: single: Temperature; Ambient air temperature
 
@@ -2420,7 +2420,7 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		.. cpp:function:: SurfaceFriction surfaceFriction() const
 
-		.	:returns: Surface friction or braking action or not reported value. Not reported if the status is :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Surface friction or braking action or not reported value. Not reported if the status is :cpp:enumerator:`Status::SNOCLO`.
 
 	**Validating**
 
@@ -2553,7 +2553,7 @@ Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2`
 
 	.. index:: single: Colour code
 
-	.. cpp:enum-class: Code
+	.. cpp:enum-class:: Code
 
 		.. index:: single: Colour code; Blue
 
@@ -2597,11 +2597,70 @@ Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2`
 
 			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
 
+	**Acquiring group data**
+
+		.. cpp:function:: Code code() const
+
+			:returns: Colour code.
+
+		.. cpp:function:: bool isCodeBlack() const
+
+			:returns: ``true`` if code BLACK (which means that aerodrome is closed e.g. due to snow accumulation) was specified additionally to main colour code, ``false`` otherwise.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: Always returns ``true``.
+
+
+.. index:: single: Group; Minimum and maximum temperature
+
+MinMaxTemperatureGroup
+^^^^^^^^^^^^^^^^^^^^^^
+
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: minmaxtemperaturegroup.svg
+
+Examples of the raw report data are ``401120084``, ``20012``, and ``11021``. 
+
+.. cpp:class:: MinMaxTemperatureGroup
+
+	Stores information about 24-hourly or 6-hourly minimum and/or maximum temperature. This group is only used in North America and included in remarks.
+
+	.. cpp:enum-class:: ObservationPeriod
+
+		Indicates the period of observation for which the minimum and/or maximum value is reported.
+
+		.. cpp:enumerator:: HOURS6
+
+			Indicates that group stores information about 6-hourly minimum/maximum temperatuer.
+
+		.. cpp:enumerator:: HOURS24
+
+			Indicates that group stores information about 24-hourly minimum/maximum temperatuer.
+
+	**Acquiring group data**
+
+		.. cpp:function:: ObservationPeriod observationPeriod() const
+
+			:returns: Period of observation for which the minimum and/or maximum value is reported.
+
+		.. cpp:function:: Temperature minimum() const
+
+			:returns: Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if minimum temperature was not specified in this group.
+
+		.. cpp:function:: Temperature maximum() const
+
+			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if maximum temperature was not specified in this group.
+
 	**Validating**
 
 	.. cpp:function:: bool isValid() const
 
 		:returns: Always returns ``true``.
+
 
 
 .. index:: single: Report type

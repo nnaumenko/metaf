@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Reference &#8212; Metaf 2.2.0 documentation</title>
+    <title>Reference &#8212; Metaf 2.3.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.3.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -2601,7 +2601,7 @@ observed.</p>
 <dl class="class">
 <dt id="_CPPv4N5metaf16TemperatureGroupE">
 <span id="_CPPv3N5metaf16TemperatureGroupE"></span><span id="_CPPv2N5metaf16TemperatureGroupE"></span><span id="metaf::TemperatureGroup"></span><em class="property">class </em><code class="descname">TemperatureGroup</code><a class="headerlink" href="#_CPPv4N5metaf16TemperatureGroupE" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Stores information about current ambient air temperature and dew point.</p>
+<dd><p>Stores information about current ambient air temperature and dew point. Group which reports values rounded to integer of degrees Celsius (e.g. <code class="docutils literal notranslate"><span class="pre">10/M00</span></code>) is included in METAR report body. Group which reports values in tength of degrees Celsius (e.g. <code class="docutils literal notranslate"><span class="pre">T02330206</span></code>) is used in North America and is included in remarks.</p>
 <span class="target" id="index-199"></span><p id="index-200"><strong>Acquiring group data</strong></p>
 <blockquote>
 <div><dl class="function">
@@ -3147,9 +3147,13 @@ observed.</p>
 <span class="target" id="index-221"></span><dl class="function">
 <dt id="_CPPv4NK5metaf16RunwayStateGroup15surfaceFrictionEv">
 <span id="_CPPv3NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="_CPPv2NK5metaf16RunwayStateGroup15surfaceFrictionEv"></span><span id="metaf::RunwayStateGroup::surfaceFrictionC"></span><a class="reference internal" href="#_CPPv4N5metaf15SurfaceFrictionE" title="metaf::SurfaceFriction">SurfaceFriction</a> <code class="descname">surfaceFriction</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16RunwayStateGroup15surfaceFrictionEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Surface friction or braking action or not reported value. Not reported if the status is <a class="reference internal" href="#_CPPv4N5metaf16RunwayStateGroup6Status6SNOCLOE" title="metaf::RunwayStateGroup::Status::SNOCLO"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::SNOCLO</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
 
-<p>.       :returns: Surface friction or braking action or not reported value. Not reported if the status is <a class="reference internal" href="#_CPPv4N5metaf16RunwayStateGroup6Status6SNOCLOE" title="metaf::RunwayStateGroup::Status::SNOCLO"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">Status::SNOCLO</span></code></a>.</p>
 </div></blockquote>
 <p><strong>Validating</strong></p>
 <dl class="function">
@@ -3313,10 +3317,155 @@ observed.</p>
 <dt id="_CPPv4N5metaf15ColourCodeGroupE">
 <span id="_CPPv3N5metaf15ColourCodeGroupE"></span><span id="_CPPv2N5metaf15ColourCodeGroupE"></span><span id="metaf::ColourCodeGroup"></span><em class="property">class </em><code class="descname">ColourCodeGroup</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroupE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Stores colour code information which allows quick assess of visibility and ceiling conditions. This group is used by military aerodromes of NATO countries.</p>
-<span class="target" id="index-231"></span><p><strong>Validating</strong></p>
+<span class="target" id="index-231"></span><dl class="enum-class">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4CodeE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4CodeE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4CodeE"></span><em class="property">enum class </em><code class="descname">Code</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4CodeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><span class="target" id="index-232"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code4BLUEE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code4BLUEE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code4BLUEE"></span><em class="property">enumerator </em><code class="descname">BLUE</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code4BLUEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;8000 m AND no cloud obscuring 3/8 or more below 2500 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-233"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code5WHITEE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code5WHITEE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code5WHITEE"></span><em class="property">enumerator </em><code class="descname">WHITE</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code5WHITEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;5000 m AND no cloud obscuring 3/8 or more below 1500 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-234"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code5GREENE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code5GREENE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code5GREENE"></span><em class="property">enumerator </em><code class="descname">GREEN</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code5GREENE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;3700 m AND no cloud obscuring 3/8 or more below 700 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-235"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code7YELLOW1E">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code7YELLOW1E"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code7YELLOW1E"></span><em class="property">enumerator </em><code class="descname">YELLOW1</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code7YELLOW1E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;2500 m AND no cloud obscuring 3/8 or more below 500 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-236"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code7YELLOW2E">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code7YELLOW2E"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code7YELLOW2E"></span><em class="property">enumerator </em><code class="descname">YELLOW2</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code7YELLOW2E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;1600 m AND no cloud obscuring 3/8 or more below 300 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-237"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code5AMBERE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code5AMBERE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code5AMBERE"></span><em class="property">enumerator </em><code class="descname">AMBER</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code5AMBERE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &gt;800 m AND no cloud obscuring 3/8 or more below 200 feet.</p>
+</dd></dl>
+
+<span class="target" id="index-238"></span><dl class="enumerator">
+<dt id="_CPPv4N5metaf15ColourCodeGroup4Code3REDE">
+<span id="_CPPv3N5metaf15ColourCodeGroup4Code3REDE"></span><span id="_CPPv2N5metaf15ColourCodeGroup4Code3REDE"></span><em class="property">enumerator </em><code class="descname">RED</code><a class="headerlink" href="#_CPPv4N5metaf15ColourCodeGroup4Code3REDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Visibility &lt;800 m OR clouds obscuring 3/8 or more below 200 feet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring group data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf15ColourCodeGroup4codeEv">
+<span id="_CPPv3NK5metaf15ColourCodeGroup4codeEv"></span><span id="_CPPv2NK5metaf15ColourCodeGroup4codeEv"></span><span id="metaf::ColourCodeGroup::codeC"></span><a class="reference internal" href="#_CPPv4N5metaf15ColourCodeGroup4CodeE" title="metaf::ColourCodeGroup::Code">Code</a> <code class="descname">code</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15ColourCodeGroup4codeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Colour code.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
+<dt id="_CPPv4NK5metaf15ColourCodeGroup11isCodeBlackEv">
+<span id="_CPPv3NK5metaf15ColourCodeGroup11isCodeBlackEv"></span><span id="_CPPv2NK5metaf15ColourCodeGroup11isCodeBlackEv"></span><span id="metaf::ColourCodeGroup::isCodeBlackC"></span>bool <code class="descname">isCodeBlack</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15ColourCodeGroup11isCodeBlackEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if code BLACK (which means that aerodrome is closed e.g. due to snow accumulation) was specified additionally to main colour code, <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<blockquote>
+<div><dl class="function">
 <dt id="_CPPv4NK5metaf15ColourCodeGroup7isValidEv">
 <span id="_CPPv3NK5metaf15ColourCodeGroup7isValidEv"></span><span id="_CPPv2NK5metaf15ColourCodeGroup7isValidEv"></span><span id="metaf::ColourCodeGroup::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf15ColourCodeGroup7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Always returns <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="minmaxtemperaturegroup">
+<span id="index-239"></span><h3>MinMaxTemperatureGroup<a class="headerlink" href="#minmaxtemperaturegroup" title="Permalink to this headline">¶</a></h3>
+<p>The following syntax corresponds to this group in METAR/TAF reports.</p>
+<img alt="_images/minmaxtemperaturegroup.svg" src="_images/minmaxtemperaturegroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">401120084</span></code>, <code class="docutils literal notranslate"><span class="pre">20012</span></code>, and <code class="docutils literal notranslate"><span class="pre">11021</span></code>.</p>
+<dl class="class">
+<dt id="_CPPv4N5metaf22MinMaxTemperatureGroupE">
+<span id="_CPPv3N5metaf22MinMaxTemperatureGroupE"></span><span id="_CPPv2N5metaf22MinMaxTemperatureGroupE"></span><span id="metaf::MinMaxTemperatureGroup"></span><em class="property">class </em><code class="descname">MinMaxTemperatureGroup</code><a class="headerlink" href="#_CPPv4N5metaf22MinMaxTemperatureGroupE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores information about 24-hourly or 6-hourly minimum and/or maximum temperature. This group is only used in North America and included in remarks.</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriodE">
+<span id="_CPPv3N5metaf22MinMaxTemperatureGroup17ObservationPeriodE"></span><span id="_CPPv2N5metaf22MinMaxTemperatureGroup17ObservationPeriodE"></span><em class="property">enum class </em><code class="descname">ObservationPeriod</code><a class="headerlink" href="#_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriodE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates the period of observation for which the minimum and/or maximum value is reported.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriod6HOURS6E">
+<span id="_CPPv3N5metaf22MinMaxTemperatureGroup17ObservationPeriod6HOURS6E"></span><span id="_CPPv2N5metaf22MinMaxTemperatureGroup17ObservationPeriod6HOURS6E"></span><em class="property">enumerator </em><code class="descname">HOURS6</code><a class="headerlink" href="#_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriod6HOURS6E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates that group stores information about 6-hourly minimum/maximum temperatuer.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriod7HOURS24E">
+<span id="_CPPv3N5metaf22MinMaxTemperatureGroup17ObservationPeriod7HOURS24E"></span><span id="_CPPv2N5metaf22MinMaxTemperatureGroup17ObservationPeriod7HOURS24E"></span><em class="property">enumerator </em><code class="descname">HOURS24</code><a class="headerlink" href="#_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriod7HOURS24E" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates that group stores information about 24-hourly minimum/maximum temperatuer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring group data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf22MinMaxTemperatureGroup17observationPeriodEv">
+<span id="_CPPv3NK5metaf22MinMaxTemperatureGroup17observationPeriodEv"></span><span id="_CPPv2NK5metaf22MinMaxTemperatureGroup17observationPeriodEv"></span><span id="metaf::MinMaxTemperatureGroup::observationPeriodC"></span><a class="reference internal" href="#_CPPv4N5metaf22MinMaxTemperatureGroup17ObservationPeriodE" title="metaf::MinMaxTemperatureGroup::ObservationPeriod">ObservationPeriod</a> <code class="descname">observationPeriod</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22MinMaxTemperatureGroup17observationPeriodEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Period of observation for which the minimum and/or maximum value is reported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf22MinMaxTemperatureGroup7minimumEv">
+<span id="_CPPv3NK5metaf22MinMaxTemperatureGroup7minimumEv"></span><span id="_CPPv2NK5metaf22MinMaxTemperatureGroup7minimumEv"></span><span id="metaf::MinMaxTemperatureGroup::minimumC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">minimum</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22MinMaxTemperatureGroup7minimumEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if minimum temperature was not specified in this group.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf22MinMaxTemperatureGroup7maximumEv">
+<span id="_CPPv3NK5metaf22MinMaxTemperatureGroup7maximumEv"></span><span id="_CPPv2NK5metaf22MinMaxTemperatureGroup7maximumEv"></span><span id="metaf::MinMaxTemperatureGroup::maximumC"></span><a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">maximum</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22MinMaxTemperatureGroup7maximumEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if maximum temperature was not specified in this group.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<dl class="function">
+<dt id="_CPPv4NK5metaf22MinMaxTemperatureGroup7isValidEv">
+<span id="_CPPv3NK5metaf22MinMaxTemperatureGroup7isValidEv"></span><span id="_CPPv2NK5metaf22MinMaxTemperatureGroup7isValidEv"></span><span id="metaf::MinMaxTemperatureGroup::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf22MinMaxTemperatureGroup7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Always returns <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
@@ -3329,7 +3478,7 @@ observed.</p>
 </div>
 </div>
 <div class="section" id="reporttype">
-<span id="index-232"></span><h2>ReportType<a class="headerlink" href="#reporttype" title="Permalink to this headline">¶</a></h2>
+<span id="index-240"></span><h2>ReportType<a class="headerlink" href="#reporttype" title="Permalink to this headline">¶</a></h2>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf10ReportTypeE">
 <span id="_CPPv3N5metaf10ReportTypeE"></span><span id="_CPPv2N5metaf10ReportTypeE"></span><em class="property">enum class </em><code class="descname">ReportType</code><a class="headerlink" href="#_CPPv4N5metaf10ReportTypeE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3356,7 +3505,7 @@ observed.</p>
 
 </div>
 <div class="section" id="reportpart">
-<span id="index-233"></span><h2>ReportPart<a class="headerlink" href="#reportpart" title="Permalink to this headline">¶</a></h2>
+<span id="index-241"></span><h2>ReportPart<a class="headerlink" href="#reportpart" title="Permalink to this headline">¶</a></h2>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf10ReportPartE">
 <span id="_CPPv3N5metaf10ReportPartE"></span><span id="_CPPv2N5metaf10ReportPartE"></span><em class="property">enum class </em><code class="descname">ReportPart</code><a class="headerlink" href="#_CPPv4N5metaf10ReportPartE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3397,7 +3546,7 @@ observed.</p>
 
 </div>
 <div class="section" id="groupparser">
-<span id="index-234"></span><h2>GroupParser<a class="headerlink" href="#groupparser" title="Permalink to this headline">¶</a></h2>
+<span id="index-242"></span><h2>GroupParser<a class="headerlink" href="#groupparser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="_CPPv4N5metaf11GroupParserE">
 <span id="_CPPv3N5metaf11GroupParserE"></span><span id="_CPPv2N5metaf11GroupParserE"></span><span id="metaf::GroupParser"></span><em class="property">class </em><code class="descname">GroupParser</code><a class="headerlink" href="#_CPPv4N5metaf11GroupParserE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3422,12 +3571,12 @@ observed.</p>
 
 </div>
 <div class="section" id="parser">
-<span id="index-235"></span><h2>Parser<a class="headerlink" href="#parser" title="Permalink to this headline">¶</a></h2>
+<span id="index-243"></span><h2>Parser<a class="headerlink" href="#parser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="_CPPv4N5metaf6ParserE">
 <span id="_CPPv3N5metaf6ParserE"></span><span id="_CPPv2N5metaf6ParserE"></span><span id="metaf::Parser"></span><em class="property">class </em><code class="descname">Parser</code><a class="headerlink" href="#_CPPv4N5metaf6ParserE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Parser class is used to parse strings which contain raw METAR or TAF reports, check for syntax errors, autodetect report type and produce a vector of <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a>.</p>
-<p id="index-236">The complete list of the errors reported by the parser is as follows.</p>
+<p id="index-244">The complete list of the errors reported by the parser is as follows.</p>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf6Parser5ErrorE">
 <span id="_CPPv3N5metaf6Parser5ErrorE"></span><span id="_CPPv2N5metaf6Parser5ErrorE"></span><em class="property">enum class </em><code class="descname">Error</code><a class="headerlink" href="#_CPPv4N5metaf6Parser5ErrorE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3619,7 +3768,7 @@ observed.</p>
 
 </div>
 <div class="section" id="groupvisitor">
-<span id="index-237"></span><h2>GroupVisitor<a class="headerlink" href="#groupvisitor" title="Permalink to this headline">¶</a></h2>
+<span id="index-245"></span><h2>GroupVisitor<a class="headerlink" href="#groupvisitor" title="Permalink to this headline">¶</a></h2>
 <p>The purpose of Group Visitor is to simplify processing the results of the parsing.</p>
 <p>Since the METAR or TAF report is parsed into the vector of type <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a>, and the <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a> is a variant data type, in order to handle the results the variant alternative check is required, after which the correct type can be extracted from the variant and the concrete group type can be handled.</p>
 <p>The Group Visitor checks the type of an alternative in <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a> and calls a corresponding virtual method for the concrete group type. The virtual methods are pure to make sure there is no risk of accidentally missing the handling of a particular group type.</p>
@@ -3782,6 +3931,7 @@ observed.</p>
 <li><a class="reference internal" href="#rainfallgroup">RainfallGroup</a></li>
 <li><a class="reference internal" href="#seasurfacegroup">SeaSurfaceGroup</a></li>
 <li><a class="reference internal" href="#colourcodegroup">ColourCodeGroup</a></li>
+<li><a class="reference internal" href="#minmaxtemperaturegroup">MinMaxTemperatureGroup</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#reporttype">ReportType</a></li>
@@ -3832,7 +3982,7 @@ observed.</p>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.2.0 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.3.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -150,6 +150,7 @@ private:
 	virtual void visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group);
+	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group);
 	virtual void visitOther(const metaf::Group & group);
 
 	MakeJson json;
@@ -724,6 +725,36 @@ void GroupVisitorJson::visitColourCodeGroup(const metaf::ColourCodeGroup & group
 	json.valueStr("colourCode", colourCodeToString(group.code()));
 	json.valueBool("colourCodeBlack", group.isCodeBlack());
 	if (!group.isValid()) json.valueBool("colourCodeValid", false);
+}
+
+void GroupVisitorJson::visitMinMaxTemperatureGroup(
+	const metaf::MinMaxTemperatureGroup & group)
+{
+	json.startObject("minMaxTemperature");
+	std::string periodStr;
+	switch(group.observationPeriod()) {
+		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6:
+		periodStr = "6-hourly";
+		break;
+
+		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS24:
+		periodStr = "24-hourly";
+		break;
+
+		default:
+		periodStr = "unknown";
+		break; 
+	}
+	json.valueStr("observationPeriod", periodStr);
+	temperatureToJson(group.minimum(),
+		"minimumTemperature", 
+		"mimimumTemperatureUnit", 
+		"minumumTemperatureFreezing");
+	temperatureToJson(group.maximum(),
+		"maximumTemperature", 
+		"maximumTemperatureUnit", 
+		"maxumumTemperatureFreezing");
+	json.finish();
 }
 
 void GroupVisitorJson::visitOther(const metaf::Group & group) {

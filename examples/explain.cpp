@@ -41,6 +41,8 @@ private:
 	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group);
+	virtual std::string visitMinMaxTemperatureGroup(
+		const metaf::MinMaxTemperatureGroup & group);
 	virtual std::string visitOther(const metaf::Group & group);
 
 	static std::string explainRunway(const metaf::Runway & runway);
@@ -550,6 +552,36 @@ std::string GroupVisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGro
 	}
 	return(result.str());
 }
+
+std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	std::string periodStr;
+	switch(group.observationPeriod()) {
+		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6:
+		periodStr = "6-hourly";
+		break;
+
+		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS24:
+		periodStr = "24-hourly";
+		break;
+
+		default:
+		periodStr = "Unknown period";
+		break; 
+	}
+	result << periodStr << " " << " minimum / maximum temperature" << lineBreak;
+	if (group.minimum().temperature().has_value()) {
+		result << "Minimum temperature ";
+		result << explainTemperature(group.minimum()) << lineBreak;
+	}
+	if (group.maximum().temperature().has_value()) {
+		result << "Maximum temperature ";
+		result << explainTemperature(group.maximum()) << lineBreak;
+	}
+	return(result.str());
+}
+
 
 std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
 	(void)group;

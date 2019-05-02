@@ -218,6 +218,9 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group) {
 		(void)group; return("ColourCodeGroup");
 	}
+	virtual std::string visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
+		(void)group; return("MinMaxTemperatureGroup");
+	}
 	virtual std::string visitOther(const metaf::Group & group) {
 		(void)group; return("Unknown Group");
 	}
@@ -360,6 +363,9 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 		}
 		virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group) {
 			(void)group; return("ColourCodeGroup");
+		}
+		virtual std::string visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
+			(void)group; return("MinMaxTemperatureGroup");
 		}
 		virtual std::string visitOther(const metaf::Group & group) {
 			(void)group; return("Unknown Group");

@@ -100,6 +100,9 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::ColourCodeGroup>():
 		return("ColourCodeGroup");
 
+		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
+		return("MinMaxTemperatureGroup");
+
 		default: return("UNDEFINED");
 	}
 }
@@ -414,6 +417,8 @@ void printDataSize(){
 	printSize(groupName(14), sizeof(variant_alternative_t<14, metaf::Group>));
 	printSize(groupName(15), sizeof(variant_alternative_t<15, metaf::Group>));
 	printSize(groupName(16), sizeof(variant_alternative_t<16, metaf::Group>));
+	printSize(groupName(17), sizeof(variant_alternative_t<17, metaf::Group>));
+	printSize(groupName(18), sizeof(variant_alternative_t<18, metaf::Group>));
 	cout << endl;
 }
 

@@ -25,7 +25,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 2;
+		static const int minor = 3;
 		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -48,6 +48,7 @@ namespace metaf {
 	class RainfallGroup;
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
+	class MinMaxTemperatureGroup;
 
 	// A variant type for all possible METAR and TAF groups.
 	using Group = std::variant<
@@ -68,7 +69,8 @@ namespace metaf {
 		WindShearLowLayerGroup,
 		RainfallGroup,
 		SeaSurfaceGroup,
-		ColourCodeGroup
+		ColourCodeGroup,
+		MinMaxTemperatureGroup
 	>;
 
 	enum class ReportPart {
@@ -1075,6 +1077,28 @@ namespace metaf {
 		bool cBlack = false; //Is colour code BLACK reported along with main code
 	};
 
+	class MinMaxTemperatureGroup {
+	public:
+		enum class ObservationPeriod {
+			HOURS6,		//6 hourly
+			HOURS24,	//24 hourly
+		};
+		ObservationPeriod observationPeriod() const { return(obsPeriod); }
+		Temperature minimum() const { return(minTemp); }
+		Temperature maximum() const { return(maxTemp); }
+		bool isValid() const { return(true); }
+
+		MinMaxTemperatureGroup() = default;
+		static inline std::optional<MinMaxTemperatureGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+	private:
+		ObservationPeriod obsPeriod = ObservationPeriod::HOURS6;
+		Temperature minTemp;
+		Temperature maxTemp;
+	};
+
 	///////////////////////////////////////////////////////////////////////////////
 	
 	enum class SyntaxGroup {
@@ -1280,6 +1304,7 @@ namespace metaf {
 		virtual T visitRainfallGroup(const RainfallGroup & group) = 0;
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
+		virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
 		virtual T visitOther(const Group & group) = 0;
 	};
 
@@ -1338,6 +1363,9 @@ namespace metaf {
 		}
 		if (std::holds_alternative<ColourCodeGroup>(group)) {
 			return(this->visitColourCodeGroup(std::get<ColourCodeGroup>(group)));
+		}
+		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
+			return(this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group)));
 		}
 		return(this->visitOther(group));
 	}
@@ -1414,6 +1442,10 @@ namespace metaf {
 		}
 		if (std::holds_alternative<ColourCodeGroup>(group)) {
 			this->visitColourCodeGroup(std::get<ColourCodeGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
+			this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group));
 			return;
 		}
 		this->visitOther(group);
@@ -3271,6 +3303,73 @@ namespace metaf {
 
 	std::optional<Group> ColourCodeGroup::combine(const Group & nextGroup) const { 
 		(void)nextGroup; return(std::optional<Group>());
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::parse(
+		const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<MinMaxTemperatureGroup> notRecognised;
+		static const std::regex rgx6hourly("([12])([01]\\d\\d\\d)");
+		static const auto matchType6hourly = 1, matchValue6hourly = 2;
+		static const std::regex rgx24hourly("4([01]\\d\\d\\d)([01]\\d\\d\\d)"); 
+		static const auto matchMaxTemp24hourly = 1, matchMinTemp24hourly = 2;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+		std::smatch match;
+		if (std::regex_match(group, match, rgx24hourly)) {
+			const auto max = 
+				Temperature::fromRemarkString(match.str(matchMaxTemp24hourly));
+			if (!max.has_value()) return(notRecognised);
+			const auto min = 
+				Temperature::fromRemarkString(match.str(matchMinTemp24hourly));
+			if (!min.has_value()) return(notRecognised);
+			MinMaxTemperatureGroup result;
+			result.obsPeriod = ObservationPeriod::HOURS24;
+			result.minTemp = min.value();
+			result.maxTemp = max.value();
+			return(result);
+		}
+		if (std::regex_match(group, match, rgx6hourly)) {
+			const auto t = 
+				Temperature::fromRemarkString(match.str(matchValue6hourly));
+			if (!t.has_value()) return(notRecognised);
+			MinMaxTemperatureGroup result;
+			result.obsPeriod = ObservationPeriod::HOURS6;
+			switch(auto type = match.str(matchType6hourly); std::stoi(type)) {
+				case 1: result.maxTemp = t.value(); break;
+				case 2: result.minTemp = t.value(); break;
+				default: return(notRecognised);
+			}
+			return(result);
+		}
+		return(notRecognised);
+	}
+
+	std::optional<Group> MinMaxTemperatureGroup::combine(const Group & nextGroup) const { 
+		static const std::optional<Group> notCombined;
+		if (!std::holds_alternative<MinMaxTemperatureGroup>(nextGroup)) {
+			return(notCombined);	
+		}
+		auto nextMinMaxGroup = std::get<MinMaxTemperatureGroup>(nextGroup);
+		if (observationPeriod() != ObservationPeriod::HOURS6) return(notCombined);
+		if (nextMinMaxGroup.observationPeriod() != observationPeriod()) return(notCombined);
+
+		if (minimum().temperature().has_value() &&
+			nextMinMaxGroup.minimum().temperature().has_value()) return(notCombined);
+		if (maximum().temperature().has_value() &&
+			nextMinMaxGroup.maximum().temperature().has_value()) return(notCombined);
+
+		MinMaxTemperatureGroup combinedGroup = *this;
+		if (!combinedGroup.minimum().temperature().has_value()) {
+			combinedGroup.minTemp = nextMinMaxGroup.minTemp;
+		}
+		if (!combinedGroup.maximum().temperature().has_value()) {
+			combinedGroup.maxTemp = nextMinMaxGroup.maxTemp;
+		}
+		return(combinedGroup);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
