@@ -663,7 +663,7 @@ Precipitation
 
 		.. cpp:function:: Unit unit() const
 
-			:returns: Precipitation amount/accumulation measurement unit which was used with stored value. Currently always returns :cpp:enumerator:`Unit::MM` since the value is always stored in millimeters.
+			:returns: Precipitation amount/accumulation measurement unit which was used with stored value.
 
 
 	**Converting to other measurement units**

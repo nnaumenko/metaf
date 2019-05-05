@@ -8,7 +8,7 @@
 #include "gtest/gtest.h"
 #include "metaf.h"
 
-static const auto margin = 0.1 / 2;
+static const auto margin = 0.01 / 2;
 
 TEST(Precipitation, fromRainfallString) {
 	const auto p1 = metaf::Precipitation::fromRainfallString("120.7");
@@ -199,19 +199,89 @@ TEST(Precipitation, fromRunwayDepositsNotReported) {
 	EXPECT_FALSE(p->precipitation().has_value());
 }
 
-TEST(Precipitation, toUnitSameUnit) {
-	const auto p = metaf::Precipitation::fromRainfallString("07.5");
+TEST(Precipitation, fromRemarkString3digits) {
+	const auto factor = 0.01;
+	const auto p = metaf::Precipitation::fromRemarkString("135", factor);
 	ASSERT_TRUE(p.has_value());
-	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::MM);
-	ASSERT_TRUE(p->toUnit(metaf::Precipitation::Unit::MM).has_value());
-	EXPECT_NEAR(p->toUnit(metaf::Precipitation::Unit::MM).value(), 7.5, margin);
+	EXPECT_EQ(p->status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p->precipitation().has_value());
+	EXPECT_NEAR(p->precipitation().value(), 1.35, factor / 2);
+}
+
+TEST(Precipitation, fromRemarkString4digits) {
+	const auto factor = 0.01;
+	const auto p = metaf::Precipitation::fromRemarkString("1352", factor);
+	ASSERT_TRUE(p.has_value());
+	EXPECT_EQ(p->status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p->precipitation().has_value());
+	EXPECT_NEAR(p->precipitation().value(), 13.52, factor / 2);
+}
+
+TEST(Precipitation, fromRemarkStringFactor) {
+	const auto valueStr = "1482";
+	const auto value = std::stof(valueStr);
+
+	const auto factor1 = 0.01;
+	const auto p1 = metaf::Precipitation::fromRemarkString(valueStr, factor1);
+	ASSERT_TRUE(p1.has_value());
+	EXPECT_EQ(p1->status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(p1->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p1->precipitation().has_value());
+	EXPECT_NEAR(p1->precipitation().value(), value*factor1, factor1 / 2);
+
+	const auto factor2 = 0.1;
+	const auto p2 = metaf::Precipitation::fromRemarkString(valueStr, factor2);
+	ASSERT_TRUE(p2.has_value());
+	EXPECT_EQ(p2->status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(p2->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p2->precipitation().has_value());
+	EXPECT_NEAR(p2->precipitation().value(), value*factor2, factor2 / 2);
+
+	const auto factor3 = 1;
+	const auto p3 = metaf::Precipitation::fromRemarkString(valueStr, factor3);
+	ASSERT_TRUE(p3.has_value());
+	EXPECT_EQ(p3->status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(p3->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p3->precipitation().has_value());
+	EXPECT_NEAR(p3->precipitation().value(), value*factor3, factor3 / 2);
+}
+
+TEST(Precipitation, fromRemarkStringNotReported) {
+	EXPECT_FALSE(metaf::Precipitation::fromRemarkString("////", 0.01).has_value());
+
+	const auto p = metaf::Precipitation::fromRemarkString("////", 0.01, true);
+	ASSERT_TRUE(p.has_value());
+	EXPECT_EQ(p->status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::INCHES);
+	EXPECT_FALSE(p->precipitation().has_value());
+}
+
+TEST(Precipitation, toUnitSameUnit) {
+	const auto p1 = metaf::Precipitation::fromRainfallString("07.5");
+	ASSERT_TRUE(p1.has_value());
+	EXPECT_EQ(p1->unit(), metaf::Precipitation::Unit::MM);
+	ASSERT_TRUE(p1->toUnit(metaf::Precipitation::Unit::MM).has_value());
+	EXPECT_NEAR(p1->toUnit(metaf::Precipitation::Unit::MM).value(), 7.5, margin);
+
+	const auto p2 = metaf::Precipitation::fromRemarkString("025", 0.1);
+	ASSERT_TRUE(p2.has_value());
+	EXPECT_EQ(p2->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p2->toUnit(metaf::Precipitation::Unit::INCHES).has_value());
+	EXPECT_NEAR(p2->toUnit(metaf::Precipitation::Unit::INCHES).value(), 2.5, margin);
 }
 
 TEST(Precipitation, toUnitNotReported) {
-	const auto p = metaf::Precipitation::fromRainfallString("");
-	ASSERT_TRUE(p.has_value());
-	EXPECT_FALSE(p->toUnit(metaf::Precipitation::Unit::MM).has_value());
-	EXPECT_FALSE(p->toUnit(metaf::Precipitation::Unit::INCHES).has_value());
+	const auto p1 = metaf::Precipitation::fromRainfallString("");
+	ASSERT_TRUE(p1.has_value());
+	EXPECT_FALSE(p1->toUnit(metaf::Precipitation::Unit::MM).has_value());
+	EXPECT_FALSE(p1->toUnit(metaf::Precipitation::Unit::INCHES).has_value());
+
+	const auto p2 = metaf::Precipitation::fromRemarkString("///", 0.1, true);
+	ASSERT_TRUE(p2.has_value());
+	EXPECT_FALSE(p2->toUnit(metaf::Precipitation::Unit::MM).has_value());
+	EXPECT_FALSE(p2->toUnit(metaf::Precipitation::Unit::INCHES).has_value());
 }
 
 TEST(Precipitation, toUnitMmToInches) {
@@ -220,4 +290,12 @@ TEST(Precipitation, toUnitMmToInches) {
 	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(p->toUnit(metaf::Precipitation::Unit::INCHES).has_value());
 	EXPECT_NEAR(p->toUnit(metaf::Precipitation::Unit::INCHES).value(), 2.0, margin);
+}
+
+TEST(Precipitation, toUnitInchesToMm) {
+	const auto p = metaf::Precipitation::fromRemarkString("010", 0.1);
+	ASSERT_TRUE(p.has_value());
+	EXPECT_EQ(p->unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(p->toUnit(metaf::Precipitation::Unit::MM).has_value());
+	EXPECT_NEAR(p->toUnit(metaf::Precipitation::Unit::MM).value(), 25.4, margin);
 }

@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 3;
-		static const int patch = 0;
+		static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -368,11 +368,14 @@ namespace metaf {
 		Precipitation() = default;
 		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
 		static inline std::optional<Precipitation> fromRunwayDeposits(const std::string & s);
+		static inline std::optional<Precipitation> fromRemarkString(const std::string & s, 
+			float factorInches,
+			bool allowNotReported = false);
 
 	private:
 		Status precipStatus = Status::NOT_REPORTED;
 		float precipValue = 0.0;
-		static const Unit precipUnit = Unit::MM;
+		Unit precipUnit = Unit::MM;
 	private:
 		// Special value for runway deposits depth, see Table 1079 in Manual on Codes (WMO No. 306).
 		enum Reserved {
@@ -2082,11 +2085,33 @@ namespace metaf {
 		return(precipitation);
 	}
 
+	std::optional<Precipitation> Precipitation::fromRemarkString(const std::string & s, 
+			float factorInches,
+			bool allowNotReported)
+	{
+		//static const std::regex rgx("\\d\\d\\d\\d?");
+		std::optional<Precipitation> error;
+		Precipitation precipitation;
+		precipitation.precipUnit = Precipitation::Unit::INCHES;
+		if (s.length() != 3 && s.length() != 4) return(error);
+		if (s == "///" || s == "////") {
+			if (!allowNotReported) return(error);
+			return(precipitation);
+		}
+		precipitation.precipStatus = Status::REPORTED;
+		const auto pr = strToUint(s, 0, s.length());
+		if (!pr.has_value()) return(error);
+		precipitation.precipValue = pr.value() * factorInches;
+		return(precipitation);
+	}
+
+
 	std::optional<float> Precipitation::toUnit(Unit unit) const {
 		if (precipStatus != Status::REPORTED) return(std::optional<float>());
 		if (precipUnit == unit) return(precipValue);
 		static const auto mmPerInch = 25.4;
 		if (precipUnit == Unit::MM && unit == Unit::INCHES) return(precipValue / mmPerInch);
+		if (precipUnit == Unit::INCHES && unit == Unit::MM) return(precipValue * mmPerInch);
 		return(std::optional<float>());
 	}
 
