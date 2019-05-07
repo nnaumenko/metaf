@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 3;
-		static const int patch = 1;
+		static const int minor = 4;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -49,6 +49,7 @@ namespace metaf {
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
 	class MinMaxTemperatureGroup;
+	class PrecipitationGroup;
 
 	// A variant type for all possible METAR and TAF groups.
 	using Group = std::variant<
@@ -70,7 +71,8 @@ namespace metaf {
 		RainfallGroup,
 		SeaSurfaceGroup,
 		ColourCodeGroup,
-		MinMaxTemperatureGroup
+		MinMaxTemperatureGroup,
+		PrecipitationGroup
 	>;
 
 	enum class ReportPart {
@@ -1102,6 +1104,32 @@ namespace metaf {
 		Temperature maxTemp;
 	};
 
+	class PrecipitationGroup {
+	public:
+		enum class Type {
+			TOTAL_PRECIPITATION_HOURLY,	
+			SNOW_DEPTH_ON_GROUND,
+			FROZEN_PRECIP_3_OR_6_HOURLY,
+			FROZEN_PRECIP_24_HOURLY,
+			SNOW_6_HOURLY,
+			WATER_EQUIV_OF_SNOW_ON_GROUND
+		};
+		Type type() const { return(precType); }
+		Precipitation amount() const { return(precAmount); }
+		bool isValid() const { return(true); }
+
+		PrecipitationGroup() = default;
+		static inline std::optional<PrecipitationGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+	private:
+		Type precType = Type::TOTAL_PRECIPITATION_HOURLY;
+		Precipitation precAmount;
+
+		static inline std::optional<Type> typeFromString(const std::string & s);
+		static inline float factorFromType(Type type);
+	};
+
 	///////////////////////////////////////////////////////////////////////////////
 	
 	enum class SyntaxGroup {
@@ -1308,6 +1336,7 @@ namespace metaf {
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
 		virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
+		virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0;
 		virtual T visitOther(const Group & group) = 0;
 	};
 
@@ -1369,6 +1398,9 @@ namespace metaf {
 		}
 		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
 			return(this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group)));
+		}
+		if (std::holds_alternative<PrecipitationGroup>(group)) {
+			return(this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group)));
 		}
 		return(this->visitOther(group));
 	}
@@ -1449,6 +1481,10 @@ namespace metaf {
 		}
 		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
 			this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<PrecipitationGroup>(group)) {
+			this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group));
 			return;
 		}
 		this->visitOther(group);
@@ -3396,6 +3432,76 @@ namespace metaf {
 		}
 		return(combinedGroup);
 	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<PrecipitationGroup> notRecognised;
+		static const std::regex rgx(
+			"([P67])(\\d\\d\\d\\d|////)|(4/|93[13])(\\d\\d\\d|///)");
+		static const auto matchType1 = 1, matchType2 = 3;
+		static const auto matchValue1 = 2, matchValue2 = 4;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+		std::smatch match;
+		if (!std::regex_match(group, match, rgx)) return(notRecognised);
+
+		// assuming only one pair matchType and matchValue will be non-empty
+		std::string typeStr = match.str(matchType1) + match.str(matchType2);
+		std::string valueStr = match.str(matchValue1) + match.str(matchValue2);
+
+		const auto t = typeFromString(typeStr);
+		if (!t.has_value()) return(notRecognised);
+		const auto type = t.value();
+		
+		// assuming that non-reported value will not pass the regex if not 
+		// allowed for this type
+		const auto amount = Precipitation::fromRemarkString(valueStr, 
+				factorFromType(type), 
+				true); 
+		if (!amount.has_value()) return(notRecognised);
+
+		PrecipitationGroup result;
+		result.precType = type; 
+		result.precAmount = amount.value();
+		return(result);
+	}
+
+
+	std::optional<Group> PrecipitationGroup::combine(const Group & nextGroup) const { 
+		(void)nextGroup; return(std::optional<Group>());
+	}
+
+	std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
+		const std::string & s)
+	{
+		if (s == "P") return(Type::TOTAL_PRECIPITATION_HOURLY);
+		if (s == "4/") return(Type::SNOW_DEPTH_ON_GROUND);
+		if (s == "6") return(Type::FROZEN_PRECIP_3_OR_6_HOURLY);
+		if (s == "7") return(Type::FROZEN_PRECIP_24_HOURLY);
+		if (s == "931") return(Type::SNOW_6_HOURLY);
+		if (s == "933") return(Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
+		return(std::optional<PrecipitationGroup::Type>());
+	}
+
+	float PrecipitationGroup::factorFromType(Type type) {
+		switch(type) {
+			case Type::SNOW_DEPTH_ON_GROUND:
+			return(1);
+
+			case Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
+			case Type::SNOW_6_HOURLY:
+			return(0.1);
+
+			case Type::TOTAL_PRECIPITATION_HOURLY:
+			case Type::FROZEN_PRECIP_3_OR_6_HOURLY:
+			case Type::FROZEN_PRECIP_24_HOURLY:
+			return(0.01);
+		}
+	}
+
 
 	///////////////////////////////////////////////////////////////////////////////
 

@@ -103,6 +103,9 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
 		return("MinMaxTemperatureGroup");
 
+		case variant_index<metaf::Group, metaf::PrecipitationGroup>():
+		return("PrecipitationGroup");
+
 		default: return("UNDEFINED");
 	}
 }

@@ -221,6 +221,9 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
 		(void)group; return("MinMaxTemperatureGroup");
 	}
+	virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group) {
+		(void)group; return("PrecipitationGroup");
+	}
 	virtual std::string visitOther(const metaf::Group & group) {
 		(void)group; return("Unknown Group");
 	}

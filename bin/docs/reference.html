@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Reference &#8212; Metaf 2.3.1 documentation</title>
+    <title>Reference &#8212; Metaf 2.4.0 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.3.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -997,10 +997,6 @@
 <dd><p>Inches.</p>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Precipitation amount/accumulation value is always stored in millimeters but may be converted to inches using <a class="reference internal" href="#_CPPv4NK5metaf13Precipitation6toUnitE4Unit" title="metaf::Precipitation::toUnit"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">toUnit()</span></code></a>.</p>
-</div>
 </dd></dl>
 
 <p><strong>Acquiring the data</strong></p>
@@ -3476,9 +3472,96 @@ observed.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="precipitationgroup">
+<span id="index-240"></span><h3>PrecipitationGroup<a class="headerlink" href="#precipitationgroup" title="Permalink to this headline">¶</a></h3>
+<p>The following syntax corresponds to this group in METAR/TAF reports.</p>
+<img alt="_images/precipitationgroup.svg" src="_images/precipitationgroup.svg" /><p>Examples of the raw report data are <code class="docutils literal notranslate"><span class="pre">P0009</span></code>, <code class="docutils literal notranslate"><span class="pre">P////</span></code>, <code class="docutils literal notranslate"><span class="pre">4/010</span></code>, <code class="docutils literal notranslate"><span class="pre">60217</span></code>, <code class="docutils literal notranslate"><span class="pre">6////</span></code>, <code class="docutils literal notranslate"><span class="pre">70021</span></code>, <code class="docutils literal notranslate"><span class="pre">931011</span></code>, and <code class="docutils literal notranslate"><span class="pre">933021</span></code>.</p>
+<dl class="class">
+<dt id="_CPPv4N5metaf18PrecipitationGroupE">
+<span id="_CPPv3N5metaf18PrecipitationGroupE"></span><span id="_CPPv2N5metaf18PrecipitationGroupE"></span><span id="metaf::PrecipitationGroup"></span><em class="property">class </em><code class="descname">PrecipitationGroup</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroupE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Stores various information about precipitation. This group is only used in North America and included in remarks.</p>
+<dl class="enum-class">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4TypeE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4TypeE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4TypeE"></span><em class="property">enum class </em><code class="descname">Type</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4TypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Indicates the type of data reported in this group.</p>
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type26TOTAL_PRECIPITATION_HOURLYE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type26TOTAL_PRECIPITATION_HOURLYE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type26TOTAL_PRECIPITATION_HOURLYE"></span><em class="property">enumerator </em><code class="descname">TOTAL_PRECIPITATION_HOURLY</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type26TOTAL_PRECIPITATION_HOURLYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Water equivalent of all precipitation for last hour.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type20SNOW_DEPTH_ON_GROUNDE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type20SNOW_DEPTH_ON_GROUNDE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type20SNOW_DEPTH_ON_GROUNDE"></span><em class="property">enumerator </em><code class="descname">SNOW_DEPTH_ON_GROUND</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type20SNOW_DEPTH_ON_GROUNDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Actual snow depth on the ground</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type27FROZEN_PRECIP_3_OR_6_HOURLYE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type27FROZEN_PRECIP_3_OR_6_HOURLYE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type27FROZEN_PRECIP_3_OR_6_HOURLYE"></span><em class="property">enumerator </em><code class="descname">FROZEN_PRECIP_3_OR_6_HOURLY</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type27FROZEN_PRECIP_3_OR_6_HOURLYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Water equivalent of frozen precipitation accumulated for last 3 hours (when reported at 0000Z, 0600Z, 1200Z, or 1800Z) or for last 6 hours (when reported at 0300Z, 0900Z, 1500Z, or 2100Z).</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type23FROZEN_PRECIP_24_HOURLYE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type23FROZEN_PRECIP_24_HOURLYE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type23FROZEN_PRECIP_24_HOURLYE"></span><em class="property">enumerator </em><code class="descname">FROZEN_PRECIP_24_HOURLY</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type23FROZEN_PRECIP_24_HOURLYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Water equivalent of frozen precipitation accumulated for last 24 hours.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type13SNOW_6_HOURLYE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type13SNOW_6_HOURLYE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type13SNOW_6_HOURLYE"></span><em class="property">enumerator </em><code class="descname">SNOW_6_HOURLY</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type13SNOW_6_HOURLYE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Snow accumulation for the last 6 hours.</p>
+</dd></dl>
+
+<dl class="enumerator">
+<dt id="_CPPv4N5metaf18PrecipitationGroup4Type29WATER_EQUIV_OF_SNOW_ON_GROUNDE">
+<span id="_CPPv3N5metaf18PrecipitationGroup4Type29WATER_EQUIV_OF_SNOW_ON_GROUNDE"></span><span id="_CPPv2N5metaf18PrecipitationGroup4Type29WATER_EQUIV_OF_SNOW_ON_GROUNDE"></span><em class="property">enumerator </em><code class="descname">WATER_EQUIV_OF_SNOW_ON_GROUND</code><a class="headerlink" href="#_CPPv4N5metaf18PrecipitationGroup4Type29WATER_EQUIV_OF_SNOW_ON_GROUNDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Water equivalent of snow on the ground (including other solid precipitation such as snow grains, ice pellets, ice crystals, hail, etc).</p>
+</dd></dl>
+
+</dd></dl>
+
+<p><strong>Acquiring group data</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4NK5metaf18PrecipitationGroup4typeEv">
+<span id="_CPPv3NK5metaf18PrecipitationGroup4typeEv"></span><span id="_CPPv2NK5metaf18PrecipitationGroup4typeEv"></span><span id="metaf::PrecipitationGroup::typeC"></span><a class="reference internal" href="#_CPPv4N5metaf18PrecipitationGroup4TypeE" title="metaf::PrecipitationGroup::Type">Type</a> <code class="descname">type</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf18PrecipitationGroup4typeEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Type of value reporte in this group.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4NK5metaf18PrecipitationGroup6amountEv">
+<span id="_CPPv3NK5metaf18PrecipitationGroup6amountEv"></span><span id="_CPPv2NK5metaf18PrecipitationGroup6amountEv"></span><span id="metaf::PrecipitationGroup::amountC"></span><a class="reference internal" href="#_CPPv4N5metaf13PrecipitationE" title="metaf::Precipitation">Precipitation</a> <code class="descname">amount</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf18PrecipitationGroup6amountEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Amount of precipitation of specified type. May be a non-reported value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Validating</strong></p>
+<dl class="function">
+<dt id="_CPPv4NK5metaf18PrecipitationGroup7isValidEv">
+<span id="_CPPv3NK5metaf18PrecipitationGroup7isValidEv"></span><span id="_CPPv2NK5metaf18PrecipitationGroup7isValidEv"></span><span id="metaf::PrecipitationGroup::isValidC"></span>bool <code class="descname">isValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf18PrecipitationGroup7isValidEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Always returns <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="reporttype">
-<span id="index-240"></span><h2>ReportType<a class="headerlink" href="#reporttype" title="Permalink to this headline">¶</a></h2>
+<span id="index-241"></span><h2>ReportType<a class="headerlink" href="#reporttype" title="Permalink to this headline">¶</a></h2>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf10ReportTypeE">
 <span id="_CPPv3N5metaf10ReportTypeE"></span><span id="_CPPv2N5metaf10ReportTypeE"></span><em class="property">enum class </em><code class="descname">ReportType</code><a class="headerlink" href="#_CPPv4N5metaf10ReportTypeE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3505,7 +3588,7 @@ observed.</p>
 
 </div>
 <div class="section" id="reportpart">
-<span id="index-241"></span><h2>ReportPart<a class="headerlink" href="#reportpart" title="Permalink to this headline">¶</a></h2>
+<span id="index-242"></span><h2>ReportPart<a class="headerlink" href="#reportpart" title="Permalink to this headline">¶</a></h2>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf10ReportPartE">
 <span id="_CPPv3N5metaf10ReportPartE"></span><span id="_CPPv2N5metaf10ReportPartE"></span><em class="property">enum class </em><code class="descname">ReportPart</code><a class="headerlink" href="#_CPPv4N5metaf10ReportPartE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3546,7 +3629,7 @@ observed.</p>
 
 </div>
 <div class="section" id="groupparser">
-<span id="index-242"></span><h2>GroupParser<a class="headerlink" href="#groupparser" title="Permalink to this headline">¶</a></h2>
+<span id="index-243"></span><h2>GroupParser<a class="headerlink" href="#groupparser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="_CPPv4N5metaf11GroupParserE">
 <span id="_CPPv3N5metaf11GroupParserE"></span><span id="_CPPv2N5metaf11GroupParserE"></span><span id="metaf::GroupParser"></span><em class="property">class </em><code class="descname">GroupParser</code><a class="headerlink" href="#_CPPv4N5metaf11GroupParserE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3571,12 +3654,12 @@ observed.</p>
 
 </div>
 <div class="section" id="parser">
-<span id="index-243"></span><h2>Parser<a class="headerlink" href="#parser" title="Permalink to this headline">¶</a></h2>
+<span id="index-244"></span><h2>Parser<a class="headerlink" href="#parser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="_CPPv4N5metaf6ParserE">
 <span id="_CPPv3N5metaf6ParserE"></span><span id="_CPPv2N5metaf6ParserE"></span><span id="metaf::Parser"></span><em class="property">class </em><code class="descname">Parser</code><a class="headerlink" href="#_CPPv4N5metaf6ParserE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Parser class is used to parse strings which contain raw METAR or TAF reports, check for syntax errors, autodetect report type and produce a vector of <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a>.</p>
-<p id="index-244">The complete list of the errors reported by the parser is as follows.</p>
+<p id="index-245">The complete list of the errors reported by the parser is as follows.</p>
 <dl class="enum-class">
 <dt id="_CPPv4N5metaf6Parser5ErrorE">
 <span id="_CPPv3N5metaf6Parser5ErrorE"></span><span id="_CPPv2N5metaf6Parser5ErrorE"></span><em class="property">enum class </em><code class="descname">Error</code><a class="headerlink" href="#_CPPv4N5metaf6Parser5ErrorE" title="Permalink to this definition">¶</a><br /></dt>
@@ -3768,7 +3851,7 @@ observed.</p>
 
 </div>
 <div class="section" id="groupvisitor">
-<span id="index-245"></span><h2>GroupVisitor<a class="headerlink" href="#groupvisitor" title="Permalink to this headline">¶</a></h2>
+<span id="index-246"></span><h2>GroupVisitor<a class="headerlink" href="#groupvisitor" title="Permalink to this headline">¶</a></h2>
 <p>The purpose of Group Visitor is to simplify processing the results of the parsing.</p>
 <p>Since the METAR or TAF report is parsed into the vector of type <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a>, and the <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a> is a variant data type, in order to handle the results the variant alternative check is required, after which the correct type can be extracted from the variant and the concrete group type can be handled.</p>
 <p>The Group Visitor checks the type of an alternative in <a class="reference internal" href="#_CPPv4N5metaf5GroupE" title="metaf::Group"><code class="xref cpp cpp-type docutils literal notranslate"><span class="pre">metaf::Group</span></code></a> and calls a corresponding virtual method for the concrete group type. The virtual methods are pure to make sure there is no risk of accidentally missing the handling of a particular group type.</p>
@@ -3932,6 +4015,7 @@ observed.</p>
 <li><a class="reference internal" href="#seasurfacegroup">SeaSurfaceGroup</a></li>
 <li><a class="reference internal" href="#colourcodegroup">ColourCodeGroup</a></li>
 <li><a class="reference internal" href="#minmaxtemperaturegroup">MinMaxTemperatureGroup</a></li>
+<li><a class="reference internal" href="#precipitationgroup">PrecipitationGroup</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#reporttype">ReportType</a></li>
@@ -3982,7 +4066,7 @@ observed.</p>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.3.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -151,6 +151,7 @@ private:
 	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group);
 	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group);
+	virtual void visitPrecipitationGroup(const metaf::PrecipitationGroup & group);
 	virtual void visitOther(const metaf::Group & group);
 
 	MakeJson json;
@@ -224,6 +225,7 @@ private:
 	static std::pair<int, int> runwayStateExtentToPercent(
 		metaf::RunwayStateGroup::Extent extent);
 	static std::string colourCodeToString(metaf::ColourCodeGroup::Code code);
+	static std::string precipitationGroupTypeToString(metaf::PrecipitationGroup::Type type);
 };
 
 void GroupVisitorJson::toJson(metaf::ReportType reportType, 
@@ -756,6 +758,18 @@ void GroupVisitorJson::visitMinMaxTemperatureGroup(
 		"maxumumTemperatureFreezing");
 	json.finish();
 }
+
+void GroupVisitorJson::visitPrecipitationGroup(
+	const metaf::PrecipitationGroup & group)
+{
+	const std::string typeStr = precipitationGroupTypeToString(group.type());
+	precipitationToJson(group.amount(),
+		typeStr,
+		typeStr + "Unit",
+		"",
+		typeStr + "Status");	
+}
+
 
 void GroupVisitorJson::visitOther(const metaf::Group & group) {
 	(void)group;
@@ -1481,6 +1495,30 @@ std::string GroupVisitorJson::colourCodeToString(metaf::ColourCodeGroup::Code co
 		case metaf::ColourCodeGroup::Code::AMBER:	return("amber");
 		case metaf::ColourCodeGroup::Code::RED:		return("red");
 		default: return(undefinedToString(static_cast<int>(code)));
+	}
+}
+
+std::string GroupVisitorJson::precipitationGroupTypeToString(
+	metaf::PrecipitationGroup::Type type)
+{
+	switch (type) {
+		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
+		return("totalPrecipitationForPastHour");
+
+		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
+		return("snowDepthOnGround");
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
+		return("waterEquivalentOfFrozenPrecipitationForLast3or6hours");
+	
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
+		return("waterEquivalentOfFrozenPrecipitationForLast24hours");
+
+		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
+		return("snowfallForLast6hours");
+
+		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
+		return("waterEquivalentOfSnowOnGround");
 	}
 }
 

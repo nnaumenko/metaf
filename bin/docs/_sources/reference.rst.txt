@@ -648,8 +648,6 @@ Precipitation
 
 			Inches.
 
-		.. note:: Precipitation amount/accumulation value is always stored in millimeters but may be converted to inches using :cpp:func:`toUnit()`.
-
 
 	**Acquiring the data**
 
@@ -2654,6 +2652,66 @@ Examples of the raw report data are ``401120084``, ``20012``, and ``11021``.
 		.. cpp:function:: Temperature maximum() const
 
 			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if maximum temperature was not specified in this group.
+
+	**Validating**
+
+	.. cpp:function:: bool isValid() const
+
+		:returns: Always returns ``true``.
+
+
+.. index:: single: Group; Precipitation
+
+PrecipitationGroup
+^^^^^^^^^^^^^^^^^^
+
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: precipitationgroup.svg
+
+Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, and ``933021``. 
+
+.. cpp:class:: PrecipitationGroup
+
+	Stores various information about precipitation. This group is only used in North America and included in remarks.
+
+	.. cpp:enum-class:: Type
+
+		Indicates the type of data reported in this group.
+
+		.. cpp:enumerator:: TOTAL_PRECIPITATION_HOURLY
+
+			Water equivalent of all precipitation for last hour.
+
+		.. cpp:enumerator:: SNOW_DEPTH_ON_GROUND
+
+			Actual snow depth on the ground
+
+		.. cpp:enumerator:: FROZEN_PRECIP_3_OR_6_HOURLY
+
+			Water equivalent of frozen precipitation accumulated for last 3 hours (when reported at 0000Z, 0600Z, 1200Z, or 1800Z) or for last 6 hours (when reported at 0300Z, 0900Z, 1500Z, or 2100Z).
+
+		.. cpp:enumerator:: FROZEN_PRECIP_24_HOURLY
+
+			Water equivalent of frozen precipitation accumulated for last 24 hours.
+
+		.. cpp:enumerator:: SNOW_6_HOURLY
+
+			Snow accumulation for the last 6 hours.
+
+		.. cpp:enumerator:: WATER_EQUIV_OF_SNOW_ON_GROUND
+
+			Water equivalent of snow on the ground (including other solid precipitation such as snow grains, ice pellets, ice crystals, hail, etc).
+
+	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of value reporte in this group.
+
+		.. cpp:function:: Precipitation amount() const
+
+			:returns: Amount of precipitation of specified type. May be a non-reported value.
 
 	**Validating**
 
