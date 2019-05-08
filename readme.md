@@ -29,8 +29,6 @@ Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.htm
 
 ## Limitations
 
-Remarks (everything after RMK group) are currently decoded as plain text only.
-
 Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
 
 ## Prerequisites and dependencies
@@ -64,3 +62,44 @@ TAF in raw form is also human-readable but requires training to decode.
 Example of a TAF report is as follows:
 
     TAF EICK 091700Z 0918/1018 27012KT 9999 BKN025 BECMG 0920/0923 24007KT BECMG 1002/1005 21007KT BECMG 1009/1012 21015KT TEMPO 1010/1013 -RA BKN012 TEMPO 1010/1018 21018G28KT BECMG 1013/1016 6000 -RA SCT003 BKN010 TEMPO 1014/1018 3000 -RADZ BKN003 PROB40 TEMPO 1015/1018 1200 BR BKN002=
+
+### Which groups Metaf is able to recognize?
+
+* Report type METAR, SPECI and TAF
+* Amended or correctional report indicators AMD and COR
+* Missing report indicator NIL and cancelled TAF report indicator CNL
+* Automated report indicator and maintenance indicator
+* ICAO location
+* Report issue time
+* Wind direction, speed and gust speed
+* Wind shear information
+* Prevailing or directional visibility in meters or statute miles
+* Cloud layer information, clear sky information and 'no significant cloud' / 'no cloud detected information'
+* Indicator of no significant cloud and good visibility CAVOK
+* Current and recent weather information, and indicator or weather phenomena end NSW
+* Temperature and dew point, including more precise values given in remarks
+* Temperature forecast from TAF reports
+* 6-hourly and 24-hourly minimum and maximum temperature
+* Current atmospheric pressure, including QNH, QFE, and SLP remarks 
+* Groups indicating rapid pressure rise or fall PRESFR and PRESRR
+* Forecast lowest atmospheric pressure
+* Runway visual range with trend
+* State of runway, type and amount of deposits, extent of runway contamination, surface friction and braking action
+* Groups indicating that runway or airport is closed due to snow accumulation
+* Groups indicating that deposits on runway were cleared or ceased to exist
+* Rainfall groups used in Australia
+* Various precipitation and snowfall groups reported in remarks section in North America
+* Temperature and state of sea surface or wave height
+* Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
+* Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
+* Automated station type AO1 and AO2
+* NOSPECI group indicating that no unscheduled reports are issued by station
+* Groups indicating non-operational sensors RVRNO, PNO, FZRANO, TSNO, SLPNO
+
+
+
+
+
+
+
+
