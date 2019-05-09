@@ -132,6 +132,24 @@ TEST(MinMaxTemperatureGroup, parse6hourlyMaximum) {
 	EXPECT_FALSE(mmtg2->minimum().temperature().has_value());
 }
 
+TEST(MinMaxTemperatureGroup, parse6hourlyNotReported) {
+	const auto mmtg1 = 
+		metaf::MinMaxTemperatureGroup::parse("1////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg1.has_value());
+	EXPECT_EQ(mmtg1->observationPeriod(),
+		metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6);
+	EXPECT_FALSE(mmtg1->maximum().temperature().has_value());
+	EXPECT_FALSE(mmtg1->minimum().temperature().has_value());
+
+	const auto mmtg2 = 
+		metaf::MinMaxTemperatureGroup::parse("2////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg2.has_value());
+	EXPECT_EQ(mmtg2->observationPeriod(),
+		metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6);
+	EXPECT_FALSE(mmtg2->maximum().temperature().has_value());
+	EXPECT_FALSE(mmtg2->minimum().temperature().has_value());
+}
+
 TEST(MinMaxTemperatureGroup, parse6hourlyWrongReportPart) {
 	EXPECT_FALSE(metaf::MinMaxTemperatureGroup::parse(
 		"20012", metaf::ReportPart::UNKNOWN));
@@ -186,8 +204,6 @@ TEST(MinMaxTemperatureGroup, parse6hourlyWrongFormat) {
 		"100142", metaf::ReportPart::RMK));
 	EXPECT_FALSE(metaf::MinMaxTemperatureGroup::parse(
 		"1142", metaf::ReportPart::RMK));
-	EXPECT_FALSE(metaf::MinMaxTemperatureGroup::parse(
-		"1////", metaf::ReportPart::RMK));
 }
 
 TEST(MinMaxTemperatureGroup, combine24hourly) {
@@ -276,3 +292,72 @@ TEST(MinMaxTemperatureGroup, combine6hourlyMaxMax) {
 	EXPECT_FALSE(mmtg1->combine(mmtg2.value()).has_value());
 	EXPECT_FALSE(mmtg2->combine(mmtg1.value()).has_value());
 }
+
+TEST(MinMaxTemperatureGroup, combine6hourlyMinNotReportedMax) {
+	const auto mmtgMax = 
+		metaf::MinMaxTemperatureGroup::parse("11021", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMax.has_value());
+
+	const auto mmtgMin = 
+		metaf::MinMaxTemperatureGroup::parse("2////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMin.has_value());
+
+	const auto combined = mmtgMin->combine(mmtgMax.value());
+	ASSERT_TRUE(combined.has_value());
+
+	ASSERT_TRUE(std::holds_alternative<metaf::MinMaxTemperatureGroup>(combined.value()));
+
+	const auto mmtgCombined = std::get<metaf::MinMaxTemperatureGroup>(combined.value());
+
+	EXPECT_EQ(mmtgCombined.observationPeriod(),
+		metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6);
+	ASSERT_TRUE(mmtgCombined.maximum().temperature().has_value());
+	EXPECT_NEAR(mmtgCombined.maximum().temperature().value(), -2.1, margin);
+	EXPECT_FALSE(mmtgCombined.minimum().temperature().has_value());
+}
+
+TEST(MinMaxTemperatureGroup, combine6hourlyMinMaxNotRepoted) {
+	const auto mmtgMax = 
+		metaf::MinMaxTemperatureGroup::parse("1////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMax.has_value());
+
+	const auto mmtgMin = 
+		metaf::MinMaxTemperatureGroup::parse("21001", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMin.has_value());
+
+	const auto combined = mmtgMin->combine(mmtgMax.value());
+	ASSERT_TRUE(combined.has_value());
+
+	ASSERT_TRUE(std::holds_alternative<metaf::MinMaxTemperatureGroup>(combined.value()));
+
+	const auto mmtgCombined = std::get<metaf::MinMaxTemperatureGroup>(combined.value());
+
+	EXPECT_EQ(mmtgCombined.observationPeriod(),
+		metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6);
+	EXPECT_FALSE(mmtgCombined.maximum().temperature().has_value());
+	ASSERT_TRUE(mmtgCombined.minimum().temperature().has_value());
+	EXPECT_NEAR(mmtgCombined.minimum().temperature().value(), -0.1, margin);
+}
+
+TEST(MinMaxTemperatureGroup, combine6hourlyNotRepoted) {
+	const auto mmtgMax = 
+		metaf::MinMaxTemperatureGroup::parse("1////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMax.has_value());
+
+	const auto mmtgMin = 
+		metaf::MinMaxTemperatureGroup::parse("2////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtgMin.has_value());
+
+	const auto combined = mmtgMin->combine(mmtgMax.value());
+	ASSERT_TRUE(combined.has_value());
+
+	ASSERT_TRUE(std::holds_alternative<metaf::MinMaxTemperatureGroup>(combined.value()));
+
+	const auto mmtgCombined = std::get<metaf::MinMaxTemperatureGroup>(combined.value());
+
+	EXPECT_EQ(mmtgCombined.observationPeriod(),
+		metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6);
+	EXPECT_FALSE(mmtgCombined.maximum().temperature().has_value());
+	EXPECT_FALSE(mmtgCombined.minimum().temperature().has_value());
+}
+

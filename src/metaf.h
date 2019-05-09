@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 4;
-		static const int patch = 0;
+		static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -3373,11 +3373,10 @@ namespace metaf {
 		ReportPart reportPart)
 	{
 		std::optional<MinMaxTemperatureGroup> notRecognised;
-		static const std::regex rgx6hourly("([12])([01]\\d\\d\\d)");
+		static const std::regex rgx6hourly("([12])([01]\\d\\d\\d|////)");
 		static const auto matchType6hourly = 1, matchValue6hourly = 2;
 		static const std::regex rgx24hourly("4([01]\\d\\d\\d)([01]\\d\\d\\d)"); 
 		static const auto matchMaxTemp24hourly = 1, matchMinTemp24hourly = 2;
-
 		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
 		if (std::regex_match(group, match, rgx24hourly)) {
@@ -3394,6 +3393,11 @@ namespace metaf {
 			return(result);
 		}
 		if (std::regex_match(group, match, rgx6hourly)) {
+			if (match.str(matchValue6hourly) == "////") {
+				MinMaxTemperatureGroup result;
+				result.obsPeriod = ObservationPeriod::HOURS6;
+				return(result);		
+			}
 			const auto t = 
 				Temperature::fromRemarkString(match.str(matchValue6hourly));
 			if (!t.has_value()) return(notRecognised);
@@ -3424,11 +3428,13 @@ namespace metaf {
 			nextMinMaxGroup.maximum().temperature().has_value()) return(notCombined);
 
 		MinMaxTemperatureGroup combinedGroup = *this;
-		if (!combinedGroup.minimum().temperature().has_value()) {
-			combinedGroup.minTemp = nextMinMaxGroup.minTemp;
+		if (!combinedGroup.minimum().temperature().has_value() &&
+			nextMinMaxGroup.minimum().temperature().has_value()) {
+				combinedGroup.minTemp = nextMinMaxGroup.minTemp;
 		}
-		if (!combinedGroup.maximum().temperature().has_value()) {
-			combinedGroup.maxTemp = nextMinMaxGroup.maxTemp;
+		if (!combinedGroup.maximum().temperature().has_value() &&
+			nextMinMaxGroup.maximum().temperature().has_value()) {
+				combinedGroup.maxTemp = nextMinMaxGroup.maxTemp;
 		}
 		return(combinedGroup);
 	}

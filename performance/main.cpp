@@ -366,7 +366,7 @@ void checkRecognisedGroups() {
 			metarUnrecognisedGroupCount += count;
 		}
 		if (strlen(data.taf)) {
-			const auto parseResult = metaf::Parser::parse(data.metar);
+			const auto parseResult = metaf::Parser::parse(data.taf);
 			auto count = addPlainTextGroups(parseResult.groups, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.taf));
 			tafTotalGroupCount += parseResult.groups.size();

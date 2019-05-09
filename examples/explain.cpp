@@ -572,7 +572,13 @@ std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMax
 		periodStr = "Unknown period";
 		break; 
 	}
-	result << periodStr << " " << " minimum / maximum temperature" << lineBreak;
+	result << periodStr << " " << " minimum / maximum temperature";
+	if (!group.minimum().temperature().has_value() && 
+		!group.maximum().temperature().has_value()) {
+			result << " is not reported";
+			return(result.str());
+	}
+	result << lineBreak;
 	if (group.minimum().temperature().has_value()) {
 		result << "Minimum temperature ";
 		result << explainTemperature(group.minimum()) << lineBreak;
