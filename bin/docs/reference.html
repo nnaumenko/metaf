@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Reference &#8212; Metaf 2.4.1 documentation</title>
+    <title>Reference &#8212; Metaf 2.4.2 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -32,7 +32,7 @@
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.2 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -312,6 +312,73 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Stored temperature value converted into specified measurement unit or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if conversion failed or the stored value was not reported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p><strong>Additional values</strong></p>
+<blockquote>
+<div><dl class="function">
+<dt id="_CPPv4N5metaf11Temperature16relativeHumidityERK11TemperatureRK11Temperature">
+<span id="_CPPv3N5metaf11Temperature16relativeHumidityERK11TemperatureRK11Temperature"></span><span id="_CPPv2N5metaf11Temperature16relativeHumidityERK11TemperatureRK11Temperature"></span><span id="metaf::Temperature::relativeHumidity__TemperatureCR.TemperatureCR"></span><em class="property">static</em> std::optional&lt;float&gt; <code class="descname">relativeHumidity</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>airTemperature</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>dewPoint</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5metaf11Temperature16relativeHumidityERK11TemperatureRK11Temperature" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airTemperature</strong> – Ambient air temperature.</p></li>
+<li><p><strong>dewPoint</strong> – Dew point.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Relative humidity value based on ambient air temperature and dew point or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if ambient air temperature and/or dew point is not reported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N5metaf11Temperature9heatIndexERK11Temperaturef">
+<span id="_CPPv3N5metaf11Temperature9heatIndexERK11Temperaturef"></span><span id="_CPPv2N5metaf11Temperature9heatIndexERK11Temperaturef"></span><span id="metaf::Temperature::heatIndex__TemperatureCR.float"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">heatIndex</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>airTemperature</em>, float <em>relativeHumidity</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5metaf11Temperature9heatIndexERK11Temperaturef" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airTemperature</strong> – Ambient air temperature.</p></li>
+<li><p><strong>relativeHumidity</strong> – Relative humidity value in range 0.0 .. 100.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Heat index (perceived temperature adjusted for humidity) value based on ambient air temperature and relative humidity or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if ambient air temperature is not reported. An empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> is also returned for the conditions where heat index is not defined, i.e. relative himidity values below 40% or above 100% or the temperature values below 27 degrees Celsius.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N5metaf11Temperature9heatIndexERK11TemperatureRK11Temperature">
+<span id="_CPPv3N5metaf11Temperature9heatIndexERK11TemperatureRK11Temperature"></span><span id="_CPPv2N5metaf11Temperature9heatIndexERK11TemperatureRK11Temperature"></span><span id="metaf::Temperature::heatIndex__TemperatureCR.TemperatureCR"></span><em class="property">static</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> <code class="descname">heatIndex</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>airTemperature</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>dewPoint</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5metaf11Temperature9heatIndexERK11TemperatureRK11Temperature" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airTemperature</strong> – Ambient air temperature.</p></li>
+<li><p><strong>dewPoint</strong> – Dew point.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Heat index (perceived temperature adjusted for humidity) value based on ambient air temperature and dew point or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if ambient air temperature and/or dew point is not reported. Dewpoint and ambient air temperature values are used to calculate relative humidity. An empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> is returned for the conditions where heat index is not defined, i.e. relative himidity values below 40% or above 100% or the temperature values below 27 degrees Celsius.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="_CPPv4N5metaf11Temperature9windChillERK11TemperatureRK5Speed">
+<span id="_CPPv3N5metaf11Temperature9windChillERK11TemperatureRK5Speed"></span><span id="_CPPv2N5metaf11Temperature9windChillERK11TemperatureRK5Speed"></span><span id="metaf::Temperature::windChill__TemperatureCR.SpeedCR"></span><code class="descname">windChill</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf11TemperatureE" title="metaf::Temperature">Temperature</a> &amp;<em>airTemperature</em>, <em class="property">const</em> <a class="reference internal" href="#_CPPv4N5metaf5SpeedE" title="metaf::Speed">Speed</a> &amp;<em>windSpeed</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5metaf11Temperature9windChillERK11TemperatureRK5Speed" title="Permalink to this definition">¶</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>airTemperature</strong> – Ambient air temperature.</p></li>
+<li><p><strong>windSpeed</strong> – Wind speed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wind chill (perceived temperature adjusted for heat loss due to wind) value based on ambient air temperature and wind speed or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if ambient air temperature and/or wind speed is not reported. An empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> is also returned for the conditions where wind chill is not defined, i.e. temperature values above 10 degrees Celsius and/or wind speed below 4.8 km/h.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2620,16 +2687,6 @@ observed.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="_CPPv4NK5metaf16TemperatureGroup16relativeHumidityEv">
-<span id="_CPPv3NK5metaf16TemperatureGroup16relativeHumidityEv"></span><span id="_CPPv2NK5metaf16TemperatureGroup16relativeHumidityEv"></span><span id="metaf::TemperatureGroup::relativeHumidityC"></span>std::optional&lt;float&gt; <code class="descname">relativeHumidity</code><span class="sig-paren">(</span><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK5metaf16TemperatureGroup16relativeHumidityEv" title="Permalink to this definition">¶</a><br /></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Relative humidity value based on ambient air temperature and dew point or empty <code class="docutils literal notranslate"><span class="pre">std::optional</span></code> if ambient air temperature and/or dew point is not reported.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div></blockquote>
 <p><strong>Validating</strong></p>
 <blockquote>
@@ -4066,7 +4123,7 @@ observed.</p>
         <li class="right" >
           <a href="getting_started.html" title="Getting started"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">Metaf 2.4.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

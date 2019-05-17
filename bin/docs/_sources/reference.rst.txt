@@ -189,6 +189,40 @@ Temperature
 			:returns: Stored temperature value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
 
 
+	**Additional values**
+
+		.. cpp:function:: static std::optional<float> relativeHumidity(const Temperature & airTemperature, const Temperature & dewPoint)
+
+			:param airTemperature: Ambient air temperature.
+
+			:param dewPoint: Dew point.
+
+			:returns: Relative humidity value based on ambient air temperature and dew point or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
+
+		.. cpp:function:: static Temperature heatIndex(const Temperature & airTemperature, float relativeHumidity)
+
+			:param airTemperature: Ambient air temperature.
+
+			:param relativeHumidity: Relative humidity value in range 0.0 .. 100.0.
+
+			:returns: Heat index (perceived temperature adjusted for humidity) value based on ambient air temperature and relative humidity or empty ``std::optional`` if ambient air temperature is not reported. An empty ``std::optional`` is also returned for the conditions where heat index is not defined, i.e. relative himidity values below 40% or above 100% or the temperature values below 27 degrees Celsius.
+
+		.. cpp:function:: static Temperature heatIndex(const Temperature & airTemperature, const Temperature & dewPoint)
+
+			:param airTemperature: Ambient air temperature.
+
+			:param dewPoint: Dew point.
+
+			:returns: Heat index (perceived temperature adjusted for humidity) value based on ambient air temperature and dew point or empty ``std::optional`` if ambient air temperature and/or dew point is not reported. Dewpoint and ambient air temperature values are used to calculate relative humidity. An empty ``std::optional`` is returned for the conditions where heat index is not defined, i.e. relative himidity values below 40% or above 100% or the temperature values below 27 degrees Celsius.
+
+		.. cpp:function:: windChill(const Temperature & airTemperature, const Speed & windSpeed)
+
+			:param airTemperature: Ambient air temperature.
+
+			:param windSpeed: Wind speed.
+
+			:returns: Wind chill (perceived temperature adjusted for heat loss due to wind) value based on ambient air temperature and wind speed or empty ``std::optional`` if ambient air temperature and/or wind speed is not reported. An empty ``std::optional`` is also returned for the conditions where wind chill is not defined, i.e. temperature values above 10 degrees Celsius and/or wind speed below 4.8 km/h.
+
 	**Miscellaneous**
 
 		.. cpp:function:: bool isFreezing() const
@@ -2047,10 +2081,6 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 		.. cpp:function:: Temperature dewPoint() const
 
 			:returns: Dew point.
-
-		.. cpp:function:: std::optional<float> relativeHumidity() const
-
-			:returns: Relative humidity value based on ambient air temperature and dew point or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
 
 	**Validating**
 

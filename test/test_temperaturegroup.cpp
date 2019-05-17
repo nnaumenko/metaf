@@ -8,18 +8,17 @@
 #include "gtest/gtest.h"
 #include "metaf.h"
 
-static const auto rhMargin = 0.1;
-static const auto tempMargin = 0.1/2;
+static const auto margin = 0.1/2;
 
 TEST(TemperatureGroup, parseTemperatureAndDewPoint) {
 	const auto tg = metaf::TemperatureGroup::parse("25/18", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg->airTemperature().temperature().value(), 25, tempMargin);
+	EXPECT_NEAR(tg->airTemperature().temperature().value(), 25, margin);
 	EXPECT_FALSE(tg->airTemperature().isPrecise());
 	ASSERT_TRUE(tg->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg->dewPoint().temperature().value(), 18, tempMargin);
+	EXPECT_NEAR(tg->dewPoint().temperature().value(), 18, margin);
 	EXPECT_FALSE(tg->dewPoint().isPrecise());
 }
 
@@ -28,20 +27,20 @@ TEST(TemperatureGroup, parseTemperatureAndDewPointNegativeValues) {
 	ASSERT_TRUE(tg1.has_value());
 	EXPECT_EQ(tg1->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg1->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 5, tempMargin);
+	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 5, margin);
 	EXPECT_FALSE(tg1->airTemperature().isPrecise());
 	ASSERT_TRUE(tg1->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg1->dewPoint().temperature().value(), -2, tempMargin);
+	EXPECT_NEAR(tg1->dewPoint().temperature().value(), -2, margin);
 	EXPECT_FALSE(tg1->dewPoint().isPrecise());
 
 	const auto tg2 = metaf::TemperatureGroup::parse("M02/M04", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_EQ(tg2->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg2->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg2->airTemperature().temperature().value(), -2, tempMargin);
+	EXPECT_NEAR(tg2->airTemperature().temperature().value(), -2, margin);
 	EXPECT_FALSE(tg2->airTemperature().isPrecise());
 	ASSERT_TRUE(tg2->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -4, tempMargin);
+	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -4, margin);
 	EXPECT_FALSE(tg2->dewPoint().isPrecise());
 }
 
@@ -50,11 +49,11 @@ TEST(TemperatureGroup, parseTemperatureAndDewPointZero) {
 	ASSERT_TRUE(tg1.has_value());
 	EXPECT_EQ(tg1->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg1->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 0, tempMargin);
+	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 0, margin);
 	EXPECT_FALSE(tg1->airTemperature().isFreezing());
 	EXPECT_FALSE(tg1->airTemperature().isPrecise());
 	ASSERT_TRUE(tg1->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg1->dewPoint().temperature().value(), -2, tempMargin);
+	EXPECT_NEAR(tg1->dewPoint().temperature().value(), -2, margin);
 	EXPECT_TRUE(tg1->dewPoint().isFreezing());
 	EXPECT_FALSE(tg1->dewPoint().isPrecise());
 
@@ -62,11 +61,11 @@ TEST(TemperatureGroup, parseTemperatureAndDewPointZero) {
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_EQ(tg2->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg2->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg2->airTemperature().temperature().value(), 0, tempMargin);
+	EXPECT_NEAR(tg2->airTemperature().temperature().value(), 0, margin);
 	EXPECT_TRUE(tg2->airTemperature().isFreezing());
 	EXPECT_FALSE(tg2->airTemperature().isPrecise());
 	ASSERT_TRUE(tg2->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -2, tempMargin);
+	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -2, margin);
 	EXPECT_TRUE(tg2->dewPoint().isFreezing());
 	EXPECT_FALSE(tg2->dewPoint().isPrecise());
 
@@ -74,11 +73,11 @@ TEST(TemperatureGroup, parseTemperatureAndDewPointZero) {
 	ASSERT_TRUE(tg3.has_value());
 	EXPECT_EQ(tg3->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg3->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg3->airTemperature().temperature().value(), 2, tempMargin);
+	EXPECT_NEAR(tg3->airTemperature().temperature().value(), 2, margin);
 	EXPECT_FALSE(tg3->airTemperature().isFreezing());
 	EXPECT_FALSE(tg3->airTemperature().isPrecise());
 	ASSERT_TRUE(tg3->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg3->dewPoint().temperature().value(), 0, tempMargin);
+	EXPECT_NEAR(tg3->dewPoint().temperature().value(), 0, margin);
 	EXPECT_TRUE(tg3->dewPoint().isFreezing());
 	EXPECT_FALSE(tg3->dewPoint().isPrecise());
 
@@ -86,11 +85,11 @@ TEST(TemperatureGroup, parseTemperatureAndDewPointZero) {
 	ASSERT_TRUE(tg4.has_value());
 	EXPECT_EQ(tg4->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg4->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg4->airTemperature().temperature().value(), 2, tempMargin);
+	EXPECT_NEAR(tg4->airTemperature().temperature().value(), 2, margin);
 	EXPECT_FALSE(tg4->airTemperature().isFreezing());
 	EXPECT_FALSE(tg4->airTemperature().isPrecise());
 	ASSERT_TRUE(tg4->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg4->dewPoint().temperature().value(), 0, tempMargin);
+	EXPECT_NEAR(tg4->dewPoint().temperature().value(), 0, margin);
 	EXPECT_FALSE(tg4->dewPoint().isFreezing());
 	EXPECT_FALSE(tg4->dewPoint().isPrecise());
 }
@@ -100,7 +99,7 @@ TEST(TemperatureGroup, parseTemperatureOnly) {
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg->airTemperature().temperature().value(), -70, tempMargin);
+	EXPECT_NEAR(tg->airTemperature().temperature().value(), -70, margin);
 	EXPECT_FALSE(tg->airTemperature().isPrecise());
 	EXPECT_FALSE(tg->dewPoint().temperature().has_value());
 }
@@ -110,7 +109,7 @@ TEST(TemperatureGroup, parseDewPointNotReported) {
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg->airTemperature().temperature().value(), 25, tempMargin);
+	EXPECT_NEAR(tg->airTemperature().temperature().value(), 25, margin);
 	EXPECT_FALSE(tg->airTemperature().isPrecise());
 	EXPECT_FALSE(tg->dewPoint().temperature().has_value());
 }
@@ -152,19 +151,19 @@ TEST(TemperatureGroup, parseRemark) {
 	ASSERT_TRUE(tg1.has_value());
 	EXPECT_EQ(tg1->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg1->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 5.6, tempMargin);
+	EXPECT_NEAR(tg1->airTemperature().temperature().value(), 5.6, margin);
 	EXPECT_TRUE(tg1->airTemperature().isPrecise());
 	ASSERT_TRUE(tg1->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg1->dewPoint().temperature().value(), 2.8, tempMargin);
+	EXPECT_NEAR(tg1->dewPoint().temperature().value(), 2.8, margin);
 	EXPECT_TRUE(tg1->dewPoint().isPrecise());
 
 	const auto tg2 = metaf::TemperatureGroup::parse("T10171028", metaf::ReportPart::RMK);
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_EQ(tg2->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg2->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg2->airTemperature().temperature().value(), -1.7, tempMargin);
+	EXPECT_NEAR(tg2->airTemperature().temperature().value(), -1.7, margin);
 	ASSERT_TRUE(tg2->dewPoint().temperature().has_value());
-	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -2.8, tempMargin);
+	EXPECT_NEAR(tg2->dewPoint().temperature().value(), -2.8, margin);
 	EXPECT_TRUE(tg2->dewPoint().isPrecise());
 }
 
@@ -173,7 +172,7 @@ TEST(TemperatureGroup, parseRemarkTemperatureOnly) {
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->airTemperature().unit(), metaf::Temperature::Unit::C);
 	ASSERT_TRUE(tg->airTemperature().temperature().has_value());
-	EXPECT_NEAR(tg->airTemperature().temperature().value(), 26.1, tempMargin);
+	EXPECT_NEAR(tg->airTemperature().temperature().value(), 26.1, margin);
 	EXPECT_TRUE(tg->airTemperature().isPrecise());
 	EXPECT_FALSE(tg->dewPoint().temperature().has_value());
 }
@@ -264,30 +263,4 @@ TEST(TemperatureGroup, isValidFalse) {
 	const auto tg2 = metaf::TemperatureGroup::parse("M00/00", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_FALSE(tg2->isValid());
-}
-
-TEST(TemperatureGroup, relativeHumidity) {
-	const auto tg1 = metaf::TemperatureGroup::parse("25/25", metaf::ReportPart::METAR);
-	ASSERT_TRUE(tg1.has_value());
-	ASSERT_TRUE(tg1->isValid());
-	const auto rh1 = tg1->relativeHumidity();
-	EXPECT_NEAR(*rh1, 100.0, rhMargin);
-
-	const auto tg2 = metaf::TemperatureGroup::parse("25/26", metaf::ReportPart::METAR);
-	ASSERT_TRUE(tg2.has_value());
-	ASSERT_FALSE(tg2->isValid());
-	const auto rh2 = tg2->relativeHumidity();
-	EXPECT_NEAR(*rh2, 100.0, rhMargin);
-
-	const auto tg3 = metaf::TemperatureGroup::parse("35/05", metaf::ReportPart::METAR);
-	ASSERT_TRUE(tg3.has_value());
-	ASSERT_TRUE(tg3->isValid());
-	const auto rh3 = tg3->relativeHumidity();
-	EXPECT_NEAR(*rh3, 15.6, rhMargin);
-
-	const auto tg4 = metaf::TemperatureGroup::parse("17/08", metaf::ReportPart::METAR);
-	ASSERT_TRUE(tg4.has_value());
-	ASSERT_TRUE(tg4->isValid());
-	const auto rh4 = tg4->relativeHumidity();
-	EXPECT_NEAR(*rh4, 55.4, rhMargin);
 }

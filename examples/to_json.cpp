@@ -558,13 +558,15 @@ void GroupVisitorJson::visitTemperatureGroup(const metaf::TemperatureGroup & gro
 		"airTemperature", 
 		"airTemperatureUnit", 
 		"airTemperatureFreezing");
-	temperatureToJson(group.airTemperature(),
+	temperatureToJson(group.dewPoint(),
 		"dewPoint", 
 		"dewPointUnit", 
 		"dewPointFreezing");
-	if (auto rh = group.relativeHumidity(); rh.has_value()) {
-		json.valueFloat("airRelativeHumidify", *rh);
-		json.valueStr("airRelativeHumidifyUnit", "percent");
+	
+	if (auto rh = metaf::Temperature::relativeHumidity(group.airTemperature(), group.dewPoint()); 
+		rh.has_value()) {
+			json.valueFloat("airRelativeHumidify", *rh);
+			json.valueStr("airRelativeHumidifyUnit", "percent");
 	}
 	if (!group.isValid()) {
 		json.valueBool("airTemperatureValid", false);

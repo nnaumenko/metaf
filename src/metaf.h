@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 4;
-		static const int patch = 1;
+		static const int patch = 2;
 		inline static const char tag [] = "";
 	};
 
@@ -151,6 +151,8 @@ namespace metaf {
 		static const inline unsigned int maxMinute = 59;
 	};
 
+	class Speed;
+
 	class Temperature {
 	public:
 		enum class Unit {
@@ -165,10 +167,22 @@ namespace metaf {
 		std::optional<float> inline toUnit(Unit unit) const;
 		bool isFreezing() const { return(freezing); }
 		bool isPrecise() const { return(precise); }
+		inline static std::optional<float> relativeHumidity(
+			const Temperature & airTemperature,
+			const Temperature & dewPoint);
+		inline static Temperature heatIndex(const Temperature & airTemperature,
+			float relativeHumidity);
+		inline static Temperature heatIndex(const Temperature & airTemperature,
+			const Temperature & dewPoint);
+		inline static Temperature windChill(const Temperature & airTemperature, 
+			const Speed & windSpeed);
+
 		Temperature () = default;
 		static inline std::optional<Temperature> fromString(const std::string & s);
 		static inline std::optional<Temperature> fromRemarkString(const std::string & s);
 	private:
+		inline Temperature (float value);
+
 		std::optional<int> tempValue;
 		bool freezing = false;
 		static const Unit tempUnit = Unit::C;
@@ -841,7 +855,6 @@ namespace metaf {
 	public:
 		Temperature airTemperature() const { return(t); }
 		Temperature dewPoint() const { return(dp); }
-		inline std::optional<float> relativeHumidity() const;
 		inline bool isValid() const;
 
 		TemperatureGroup() = default;
@@ -1593,6 +1606,85 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
+	Temperature::Temperature(float value) :
+		tempValue(std::round(value * 10.0)), freezing(value < 0), precise(true)  {}
+
+	std::optional<float> Temperature::relativeHumidity(
+		const Temperature & airTemperature,
+		const Temperature & dewPoint)
+	{
+		const auto temperatureC = airTemperature.toUnit(Temperature::Unit::C);
+		const auto dewPointC = dewPoint.toUnit(Temperature::Unit::C);
+		if (!temperatureC.has_value() || !dewPointC.has_value()) {
+			return(std::optional<float>());
+		}
+		if (*temperatureC < *dewPointC) return(100.0);
+		const auto saturationVapourPressure = 
+			6.11 * powf(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
+		const auto actualVapourPressure = 
+			6.11 * powf(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
+		return (100.0 * actualVapourPressure / saturationVapourPressure);
+	}
+
+	Temperature Temperature::heatIndex(
+		const Temperature & airTemperature,
+		float relativeHumidity)
+	{
+		// Using formula from https://en.wikipedia.org/wiki/Heat_index
+		// (see formula for degrees Celsius)
+		// The formula is valid for temperature > 27 C and RH > 40%
+		const auto temperatureC = airTemperature.toUnit(Temperature::Unit::C);
+		if (!temperatureC.has_value() || temperatureC <27.0) return(Temperature());
+
+		if (relativeHumidity > 100.0 || relativeHumidity < 40.0) return(Temperature());
+
+		const auto c1 = -8.78469475556;
+    	const auto c2 = 1.61139411;
+    	const auto c3 = 2.33854883889;
+	    const auto c4 = -0.14611605;
+	    const auto c5 = -0.012308094;
+	    const auto c6 = -0.0164248277778;
+	    const auto c7 = 0.002211732;
+	    const auto c8 = 0.00072546;
+	    const auto c9 = -0.000003582;
+	    const auto t = temperatureC.value(), r = relativeHumidity;
+
+	    const auto heatIndexC = 
+	    	c1 + c2 * t + c3 * r + c4 * t * r + 
+	    	c5 * t * t + c6 * r * r +
+	    	c7 * t * t * r + c8 * t * r * r + c9 * t * t * r * r;
+
+	    return(Temperature(heatIndexC));
+	}
+
+	Temperature Temperature::heatIndex(
+		const Temperature & airTemperature,
+		const Temperature & dewPoint) 
+	{
+		const auto rh = relativeHumidity(airTemperature, dewPoint);
+		if (!rh.has_value()) return(Temperature());
+		return(heatIndex(airTemperature, rh.value()));
+	}
+
+	Temperature Temperature::windChill(
+		const Temperature & airTemperature, 
+		const Speed & windSpeed) 
+	{
+		const auto temperatureC = airTemperature.toUnit(Temperature::Unit::C);
+		if (!temperatureC.has_value() || temperatureC.value() > 10.0) return(Temperature());
+
+		const auto windKmh = windSpeed.toUnit(Speed::Unit::KILOMETERS_PER_HOUR);
+		if (!windKmh.has_value() || windKmh.value() < 4.8) return(Temperature());
+
+		const auto windChillC = 
+			13.12 + 
+			0.6215 * temperatureC.value() - 
+			11.37 * std::powf(windKmh.value(), 0.16) + 
+			0.3965 * temperatureC.value() * std::powf(windKmh.value(), 0.16);
+
+		return(Temperature(windChillC));
+	}
+
 	std::optional<Temperature> Temperature::fromString(const std::string & s) {
 		//static const std::regex rgx ("(?:(M)?(\\d\\d))|//");
 		std::optional<Temperature> error;
@@ -1623,11 +1715,9 @@ namespace metaf {
 		if (s[0] != '0' && s[0] != '1') return(error);
 		const auto t = strToUint(s, 1, 3);
 		if (!t.has_value()) return(error);
-		Temperature temperature;
-		temperature.tempValue = (s[0] != '1') ? t.value() : - t.value();
-		temperature.precise = true;
-		temperature.freezing = (s[0] == '1');
-		return(temperature);
+		int tValueSigned = t.value();
+		if (s[0] == '1') tValueSigned = -tValueSigned;
+		return(Temperature(tValueSigned / 10.0));
 	}
 
 	std::optional<float> Temperature::toUnit(Unit unit) const {
@@ -2954,20 +3044,6 @@ namespace metaf {
 	}
 
 	///////////////////////////////////////////////////////////////////////////
-
-	std::optional<float> TemperatureGroup::relativeHumidity() const {
-		const auto temperatureC = airTemperature().toUnit(Temperature::Unit::C);
-		const auto dewPointC = dewPoint().toUnit(Temperature::Unit::C);
-		if (!temperatureC.has_value() || !dewPointC.has_value()) {
-			return(std::optional<float>());
-		}
-		if (*temperatureC < *dewPointC) return(100.0);
-		const auto saturationVapourPressure = 
-			6.11 * powf(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
-		const auto actualVapourPressure = 
-			6.11 * powf(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
-		return (100.0 * actualVapourPressure / saturationVapourPressure);
-	}
 
 	bool TemperatureGroup::isValid() const {
 		// Either temperature or dew point not reported: always valid
