@@ -17,25 +17,12 @@ build:
     paths:
       - ci-build/
 
-.tests:
-  stage: test
-  image: ubuntu:16.04
-  script:
-  - echo Work in progress, see branch ci/tests_gitlab
-  - echo So far we only check that prebuilt test.xml file exists and no failures included
-  - test -f bin/test/test.xml
-  - cat bin/test/test.xml | grep 'failures="[1-9]' | [ $(wc -c) -eq 0 ]
-  dependencies:
-    - build
-  artifacts:
-    reports:
-      junit: bin/test/test.xml
-
 pages:
   stage: deploy
   script:
     - mkdir public
     - cp -r ci-build/* public
+    - cp pages/* public
   dependencies:
     - build
   artifacts:

@@ -45,6 +45,9 @@ $RECYCLE.BIN/
 #Small helper projects/utilities/drafts
 misc/
 
+#Binary files (CI is used instead)
+bin/
+
 #Object files
 build/*.*
 build/test/*.*
