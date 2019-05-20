@@ -224,6 +224,15 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group) {
 		(void)group; return("PrecipitationGroup");
 	}
+	virtual std::string visitLayerForecastGroup(const metaf::LayerForecastGroup & group) {
+		(void)group; return("LayerForecastGroup");
+	}
+	virtual std::string visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group) {
+		(void)group; return("PressureTendencyGroup");
+	}
+	virtual std::string visitMiscGroup(const metaf::MiscGroup & group) {
+		(void)group; return("MiscGroup");
+	}
 	virtual std::string visitOther(const metaf::Group & group) {
 		(void)group; return("Unknown Group");
 	}

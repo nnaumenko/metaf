@@ -478,6 +478,41 @@ TEST(Distance, fromRvrStringWrongFormat) {
 	EXPECT_FALSE(metaf::Distance::fromRvrString("/////", false).has_value());
 }
 
+TEST(Distance, fromLayerString) {
+	const auto d = metaf::Distance::fromLayerString("0314");
+	ASSERT_TRUE(d.has_value());
+
+	const auto d1 = std::get<0>(d.value());
+	EXPECT_EQ(d1.unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(d1.modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(d1.integer().has_value());
+	EXPECT_EQ(d1.integer().value(), 3100u);
+	EXPECT_FALSE(d1.numerator().has_value());
+	EXPECT_FALSE(d1.denominator().has_value());
+
+
+	const auto d2 = std::get<1>(d.value());
+	EXPECT_EQ(d2.unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(d2.modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(d2.integer().has_value());
+	EXPECT_EQ(d2.integer().value(), 7100u);
+	EXPECT_FALSE(d2.numerator().has_value());
+	EXPECT_FALSE(d2.denominator().has_value());
+}
+
+TEST(Distance, fromLayerStringWrongFormat) {
+	EXPECT_FALSE(metaf::Distance::fromLayerString("").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("////").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("003/").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("///3").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("00304").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("304").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("030A").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("A304").has_value());
+	EXPECT_FALSE(metaf::Distance::fromLayerString("03A4").has_value());
+}
+
+
 TEST(Distance, fromIntegerAndFraction) {
 	const auto integer = metaf::Distance(2, metaf::Distance::Unit::STATUTE_MILES);
 	const auto fraction = metaf::Distance::fromMileString("1/4SM");

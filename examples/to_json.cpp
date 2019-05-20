@@ -152,12 +152,16 @@ private:
 	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group);
 	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group);
 	virtual void visitPrecipitationGroup(const metaf::PrecipitationGroup & group);
+	virtual void visitLayerForecastGroup(const metaf::LayerForecastGroup & group);
+	virtual void visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group);
+	virtual void visitMiscGroup(const metaf::MiscGroup & group);
 	virtual void visitOther(const metaf::Group & group);
 
 	MakeJson json;
 	bool isTrend = false;
 	bool isRemark = false;
 	int plainTextCounter = 0;
+	int layerForecastCounter = 0;
 	metaf::Group lastGroup;
 	void similarGroupsToArrays(const metaf::Group & group);
 
@@ -205,6 +209,11 @@ private:
 		std::string_view waveHeightName,
 		std::string_view waveHeightUnitName,
 		std::string_view undefinedTypeName);
+	void atmosphericLayerToJson(const metaf::LayerForecastGroup::Type type,
+		std::string_view typeName,
+		std::string_view descriptionName,
+		std::string_view severityName,
+		std::string_view frequencyName);
 
 	static std::string undefinedToString(int value);
 	static std::string reportTypeToString(metaf::ReportType reportType);
@@ -226,6 +235,8 @@ private:
 		metaf::RunwayStateGroup::Extent extent);
 	static std::string colourCodeToString(metaf::ColourCodeGroup::Code code);
 	static std::string precipitationGroupTypeToString(metaf::PrecipitationGroup::Type type);
+	static std::string pressureTendencyTypeToString(metaf::PressureTendencyGroup::Type type);
+	static std::string pressureTendencyTrendToString(metaf::PressureTendencyGroup::Trend type);
 };
 
 void GroupVisitorJson::toJson(metaf::ReportType reportType, 
@@ -772,6 +783,54 @@ void GroupVisitorJson::visitPrecipitationGroup(
 		typeStr + "Status");	
 }
 
+void GroupVisitorJson::visitLayerForecastGroup(
+	const metaf::LayerForecastGroup & group)
+{
+	const auto name = "atmosphericLayerForecast"s + std::to_string(layerForecastCounter++);
+	json.startObject(name);
+	atmosphericLayerToJson(group.type(), "type", "description", "severity", "frequency");
+	distanceToJson(group.baseHeight(), 
+		"layerBaseHeight",
+		"layerBaseHeightUnit",
+		"layerBaseHeightModifier");
+	distanceToJson(group.topHeight(),
+		"layerTopHeight",
+		"layerTopHeightUnit",
+		"layerTopHeightModifier");
+	json.finish();
+}
+
+void GroupVisitorJson::visitPressureTendencyGroup(
+	const metaf::PressureTendencyGroup & group)
+{
+	json.startObject("pressureTendency");
+	json.valueStr("tendency", 
+		pressureTendencyTypeToString(group.type()));
+	json.valueStr("trend", 
+		pressureTendencyTrendToString(metaf::PressureTendencyGroup::trend(group.type())));
+	json.valueStr("observationPeriod", "3-hourly");
+	pressureToJson(group.difference(), 
+		"pressureChange",
+		"pressureChangeUnit");
+	json.finish();
+}
+
+void GroupVisitorJson::visitMiscGroup(
+	const metaf::MiscGroup & group)
+{
+	switch (group.type()) {
+		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
+		if (!group.value().has_value()) break;
+		json.valueInt("sunshineDuration", group.value().value());
+		json.valueStr("sunshineDurationUnit", "minutes");
+		break;
+
+		default:
+		break;
+	}	
+}
+
+
 
 void GroupVisitorJson::visitOther(const metaf::Group & group) {
 	(void)group;
@@ -1171,6 +1230,156 @@ void GroupVisitorJson::waveHeightToJson(const metaf::WaveHeight waveHeight,
 	}
 }
 
+void GroupVisitorJson::atmosphericLayerToJson(const metaf::LayerForecastGroup::Type type,
+	std::string_view typeName,
+	std::string_view descriptionName,
+	std::string_view severityName,
+	std::string_view frequencyName)
+{
+	std::string typeStr, descriptionStr, severityStr, frequencyStr;
+	switch (type) {
+		case metaf::LayerForecastGroup::Type::ICING_TRACE_OR_NONE:
+		typeStr = "icing";
+		descriptionStr = "traceOrNone";
+		severityStr = "none";
+		break;
+
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_MIXED:
+		typeStr = "icing";
+		descriptionStr = "mixed";
+		severityStr = "light";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_RIME_IN_CLOUD:
+		typeStr = "icing";
+		descriptionStr = "rimeInCloud";
+		severityStr = "light";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_CLEAR_IN_PRECIPITATION:
+		typeStr = "icing";
+		descriptionStr = "clearInPrecipitation";
+		severityStr = "light";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_MIXED:
+		typeStr = "icing";
+		descriptionStr = "mixed";
+		severityStr = "moderate";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_RIME_IN_CLOUD:
+		typeStr = "icing";
+		descriptionStr = "rimeInCloud";
+		severityStr = "moderate";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_CLEAR_IN_PRECIPITATION:
+		typeStr = "icing";
+		descriptionStr = "clearInPrecipitation";
+		severityStr = "moderate";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_MIXED:
+		typeStr = "icing";
+		descriptionStr = "mixed";
+		severityStr = "severe";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_RIME_IN_CLOUD:
+		typeStr = "icing";
+		descriptionStr = "rimeInCloud";
+		severityStr = "severe";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION:
+		typeStr = "icing";
+		descriptionStr = "clearInPrecipitation";
+		severityStr = "severe";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_NONE:
+		typeStr = "turbulence";
+		severityStr = "none";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT:
+		typeStr = "turbulence";
+		severityStr = "light";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL:
+		typeStr = "turbulence";
+		descriptionStr = "clearAir";
+		severityStr = "moderate";
+		frequencyStr = "occasional";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
+		typeStr = "turbulence";
+		descriptionStr = "clearAir";
+		severityStr = "moderate";
+		frequencyStr = "frequent";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL:
+		typeStr = "turbulence";
+		descriptionStr = "inCloud";
+		severityStr = "moderate";
+		frequencyStr = "occasional";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
+		typeStr = "turbulence";
+		descriptionStr = "inCloud";
+		severityStr = "moderate";
+		frequencyStr = "frequent";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL:
+		typeStr = "turbulence";
+		descriptionStr = "clearAir";
+		severityStr = "severe";
+		frequencyStr = "occasional";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
+		typeStr = "turbulence";
+		descriptionStr = "clearAir";
+		severityStr = "severe";
+		frequencyStr = "frequent";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL:
+		typeStr = "turbulence";
+		descriptionStr = "inCloud";
+		severityStr = "severe";
+		frequencyStr = "occasional";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
+		typeStr = "turbulence";
+		descriptionStr = "inCloud";
+		severityStr = "severe";
+		frequencyStr = "frequent";
+		break;
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME:
+		typeStr = "turbulence";
+		severityStr = "extreme";
+		break;
+		
+		default:
+		undefinedToJson(static_cast<int>(type), typeName);
+		return;
+	}
+	if (!typeStr.empty()) json.valueStr(typeName, typeStr);
+	if (!descriptionStr.empty()) json.valueStr(descriptionName, descriptionStr);
+	if (!severityStr.empty()) json.valueStr(severityName, severityStr);
+	if (!frequencyStr.empty()) json.valueStr(frequencyName, frequencyStr);
+
+}
+
 std::string GroupVisitorJson::undefinedToString(int value) {
 	return("undefined_"s + std::to_string(value));
 }
@@ -1521,6 +1730,68 @@ std::string GroupVisitorJson::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
 		return("waterEquivalentOfSnowOnGround");
+
+		default: return(undefinedToString(static_cast<int>(type)));
+	}
+}
+
+std::string GroupVisitorJson::pressureTendencyTypeToString(
+	metaf::PressureTendencyGroup::Type type)
+{
+	switch(type) {
+		case metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING:
+		return("increasingThenDecreasing");
+		
+		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_SLOWLY:
+		return("increasingMoreSlowly");
+
+		case metaf::PressureTendencyGroup::Type::INCREASING:
+		return("increasingSteadilyOrUnsteadily");
+
+		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_RAPIDLY:
+		return("increasingMoreRapidly");
+		
+		case metaf::PressureTendencyGroup::Type::STEADY:
+		return("steady");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_THEN_INCREASING:
+		return("decreasingThenIncreasing");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_SLOWLY:
+		return("decreasingMoreSlowly");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING:
+		return("decreasingSteadilyOrUnsteadily");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
+		return("decreasingMoreRapidly");
+		
+		default:
+		return(undefinedToString(static_cast<int>(type)));
+	}
+}
+
+std::string GroupVisitorJson::pressureTendencyTrendToString(
+	metaf::PressureTendencyGroup::Trend trend)
+{
+	switch(trend) {
+		case metaf::PressureTendencyGroup::Trend::HIGHER:
+		return("higherThanBefore");
+
+		case metaf::PressureTendencyGroup::Trend::HIGHER_OR_SAME:
+		return("higherOrSameAsBefore");
+
+		case metaf::PressureTendencyGroup::Trend::SAME:
+		return("sameAsBefore");
+
+		case metaf::PressureTendencyGroup::Trend::LOWER_OR_SAME:
+		return("lowerOrSameAsBefore");
+
+		case metaf::PressureTendencyGroup::Trend::LOWER:
+		return("lowerThanBefore");
+
+		default:
+		return(undefinedToString(static_cast<int>(trend)));
 	}
 }
 

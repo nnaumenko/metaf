@@ -2685,9 +2685,9 @@ Examples of the raw report data are ``401120084``, ``20012``, and ``11021``.
 
 	**Validating**
 
-	.. cpp:function:: bool isValid() const
+		.. cpp:function:: bool isValid() const
 
-		:returns: Always returns ``true``.
+			:returns: Always returns ``true``.
 
 
 .. index:: single: Group; Precipitation
@@ -2737,7 +2737,7 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of value reporte in this group.
+			:returns: Type of value reported in this group.
 
 		.. cpp:function:: Precipitation amount() const
 
@@ -2745,9 +2745,277 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 	**Validating**
 
-	.. cpp:function:: bool isValid() const
+		.. cpp:function:: bool isValid() const
 
-		:returns: Always returns ``true``.
+			:returns: Always returns ``true``.
+
+
+.. index:: single: Group; Atmospheric Layer Forecast
+
+LayerForecastGroup
+^^^^^^^^^^^^^^^^^^
+
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: layerforecastgroup.svg
+
+Examples of the raw report data are ``520004``, and ``620304``. 
+
+.. cpp:class:: LayerForecastGroup
+
+	Stores various information about forecast atmospheric layer (span of heights where certain conditions such as icing or turbulence are forecast). This group may be present in TAFs issued at military aerodromes of NATO countries.
+
+	.. cpp:enum-class:: Type
+
+		Provides description of the atmospheric layer reported in this group.
+
+		.. cpp:enumerator:: ICING_TRACE_OR_NONE
+
+			Trace Icing or No Icing.
+
+		.. cpp:enumerator:: ICING_LIGHT_MIXED
+
+			Light Mixed Icing.
+
+		.. cpp:enumerator:: ICING_LIGHT_RIME_IN_CLOUD
+
+			Light Rime Icing In Cloud.
+
+		.. cpp:enumerator:: ICING_LIGHT_CLEAR_IN_PRECIPITATION
+
+			Light Clear Icing In Precipitation.
+
+		.. cpp:enumerator:: ICING_MODERATE_MIXED
+
+			Moderate Mixed Icing.
+
+		.. cpp:enumerator:: ICING_MODERATE_RIME_IN_CLOUD
+
+			Moderate Rime Icing In Cloud.
+
+		.. cpp:enumerator:: ICING_MODERATE_CLEAR_IN_PRECIPITATION
+
+			Moderate Clear Icing In Precipitation.
+
+		.. cpp:enumerator:: ICING_SEVERE_MIXED
+
+			Severe Mixed Icing.
+
+		.. cpp:enumerator:: ICING_SEVERE_RIME_IN_CLOUD
+
+			Severe Rime Icing In Cloud.
+
+		.. cpp:enumerator:: ICING_SEVERE_CLEAR_IN_PRECIPITATION
+
+			Severe Rime Icing In Cloud.
+
+		.. cpp:enumerator:: TURBULENCE_NONE
+
+			No turbulence.
+
+		.. cpp:enumerator:: TURBULENCE_LIGHT
+
+			Light turbulence.
+
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL
+
+			Moderate turbulence in clear air, occasional.
+
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT
+
+			Moderate turbulence in clear air, frequent.
+
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL
+
+			Moderate turbulence in cloud, occasional.
+
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_FREQUENT
+
+			Moderate turbulence in cloud, frequent.
+
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL
+
+			Severe turbulence in clear air, occasional.
+
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT
+
+			Severe turbulence in clear air, frequent.
+
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL
+
+			Severe turbulence in cloud, occasional.
+
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_FREQUENT
+
+			Severe turbulence in cloud, frequent.
+
+		.. cpp:enumerator:: TURBULENCE_EXTREME
+
+			Extreme turbulence.
+
+	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of atmospheric layers reported in this group.
+
+		.. cpp:function:: Distance baseHeight() const
+
+			:returns: Height of atmospheric layer base (bottom range).
+
+		.. cpp:function:: Distance topHeight() const
+
+			:returns: Height of atmospheric layer top (top range).
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: Always returns ``true``.
+
+
+
+.. index:: single: Group; 3-hourly Atmospheric Pressure Tendency
+
+PressureTendencyGroup
+^^^^^^^^^^^^^^^^^^^^^
+
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: pressuretendencygroup.svg
+
+Example of the raw report data is ``52032``. 
+
+.. cpp:class:: PressureTendencyGroup
+
+	Stores information about atmospheric pressure tendency for the last 3 hours. This group is used in North America and is included in remarks.
+
+	.. cpp:enum-class:: Type
+
+		Indicates the nature of atmospheric pressure change reported in this group.
+
+		.. cpp:enumerator:: INCREASING_THEN_DECREASING
+
+			Atmospheric pressure was increasing, then decreasing.
+
+		.. cpp:enumerator:: INCREASING_MORE_SLOWLY
+
+			Atmospheric pressure was increasing, then steady, or increasing then increasing more slowly.
+
+		.. cpp:enumerator:: INCREASING
+
+			Atmospheric pressure was increasing steadily or unsteadily.
+
+		.. cpp:enumerator:: INCREASING_MORE_RAPIDLY
+
+			Atmospheric pressure was decreasing or steady, then increasing; or increasing then increasing more rapidly.
+
+		.. cpp:enumerator:: STEADY
+
+			Atmospheric pressure was steady.
+
+		.. cpp:enumerator:: DECREASING_THEN_INCREASING
+
+			Atmospheric pressure was decreasing, then increasing.
+
+		.. cpp:enumerator:: DECREASING_MORE_SLOWLY
+
+			Atmospheric pressure was decreasing then steady; or decreasing then decreasing more slowly.
+
+		.. cpp:enumerator:: DECREASING
+
+			Atmospheric pressure was decreasing steadily or unsteadily.
+
+		.. cpp:enumerator:: DECREASING_MORE_RAPIDLY
+
+			Atmospheric pressure was steady or increasing, then decreasing; or decreasing then decreasing more rapidly.
+
+	.. cpp:enum-class:: Trend
+
+		Indicates the trend of atmospheric pressure changes reported in this group.
+
+		.. cpp:enumerator:: MORE
+
+			Atmospheric pressure is higher than 3 hours ago.
+
+		.. cpp:enumerator:: MORE_OR_SAME
+
+			Atmospheric pressure is higher than or the same as 3 hours ago.
+
+		.. cpp:enumerator:: SAME
+
+			Atmospheric pressure is the same as 3 hours ago.
+
+		.. cpp:enumerator:: LESS_OR_SAME
+
+			Atmospheric pressure is lower than or the same as 3 hours ago.
+
+		.. cpp:enumerator:: LESS
+
+			Atmospheric pressure is lower than 3 hours ago.
+
+	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Nature of atmospheric pressure changes for last 3 hours.
+
+		.. cpp:function:: Trend trend() const
+
+			:returns: Trend of atmospheric pressure changes for last 3 hours.
+
+		.. cpp:function:: Pressure difference() const
+
+			:returns: Absolute value of atmospheric pressure change for the last 3 hours.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: Always returns ``true``.
+
+
+
+.. index:: single: Group; Miscellaneous
+
+MiscGroup
+^^^^^^^^^
+
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: miscgroup.svg
+
+Example of the raw report data is ``98096``. 
+
+.. cpp:class:: MiscGroup
+
+	Stores various values provided in METAR or TAF report.
+
+	.. cpp:enum-class:: Type
+
+		Indicates the type of the value reported in this group.
+
+		.. cpp:enumerator:: SUNSHINE_DURATION_MINUTES
+
+			Sunshine duration in minutes that occurred the previous calendar day (or zero if no sunshine occurred).
+
+	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of value reported in this group.
+
+		.. cpp:function:: std::optional<float> value() const
+
+			:returns: The value reported in this group, or empty ``std::optional`` if the value is not reported.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: The following values are returned depending on type of the value:
+
+				* If sunshine duration value is reported, always returns ``true``.
 
 
 

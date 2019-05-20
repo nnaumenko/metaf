@@ -3,7 +3,7 @@ About Metaf
 
 .. index:: single: Metaf
 
-Metaf is a header-only, dependency-free modern c++ library for parsing METAR weather reports and TAF weather forecasts used in aviation. 
+Metaf is a header-only, dependency-free modern C++ library for parsing METAR weather reports and TAF weather forecasts used in aviation. 
 
 .. index:: single: Metaf;License
 

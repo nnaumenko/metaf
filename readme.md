@@ -1,4 +1,4 @@
-# Modern c++ library for parsing METAR and TAF with focus on Webassembly
+# Modern C++ library for parsing METAR and TAF with focus on Webassembly
 
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)

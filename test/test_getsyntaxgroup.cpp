@@ -314,6 +314,12 @@ TEST(getSyntaxGroup, OTHER_RunwayStateGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_WindShearLowLayerGroup) {
+	const auto g = metaf::WindShearLowLayerGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_RainfallGroup) {
 	const auto g = metaf::RainfallGroup::parse("RF00.0/000.0", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
@@ -326,8 +332,38 @@ TEST(getSyntaxGroup, OTHER_SeaSurfaceGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
- TEST(getSyntaxGroup, OTHER_ColourCodeGroup) {
+TEST(getSyntaxGroup, OTHER_ColourCodeGroup) {
 	const auto g = metaf::ColourCodeGroup::parse("AMB", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_MinMaxTemperatureGroup) {
+	const auto g = metaf::MinMaxTemperatureGroup::parse("401120084", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PrecipitationGroup) {
+	const auto g = metaf::PrecipitationGroup::parse("P2168", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_LayerForecastGroup) {
+	const auto g = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_PressureTendencyGroup) {
+	const auto g = metaf::PressureTendencyGroup::parse("52032", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_MiscGroup) {
+	const auto g = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

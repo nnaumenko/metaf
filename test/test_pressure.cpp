@@ -162,6 +162,25 @@ TEST(Pressure, fromQfeStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761/1015Q"));
 }
 
+TEST(Pressure, fromTendencyString) {
+	const auto p = metaf::Pressure::fromTendencyString("032");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_EQ(p->unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	ASSERT_TRUE(p->pressure().has_value());
+	EXPECT_NEAR(p->pressure().value(), 3.2, margin);
+}
+
+TEST(Pressure, fromTendencyStringWrongFormat) {
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString(""));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("///"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("0032"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("32"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("A32"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("03A"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("03.2"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("3.2"));
+}
+
 TEST(Pressure, toUnitSameUnit) {
 	const auto p1 = metaf::Pressure::fromString("A2934");
 	ASSERT_TRUE(p1.has_value());

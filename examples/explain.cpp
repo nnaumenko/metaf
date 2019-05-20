@@ -44,6 +44,10 @@ private:
 	virtual std::string visitMinMaxTemperatureGroup(
 		const metaf::MinMaxTemperatureGroup & group);
 	virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group);
+	virtual std::string visitLayerForecastGroup(const metaf::LayerForecastGroup & group);
+	virtual std::string visitPressureTendencyGroup(
+		const metaf::PressureTendencyGroup & group);
+	virtual std::string visitMiscGroup(const metaf::MiscGroup & group);
 	virtual std::string visitOther(const metaf::Group & group);
 
 	static std::string explainRunway(const metaf::Runway & runway);
@@ -78,7 +82,14 @@ private:
 	static std::string_view colourCodeToString(metaf::ColourCodeGroup::Code code);
 	static unsigned int colourCodeVisibility(metaf::ColourCodeGroup::Code code);
 	static unsigned int colourCodeCeiling(metaf::ColourCodeGroup::Code code);
-	static std::string_view precipitationGroupType(metaf::PrecipitationGroup::Type type);
+	static std::string_view precipitationGroupTypeToString(
+		metaf::PrecipitationGroup::Type type);
+	static std::string_view layerForecastGroupTypeToString(
+		metaf::LayerForecastGroup::Type type);
+	static std::string_view pressureTendencyTypeToString(
+		metaf::PressureTendencyGroup::Type type);
+	static std::string_view pressureTendencyTrendToString(
+		metaf::PressureTendencyGroup::Trend trend);
 
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
 
@@ -605,10 +616,62 @@ std::string GroupVisitorExplain::visitPrecipitationGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << precipitationGroupType(group.type()) << " is ";
+	result << precipitationGroupTypeToString(group.type()) << " is ";
 	result << explainPrecipitation(group.amount());
 	return(result.str());
 }
+
+std::string GroupVisitorExplain::visitLayerForecastGroup(
+	const metaf::LayerForecastGroup & group)
+{
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	result << layerForecastGroupTypeToString(group.type());
+	result << " at heights from " << explainDistance(group.baseHeight());
+	result << " to " << explainDistance(group.topHeight());
+	return(result.str());	
+}
+
+std::string GroupVisitorExplain::visitPressureTendencyGroup(
+		const metaf::PressureTendencyGroup & group)
+{
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	result << "During last 3 hours the atmospheric pressure was ";
+	result << pressureTendencyTypeToString (group.type()) << lineBreak;
+	result << "Now pressure is ";
+	result << pressureTendencyTrendToString(
+		metaf::PressureTendencyGroup::trend(group.type()));
+	result << " 3 hours ago, absolute pressure change is ";
+	result << explainPressure(group.difference());
+	return(result.str());	
+}
+
+std::string GroupVisitorExplain::visitMiscGroup(const metaf::MiscGroup & group) {
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	switch (group.type()) {
+		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
+		if (group.value().has_value()) {
+			if (const auto duration = group.value(); duration.has_value()) {
+				if (!duration.value()) {
+					result << "No sunshine occurred the previous calendar day";
+				} else {
+					result << "Duration of sunshine ";
+					result << "that occurred the previous calendar day is ";
+					result << duration.value() << " minutes";
+				}
+			}
+		}
+		break;
+
+		default:
+		result << "[unknown miscellaneous group type]";
+		break;
+	}
+	return(result.str());
+}
+
 
 std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
 	(void)group;
@@ -1443,7 +1506,7 @@ unsigned int GroupVisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code
 	}
 }
 
-std::string_view GroupVisitorExplain::precipitationGroupType(
+std::string_view GroupVisitorExplain::precipitationGroupTypeToString(
 	metaf::PrecipitationGroup::Type type)
 {
 	switch (type) {
@@ -1464,8 +1527,146 @@ std::string_view GroupVisitorExplain::precipitationGroupType(
 
 		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
 		return("Water equivalent of snow on ground");
+
+		default:
+		return("[unknown precipitation type]");
 	}
 }
+
+std::string_view GroupVisitorExplain::layerForecastGroupTypeToString(
+	metaf::LayerForecastGroup::Type type)
+{
+	switch(type) {
+		case metaf::LayerForecastGroup::Type::ICING_TRACE_OR_NONE:
+		return("Trace icing or no icing");
+
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_MIXED:
+		return("Light mixed icing");
+		
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_RIME_IN_CLOUD:
+		return("Light rime icing in cloud");
+		
+		case metaf::LayerForecastGroup::Type::ICING_LIGHT_CLEAR_IN_PRECIPITATION:
+		return("Light clear icing in precipitation");
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_MIXED:
+		return("Moderate mixed icing");
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_RIME_IN_CLOUD:
+		return("Moderate rime icing in cloud");
+		
+		case metaf::LayerForecastGroup::Type::ICING_MODERATE_CLEAR_IN_PRECIPITATION:
+		return("Moderate clear icing in precipitation");
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_MIXED:
+		return("Severe mixed icing");
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_RIME_IN_CLOUD:
+		return("Severe rime icing in cloud");
+		
+		case metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION:
+		return("Severe clear icing in precipitation");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_NONE:
+		return("No turbulence");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT:
+		return("Light turbulence");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL:
+		return("Occasional moderate turbulence in clear air");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
+		return("Frequent moderate turbulence in clear air");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL:
+		return("Occasional moderate turbulence in cloud");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
+		return("Frequent moderate turbulence in cloud");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL:
+		return("Occasional severe turbulence in clear air");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
+		return("Frequent severe turbulence in clear air");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL:
+		return("Occasional severe turbulence in cloud");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
+		return("Frequent severe turbulence in cloud");
+		
+		case metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME:
+		return("Extreme turbulence");
+		
+		default:
+		return("[unknown atmospheric layer type]");
+	}
+}
+
+
+std::string_view GroupVisitorExplain::pressureTendencyTypeToString(
+	metaf::PressureTendencyGroup::Type type)
+{
+	switch(type) {
+		case metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING:
+		return("increasing, then decreasing");
+		
+		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_SLOWLY:
+		return("increasing, then steady, or increasing then increasing more slowly");
+
+		case metaf::PressureTendencyGroup::Type::INCREASING:
+		return("increasing steadily or unsteadily");
+
+		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_RAPIDLY:
+		return("decreasing or steady, then increasing; or increasing then increasing more rapidly");
+		
+		case metaf::PressureTendencyGroup::Type::STEADY:
+		return("steady");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_THEN_INCREASING:
+		return("decreasing, then increasing");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_SLOWLY:
+		return("decreasing then steady; or decreasing then decreasing more slowly");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING:
+		return("decreasing steadily or unsteadily");
+		
+		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
+		return("steady or increasing, then decreasing; or decreasing then decreasing more rapidly");
+		
+		default:
+		return("[unknown pressure tendency]");
+	}
+
+}
+
+std::string_view GroupVisitorExplain::pressureTendencyTrendToString(
+	metaf::PressureTendencyGroup::Trend trend)
+{
+	switch(trend) {
+		case metaf::PressureTendencyGroup::Trend::HIGHER:
+		return("higher than");
+
+		case metaf::PressureTendencyGroup::Trend::HIGHER_OR_SAME:
+		return("higher or the same as");
+
+		case metaf::PressureTendencyGroup::Trend::SAME:
+		return("same as");
+
+		case metaf::PressureTendencyGroup::Trend::LOWER_OR_SAME:
+		return("lower or the same as");
+
+		case metaf::PressureTendencyGroup::Trend::LOWER:
+		return("lower than");
+
+		default:
+		return("[unknown pressure trend]");
+	}	
+}
+
 
 std::string GroupVisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint) {
 	static const char decimalPoint = '.';

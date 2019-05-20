@@ -106,6 +106,15 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::PrecipitationGroup>():
 		return("PrecipitationGroup");
 
+		case variant_index<metaf::Group, metaf::LayerForecastGroup>():
+		return("LayerForecastGroup");
+
+		case variant_index<metaf::Group, metaf::PressureTendencyGroup>():
+		return("PressureTendencyGroup");
+
+		case variant_index<metaf::Group, metaf::MiscGroup>():
+		return("MiscGroup");
+
 		default: return("UNDEFINED");
 	}
 }

@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 4;
-		static const int patch = 2;
+		static const int minor = 5;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -50,6 +50,9 @@ namespace metaf {
 	class ColourCodeGroup;
 	class MinMaxTemperatureGroup;
 	class PrecipitationGroup;
+	class LayerForecastGroup;
+	class PressureTendencyGroup;
+	class MiscGroup;
 
 	// A variant type for all possible METAR and TAF groups.
 	using Group = std::variant<
@@ -72,7 +75,10 @@ namespace metaf {
 		SeaSurfaceGroup,
 		ColourCodeGroup,
 		MinMaxTemperatureGroup,
-		PrecipitationGroup
+		PrecipitationGroup,
+		LayerForecastGroup,
+		PressureTendencyGroup,
+		MiscGroup
 	>;
 
 	enum class ReportPart {
@@ -263,7 +269,8 @@ namespace metaf {
 		static inline std::optional<Distance> fromMileString(const std::string & s);
 		static inline std::optional<Distance> fromHeightString(const std::string & s);
 		static inline std::optional<Distance> fromRvrString(const std::string & s, bool unitFeet);
-
+		static inline std::optional< std::pair<Distance,Distance> > fromLayerString(
+			const std::string & s);
 	private:
 		Modifier distModifier = Modifier::NONE;
 		std::optional<unsigned int> distValueInt;
@@ -272,6 +279,9 @@ namespace metaf {
 		Unit distUnit = Unit::METERS;
 
 		static const unsigned int heightFactor = 100; //height unit is 100s of feet
+
+		// Icing or turbulence layer depth is given in 1000s of feet
+		static const unsigned int layerDepthFactor = 1000;
 
 		static inline std::optional<Modifier> modifierFromChar(char c);
 		static inline std::optional<float> metersToUnit(float value, Unit unit);
@@ -354,12 +364,14 @@ namespace metaf {
 		static inline std::optional<Pressure> fromForecastString(const std::string & s);
 		static inline std::optional<Pressure> fromSlpString(const std::string & s);
 		static inline std::optional<Pressure> fromQfeString(const std::string & s);
+		static inline std::optional<Pressure> fromTendencyString(const std::string & s);
 
 	private:
 		std::optional<float> pressureValue;
 		Unit pressureUnit = Unit::HECTOPASCAL;
 
 		static inline const float inHgDecimalPointShift = 0.01;
+		static inline const float tendencyDecimalPointShift = 0.1;
 	};
 
 	class Precipitation {
@@ -1143,6 +1155,105 @@ namespace metaf {
 		static inline float factorFromType(Type type);
 	};
 
+	class LayerForecastGroup {
+	public:
+		enum class Type {
+			ICING_TRACE_OR_NONE,
+			ICING_LIGHT_MIXED,
+			ICING_LIGHT_RIME_IN_CLOUD,
+			ICING_LIGHT_CLEAR_IN_PRECIPITATION,
+			ICING_MODERATE_MIXED,
+			ICING_MODERATE_RIME_IN_CLOUD,
+			ICING_MODERATE_CLEAR_IN_PRECIPITATION,
+			ICING_SEVERE_MIXED,
+			ICING_SEVERE_RIME_IN_CLOUD,
+			ICING_SEVERE_CLEAR_IN_PRECIPITATION,
+			TURBULENCE_NONE,
+			TURBULENCE_LIGHT,
+			TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL,
+			TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT,
+			TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL,
+			TURBULENCE_MODERATE_IN_CLOUD_FREQUENT,
+			TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL,
+			TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT,
+			TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL,
+			TURBULENCE_SEVERE_IN_CLOUD_FREQUENT,
+			TURBULENCE_EXTREME,
+		};
+		Type type() const { return(layerType); }
+		Distance baseHeight() const { return(layerBaseHeight); }
+		Distance topHeight() const { return(layerTopHeight); }
+		bool isValid() const { return(true); }
+
+		LayerForecastGroup() = default;
+		static inline std::optional<LayerForecastGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+
+	private:
+		Type layerType;
+		Distance layerBaseHeight;
+		Distance layerTopHeight;
+
+		static inline std::optional<Type> typeFromStr(const std::string & s);
+	};
+
+	class PressureTendencyGroup {
+	public:
+		enum class Type {
+			INCREASING_THEN_DECREASING,
+			INCREASING_MORE_SLOWLY,
+			INCREASING,
+			INCREASING_MORE_RAPIDLY,
+			STEADY,
+			DECREASING_THEN_INCREASING,
+			DECREASING_MORE_SLOWLY,
+			DECREASING,
+			DECREASING_MORE_RAPIDLY,
+		};
+		enum class Trend {
+			HIGHER,
+			HIGHER_OR_SAME,
+			SAME,
+			LOWER_OR_SAME,
+			LOWER
+		};
+		Type type() const { return(tendencyType); }
+		Pressure difference() const { return(pressureDifference); }
+		static inline Trend trend(Type type);
+		bool isValid() const { return(true); }
+
+		PressureTendencyGroup() = default;
+		static inline std::optional<PressureTendencyGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+
+	private:
+		Type tendencyType;
+		Pressure pressureDifference;
+
+		static inline std::optional<Type> typeFromChar(char type);
+	};
+
+	class MiscGroup {
+	public:
+		enum class Type {
+			SUNSHINE_DURATION_MINUTES,
+		};
+		Type type() const { return(groupType); }
+		std::optional<float> value() const { return(groupValue); }
+		inline bool isValid() const;
+
+		MiscGroup() = default;
+		static inline std::optional<MiscGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+	
+	private:
+		Type groupType;
+		std::optional<float> groupValue;
+	};
+
 	///////////////////////////////////////////////////////////////////////////////
 	
 	enum class SyntaxGroup {
@@ -1350,6 +1461,9 @@ namespace metaf {
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
 		virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
 		virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0;
+		virtual T visitLayerForecastGroup(const LayerForecastGroup & group) = 0;
+		virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group) = 0;
+		virtual T visitMiscGroup(const MiscGroup & group) = 0;
 		virtual T visitOther(const Group & group) = 0;
 	};
 
@@ -1414,6 +1528,15 @@ namespace metaf {
 		}
 		if (std::holds_alternative<PrecipitationGroup>(group)) {
 			return(this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group)));
+		}
+		if (std::holds_alternative<LayerForecastGroup>(group)) {
+			return(this->visitLayerForecastGroup(std::get<LayerForecastGroup>(group)));
+		}
+		if (std::holds_alternative<PressureTendencyGroup>(group)) {
+			return(this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group)));
+		}
+		if (std::holds_alternative<MiscGroup>(group)) {
+			return(this->visitMiscGroup(std::get<MiscGroup>(group)));
 		}
 		return(this->visitOther(group));
 	}
@@ -1498,6 +1621,18 @@ namespace metaf {
 		}
 		if (std::holds_alternative<PrecipitationGroup>(group)) {
 			this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<LayerForecastGroup>(group)) {
+			this->visitLayerForecastGroup(std::get<LayerForecastGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<PressureTendencyGroup>(group)) {
+			this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<MiscGroup>(group)) {
+			this->visitMiscGroup(std::get<MiscGroup>(group));
 			return;
 		}
 		this->visitOther(group);
@@ -1885,8 +2020,7 @@ namespace metaf {
 		return(distance);
 	}
 
-	std::optional<Distance> Distance::fromRvrString(const std::string & s, bool unitFeet)
-	{
+	std::optional<Distance> Distance::fromRvrString(const std::string & s, bool unitFeet) {
 		//static const std::regex rgx ("([PM])?(\\d\\d\\d\\d)|////");
 		static const std::optional<Distance> error;
 		Distance distance;
@@ -1908,6 +2042,25 @@ namespace metaf {
 			return(distance);
 		}
 		return(error);
+	}
+
+	std::optional<std::pair<Distance, Distance>> Distance::fromLayerString(
+		const std::string & s)
+	{
+		//static const std::regex rgx ("(\\d\\d\\d)(\\d)");
+		static const std::optional<std::pair<Distance, Distance>> error;
+		if (s.length() != 4) return(error);
+		const auto h = strToUint(s, 0, 3);
+		if (!h.has_value())	return(error);	
+		const auto d = strToUint(s, 3, 1);
+		if (!d.has_value())	return(error);	
+		Distance baseHeight, topHeight;
+		baseHeight.distUnit = Unit::FEET;
+		topHeight.distUnit = Unit::FEET;
+		baseHeight.distValueInt = h.value() * heightFactor;
+		topHeight.distValueInt = 
+			h.value() * heightFactor + d.value() * layerDepthFactor;
+		return(std::pair(baseHeight, topHeight));
 	}
 
 	std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer, 
@@ -2129,6 +2282,18 @@ namespace metaf {
 		Pressure pressure;
 		pressure.pressureUnit = Unit::MM_HG;
 		pressure.pressureValue = mmHg.value();
+		return(pressure);
+	}
+
+	std::optional<Pressure> Pressure::fromTendencyString(const std::string & s) {
+		//static const std::regex rgx("(\\d\\d\\d)");
+		static const std::optional<Pressure> error;
+		if (s.length() != 3) return(error);
+		const auto hPa = strToUint(s, 0, 3);
+		if (!hPa.has_value()) return(error);
+		Pressure pressure;
+		pressure.pressureUnit = Unit::HECTOPASCAL;
+		pressure.pressureValue = hPa.value() * tendencyDecimalPointShift;
 		return(pressure);
 	}
 
@@ -3584,6 +3749,163 @@ namespace metaf {
 		}
 	}
 
+	///////////////////////////////////////////////////////////////////////////////
+
+	std::optional<LayerForecastGroup::Type> LayerForecastGroup::typeFromStr(
+		const std::string & s)
+	{
+		if (s == "60") return(Type::ICING_TRACE_OR_NONE);
+		if (s == "61") return(Type::ICING_LIGHT_MIXED);
+		if (s == "62") return(Type::ICING_LIGHT_RIME_IN_CLOUD);
+		if (s == "63") return(Type::ICING_LIGHT_CLEAR_IN_PRECIPITATION);
+		if (s == "64") return(Type::ICING_MODERATE_MIXED);
+		if (s == "65") return(Type::ICING_MODERATE_RIME_IN_CLOUD);
+		if (s == "66") return(Type::ICING_MODERATE_CLEAR_IN_PRECIPITATION);
+		if (s == "67") return(Type::ICING_SEVERE_MIXED);
+		if (s == "68") return(Type::ICING_SEVERE_RIME_IN_CLOUD);
+		if (s == "69") return(Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION);
+		if (s == "50") return(Type::TURBULENCE_NONE);
+		if (s == "51") return(Type::TURBULENCE_LIGHT);
+		if (s == "52") return(Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL);
+		if (s == "53") return(Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT);
+		if (s == "54") return(Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL);
+		if (s == "55") return(Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT);
+		if (s == "56") return(Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL);
+		if (s == "57") return(Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT);
+		if (s == "58") return(Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL);
+		if (s == "59") return(Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT);
+		if (s == "5X") return(Type::TURBULENCE_EXTREME);
+		return(std::optional<Type>());
+	}
+
+	std::optional<LayerForecastGroup> LayerForecastGroup::parse(
+		const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<LayerForecastGroup> notRecognised;
+		static const std::regex rgx("([65][\\dX])(\\d\\d\\d\\d)");
+		static const auto matchType = 1, matchHeight = 2;
+
+		if (reportPart != ReportPart::TAF) return(notRecognised);
+		std::smatch match;
+		if (!std::regex_match(group, match, rgx)) return(notRecognised);
+		const auto type = typeFromStr(match.str(matchType));
+		if (!type.has_value()) return(notRecognised);
+		const auto heights = Distance::fromLayerString(match.str(matchHeight));
+		if (!heights.has_value()) return(notRecognised);
+		
+		LayerForecastGroup result;
+		result.layerType = type.value();
+		result.layerBaseHeight = std::get<0>(heights.value());
+		result.layerTopHeight = std::get<1>(heights.value());
+		return(result);
+	}
+
+	std::optional<Group> LayerForecastGroup::combine(const Group & nextGroup) const {
+		(void)nextGroup; return(std::optional<Group>());
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	PressureTendencyGroup::Trend PressureTendencyGroup::trend(Type type) {
+		switch(type) {
+			case Type::INCREASING_MORE_SLOWLY:
+			case Type::INCREASING:
+			case Type::INCREASING_MORE_RAPIDLY:
+			return(Trend::HIGHER);
+
+			case Type::INCREASING_THEN_DECREASING:	
+			return(Trend::HIGHER_OR_SAME);
+
+			case Type::STEADY:
+			return(Trend::SAME);
+
+			case Type::DECREASING_THEN_INCREASING:
+			return(Trend::LOWER_OR_SAME);
+
+			case Type::DECREASING_MORE_SLOWLY:
+			case Type::DECREASING:
+			case Type::DECREASING_MORE_RAPIDLY:
+			return(Trend::LOWER);
+		}
+	}
+
+	std::optional<PressureTendencyGroup::Type> PressureTendencyGroup::typeFromChar(
+		char type)
+	{
+		switch (type) {
+			case '0': return(Type::INCREASING_THEN_DECREASING);
+			case '1': return(Type::INCREASING_MORE_SLOWLY);
+			case '2': return(Type::INCREASING);
+			case '3': return(Type::INCREASING_MORE_RAPIDLY);
+			case '4': return(Type::STEADY);
+			case '5': return(Type::DECREASING_THEN_INCREASING);
+			case '6': return(Type::DECREASING_MORE_SLOWLY);
+			case '7': return(Type::DECREASING);
+			case '8': return(Type::DECREASING_MORE_RAPIDLY);
+			default: return(std::optional<Type>());
+		}
+	}
+
+	std::optional<PressureTendencyGroup> PressureTendencyGroup::parse(
+		const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<PressureTendencyGroup> notRecognised;
+		static const std::regex rgx("5([\\d])(\\d\\d\\d)");
+		static const auto matchType = 1, matchPressure = 2;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+		std::smatch match;
+		if (!std::regex_match(group, match, rgx)) return(notRecognised);
+		const auto type = typeFromChar(match.str(matchType)[0]);
+		if (!type.has_value()) return(notRecognised);
+		const auto pressure = Pressure::fromTendencyString(match.str(matchPressure));
+		if (!pressure.has_value()) return(notRecognised);
+
+		PressureTendencyGroup result;
+		result.tendencyType = type.value();
+		result.pressureDifference = pressure.value();
+		return(result);
+	}
+
+	std::optional<Group> PressureTendencyGroup::combine(const Group & nextGroup) const {
+		(void)nextGroup; return(std::optional<Group>());			
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	std::optional<MiscGroup> MiscGroup::parse(const std::string & group, 
+			ReportPart reportPart) 
+	{
+		std::optional<MiscGroup> notRecognised;
+		static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");
+		static const auto matchValue = 1;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+		std::smatch match;
+		if (std::regex_match(group, match, rgxSunshineDuration)) {
+			MiscGroup result;
+			result.groupType = Type::SUNSHINE_DURATION_MINUTES;
+			result.groupValue = std::stoi(match.str(matchValue));
+			return(result);
+		}
+		return(notRecognised);
+	}
+
+	std::optional<Group> MiscGroup::combine(const Group & nextGroup) const {
+		(void)nextGroup; return(std::optional<Group>());			
+	}
+
+	bool MiscGroup::isValid() const {
+		switch(type()) {
+			case Type::SUNSHINE_DURATION_MINUTES:
+			return(true);
+
+			default:
+			return(false);
+		}
+	} 
 
 	///////////////////////////////////////////////////////////////////////////////
 
