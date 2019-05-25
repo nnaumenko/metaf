@@ -17,6 +17,30 @@ build:
     paths:
       - ci-build/
 
+tests:
+  stage: test
+  image: trzeci/emscripten-ubuntu
+  script:
+  # prepare Firefox browser
+  - apt-get update -y
+  - apt-get install -y firefox xvfb dbus-x11
+  - Xvfb :10 -ac &
+  - export DISPLAY=:10
+  # list browsers, for reference only 
+  - emrun --list_browsers
+  # run tests with Firefox (will return exit code 1 if test failed)
+  - emrun --browser firefox ci-build/test/main.html --gtest_output="xml:test.xml" >ci-build/test/firefox_test_output.txt
+  # make bin/test/test.xml
+  - sed -n '/<<<<\/test.xml:BEGIN>>>>/,/<<<<\/test.xml:END>>>>/{ /<<<<\/test.xml:BEGIN>>>>/d; /<<<<\/test.xml:END>>>>/d; p }' ci-build/test/firefox_test_output.txt >ci-build/test/test.xml
+  # additionally check for failure reports in ci-build/test/test.xml
+  - test -f ci-build/test/test.xml
+  - if [ "$(grep 'failures="[1-9]' ci-build/test/test.xml)" != "" ]; then exit 1; fi
+  artifacts:
+    paths:
+      - ci-build/    
+    reports:
+      junit: ci-build/test/test.xml
+
 pages:
   stage: deploy
   script:
