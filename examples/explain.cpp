@@ -425,6 +425,10 @@ std::string GroupVisitorExplain::visitTemperatureForecastGroup(
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch(group.point()) {
+		case metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED:
+		result << "Temperature";
+		break;
+
 		case metaf::TemperatureForecastGroup::Point::MINIMUM: 
 		result << "Minimum temperature";
 		break;
@@ -637,14 +641,19 @@ std::string GroupVisitorExplain::visitPressureTendencyGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "During last 3 hours the atmospheric pressure was ";
-	result << pressureTendencyTypeToString (group.type()) << lineBreak;
-	result << "Now pressure is ";
-	result << pressureTendencyTrendToString(
-		metaf::PressureTendencyGroup::trend(group.type()));
-	result << " 3 hours ago, absolute pressure change is ";
+	if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED) {
+		result << "During last 3 hours the atmospheric pressure was ";
+		result << pressureTendencyTypeToString (group.type()) << lineBreak;
+		result << "Now pressure is ";
+		result << pressureTendencyTrendToString(
+			metaf::PressureTendencyGroup::trend(group.type()));
+		result << " 3 hours ago";
+	} else {
+		result << "3-hourly pressure tendency is not reported";
+	}
+	result << ", absolute pressure change is ";
 	result << explainPressure(group.difference());
-	return(result.str());	
+	return(result.str());
 }
 
 std::string GroupVisitorExplain::visitMiscGroup(const metaf::MiscGroup & group) {

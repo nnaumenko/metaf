@@ -170,9 +170,16 @@ TEST(Pressure, fromTendencyString) {
 	EXPECT_NEAR(p->pressure().value(), 3.2, margin);
 }
 
+TEST(Pressure, fromTendencyStringNotReported) {
+	const auto p = metaf::Pressure::fromTendencyString("///");
+	ASSERT_TRUE(p.has_value());
+	EXPECT_FALSE(p->pressure().has_value());
+}
+
 TEST(Pressure, fromTendencyStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString(""));
-	EXPECT_FALSE(metaf::Pressure::fromTendencyString("///"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("//"));
+	EXPECT_FALSE(metaf::Pressure::fromTendencyString("////"));
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString("0032"));
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString("32"));
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString("A32"));

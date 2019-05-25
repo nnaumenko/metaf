@@ -162,6 +162,7 @@ private:
 	bool isRemark = false;
 	int plainTextCounter = 0;
 	int layerForecastCounter = 0;
+	int notSpecifiedTemperatureForecastCounter = 0;
 	metaf::Group lastGroup;
 	void similarGroupsToArrays(const metaf::Group & group);
 
@@ -588,8 +589,12 @@ void GroupVisitorJson::visitTemperatureGroup(const metaf::TemperatureGroup & gro
 void GroupVisitorJson::visitTemperatureForecastGroup(
 	const metaf::TemperatureForecastGroup & group)
 {
-	const std::string objectName = 
+	std::string objectName = 
 		temperatureForecastPointToString(group.point()) + "Temperature"s;
+	if (group.point() == metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED) {
+		objectName = "temperatureForecast" +	
+			std::to_string(notSpecifiedTemperatureForecastCounter++);
+	}
 	json.startObject(objectName);
 	if (!group.isValid()) json.valueBool("valid", false);
 	temperatureToJson(group.airTemperature(),
@@ -803,16 +808,23 @@ void GroupVisitorJson::visitLayerForecastGroup(
 void GroupVisitorJson::visitPressureTendencyGroup(
 	const metaf::PressureTendencyGroup & group)
 {
-	json.startObject("pressureTendency");
-	json.valueStr("tendency", 
-		pressureTendencyTypeToString(group.type()));
-	json.valueStr("trend", 
-		pressureTendencyTrendToString(metaf::PressureTendencyGroup::trend(group.type())));
-	json.valueStr("observationPeriod", "3-hourly");
-	pressureToJson(group.difference(), 
-		"pressureChange",
-		"pressureChangeUnit");
-	json.finish();
+	if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED ||
+		group.difference().pressure().has_value())
+	{
+		json.startObject("pressureTendency");
+		if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED) {
+			json.valueStr("tendency", 
+				pressureTendencyTypeToString(group.type()));
+			json.valueStr("trend", 
+				pressureTendencyTrendToString(
+					metaf::PressureTendencyGroup::trend(group.type())));
+		}
+		json.valueStr("observationPeriod", "3-hourly");
+		pressureToJson(group.difference(), 
+			"pressureChange",
+			"pressureChangeUnit");
+		json.finish();
+	}
 }
 
 void GroupVisitorJson::visitMiscGroup(
@@ -1586,9 +1598,10 @@ std::string GroupVisitorJson::temperatureForecastPointToString(
 		metaf::TemperatureForecastGroup::Point point) 
 {
 	switch(point) {
+		case metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED:	return("notSpecified");
 		case metaf::TemperatureForecastGroup::Point::MINIMUM:	return("minimum");
 		case metaf::TemperatureForecastGroup::Point::MAXIMUM:	return("maximum");
-		default: undefinedToString(static_cast<int>(point));
+		default: return(undefinedToString(static_cast<int>(point)));
 	}
 }
 
@@ -1739,6 +1752,9 @@ std::string GroupVisitorJson::pressureTendencyTypeToString(
 	metaf::PressureTendencyGroup::Type type)
 {
 	switch(type) {
+		case metaf::PressureTendencyGroup::Type::NOT_REPORTED:
+		return("notReported");
+		
 		case metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING:
 		return("increasingThenDecreasing");
 		
@@ -1775,6 +1791,9 @@ std::string GroupVisitorJson::pressureTendencyTrendToString(
 	metaf::PressureTendencyGroup::Trend trend)
 {
 	switch(trend) {
+		case metaf::PressureTendencyGroup::Trend::NOT_REPORTED:
+		return("notReported");
+
 		case metaf::PressureTendencyGroup::Trend::HIGHER:
 		return("higherThanBefore");
 

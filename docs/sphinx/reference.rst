@@ -2102,7 +2102,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. note:: Metaf does not verify in which order minimum and maximum temperature forecast is reported.
 
-Examples of the raw report data are ``TX15/3111Z`` and ``TN00/3103Z``.
+Examples of the raw report data are ``TX15/3111Z``, ``TN00/3103Z``, and ``T30/1218Z``.
 
 .. cpp:class:: TemperatureForecastGroup
 
@@ -2112,6 +2112,10 @@ Examples of the raw report data are ``TX15/3111Z`` and ``TN00/3103Z``.
 
 			Temperature point for which the forecast is reported.
 			
+			.. cpp:enumerator:: NOT_SPECIFIED
+
+				Forecast temperature point is not specified; temperature expected at certain time is reported.
+
 			.. cpp:enumerator:: MINIMUM
 
 				Forecast for minimum temperature is reported.
@@ -2894,6 +2898,10 @@ Example of the raw report data is ``52032``.
 
 		Indicates the nature of atmospheric pressure change reported in this group.
 
+		.. cpp:enumerator:: NOT_REPORTED
+
+			Atmospheric pressure tendency is not reported.
+
 		.. cpp:enumerator:: INCREASING_THEN_DECREASING
 
 			Atmospheric pressure was increasing, then decreasing.
@@ -2934,6 +2942,10 @@ Example of the raw report data is ``52032``.
 
 		Indicates the trend of atmospheric pressure changes reported in this group.
 
+		.. cpp:enumerator:: NOT_REPORTED
+
+			Atmospheric pressure tendency is not reported.
+
 		.. cpp:enumerator:: MORE
 
 			Atmospheric pressure is higher than 3 hours ago.
@@ -2966,7 +2978,7 @@ Example of the raw report data is ``52032``.
 
 		.. cpp:function:: Pressure difference() const
 
-			:returns: Absolute value of atmospheric pressure change for the last 3 hours.
+			:returns: Absolute value of atmospheric pressure change for the last 3 hours or emply ``std::optional`` if pressure is not reported.
 
 	**Validating**
 

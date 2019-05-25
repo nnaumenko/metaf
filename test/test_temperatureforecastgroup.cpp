@@ -60,6 +60,32 @@ TEST(TemperatureForecastGroup, parseMaximumNegative) {
 	EXPECT_EQ(tfg->time().minute(), 0u);
 }
 
+TEST(TemperatureForecastGroup, parseNotSpecified) {
+	const auto tfg = metaf::TemperatureForecastGroup::parse("T24/1306Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(tfg.has_value());
+	EXPECT_EQ(tfg->point(), metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED);
+	EXPECT_EQ(tfg->airTemperature().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(tfg->airTemperature().temperature().has_value());
+	EXPECT_EQ(tfg->airTemperature().temperature().value(), 24);
+	ASSERT_TRUE(tfg->time().day().has_value());
+	EXPECT_EQ(tfg->time().day().value(), 13u);
+	EXPECT_EQ(tfg->time().hour(), 6u);
+	EXPECT_EQ(tfg->time().minute(), 0u);
+}
+
+TEST(TemperatureForecastGroup, parseNotSpecifiedNegative) {
+	const auto tfg = metaf::TemperatureForecastGroup::parse("TM03/0911Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(tfg.has_value());
+	EXPECT_EQ(tfg->point(), metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED);
+	EXPECT_EQ(tfg->airTemperature().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(tfg->airTemperature().temperature().has_value());
+	EXPECT_EQ(tfg->airTemperature().temperature().value(), -3);
+	ASSERT_TRUE(tfg->time().day().has_value());
+	EXPECT_EQ(tfg->time().day().value(), 9u);
+	EXPECT_EQ(tfg->time().hour(), 11u);
+	EXPECT_EQ(tfg->time().minute(), 0u);
+}
+
 TEST(TemperatureForecastGroup, parseWrongReportPart) {
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse("TN03/0620Z", 
 		metaf::ReportPart::UNKNOWN).has_value());
@@ -72,6 +98,11 @@ TEST(TemperatureForecastGroup, parseWrongReportPart) {
 }
 
 TEST(TemperatureForecastGroup, parseWrongFormat) {
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TZ03/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"X03/0620Z", metaf::ReportPart::TAF).has_value());
+
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
 		"TN003/0620Z", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
@@ -87,8 +118,6 @@ TEST(TemperatureForecastGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
 		"NN03/0620Z", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
-		"TZ03/0620Z", metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
 		"TN0A/0620Z", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
 		"TN03/060AZ", metaf::ReportPart::TAF).has_value());
@@ -96,6 +125,50 @@ TEST(TemperatureForecastGroup, parseWrongFormat) {
 		"TN///0620Z", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
 		"TN03/////Z", metaf::ReportPart::TAF).has_value());
+
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX003/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX3/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/00620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/0620", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/0620T", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"NX03/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX0A/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/060AZ", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX///0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"TX03/////Z", metaf::ReportPart::TAF).has_value());
+
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T003/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T3/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/00620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/0620", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/0620T", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T0A/0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/060AZ", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T///0620Z", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::TemperatureForecastGroup::parse(
+		"T03/////Z", metaf::ReportPart::TAF).has_value());
 }
 
 TEST(TemperatureForecastGroup, isValidTrue) {

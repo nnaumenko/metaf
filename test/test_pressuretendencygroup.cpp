@@ -16,6 +16,21 @@ TEST(PressureTendencyGroup, pressureDifference) {
 	ASSERT_TRUE(ptg->difference().pressure().has_value());
 	EXPECT_EQ(ptg->difference().unit(), metaf::Pressure::Unit::HECTOPASCAL);
 	EXPECT_NEAR(ptg->difference().pressure().value(), 13.2, margin);
+	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::INCREASING);
+}
+
+TEST(PressureTendencyGroup, pressureDifferenceNotReported) {
+	const auto ptg = metaf::PressureTendencyGroup::parse("52///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg.has_value());
+	EXPECT_FALSE(ptg->difference().pressure().has_value());
+	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::INCREASING);
+}
+
+TEST(PressureTendencyGroup, notReported) {
+	const auto ptg = metaf::PressureTendencyGroup::parse("5////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg.has_value());
+	EXPECT_FALSE(ptg->difference().pressure().has_value());
+	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::NOT_REPORTED);
 }
 
 TEST(PressureTendencyGroup, typeIncreasingThenDecreasing) {
@@ -72,6 +87,12 @@ TEST(PressureTendencyGroup, typeDecreasingMoreRapidly) {
 	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY);
 }
 
+TEST(PressureTendencyGroup, typeNotReported) {
+	const auto ptg = metaf::PressureTendencyGroup::parse("5/132", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg.has_value());
+	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::NOT_REPORTED);
+}
+
 TEST(PressureTendencyGroup, wrongReportPart) {
 	EXPECT_FALSE(
 		metaf::PressureTendencyGroup::parse("52132", metaf::ReportPart::UNKNOWN).has_value());
@@ -111,11 +132,9 @@ TEST(PressureTendencyGroup, wrongFormat) {
 		metaf::PressureTendencyGroup::parse("5A132", metaf::ReportPart::RMK).has_value());
 
 	EXPECT_FALSE(
-		metaf::PressureTendencyGroup::parse("52///", metaf::ReportPart::RMK).has_value());
+		metaf::PressureTendencyGroup::parse("5/////", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(
-		metaf::PressureTendencyGroup::parse("5/132", metaf::ReportPart::RMK).has_value());
-	EXPECT_FALSE(
-		metaf::PressureTendencyGroup::parse("5////", metaf::ReportPart::RMK).has_value());
+		metaf::PressureTendencyGroup::parse("5///", metaf::ReportPart::RMK).has_value());
 
 	EXPECT_FALSE(
 		metaf::PressureTendencyGroup::parse("520132", metaf::ReportPart::RMK).has_value());
@@ -167,4 +186,8 @@ TEST(PressureTendencyGroup, trend) {
 	EXPECT_EQ(metaf::PressureTendencyGroup::trend(
 		metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY),
 		metaf::PressureTendencyGroup::Trend::LOWER);
+
+	EXPECT_EQ(metaf::PressureTendencyGroup::trend(
+		metaf::PressureTendencyGroup::Type::NOT_REPORTED),
+		metaf::PressureTendencyGroup::Trend::NOT_REPORTED);
 }

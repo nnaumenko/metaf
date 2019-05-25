@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 5;
-		static const int patch = 0;
+		static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -881,6 +881,7 @@ namespace metaf {
 	class TemperatureForecastGroup {
 	public:
 		enum class Point {
+			NOT_SPECIFIED,
 			MINIMUM,
 			MAXIMUM
 		};
@@ -895,11 +896,12 @@ namespace metaf {
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
-		Point p = Point::MINIMUM;
+		Point p = Point::NOT_SPECIFIED;
 		Temperature t;
 		MetafTime tm;
 
 		static std::optional<Point> pointFromString (const std::string & s) {
+			if (s == "T")  return(Point::NOT_SPECIFIED);
 			if (s == "TX") return(Point::MAXIMUM);
 			if (s == "TN") return(Point::MINIMUM);
 			return(std::optional<Point>());
@@ -1201,6 +1203,7 @@ namespace metaf {
 	class PressureTendencyGroup {
 	public:
 		enum class Type {
+			NOT_REPORTED,
 			INCREASING_THEN_DECREASING,
 			INCREASING_MORE_SLOWLY,
 			INCREASING,
@@ -1212,6 +1215,7 @@ namespace metaf {
 			DECREASING_MORE_RAPIDLY,
 		};
 		enum class Trend {
+			NOT_REPORTED,
 			HIGHER,
 			HIGHER_OR_SAME,
 			SAME,
@@ -2286,9 +2290,10 @@ namespace metaf {
 	}
 
 	std::optional<Pressure> Pressure::fromTendencyString(const std::string & s) {
-		//static const std::regex rgx("(\\d\\d\\d)");
+		//static const std::regex rgx("(\\d\\d\\d)|///");
 		static const std::optional<Pressure> error;
 		if (s.length() != 3) return(error);
+		if (s == "///") return(Pressure());
 		const auto hPa = strToUint(s, 0, 3);
 		if (!hPa.has_value()) return(error);
 		Pressure pressure;
@@ -3271,7 +3276,7 @@ namespace metaf {
 	{
 		static const std::optional<TemperatureForecastGroup> notRecognised;
 		if (reportPart != ReportPart::TAF) return (notRecognised);
-		static const std::regex rgx ("(TX|TN)(M?\\d\\d)/(\\d\\d\\d\\d)Z");
+		static const std::regex rgx ("(TX?|TN?)(M?\\d\\d)/(\\d\\d\\d\\d)Z");
 		static const auto matchPoint = 1, matchTemperature = 2, matchTime = 3;
 		std::smatch match;
 		if (!std::regex_match(group, match, rgx)) return(notRecognised);
@@ -3827,6 +3832,9 @@ namespace metaf {
 			case Type::DECREASING:
 			case Type::DECREASING_MORE_RAPIDLY:
 			return(Trend::LOWER);
+
+			case Type::NOT_REPORTED:
+			return(Trend::NOT_REPORTED);
 		}
 	}
 
@@ -3843,6 +3851,7 @@ namespace metaf {
 			case '6': return(Type::DECREASING_MORE_SLOWLY);
 			case '7': return(Type::DECREASING);
 			case '8': return(Type::DECREASING_MORE_RAPIDLY);
+			case '/': return(Type::NOT_REPORTED);
 			default: return(std::optional<Type>());
 		}
 	}
@@ -3852,7 +3861,7 @@ namespace metaf {
 		ReportPart reportPart)
 	{
 		std::optional<PressureTendencyGroup> notRecognised;
-		static const std::regex rgx("5([\\d])(\\d\\d\\d)");
+		static const std::regex rgx("5([\\d/])(\\d\\d\\d|///)");
 		static const auto matchType = 1, matchPressure = 2;
 
 		if (reportPart != ReportPart::RMK) return(notRecognised);
