@@ -620,8 +620,16 @@ std::string GroupVisitorExplain::visitPrecipitationGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << precipitationGroupTypeToString(group.type()) << " is ";
-	result << explainPrecipitation(group.amount());
+	if (group.amount().status() == metaf::Precipitation::Status::REPORTED &&
+		!group.amount().precipitation().value())
+	{
+		result << "Trace amount of ";
+		result << precipitationGroupTypeToString(group.type());
+	} else {
+		result << "Amount of ";
+		result << precipitationGroupTypeToString(group.type()) << " is ";
+		result << explainPrecipitation(group.amount());
+	}
 	return(result.str());
 }
 
@@ -1520,22 +1528,31 @@ std::string_view GroupVisitorExplain::precipitationGroupTypeToString(
 {
 	switch (type) {
 		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
-		return("Total precipitation for the past hour");
+		return("total precipitation for the past hour");
 
 		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
-		return("Snow depth on ground");
+		return("snow depth on ground");
 
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
-		return("Water equivalent of frozen precipitation for the last 3 or 6 hours");
+		return("water equivalent of frozen precipitation for the last 3 or 6 hours");
 	
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
-		return("Water equivalent of frozen precipitation for the last 24 hours");
+		return("water equivalent of frozen precipitation for the last 24 hours");
 
 		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
-		return("Snowfall for the last 6 hours");
+		return("snowfall for the last 6 hours");
 
 		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
-		return("Water equivalent of snow on ground");
+		return("water equivalent of snow on ground");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
+		return("ice accretion for the last hour");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
+		return("ice accretion for the last 3 hours");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
+		return("ice accretion for the last 6 hours");
 
 		default:
 		return("[unknown precipitation type]");

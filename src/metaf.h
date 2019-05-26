@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 5;
-		static const int patch = 1;
+		static const int minor = 6;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -1139,7 +1139,10 @@ namespace metaf {
 			FROZEN_PRECIP_3_OR_6_HOURLY,
 			FROZEN_PRECIP_24_HOURLY,
 			SNOW_6_HOURLY,
-			WATER_EQUIV_OF_SNOW_ON_GROUND
+			WATER_EQUIV_OF_SNOW_ON_GROUND,
+			ICE_ACCRETION_FOR_LAST_HOUR,
+			ICE_ACCRETION_FOR_LAST_3_HOURS,
+			ICE_ACCRETION_FOR_LAST_6_HOURS
 		};
 		Type type() const { return(precType); }
 		Precipitation amount() const { return(precAmount); }
@@ -3692,7 +3695,7 @@ namespace metaf {
 	{
 		std::optional<PrecipitationGroup> notRecognised;
 		static const std::regex rgx(
-			"([P67])(\\d\\d\\d\\d|////)|(4/|93[13])(\\d\\d\\d|///)");
+			"([P67])(\\d\\d\\d\\d|////)|(4/|93[13]|I[136])(\\d\\d\\d|///)");
 		static const auto matchType1 = 1, matchType2 = 3;
 		static const auto matchValue1 = 2, matchValue2 = 4;
 
@@ -3735,6 +3738,9 @@ namespace metaf {
 		if (s == "7") return(Type::FROZEN_PRECIP_24_HOURLY);
 		if (s == "931") return(Type::SNOW_6_HOURLY);
 		if (s == "933") return(Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
+		if (s == "I1") return(Type::ICE_ACCRETION_FOR_LAST_HOUR);
+		if (s == "I3") return(Type::ICE_ACCRETION_FOR_LAST_3_HOURS);
+		if (s == "I6") return(Type::ICE_ACCRETION_FOR_LAST_6_HOURS);
 		return(std::optional<PrecipitationGroup::Type>());
 	}
 
@@ -3750,6 +3756,9 @@ namespace metaf {
 			case Type::TOTAL_PRECIPITATION_HOURLY:
 			case Type::FROZEN_PRECIP_3_OR_6_HOURLY:
 			case Type::FROZEN_PRECIP_24_HOURLY:
+			case Type::ICE_ACCRETION_FOR_LAST_HOUR:
+			case Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
+			case Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
 			return(0.01);
 		}
 	}

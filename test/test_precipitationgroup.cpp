@@ -80,6 +80,30 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	EXPECT_EQ(pg3->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg3->amount().precipitation().has_value());
 	EXPECT_NEAR(pg3->amount().precipitation().value(), 12.5, margin);	
+
+	const auto pg4 = metaf::PrecipitationGroup::parse("I1010", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_EQ(pg4->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR);
+	EXPECT_EQ(pg4->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg4->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg4->amount().precipitation().has_value());
+	EXPECT_NEAR(pg4->amount().precipitation().value(), 0.10, margin);	
+
+	const auto pg5 = metaf::PrecipitationGroup::parse("I3015", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_EQ(pg5->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS);
+	EXPECT_EQ(pg5->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg5->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg5->amount().precipitation().has_value());
+	EXPECT_NEAR(pg5->amount().precipitation().value(), 0.15, margin);	
+
+	const auto pg6 = metaf::PrecipitationGroup::parse("I6022", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg6.has_value());
+	EXPECT_EQ(pg6->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS);
+	EXPECT_EQ(pg6->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg6->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg6->amount().precipitation().has_value());
+	EXPECT_NEAR(pg6->amount().precipitation().value(), 0.22, margin);
 }
 
 TEST(PrecipitationGroup, parse3digitGroupNotReported) {
@@ -100,6 +124,25 @@ TEST(PrecipitationGroup, parse3digitGroupNotReported) {
 	EXPECT_EQ(pg3->type(), metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
 	EXPECT_EQ(pg3->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
 	EXPECT_FALSE(pg3->amount().precipitation().has_value());	
+
+	const auto pg4 = metaf::PrecipitationGroup::parse("I1///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_EQ(pg4->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR);
+	EXPECT_EQ(pg4->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(pg4->amount().precipitation().has_value());	
+
+	const auto pg5 = metaf::PrecipitationGroup::parse("I3///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_EQ(pg5->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS);
+	EXPECT_EQ(pg5->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(pg5->amount().precipitation().has_value());	
+
+	const auto pg6 = metaf::PrecipitationGroup::parse("I6///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg6.has_value());
+	EXPECT_EQ(pg6->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS);
+	EXPECT_EQ(pg6->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(pg6->amount().precipitation().has_value());	
+
 }
 
 TEST(PrecipitationGroup, parseWrongReportPart) {

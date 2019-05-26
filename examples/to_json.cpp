@@ -199,7 +199,8 @@ private:
 		std::string_view valueName,
 		std::string_view unitName,
 		std::string_view runwayNotOperationalName,
-		std::string_view undefinedStatusName);
+		std::string_view undefinedStatusName,
+		bool allowTrace = false);
 	void surfaceFrictionToJson(const metaf::SurfaceFriction & surfaceFriction,
 		std::string_view coefficientName,
 		std::string_view brakingActionName,
@@ -785,7 +786,8 @@ void GroupVisitorJson::visitPrecipitationGroup(
 		typeStr,
 		typeStr + "Unit",
 		"",
-		typeStr + "Status");	
+		typeStr + "Status",
+		true);	
 }
 
 void GroupVisitorJson::visitLayerForecastGroup(
@@ -1108,7 +1110,8 @@ void GroupVisitorJson::precipitationToJson(const metaf::Precipitation & precipit
 	std::string_view valueName,
 	std::string_view unitName,
 	std::string_view runwayOperationalName,
-	std::string_view undefinedStatusName)
+	std::string_view undefinedStatusName,
+	bool allowTrace)
 {
 	switch (precipitation.status()) {
 		case metaf::Precipitation::Status::NOT_REPORTED:
@@ -1120,20 +1123,24 @@ void GroupVisitorJson::precipitationToJson(const metaf::Precipitation & precipit
 
 		case metaf::Precipitation::Status::REPORTED:
 		if (const auto p = precipitation.precipitation(); p.has_value()) {
-		json.valueFloat(valueName, *p);
-			switch(precipitation.unit()) {
-				case metaf::Precipitation::Unit::MM:
-				json.valueStr(unitName, "mm");
-				break;
+		if (!*p && allowTrace) {
+			json.valueStr(valueName, "traceAmount");
+		} else {
+			json.valueFloat(valueName, *p);
+		}
+		switch(precipitation.unit()) {
+			case metaf::Precipitation::Unit::MM:
+			json.valueStr(unitName, "mm");
+			break;
 
-				case metaf::Precipitation::Unit::INCHES:
-				json.valueStr(unitName, "inches");
-				break;
+			case metaf::Precipitation::Unit::INCHES:
+			json.valueStr(unitName, "inches");
+			break;
 
-				default:
-				undefinedToJson(static_cast<int>(precipitation.unit()), unitName);
-				break;
-			}
+			default:
+			undefinedToJson(static_cast<int>(precipitation.unit()), unitName);
+			break;
+		}
 		}
 		break;
 
@@ -1743,6 +1750,15 @@ std::string GroupVisitorJson::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
 		return("waterEquivalentOfSnowOnGround");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
+		return("iceAccretionForLastHour");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
+		return("iceAccretionForLast3Hours");
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
+		return("iceAccretionForLast6Hours");
 
 		default: return(undefinedToString(static_cast<int>(type)));
 	}

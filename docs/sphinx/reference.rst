@@ -2703,7 +2703,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: precipitationgroup.svg
 
-Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, and ``933021``. 
+Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, and ``I6012``. 
 
 .. cpp:class:: PrecipitationGroup
 
@@ -2736,6 +2736,18 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 		.. cpp:enumerator:: WATER_EQUIV_OF_SNOW_ON_GROUND
 
 			Water equivalent of snow on the ground (including other solid precipitation such as snow grains, ice pellets, ice crystals, hail, etc).
+
+		.. cpp:enumerator:: ICE_ACCRETION_FOR_LAST_HOUR
+
+			Amount of ice accretion during the preceding hour.
+
+		.. cpp:enumerator:: ICE_ACCRETION_FOR_LAST_3_HOURS
+
+			Amount of ice accretion during the last 3 hours.
+
+		.. cpp:enumerator:: ICE_ACCRETION_FOR_LAST_6_HOURS
+
+			Amount of ice accretion during the last 6 hours.
 
 	**Acquiring group data**
 
