@@ -2100,8 +2100,6 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: temperatureforecastgroup.svg
 
-.. note:: Metaf does not verify in which order minimum and maximum temperature forecast is reported.
-
 Examples of the raw report data are ``TX15/3111Z``, ``TN00/3103Z``, and ``T30/1218Z``.
 
 .. cpp:class:: TemperatureForecastGroup
@@ -2707,7 +2705,7 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 .. cpp:class:: PrecipitationGroup
 
-	Stores various information about precipitation. This group is only used in North America and included in remarks.
+	Stores various information about precipitation, snowfall, snow depth, and icing (typically caused by freezing precipitation). This group is only used in North America and included in remarks.
 
 	.. cpp:enum-class:: Type
 
@@ -2900,7 +2898,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuretendencygroup.svg
 
-Example of the raw report data is ``52032``. 
+Example of the raw report data is ``52032``, and ``5////``. 
 
 .. cpp:class:: PressureTendencyGroup
 

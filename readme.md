@@ -19,10 +19,6 @@ Metaf can do the following:
 
 [Example: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
 
-## License
-
-This project is available under MIT license.
-
 ## Documentation
 
 Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
@@ -65,10 +61,10 @@ Example of a TAF report is as follows:
 
 ### Which groups Metaf is able to recognize?
 
-* Report type METAR, SPECI and TAF
-* Amended or correctional report indicators AMD and COR
+* Report type METAR, SPECI, and TAF
+* Amended or correctional report indicators
 * Missing report indicator NIL and cancelled TAF report indicator CNL
-* Automated report indicator and maintenance indicator
+* Automated report indicator, automated station type remark, and maintenance indicator
 * ICAO location
 * Report issue time
 * Wind direction, speed and gust speed
@@ -80,26 +76,22 @@ Example of a TAF report is as follows:
 * Temperature and dew point, including more precise values given in remarks
 * Temperature forecast from TAF reports
 * 6-hourly and 24-hourly minimum and maximum temperature
-* Current atmospheric pressure, including QNH, QFE, and SLP remarks 
-* Groups indicating rapid pressure rise or fall PRESFR and PRESRR
+* Current atmospheric pressure, including QNH, QFE, SLP remarks, atmospheric pressure tendency remark, and groups indicating rapid pressure rise or fall
 * Forecast lowest atmospheric pressure
 * Runway visual range with trend
 * State of runway, type and amount of deposits, extent of runway contamination, surface friction and braking action
 * Groups indicating that runway or airport is closed due to snow accumulation
 * Groups indicating that deposits on runway were cleared or ceased to exist
 * Rainfall groups used in Australia
-* Various precipitation and snowfall groups reported in remarks section in North America
+* Various precipitation, snowfall, and ice buildup groups reported in remarks section in North America
 * Temperature and state of sea surface or wave height
 * Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
 * Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
-* Automated station type AO1 and AO2
 * NOSPECI group indicating that no unscheduled reports are issued by station
-* Groups indicating non-operational sensors RVRNO, PNO, FZRANO, TSNO, SLPNO
+* Groups indicating non-operational sensors
+* Icing and turbulence forecast used by NATO militaries
+* Miscellaneous rare groups (e.g. sunshine duration)
 
+## License
 
-
-
-
-
-
-
+This project is available under MIT license.
