@@ -3918,7 +3918,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASY", "Shemya/Eareckson Arp", {2019, 01, 3}, 
+		"PASY", "Shemya/Eareckson Arp", {2019, 1, 3}, 
 		"METAR PASY 032359Z 19019G25KT 7SM SCT027 SCT035 BKN055 01/M03 A2943"
 		" RMK SLP970 6//// 4//// 5//// $"
 		"=",
@@ -3933,6 +3933,30 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"PABE", "Bethel Arpt", {2019, 1, 4},
+		"METAR PABE 042053Z 18006KT 1/4SM R19R/1600V2000FT FZFG VV003 M07/M07 A2977"
+		" RMK AO2 SLP082 I1005 I3011 T10671072 51018 $"
+		"=",
+		"PABE 042001Z 0420/0518 19006KT 3SM BR OVC006"
+		" TEMPO 0420/0422 1/2SM FZFG VV002"
+		" FM050300 15006KT P6SM OVC010"
+		"="
+	},
+
+	{
+		"PABE", "Bethel Arpt", {2019, 1, 5},
+		"METAR PABE 052353Z 03007KT 10SM SCT004 BKN110 M13/M15 A2992"
+		" RMK AO2 SLP136 I6011 T11331150 11072 21133 55003 $"
+		"=",
+		"TAF PABE 052342Z 0600/0624 04007KT 3SM BR OVC002"
+		" TEMPO 0600/0604 SCT002 BKN050"
+		" FM060400 06012KT P6SM VCFG OVC050"
+		" FM061500 06013KT 5SM -SN BKN020 OVC035"
+		" FM061800 05012KT 3SM -SN BR SCT007 OVC015"
+		"="
+	},
+
+	{
 		"PABT", "Bettles Arpt", {2019, 1, 12},
 		"METAR PABT 121453Z 01003KT 10SM CLR M35/ A3008"
 		" RMK AO2 SLP219 I1000 I3000 T1350 53004 PNO"
@@ -3942,7 +3966,31 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UAAA", "Almaty Intl", {2019, 01, 18},
+		"PAYA", "Yakutat Arpt", {2019, 1, 13},
+		"METAR PAYA 131653Z AUTO 00000KT 10SM M03/M04 A2992"
+		" RMK AO2 SLP133 I1/// T10331044 TSNO $"
+		"=",
+		"PAYA 131205Z 1312/1412 10005KT P6SM VCFG BKN050 BKN070"
+		" TEMPO 1312/1316 3SM BR SCT005"
+		" FM131800 06004KT P6SM SCT025 BKN100"
+		"="
+	},
+
+	{
+		"PAYA", "Yakutat Arpt", {2019, 1, 14},
+		"METAR PAYA 141753Z AUTO 05003KT 6SM -FZRA BR FEW026 OVC034 01/01 A3002"
+		" RMK AO2 FZRAB31 SLP166 P0001 60004 I1001 I6/// T00060006 10006 21044 TSNO $"
+		"=",
+		"TAF PAYA 141739Z 1418/1518 08003KT 6SM BR SCT025 OVC040"
+		" TEMPO 1418/1422 2SM -FZRA BR BKN025 OVC035"
+		" FM150300 08003KT P6SM VCSH SCT010 BKN035 BKN060"
+		" FM150600 VRB03KT 6SM BR SCT001 SCT015 OVC035"
+		" FM151000 08006KT 4SM -RA BR BKN025 OVC040"
+		"="
+	},
+
+	{
+		"UAAA", "Almaty Intl", {2019, 1, 18},
 		"METAR UAAA 181730Z 17002MPS 150V210 0700 R05L/1800 R05R/P2000 FZFG FU SCT200 M05/M07 Q1013 R05L/91//60 R05R/CLRD65 NOSIG"
 		"=",
 		"TAF UAAA 181700Z 1818/1918 16004MPS 0800 FZFG SCT011 BKN100 TX07/1908Z TNM06/1901Z"
@@ -3954,14 +4002,26 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAAK", "Atka Arpt", {2019, 01, 23},
+		"PAAQ", "Palmer Muni", {2019, 1, 18},
+		"METAR PAAQ 192253Z 18003KT 3/4SM BR OVC002 M13/M15 A2958"
+		" RMK AO2 SLP023 I1001 T11281150"
+		"=",
+		"PAAQ 192100Z 1921/2018 VRB04KT 1/4SM FZFG BKN002"
+		" TEMPO 1922/1924 2SM BR BKN003"
+		" FM200000 VRB05KT P6SM VCFG SCT002 BKN010"
+		" FM200200 05007KT P6SM VCFG FEW002 SCT010"
+		"="
+	},
+
+	{
+		"PAAK", "Atka Arpt", {2019, 1, 23},
 		"METAR PAAK 231156Z AUTO 28007KT 10SM FEW027 SCT032 SCT045 00/M02 A2886"
 		" RMK AO2 SLP773 6//// 7//// T00001017 10017 21006 53015"
 		"="
 	},
 
 	{
-		"PAJN", "Juneau Intl Arpt", {2019, 01, 23},
+		"PAJN", "Juneau Intl Arpt", {2019, 1, 23},
 		"METAR PAJN 231753Z 07005KT 7SM OVC037 M02/M02 A3028"
 		" RMK AO2 SLP254 4/010 933021 I6002 T10171022 11017 21033 51015"
 		"=",
@@ -3972,7 +4032,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KBIL", "Billings/Logan Intl", {2019, 01, 23},
+		"KBIL", "Billings/Logan Intl", {2019, 1, 23},
 		"METAR KBIL 232253Z 00000KT 1/2SM R10L/2600V5000FT SN FZFG FEW004 OVC008 M02/M02 A2998"
 		" RMK AO2 SLP188 SNINCR 1/9 P0005 T10171022"
 		"=",
@@ -3986,7 +4046,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
     {
-		"KFTK", "Fort Knox/Godman Air", {2019, 01, 23}, 
+		"KFTK", "Fort Knox/Godman Air", {2019, 1, 23}, 
 		"SPECI KFTK 232135Z 26011G19KT 4SM RA BR BKN005 OVC060 10/10 A2973"
 		" RMK AO2A WSHFT 30 FROPA PRESRR SLP071 CHINO RWY36 $"
 		"=",
@@ -4000,7 +4060,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
 	{
-		"KSDF", "Louisville Intl", {2019, 01, 23}, 
+		"KSDF", "Louisville Intl", {2019, 1, 23}, 
 		"METAR KSDF 232256Z 31010KT 10SM FEW008 BKN012 OVC023 06/04 A2975"
 		" RMK AO2 PK WND 29026/2204 WSHFT 2144 RAE28 SLP077 APRNT FROPA P0001 T00610039 $"
 		"=",
@@ -4013,7 +4073,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KSLC", "Salt Lake City Intl", {2019, 01, 23}, 
+		"KSLC", "Salt Lake City Intl", {2019, 1, 23}, 
 		"METAR KSLC 232154Z 14005KT 10SM BKN060 BKN080 M01/M07 A3022"
 		" RMK AO2 SNE2059 SLP260 VIRGA P0000 T10111072"
 		"=",
@@ -4025,7 +4085,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LGRP", "Rhodes/Diagoras Arpt", {2019, 01, 23},
+		"LGRP", "Rhodes/Diagoras Arpt", {2019, 1, 23},
 		"METAR LGRP 232250Z 13011G25KT 040V210 9999 FEW010 FEW018TCU BKN020 15/12 Q1003 WS ALL RWY NOSIG"
 		"=",
 		"TAF LGRP 232300Z 2400/2424 13020G30KT 9999 FEW016 BKN020"
@@ -4038,7 +4098,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	}, 
 
 	{
-		"SKBG", "Bucaramango/Palonegr", {2019, 01, 23},
+		"SKBG", "Bucaramango/Palonegr", {2019, 1, 23},
 		"METAR SKBG 232200Z 31006KT 9999 FEW015 26/19 A2989 WS R35"
 		"=",
 		"TAF SKBG 232300Z 2400/2424 32006KT 9999 SCT015"
@@ -4048,7 +4108,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASC", "Deadhorse Arpt", {2019, 01, 23},
+		"PASC", "Deadhorse Arpt", {2019, 1, 23},
 		"METAR PASC 232253Z 06013KT 10SM BKN005 M21/M23 A2978"
 		" RMK AO2 SLP084 I1000 T12061233"
 		"=",
@@ -4059,7 +4119,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YPKG", "Kalgoorlie/Boulder A", {2019, 01, 23},
+		"YPKG", "Kalgoorlie/Boulder A", {2019, 1, 23},
 		"METAR YPKG 232300Z AUTO 26013KT 9999 // NCD 17/10 Q1010 RF00.0////./"
 		"=",
 		"TAF YPKG 232302Z 2400/2424 24012KT CAVOK FM241000 18010KT CAVOK"
@@ -4067,7 +4127,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ULLI", "St Petersburg/Pulkov", {2019, 01, 23},
+		"ULLI", "St Petersburg/Pulkov", {2019, 1, 23},
 		"METAR ULLI 232330Z 25005MPS 1200 1100SE R28R/P2000U SHSN SCT008 BKN016CB OVC033 M05/M06 Q1009 RESHSN R28R/492034 NOSIG"
 		"=",
 		"TAF ULLI 232255Z 2400/2424 25003G08MPS 1500 SN BKN011 OVC015"
@@ -4080,7 +4140,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UAAA", "Almaty Intl", {2019, 01, 24},
+		"UAAA", "Almaty Intl", {2019, 1, 24},
 		"METAR UAAA 240000Z VRB01MPS 3400 BR FU OVC006 M05/M06 Q1026 R23R/1///60 R23L/3///50 NOSIG"
 		" RMK QBB190"
 		"=",
@@ -4093,7 +4153,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	}, 
 
 	{
-		"KMEI", "Meridian/Key Fld", {2019, 01, 25},
+		"KMEI", "Meridian/Key Fld", {2019, 1, 25},
 		"METAR KMEI 252058Z 30007G18KT 10SM CLR 13/M01 A3028"
 		" RMK AO2 SLP252 I1000 I3/// T01281006 56022 $"
 		"=",
@@ -4102,7 +4162,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASY", "Shemya/Eareckson Arp", {2019, 01, 26}, 
+		"PASY", "Shemya/Eareckson Arp", {2019, 1, 26}, 
 		"METAR PASY 260558Z 27009KT 7SM SCT011 BKN018 00/M01 A2886"
 		" RMK SHSNB0436E58 SLPNO 60001 T00021007 1//// 2//// 51007 $"
 		"=",
@@ -4126,7 +4186,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PGUA", "Guam/Andersen AFB", {2019, 01, 27},
+		"PGUA", "Guam/Andersen AFB", {2019, 1, 27},
 		"METAR PGUA 271256Z 03016G25KT 4SM -SHRA SCT001 OVC007 23/22 A2993"
 		" RMK AO2A PK WND 05033/41 CIG 001V007 CIG 003 RWY24L SLP126 P//// T02300220 PWINO TSNO $"
 		"=",
@@ -4148,7 +4208,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHSA", "(Euro Platform(OIL)", {2019, 01, 27},
+		"EHSA", "(Euro Platform(OIL)", {2019, 1, 27},
 		"METAR EHSA 272355Z AUTO 29044KT 5000 -RADZ ///////// 05/03 Q0988 W05/H59"
 		"="
 	},

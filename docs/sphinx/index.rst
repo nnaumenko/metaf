@@ -37,3 +37,8 @@ The following sources were used for information on METAR and TAF:
    - FM 16–XV SPECI
 
    - FM 51–XV TAF
+
+- Information for Operators InFO 08024 dated 5/16/08, Federal Aviation
+Administration.
+
+- Aircrew Quick Reference to the METAR and TAF Codes. Air Force Pamphlet 11-238. Flying Operations. 1 November 2005.
