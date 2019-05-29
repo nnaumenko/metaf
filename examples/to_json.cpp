@@ -154,6 +154,8 @@ private:
 	virtual void visitPrecipitationGroup(const metaf::PrecipitationGroup & group);
 	virtual void visitLayerForecastGroup(const metaf::LayerForecastGroup & group);
 	virtual void visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group);
+	virtual void visitCloudTypesGroup(const metaf::CloudTypesGroup & group);
+	virtual void visitCloudLayersGroup(const metaf::CloudLayersGroup & group);
 	virtual void visitMiscGroup(const metaf::MiscGroup & group);
 	virtual void visitOther(const metaf::Group & group);
 
@@ -239,6 +241,10 @@ private:
 	static std::string precipitationGroupTypeToString(metaf::PrecipitationGroup::Type type);
 	static std::string pressureTendencyTypeToString(metaf::PressureTendencyGroup::Type type);
 	static std::string pressureTendencyTrendToString(metaf::PressureTendencyGroup::Trend type);
+	static std::string cloudTypeToString(metaf::CloudTypesGroup::Type type);
+	static std::string cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer);
+	static std::string cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer);
+	static std::string cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer);
 };
 
 void GroupVisitorJson::toJson(metaf::ReportType reportType, 
@@ -827,6 +833,24 @@ void GroupVisitorJson::visitPressureTendencyGroup(
 			"pressureChangeUnit");
 		json.finish();
 	}
+}
+
+void GroupVisitorJson::visitCloudTypesGroup(const metaf::CloudTypesGroup & group) {
+	json.startArray("cloudTypes");
+	for (const auto clouds : group.toVector()) {
+		json.startObject();
+		json.valueStr("type", 
+			cloudTypeToString(std::get<metaf::CloudTypesGroup::Type>(clouds)));
+		json.valueInt("okta", std::get<unsigned int>(clouds));
+		json.finish();
+	}
+	json.finish();
+}
+
+void GroupVisitorJson::visitCloudLayersGroup(const metaf::CloudLayersGroup & group) {
+	json.valueStr("cloudLowLayer", cloudLowLayerToString(group.lowLayer()));
+	json.valueStr("cloudMidLayer", cloudMidLayerToString(group.midLayer()));
+	json.valueStr("cloudHighLayer", cloudHighLayerToString(group.highLayer()));
 }
 
 void GroupVisitorJson::visitMiscGroup(
@@ -1829,6 +1853,176 @@ std::string GroupVisitorJson::pressureTendencyTrendToString(
 		return(undefinedToString(static_cast<int>(trend)));
 	}
 }
+
+std::string GroupVisitorJson::cloudTypeToString(metaf::CloudTypesGroup::Type type) {
+	switch(type) {
+		case metaf::CloudTypesGroup::Type::CUMULONIMBUS:
+		return("cumulonimbus");
+
+		case metaf::CloudTypesGroup::Type::TOWERING_CUMULUS:
+		return("toweringCumulus");
+
+		case metaf::CloudTypesGroup::Type::CUMULUS:
+		return("cumulus");
+
+		case metaf::CloudTypesGroup::Type::CUMULUS_FRACTUS:
+		return("cumulusFractus");
+
+		case metaf::CloudTypesGroup::Type::STRATOCUMULUS:
+		return("stratocumulus");
+
+		case metaf::CloudTypesGroup::Type::NIMBOSTRATUS:
+		return("nimbostratus");
+
+		case metaf::CloudTypesGroup::Type::STRATUS:
+		return("stratus");
+
+		case metaf::CloudTypesGroup::Type::STRATUS_FRACTUS:
+		return("stratusFractus");
+
+		case metaf::CloudTypesGroup::Type::ALTOSTRATUS:
+		return("altostratus");
+		
+		case metaf::CloudTypesGroup::Type::ALTOCUMULUS:
+		return("altocumulus");
+
+		case metaf::CloudTypesGroup::Type::ALTOCUMULUS_CASTELLANUS:
+		return("altocumulusCastellanus");
+		
+		case metaf::CloudTypesGroup::Type::CIRRUS:
+		return("cirrus");
+		
+		case metaf::CloudTypesGroup::Type::CIRROSTRATUS:
+		return("cirrostratus");
+		
+		case metaf::CloudTypesGroup::Type::CIRROCUMULUS:
+		return("cirrocumulus");
+		
+		default: 
+		return(undefinedToString(static_cast<int>(type)));
+	}
+}
+
+std::string GroupVisitorJson::cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer) {
+	switch(lowLayer) {
+		case metaf::CloudLayersGroup::LowLayer::NONE:
+		return("none");
+
+		case metaf::CloudLayersGroup::LowLayer::CU_HU_CU_FR:
+		return("CuHu_CuFr");
+
+		case metaf::CloudLayersGroup::LowLayer::CU_MED_CU_CON:
+		return("CuMed_CuCon");
+
+		case metaf::CloudLayersGroup::LowLayer::CB_CAL:
+		return("CbCal");
+
+		case metaf::CloudLayersGroup::LowLayer::SC_CUGEN:
+		return("ScCugen");
+
+		case metaf::CloudLayersGroup::LowLayer::SC_NON_CUGEN:
+		return("ScNotCugen");
+
+		case metaf::CloudLayersGroup::LowLayer::ST_NEB_ST_FR:
+		return("StNeb_StFr");
+
+		case metaf::CloudLayersGroup::LowLayer::ST_FR_CU_FR_PANNUS:
+		return("StFr_CuFr");
+
+		case metaf::CloudLayersGroup::LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS:
+		return("Cu_ScNotCugen_onDifferentLevels");
+
+		case metaf::CloudLayersGroup::LowLayer::CB_CAP:
+		return("CbCap");
+
+		case metaf::CloudLayersGroup::LowLayer::NOT_OBSERVABLE:
+		return("notObservable");
+
+		default:
+		return(undefinedToString(static_cast<int>(lowLayer)));		
+	}
+}
+
+std::string GroupVisitorJson::cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer) {
+	switch(midLayer) {
+		case metaf::CloudLayersGroup::MidLayer::NONE:
+		return("none");
+
+		case metaf::CloudLayersGroup::MidLayer::AS_TR:
+		return("AsTr");
+		
+		case metaf::CloudLayersGroup::MidLayer::AS_OP_NS:
+		return("AsOp_Ns");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_TR:
+		return("AcTr");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_TR_LEN_PATCHES:
+		return("AcTr_patches");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_TR_AC_OP_SPREADING:
+		return("AcTr_AcOp_spreading");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_CUGEN_AC_CBGEN:
+		return("AcCugen_AcCbGen");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS:
+		return("AcDu_AcOp_As_Ns");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_CAS_AC_FLO:
+		return("AcCas_AcFlo");
+		
+		case metaf::CloudLayersGroup::MidLayer::AC_OF_CHAOTIC_SKY:
+		return("Ac_chaoticSky");
+
+		case metaf::CloudLayersGroup::MidLayer::NOT_OBSERVABLE:
+		return("notObservable");
+
+		default:
+		return(undefinedToString(static_cast<int>(midLayer)));
+	}
+}
+
+std::string GroupVisitorJson::cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer) {
+	switch(highLayer) {
+		case metaf::CloudLayersGroup::HighLayer::NONE:
+		return("none");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC:
+		return("CiFib_CiUnc");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CI_CAS_CI_FLO:
+		return("CiSpi_CiCas_CiFlo");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CBGEN:
+		return("CiSpiCbgen");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC_SPREADING:
+		return("CiFib_CiUnc_spreading");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
+		return("Ci_Cs_lowAboveHorizon");
+
+		case metaf::CloudLayersGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
+		return("Ci_Cs_highAboveHorizon");
+
+		case metaf::CloudLayersGroup::HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
+		return("CsNeb_CsFib_coveringEntireSky");
+
+		case metaf::CloudLayersGroup::HighLayer::CS:
+		return("Cs");
+
+		case metaf::CloudLayersGroup::HighLayer::CC:
+		return("Cc");
+
+		case metaf::CloudLayersGroup::HighLayer::NOT_OBSERVABLE:
+		return("notObservable");
+
+		default:
+		return(undefinedToString(static_cast<int>(highLayer)));
+	}
+}
+
 
 std::string result;
 

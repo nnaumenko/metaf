@@ -230,6 +230,12 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group) {
 		(void)group; return("PressureTendencyGroup");
 	}
+	virtual std::string visitCloudTypesGroup(const metaf::CloudTypesGroup & group) {
+		(void)group; return("CloudTypesGroup");
+	}
+	virtual std::string visitCloudLayersGroup(const metaf::CloudLayersGroup & group) {
+		(void)group; return("CloudLayersGroup");
+	}
 	virtual std::string visitMiscGroup(const metaf::MiscGroup & group) {
 		(void)group; return("MiscGroup");
 	}
@@ -378,6 +384,24 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 		}
 		virtual std::string visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
 			(void)group; return("MinMaxTemperatureGroup");
+		}
+		virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group) {
+			(void)group; return("PrecipitationGroup");
+		}
+		virtual std::string visitLayerForecastGroup(const metaf::LayerForecastGroup & group) {
+			(void)group; return("LayerForecastGroup");
+		}
+		virtual std::string visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group) {
+			(void)group; return("PressureTendencyGroup");
+		}
+		virtual std::string visitCloudTypesGroup(const metaf::CloudTypesGroup & group) {
+			(void)group; return("CloudTypesGroup");
+		}
+		virtual std::string visitCloudLayersGroup(const metaf::CloudLayersGroup & group) {
+			(void)group; return("CloudLayersGroup");
+		}
+		virtual std::string visitMiscGroup(const metaf::MiscGroup & group) {
+			(void)group; return("MiscGroup");
 		}
 		virtual std::string visitOther(const metaf::Group & group) {
 			(void)group; return("Unknown Group");

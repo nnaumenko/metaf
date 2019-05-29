@@ -112,6 +112,12 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::PressureTendencyGroup>():
 		return("PressureTendencyGroup");
 
+		case variant_index<metaf::Group, metaf::CloudTypesGroup>():
+		return("CloudTypesGroup");
+
+		case variant_index<metaf::Group, metaf::CloudLayersGroup>():
+		return("CloudLayersGroup");
+
 		case variant_index<metaf::Group, metaf::MiscGroup>():
 		return("MiscGroup");
 

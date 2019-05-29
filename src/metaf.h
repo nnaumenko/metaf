@@ -25,7 +25,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 6;
+		static const int minor = 7;
 		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -52,6 +52,8 @@ namespace metaf {
 	class PrecipitationGroup;
 	class LayerForecastGroup;
 	class PressureTendencyGroup;
+	class CloudTypesGroup;
+	class CloudLayersGroup;
 	class MiscGroup;
 
 	// A variant type for all possible METAR and TAF groups.
@@ -78,6 +80,8 @@ namespace metaf {
 		PrecipitationGroup,
 		LayerForecastGroup,
 		PressureTendencyGroup,
+		CloudTypesGroup,
+		CloudLayersGroup,
 		MiscGroup
 	>;
 
@@ -1242,6 +1246,104 @@ namespace metaf {
 		static inline std::optional<Type> typeFromChar(char type);
 	};
 
+	class CloudTypesGroup {
+	public:
+		enum class Type {
+			//Low clouds
+			CUMULONIMBUS,
+			TOWERING_CUMULUS,
+			CUMULUS,
+			CUMULUS_FRACTUS,
+			STRATOCUMULUS,
+			NIMBOSTRATUS,
+			STRATUS,
+			STRATUS_FRACTUS,
+			//Med clouds
+			ALTOSTRATUS,
+			ALTOCUMULUS,
+			ALTOCUMULUS_CASTELLANUS,
+			//High clouds
+			CIRRUS,
+			CIRROSTRATUS,
+			CIRROCUMULUS
+		};
+		inline std::vector<std::pair<Type, unsigned int>> toVector() const;
+		bool isValid() const { return(true); }
+
+		CloudTypesGroup() = default;
+		static inline std::optional<CloudTypesGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+
+	private:
+		size_t cloudTypesSize = 0;
+		inline static const size_t cloudTypesMaxSize = 8;
+		std::pair<Type, unsigned int> cloudTypes[cloudTypesMaxSize];
+
+		static inline std::optional<Type> typeFromString(std::string s);
+	};
+
+	class CloudLayersGroup {
+	public:
+		enum class LowLayer {
+			NONE,
+			CU_HU_CU_FR,
+			CU_MED_CU_CON,
+			CB_CAL,
+			SC_CUGEN,
+			SC_NON_CUGEN,
+			ST_NEB_ST_FR,
+			ST_FR_CU_FR_PANNUS,
+			CU_SC_NON_CUGEN_DIFFERENT_LEVELS,
+			CB_CAP,
+			NOT_OBSERVABLE
+		};
+		enum class MidLayer {
+			NONE,
+			AS_TR,
+			AS_OP_NS,
+			AC_TR,
+			AC_TR_LEN_PATCHES,
+			AC_TR_AC_OP_SPREADING,
+			AC_CUGEN_AC_CBGEN,
+			AC_DU_AC_OP_AC_WITH_AS_OR_NS,
+			AC_CAS_AC_FLO,
+			AC_OF_CHAOTIC_SKY,
+			NOT_OBSERVABLE
+		};
+		enum class HighLayer {
+			NONE,
+			CI_FIB_CI_UNC,
+			CI_SPI_CI_CAS_CI_FLO,
+			CI_SPI_CBGEN,
+			CI_FIB_CI_UNC_SPREADING,
+			CI_CS_LOW_ABOVE_HORIZON,
+			CI_CS_HIGH_ABOVE_HORIZON,
+			CS_NEB_CS_FIB_COVERING_ENTIRE_SKY,
+			CS,
+			CC,
+			NOT_OBSERVABLE
+		};
+		LowLayer lowLayer() const { return(cloudLowLayer); }
+		MidLayer midLayer() const { return(cloudMidLayer); }
+		HighLayer highLayer() const { return(cloudHighLayer); }
+		inline bool isValid() const;
+
+		CloudLayersGroup() = default;
+		static inline std::optional<CloudLayersGroup> parse(const std::string & group, 
+			ReportPart reportPart);
+		inline std::optional<Group> combine(const Group & nextGroup) const;
+
+	private:
+		LowLayer cloudLowLayer = LowLayer::NONE;
+		MidLayer cloudMidLayer = MidLayer::NONE;
+		HighLayer cloudHighLayer = HighLayer::NONE;
+
+		static inline std::optional<LowLayer> lowLayerFromChar(char c);
+		static inline std::optional<MidLayer> midLayerFromChar(char c);
+		static inline std::optional<HighLayer> highLayerFromChar(char c);
+	};
+
 	class MiscGroup {
 	public:
 		enum class Type {
@@ -1470,6 +1572,8 @@ namespace metaf {
 		virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0;
 		virtual T visitLayerForecastGroup(const LayerForecastGroup & group) = 0;
 		virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group) = 0;
+		virtual T visitCloudTypesGroup(const CloudTypesGroup & group) = 0;
+		virtual T visitCloudLayersGroup(const CloudLayersGroup & group) = 0;
 		virtual T visitMiscGroup(const MiscGroup & group) = 0;
 		virtual T visitOther(const Group & group) = 0;
 	};
@@ -1541,6 +1645,12 @@ namespace metaf {
 		}
 		if (std::holds_alternative<PressureTendencyGroup>(group)) {
 			return(this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group)));
+		}
+		if (std::holds_alternative<CloudTypesGroup>(group)) {
+			return(this->visitCloudTypesGroup(std::get<CloudTypesGroup>(group)));
+		}
+		if (std::holds_alternative<CloudLayersGroup>(group)) {
+			return(this->visitCloudLayersGroup(std::get<CloudLayersGroup>(group)));
 		}
 		if (std::holds_alternative<MiscGroup>(group)) {
 			return(this->visitMiscGroup(std::get<MiscGroup>(group)));
@@ -1636,6 +1746,14 @@ namespace metaf {
 		}
 		if (std::holds_alternative<PressureTendencyGroup>(group)) {
 			this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<CloudTypesGroup>(group)) {
+			this->visitCloudTypesGroup(std::get<CloudTypesGroup>(group));
+			return;
+		}
+		if (std::holds_alternative<CloudLayersGroup>(group)) {
+			this->visitCloudLayersGroup(std::get<CloudLayersGroup>(group));
 			return;
 		}
 		if (std::holds_alternative<MiscGroup>(group)) {
@@ -3893,8 +4011,161 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
+	std::vector<std::pair<CloudTypesGroup::Type, unsigned int>> 
+	CloudTypesGroup::toVector() const
+	{
+		std::vector<std::pair<CloudTypesGroup::Type, unsigned int>> result;
+		for (auto i=0u; i < cloudTypesSize; i++) {
+			result.push_back(cloudTypes[i]);
+		}
+		return(result);
+	}
+
+
+	std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<CloudTypesGroup> notRecognised;
+		//"(CB|TCU|CU|CF|SC|NS|ST|SF|AS|AC|ACC|CI|CS|CC|FU)(\\d)"
+		static const std::regex matchRgx("(?:[ACNST][BCFISTU][CU]?[1-8])+");
+		static const std::regex searchRgx("([ACNST][BCFISTU][CU]?)([1-8])");
+		static const auto matchType = 1, matchOkta = 2;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+		std::smatch match;
+		if (!std::regex_match(group, match, matchRgx)) return(notRecognised);
+		
+		CloudTypesGroup result;
+		auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
+		while (iter != std::sregex_iterator()) {
+			match = *iter++;
+			const auto type = typeFromString(match.str(matchType));
+			if (!type.has_value()) return(notRecognised);
+			const auto okta = static_cast<unsigned int>(stoi(match.str(matchOkta)));
+			//Assuming okta is from 1 to 8, guaranteed by regex
+			if (result.cloudTypesSize >= result.cloudTypesMaxSize) return(result);
+			result.cloudTypes[result.cloudTypesSize++] = std::pair(type.value(), okta);
+		}
+		return(result);
+	}
+
+	std::optional<Group> CloudTypesGroup::combine(const Group & nextGroup) const {
+		(void)nextGroup; return(std::optional<Group>());
+	}
+
+	std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
+		if (s == "CB")  return(Type::CUMULONIMBUS);
+		if (s == "TCU") return(Type::TOWERING_CUMULUS);
+		if (s == "CU")  return(Type::CUMULUS);
+		if (s == "CF")  return(Type::CUMULUS_FRACTUS);
+		if (s == "SC")  return(Type::STRATOCUMULUS);
+		if (s == "NS")  return(Type::NIMBOSTRATUS);
+		if (s == "ST")  return(Type::STRATUS);
+		if (s == "SF")  return(Type::STRATUS_FRACTUS);
+		if (s == "AS")  return(Type::ALTOSTRATUS);
+		if (s == "AC")  return(Type::ALTOCUMULUS);
+		if (s == "ACC") return(Type::ALTOCUMULUS_CASTELLANUS);
+		if (s == "CI")  return(Type::CIRRUS);
+		if (s == "CS")  return(Type::CIRROSTRATUS);
+		if (s == "CC")  return(Type::CIRROCUMULUS);
+		return(std::optional<CloudTypesGroup::Type>());	
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	bool CloudLayersGroup::isValid() const {
+		if (lowLayer() == LowLayer::NOT_OBSERVABLE && 
+			midLayer() != MidLayer::NOT_OBSERVABLE) return(false);
+		if (midLayer() == MidLayer::NOT_OBSERVABLE && 
+			highLayer() != HighLayer::NOT_OBSERVABLE) return(false);
+		return(true);
+	}
+
+
+	std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & group, 
+		ReportPart reportPart)
+	{
+		std::optional<CloudLayersGroup> notRecognised;
+		static const std::regex rgx("8/([\\d/])([\\d/])([\\d/])");
+		static const auto matchLowLayer = 1, matchMidLayer = 2, matchHighLayer = 3;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);	
+		std::smatch match;
+		if (!std::regex_match(group, match, rgx)) return(notRecognised);
+		
+		const auto lowLayer = lowLayerFromChar(match.str(matchLowLayer)[0]);
+		const auto midLayer = midLayerFromChar(match.str(matchMidLayer)[0]);
+		const auto highLayer = highLayerFromChar(match.str(matchHighLayer)[0]);
+		if (!lowLayer.has_value() || !midLayer.has_value() || !highLayer.has_value()) {
+			return(notRecognised);
+		}
+
+		CloudLayersGroup result;
+		result.cloudLowLayer = lowLayer.value();
+		result.cloudMidLayer = midLayer.value();
+		result.cloudHighLayer = highLayer.value();
+		return(result);
+	}
+
+	inline std::optional<Group> CloudLayersGroup::combine(const Group & nextGroup) const {
+		(void)nextGroup; return(std::optional<Group>());
+	}
+
+	std::optional<CloudLayersGroup::LowLayer> CloudLayersGroup::lowLayerFromChar(char c) {
+		switch (c) {
+			case '0': return(LowLayer::NONE);
+			case '1': return(LowLayer::CU_HU_CU_FR);
+			case '2': return(LowLayer::CU_MED_CU_CON);
+			case '3': return(LowLayer::CB_CAL);
+			case '4': return(LowLayer::SC_CUGEN);
+			case '5': return(LowLayer::SC_NON_CUGEN);
+			case '6': return(LowLayer::ST_NEB_ST_FR);
+			case '7': return(LowLayer::ST_FR_CU_FR_PANNUS);
+			case '8': return(LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS);
+			case '9': return(LowLayer::CB_CAP);
+			case '/': return(LowLayer::NOT_OBSERVABLE); 
+			default:  return(std::optional<LowLayer>());
+		}
+	}
+
+	std::optional<CloudLayersGroup::MidLayer> CloudLayersGroup::midLayerFromChar(char c) {
+		switch (c) {
+			case '0': return(MidLayer::NONE);
+			case '1': return(MidLayer::AS_TR);
+			case '2': return(MidLayer::AS_OP_NS);
+			case '3': return(MidLayer::AC_TR);
+			case '4': return(MidLayer::AC_TR_LEN_PATCHES);
+			case '5': return(MidLayer::AC_TR_AC_OP_SPREADING);
+			case '6': return(MidLayer::AC_CUGEN_AC_CBGEN);
+			case '7': return(MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS);
+			case '8': return(MidLayer::AC_CAS_AC_FLO);
+			case '9': return(MidLayer::AC_OF_CHAOTIC_SKY);
+			case '/': return(MidLayer::NOT_OBSERVABLE); 
+			default:  return(std::optional<MidLayer>());
+		} 
+	}
+
+	std::optional<CloudLayersGroup::HighLayer> CloudLayersGroup::highLayerFromChar(char c) {
+		switch (c) {
+			case '0': return(HighLayer::NONE);
+			case '1': return(HighLayer::CI_FIB_CI_UNC);
+			case '2': return(HighLayer::CI_SPI_CI_CAS_CI_FLO);
+			case '3': return(HighLayer::CI_SPI_CBGEN);
+			case '4': return(HighLayer::CI_FIB_CI_UNC_SPREADING);
+			case '5': return(HighLayer::CI_CS_LOW_ABOVE_HORIZON);
+			case '6': return(HighLayer::CI_CS_HIGH_ABOVE_HORIZON);
+			case '7': return(HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY);
+			case '8': return(HighLayer::CS);
+			case '9': return(HighLayer::CC);
+			case '/': return(HighLayer::NOT_OBSERVABLE);
+			default:  return(std::optional<HighLayer>()); 
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
 	std::optional<MiscGroup> MiscGroup::parse(const std::string & group, 
-			ReportPart reportPart) 
+		ReportPart reportPart) 
 	{
 		std::optional<MiscGroup> notRecognised;
 		static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");

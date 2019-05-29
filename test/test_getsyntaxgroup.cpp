@@ -362,6 +362,18 @@ TEST(getSyntaxGroup, OTHER_PressureTendencyGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_CloudTypesGroup) {
+	const auto g = metaf::CloudTypesGroup::parse("CF1CU3SC1CS1CI2", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_CloudLayersGroup) {
+	const auto g = metaf::CloudLayersGroup::parse("8/578", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_MiscGroup) {
 	const auto g = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
