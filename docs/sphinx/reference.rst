@@ -1450,7 +1450,31 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 	Stores information about surface wind (including variable wind direction sector if reported) or wind shear.
 
+	.. cpp:enum-class:: Status
+
+		Group status which specifies what kind of data stored within this group.
+
+		.. cpp:enumerator:: SURFACE_WIND
+
+			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, and :cpp:func:`gustSpeed()`.
+
+		.. cpp:enumerator:: VARIABLE_WIND_SECTOR
+
+			Only variable wind sector information is stored. Use :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+
+		.. cpp:enumerator:: SURFACE_WIND_WITH_VARIABLE_SECTOR
+
+			Surface wind information with variable wind sector information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, :cpp:func:`gustSpeed()`, :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+
+		.. cpp:enumerator:: WIND_SHEAR
+
+			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
+
 	**Acquiring group data**
+
+		.. cpp:function:: Status status() const
+
+			:returns: Wind group status, i.e. what kind of information is stored.
 
 		.. index:: single: Wind; Direction
 
@@ -1464,7 +1488,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 		
 			:returns: Wind speed.
 
-		.. index:: single: Wind; Gust speedW
+		.. index:: single: Wind; Gust speed
 
 		.. cpp:function:: Speed gustSpeed() const
 
@@ -1484,7 +1508,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 		
 		.. index:: single: Wind shear; Height
 
-		.. cpp:function:: Distance windShearHeight() const
+		.. cpp:function:: Distance height() const
 
 			:returns: Height at which wind shear occurs or a non-reported value if surface wind data are specified.
 
@@ -1496,18 +1520,6 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 			:returns: ``true`` if calm wind (i.e. no wind) is reported. Calm wind is coded as ``00000KT`` or ``00000MPS`` or ``00000KMH``.
 
-		.. cpp:function:: bool isWindShear() const
-
-			:returns: ``true`` if this group contains a wind shear information rather than surface wind information, and ``false`` otherwise.
-
-		.. cpp:function:: bool isSurfaceWind() const
-
-			:returns: ``true`` if this group contains a surface wind information rather than wind shear information, and ``false`` otherwise.
-
-		.. cpp:function:: bool hasVariableSector() const
-
-			:returns: ``true`` if this group contains a variable wind sector  information (with or without surface wind information) , and ``false`` otherwise.
-
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
@@ -1517,7 +1529,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 				The information is considered valid if all of the following conditions are met: 
 					- If both gust speed and wind speed are reported, wind speed is less than gust speed;
 					- If gust speed is reported, its value is non-zero;
-					- If group contains wind shear information rather than surface wind information (i.e. wind shear height is reported) then wind shear height value is non-zero;
+					- If wind shear height is reported then wind shear height value is non-zero;
 					- Wind direction, wind shear height, variable wind sector directions must be valid values if reported.
 
 

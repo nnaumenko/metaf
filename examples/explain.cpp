@@ -304,10 +304,21 @@ std::string GroupVisitorExplain::visitTrendGroup(const metaf::TrendGroup & group
 std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.isSurfaceWind()) result << "Surface wind:";
-	if (group.isWindShear()) {
+	switch (group.status()) {
+		case metaf::WindGroup::Status::SURFACE_WIND:
+		case metaf::WindGroup::Status::VARIABLE_WIND_SECTOR:
+		case metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR:
+		result << "Surface wind:";
+		break;
+
+		case metaf::WindGroup::Status::WIND_SHEAR:
 		result << "Wind shear at height ";
-		result << explainDistance(group.windShearHeight()) << ':';
+		result << explainDistance(group.height()) << ':';
+		break;
+
+		default:
+		result << "[unknown wind group]:";
+		break;
 	}
 	result << lineBreak;
 
@@ -327,10 +338,11 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
 		}
 	}
-	if (group.hasVariableSector()) {
-		result << "Variable wind direction sector from ";
-		result << explainDirection(group.varSectorBegin()) << " clockwise to ";
-		result << explainDirection(group.varSectorEnd());
+	if (group.status() == metaf::WindGroup::Status::VARIABLE_WIND_SECTOR ||
+		group.status() == metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR) {
+			result << "Variable wind direction sector from ";
+			result << explainDirection(group.varSectorBegin()) << " clockwise to ";
+			result << explainDirection(group.varSectorEnd());
 	}
 	return(result.str());
 }

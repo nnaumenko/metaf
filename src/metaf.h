@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 7;
-		static const int patch = 0;
+		static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -685,35 +685,33 @@ namespace metaf {
 
 	class WindGroup {
 	public:
+		enum class Status {
+			SURFACE_WIND,
+			VARIABLE_WIND_SECTOR,
+			SURFACE_WIND_WITH_VARIABLE_SECTOR,
+			WIND_SHEAR,
+		};
+		Status status() const { return(windStatus); }
 		Direction direction() const { return(windDir); }
 		Speed windSpeed() const { return(wSpeed); }
 		Speed gustSpeed() const { return(gSpeed); }
-		inline bool isCalm() const;
-		Distance windShearHeight() const { return(wShHeight); }
+		Distance height() const { return(wShHeight); }
 		Direction varSectorBegin() const { return(vsecBegin); }
 		Direction varSectorEnd() const { return(vsecEnd); }
-		bool isWindShear() const { return(wShHeight.isReported()); }
-		bool isSurfaceWind() const { return(!isWindShear()); }
-		bool hasVariableSector() const { 
-			return(isSurfaceWind() &&
-				vsecBegin.status() == Direction::Status::VALUE_DEGREES && 
-				vsecEnd.status() == Direction::Status::VALUE_DEGREES);
-		}
+		inline bool isCalm() const;
 		inline bool isValid() const;
 
 		WindGroup() = default;
 		static inline std::optional<WindGroup> parse(const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
+		Status windStatus;
 		Direction windDir;
 		Speed wSpeed;
 		Speed gSpeed;
 		Distance wShHeight;
 		Direction vsecBegin;
 		Direction vsecEnd;
-
-		inline bool isSurfaceWindGroup() const;
-		inline bool isWindSectorGroup() const;
 	};
 
 	class VisibilityGroup {
@@ -2983,14 +2981,18 @@ namespace metaf {
 			ReportPart reportPart)
 	{
 		static const std::optional<WindGroup> notRecognised;
+
 		static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
 			"(\\d\\d0|VRB|///)([1-9]?\\d\\d|//)(?:G([1-9]?\\d\\d))?([KM][TMP][HS]?)");
 		static const auto matchWindShearHeight = 1, matchWindDir = 2;
 		static const auto matchWindSpeed = 3, matchWindGust = 4, matchWindUnit = 5;
+
 		static const std::regex varWindRgx("(\\d\\d0)V(\\d\\d0)");
 		static const auto matchVarWindBegin = 1, matchVarWindEnd = 2;
+
 		if (reportPart != ReportPart::METAR && 
 			reportPart != ReportPart::TAF) return(notRecognised);
+
 		if (std::smatch match; std::regex_match(group, match, windRgx)) {
 			const auto speedUnit = Speed::unitFromString(match.str(matchWindUnit));
 			if (!speedUnit.has_value()) return(notRecognised);
@@ -3004,7 +3006,11 @@ namespace metaf {
 			const auto gust = Speed::fromString(match.str(matchWindGust), speedUnit.value());
 			if (gust.has_value()) result.gSpeed = gust.value();
 			const auto wsHeight = Distance::fromHeightString(match.str(matchWindShearHeight));
-			if (wsHeight.has_value()) result.wShHeight = wsHeight.value();
+			result.windStatus = Status::SURFACE_WIND;
+			if (wsHeight.has_value()) {
+				result.windStatus = Status::WIND_SHEAR;
+				result.wShHeight = wsHeight.value();
+			}
 			return(result);
 		}
 		if (std::smatch match; std::regex_match(group, match, varWindRgx)) {
@@ -3015,60 +3021,55 @@ namespace metaf {
 			const auto end = Direction::fromDegreesString(match.str(matchVarWindEnd));
 			if (!end.has_value()) return(notRecognised);
 			result.vsecEnd = end.value();
+			result.windStatus = Status::VARIABLE_WIND_SECTOR;
 			return(result);
 		}
 		return(notRecognised);
 	}
 
 	std::optional<Group> WindGroup::combine(const Group & nextGroup) const {
-		if (!std::holds_alternative<WindGroup>(nextGroup)) return(std::optional<Group>());
+		static const std::optional<Group> notCombined;
+		if (!std::holds_alternative<WindGroup>(nextGroup)) return(notCombined);
 		auto nextWindGroup = std::get<WindGroup>(nextGroup);
-		if (!isSurfaceWindGroup()) return(std::optional<Group>());
-		if (!nextWindGroup.isWindSectorGroup()) return(std::optional<Group>());
-		WindGroup combinedGroup = *this;
-		combinedGroup.vsecBegin = nextWindGroup.vsecBegin;
-		combinedGroup.vsecEnd = nextWindGroup.vsecEnd;
-		return(combinedGroup);
+		switch (status()) {
+			case Status::SURFACE_WIND:
+			if (nextWindGroup.status() == Status::VARIABLE_WIND_SECTOR) {
+				WindGroup combinedGroup = *this;
+				combinedGroup.windStatus = 
+					Status::SURFACE_WIND_WITH_VARIABLE_SECTOR;
+				combinedGroup.vsecBegin = nextWindGroup.vsecBegin;
+				combinedGroup.vsecEnd = nextWindGroup.vsecEnd;
+				return(combinedGroup);
+			}
+			return(notCombined); 
+
+			default: return(notCombined);
+		}
 	}
 
 	bool WindGroup::isCalm() const {
-		return (!direction().degrees().value_or(1) && 
+		return (status() == Status::SURFACE_WIND && 
 			direction().status() == Direction::Status::VALUE_DEGREES &&
+			!direction().degrees().value_or(1) && 
 			!windSpeed().speed().value_or(1) && 
-			!gustSpeed().speed().has_value() &&
-			!windShearHeight().isReported() && 
-			varSectorBegin().status() == Direction::Status::OMMITTED &&
-			varSectorEnd().status() == Direction::Status::OMMITTED);
+			!gustSpeed().speed().has_value());
 	}
 
 	bool WindGroup::isValid() const {
-		// If both wind and gust speed reported, wind speed cannot be greater than gust speed
-		if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) return(false);
+		// If both wind and gust speed reported, wind speed cannot be greater 
+		// than gust speed
+		if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) {
+			return(false);
+		}
 		// Gust speed cannot be zero if reported
 		if (!gustSpeed().speed().value_or(1)) return(false);
 		// Wind shear height cannot be zero if reported
-		if (!windShearHeight().integer().value_or(1)) return(false);
+		if (!height().integer().value_or(1)) return(false);
 		// All data must be valid
 		return(direction().isValid() &&
-			windShearHeight().isValid() &&
+			height().isValid() &&
 			varSectorBegin().isValid() &&
 			varSectorEnd().isValid());
-	}
-
-	bool WindGroup::isSurfaceWindGroup() const {
-		return (direction().status() != Direction::Status::OMMITTED &&
-			!windShearHeight().isReported() &&
-			varSectorBegin().status() == Direction::Status::OMMITTED &&
-			varSectorEnd().status() == Direction::Status::OMMITTED);
-	}
-
-	bool WindGroup::isWindSectorGroup() const {
-		return (direction().status() == Direction::Status::OMMITTED &&
-			!windSpeed().speed().has_value() &&
-			!gustSpeed().speed().has_value() &&
-			!windShearHeight().isReported() &&
-			varSectorBegin().status() == Direction::Status::VALUE_DEGREES &&
-			varSectorEnd().status() == Direction::Status::VALUE_DEGREES);
 	}
 
 	///////////////////////////////////////////////////////////////////////////

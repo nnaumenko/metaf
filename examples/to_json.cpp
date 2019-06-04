@@ -445,11 +445,24 @@ void GroupVisitorJson::visitTrendGroup(const metaf::TrendGroup & group) {
 }
 
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
-	if (group.isWindShear()) json.startObject("windShear");
-	if (group.isSurfaceWind()) json.startObject("wind");
+	switch (group.status()) {
+		case metaf::WindGroup::Status::SURFACE_WIND:
+		case metaf::WindGroup::Status::VARIABLE_WIND_SECTOR:
+		case metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR:
+			json.startObject("wind");
+			break;
+
+		case metaf::WindGroup::Status::WIND_SHEAR:
+			json.startObject("windShear");
+			break;
+
+		default:
+			json.startObject("unknownWindGroupStatus");
+			break;
+	}
 	if (!group.isValid()) json.valueBool("valid", false);
 	if (group.isCalm()) json.valueBool("calm", true);
-	distanceToJson(group.windShearHeight(), "windShearHeight", "heightUnit", "heightModifier");
+	distanceToJson(group.height(), "windShearHeight", "heightUnit", "heightModifier");
 	directionToJson(group.direction(), 
 		"direction", 
 		"directionCardinal",
