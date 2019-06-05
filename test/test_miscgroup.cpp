@@ -45,3 +45,34 @@ TEST(MiscGroup, parseSunshineDurationWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("18096", metaf::ReportPart::RMK));
 }
 
+TEST(MiscGroup, parseCorrectedObservation) {
+	const auto mg1 = metaf::MiscGroup::parse("CCA", metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION);
+	ASSERT_TRUE(mg1->value().has_value());
+	EXPECT_EQ(static_cast<int>(mg1->value().value()), 1);
+
+	const auto mg2 = metaf::MiscGroup::parse("CCZ", metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION);
+	ASSERT_TRUE(mg1->value().has_value());
+	EXPECT_EQ(static_cast<int>(mg2->value().value()), 26);
+}
+
+TEST(MiscGroup, parseCorrectedObservationWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("CCA", metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CCA", metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CCA", metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CCA", metaf::ReportPart::RMK));
+}
+
+TEST(MiscGroup, parseCorrectedObservationDurationWrongFormat) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("CC", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CC/", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CC0", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CC-", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CCAA", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CA", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("XCA", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse("CXA", metaf::ReportPart::METAR));
+}

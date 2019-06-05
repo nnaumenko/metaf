@@ -62,7 +62,7 @@ Example of a TAF report is as follows:
 ### Which groups Metaf is able to recognize?
 
 * Report type METAR, SPECI, and TAF
-* Amended or correctional report indicators
+* Various amended or correctional report indicators
 * Missing report indicator NIL and cancelled TAF report indicator CNL
 * Automated report indicator, automated station type remark, and maintenance indicator
 * ICAO location
@@ -70,8 +70,9 @@ Example of a TAF report is as follows:
 * Wind direction, speed and gust speed
 * Wind shear information
 * Prevailing or directional visibility in meters or statute miles
-* Cloud layer information, clear sky information and 'no significant cloud' / 'no cloud detected information'
+* Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
 * Indicator of no significant cloud and good visibility CAVOK
+* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach)
 * Current and recent weather information, and indicator or weather phenomena end NSW
 * Temperature and dew point, including more precise values given in remarks
 * Temperature forecast from TAF reports
@@ -87,7 +88,7 @@ Example of a TAF report is as follows:
 * Temperature and state of sea surface or wave height
 * Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
 * Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
-* NOSPECI group indicating that no unscheduled reports are issued by station
+* Indicator of no unscheduled reports being issued by station
 * Groups indicating non-operational sensors
 * Icing and turbulence forecast used by NATO militaries
 * Miscellaneous rare groups (e.g. sunshine duration)

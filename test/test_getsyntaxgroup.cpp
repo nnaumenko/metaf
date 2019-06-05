@@ -176,6 +176,12 @@ TEST(getSyntaxGroup, OTHER_SLPNO) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_FROIN) {
+	const auto g = metaf::FixedGroup::parse("FROIN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_NOSIG) {
 	const auto g = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
@@ -374,8 +380,14 @@ TEST(getSyntaxGroup, OTHER_CloudLayersGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_MiscGroup) {
+TEST(getSyntaxGroup, OTHER_MiscGroupSunshineDuration) {
 	const auto g = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_MiscGroupCorrectionNo) {
+	const auto g = metaf::MiscGroup::parse("CCA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

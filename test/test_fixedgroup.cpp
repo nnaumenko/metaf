@@ -400,6 +400,20 @@ TEST(FixedGroup, parseSlpno) {
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
+TEST(FixedGroup, parseFroin) {
+	static const char gs[] = "FROIN";
+	static const auto type = metaf::FixedGroup::Type::FROIN;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
 TEST(FixedGroup, parseOther) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::FixedGroup::parse("METAF", metaf::ReportPart::HEADER).has_value());
@@ -503,4 +517,8 @@ TEST(FixedGroup, isValid) {
 	const auto fg24 = metaf::FixedGroup::parse("SLPNO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg24.has_value());
 	EXPECT_TRUE(fg24->isValid());
+
+	const auto fg25 = metaf::FixedGroup::parse("FROIN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg25.has_value());
+	EXPECT_TRUE(fg25->isValid());
 }

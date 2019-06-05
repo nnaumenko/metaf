@@ -388,6 +388,10 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueNull("atmosphericPressureAdditionalSeaLevelPressure");
 		break;
 
+		case metaf::FixedGroup::Type::FROIN:
+		json.valueBool("frostOnInstrument", true);
+		break;
+
 		default:
 		json.startObject("fixedGroup");
 		undefinedToJson(static_cast<int>(group.type()), "type");
@@ -875,6 +879,11 @@ void GroupVisitorJson::visitMiscGroup(
 		json.valueInt("sunshineDuration", group.value().value());
 		json.valueStr("sunshineDurationUnit", "minutes");
 		break;
+
+		case metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION:
+		if (!group.value().has_value()) break;
+		json.valueBool("correctedObservation", true);
+		json.valueInt("correctedObservationNumber", group.value().value());
 
 		default:
 		break;

@@ -239,6 +239,10 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		result << "Mean sea-level pressure information is not available";
 		break;
 
+		case metaf::FixedGroup::Type::FROIN:
+		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
+		break;
+
 		default:
 		result << "Unknown fixed group";
 		break;
@@ -724,16 +728,21 @@ std::string GroupVisitorExplain::visitMiscGroup(const metaf::MiscGroup & group) 
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
 		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
-		if (group.value().has_value()) {
-			if (const auto duration = group.value(); duration.has_value()) {
-				if (!duration.value()) {
-					result << "No sunshine occurred the previous calendar day";
-				} else {
-					result << "Duration of sunshine ";
-					result << "that occurred the previous calendar day is ";
-					result << duration.value() << " minutes";
-				}
+		if (const auto duration = group.value(); duration.has_value()) {
+			if (!duration.value()) {
+				result << "No sunshine occurred the previous calendar day";
+			} else {
+				result << "Duration of sunshine ";
+				result << "that occurred the previous calendar day is ";
+				result << duration.value() << " minutes";
 			}
+		}
+		break;
+
+		case metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION:
+		if (const auto correctionNo = group.value(); correctionNo.has_value()) {
+			result << "This report is the corrected weather observation, ";
+			result << "correction number is " << static_cast<int>(correctionNo.value());
 		}
 		break;
 

@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		static const int major = 2;
-		static const int minor = 7;
-		static const int patch = 1;
+		static const int minor = 8;
+		static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -581,7 +581,8 @@ namespace metaf {
 			PNO,
 			FZRANO,
 			TSNO,
-			SLPNO
+			SLPNO,
+			FROIN
 		};
 		Type type() const { return(t); }
 		bool isValid() const { return(true); }
@@ -1346,6 +1347,7 @@ namespace metaf {
 	public:
 		enum class Type {
 			SUNSHINE_DURATION_MINUTES,
+			CORRECTED_WEATHER_OBSERVATION
 		};
 		Type type() const { return(groupType); }
 		std::optional<float> value() const { return(groupValue); }
@@ -2724,6 +2726,7 @@ namespace metaf {
 			if (group == "FZRANO") return(FixedGroup(Type::FZRANO));
 			if (group == "TSNO") return(FixedGroup(Type::TSNO));
 			if (group == "SLPNO") return(FixedGroup(Type::SLPNO));
+			if (group == "FROIN") return(FixedGroup(Type::FROIN));
 		}
 		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
@@ -4170,16 +4173,29 @@ namespace metaf {
 	{
 		std::optional<MiscGroup> notRecognised;
 		static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");
+		static const std::regex rgxCorrectionObservation("CC([A-Z])");
 		static const auto matchValue = 1;
 
-		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
-		if (std::regex_match(group, match, rgxSunshineDuration)) {
-			MiscGroup result;
-			result.groupType = Type::SUNSHINE_DURATION_MINUTES;
-			result.groupValue = std::stoi(match.str(matchValue));
-			return(result);
+
+		if (reportPart == ReportPart::METAR) {
+			if (std::regex_match(group, match, rgxCorrectionObservation)) {
+				MiscGroup result;
+				result.groupType = Type::CORRECTED_WEATHER_OBSERVATION;
+				result.groupValue = match.str(matchValue)[0] - 'A' + 1;
+				return(result);
+			}
+    	}
+
+		if (reportPart == ReportPart::RMK) {
+			if (std::regex_match(group, match, rgxSunshineDuration)) {
+				MiscGroup result;
+				result.groupType = Type::SUNSHINE_DURATION_MINUTES;
+				result.groupValue = std::stoi(match.str(matchValue));
+				return(result);
+			}
 		}
+
 		return(notRecognised);
 	}
 
@@ -4190,6 +4206,9 @@ namespace metaf {
 	bool MiscGroup::isValid() const {
 		switch(type()) {
 			case Type::SUNSHINE_DURATION_MINUTES:
+			return(true);
+
+			case Type::CORRECTED_WEATHER_OBSERVATION:
 			return(true);
 
 			default:

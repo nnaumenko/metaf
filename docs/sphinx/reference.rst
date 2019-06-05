@@ -1205,6 +1205,10 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Mean sea-level pressure information is not available.
 
+		.. cpp:enumerator:: FROIN
+
+			Frost on the instrument (e.g. due to fog depositing rime).
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -3290,7 +3294,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: miscgroup.svg
 
-Example of the raw report data is ``98096``. 
+Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``. 
 
 .. cpp:class:: MiscGroup
 
@@ -3303,6 +3307,10 @@ Example of the raw report data is ``98096``.
 		.. cpp:enumerator:: SUNSHINE_DURATION_MINUTES
 
 			Sunshine duration in minutes that occurred the previous calendar day (or zero if no sunshine occurred).
+
+		.. cpp:enumerator:: CORRECTED_WEATHER_OBSERVATION
+
+			This group designates a corrected weather observation; value reports the sequential number of correction, e.g. 1st, 2nd, 3rd, etc; this group is only used in Canada.
 
 	**Acquiring group data**
 
@@ -3321,6 +3329,8 @@ Example of the raw report data is ``98096``.
 			:returns: The following values are returned depending on type of the value:
 
 				* If sunshine duration value is reported, always returns ``true``.
+
+				* If number of corrected weather observation is reported, always returns ``true``.
 
 
 

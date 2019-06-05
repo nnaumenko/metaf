@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="306.5" height="362" viewBox="0 0 306.5 362">
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="306.5" height="392" viewBox="0 0 306.5 392">
 <style>
 /* <![CDATA[ */
 svg.railroad-diagram {
@@ -146,6 +146,14 @@ svg.railroad-diagram g.diagram-text:hover path.diagram-text {
 <text x="206.75" y="335">SLPNO</text>
 </g>
 <path d="M246.5 331a10 10 0 0 0 10 -10v-100a10 10 0 0 1 10 -10"></path>
+<path d="M147 211a10 10 0 0 1 10 10v130a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M167 361h8.5"></path>
+<path d="M238 361h8.5"></path>
+<rect x="175.5" y="350" width="62.5" height="22" rx="10" ry="10"></rect>
+<text x="206.75" y="365">FROIN</text>
+</g>
+<path d="M246.5 361a10 10 0 0 0 10 -10v-130a10 10 0 0 1 10 -10"></path>
 </g>
 <path d="M 266.5 211 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
 </g>
