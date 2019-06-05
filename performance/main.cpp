@@ -88,8 +88,8 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::RunwayStateGroup>():
 		return("RunwayStateGroup");
 
-		case variant_index<metaf::Group, metaf::WindShearLowLayerGroup>():
-		return("WindShearLowLayerGroup");
+		case variant_index<metaf::Group, metaf::LocationDetailsGroup>():
+		return("LocationDetailsGroup");
 
 		case variant_index<metaf::Group, metaf::RainfallGroup>():
 		return("RainfallGroup");

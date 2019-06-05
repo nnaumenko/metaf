@@ -44,7 +44,7 @@ namespace metaf {
 	class PressureGroup;
 	class RunwayVisualRangeGroup;
 	class RunwayStateGroup;
-	class WindShearLowLayerGroup;
+	class LocationDetailsGroup;
 	class RainfallGroup;
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
@@ -72,7 +72,7 @@ namespace metaf {
 		PressureGroup,
 		RunwayVisualRangeGroup,
 		RunwayStateGroup,
-		WindShearLowLayerGroup,
+		LocationDetailsGroup,
 		RainfallGroup,
 		SeaSurfaceGroup,
 		ColourCodeGroup,
@@ -1036,13 +1036,13 @@ namespace metaf {
 		static inline std::optional<Extent> extentFromString(const std::string & s);
 	};
 
-	class WindShearLowLayerGroup {
+	class LocationDetailsGroup {
 	public:
 		Runway runway() const { return(rw); }
 		bool isValid() const { return(rw.isValid() && status == Status::COMPLETE); }
 
-		WindShearLowLayerGroup() = default; 
-		static inline std::optional<WindShearLowLayerGroup> parse(
+		LocationDetailsGroup() = default; 
+		static inline std::optional<LocationDetailsGroup> parse(
 			const std::string & group, ReportPart reportPart);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
@@ -1562,7 +1562,7 @@ namespace metaf {
 		virtual T visitPressureGroup(const PressureGroup & group) = 0;
 		virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
 		virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
-		virtual T visitWindShearLowLayerGroup(const WindShearLowLayerGroup & group) = 0;
+		virtual T visitLocationDetailsGroup(const LocationDetailsGroup & group) = 0;
 		virtual T visitRainfallGroup(const RainfallGroup & group) = 0;
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
@@ -1620,8 +1620,8 @@ namespace metaf {
 		if (std::holds_alternative<RunwayStateGroup>(group)) {
 			return(this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group)));
 		}
-		if (std::holds_alternative<WindShearLowLayerGroup>(group)) {
-			return(this->visitWindShearLowLayerGroup(std::get<WindShearLowLayerGroup>(group)));
+		if (std::holds_alternative<LocationDetailsGroup>(group)) {
+			return(this->visitLocationDetailsGroup(std::get<LocationDetailsGroup>(group)));
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
 			return(this->visitRainfallGroup(std::get<RainfallGroup>(group)));
@@ -1714,8 +1714,8 @@ namespace metaf {
 			this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group));
 			return;
 		}
-		if (std::holds_alternative<WindShearLowLayerGroup>(group)) {
-			this->visitWindShearLowLayerGroup(std::get<WindShearLowLayerGroup>(group));
+		if (std::holds_alternative<LocationDetailsGroup>(group)) {
+			this->visitLocationDetailsGroup(std::get<LocationDetailsGroup>(group));
 			return;
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
@@ -3608,21 +3608,21 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<WindShearLowLayerGroup> WindShearLowLayerGroup::parse(
+	std::optional<LocationDetailsGroup> LocationDetailsGroup::parse(
 			const std::string & group,
 			ReportPart reportPart)
 	{
-		static const std::optional<WindShearLowLayerGroup> notRecognised;
+		static const std::optional<LocationDetailsGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
-		if (group == "WS") return(WindShearLowLayerGroup());
+		if (group == "WS") return(LocationDetailsGroup());
 		return(notRecognised);
 	}
 
-	std::optional<Group> WindShearLowLayerGroup::combine(const Group & nextGroup) const { 
-		static const std::optional<WindShearLowLayerGroup> notCombined;
+	std::optional<Group> LocationDetailsGroup::combine(const Group & nextGroup) const { 
+		static const std::optional<LocationDetailsGroup> notCombined;
 		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
 		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-		WindShearLowLayerGroup combinedGroup = *this;
+		LocationDetailsGroup combinedGroup = *this;
 
 		switch (status) {
 			case Status::COMPLETE:

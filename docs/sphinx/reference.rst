@@ -950,7 +950,7 @@ WaveHeight
 Group
 -----
 
-.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, WindShearLowLayerGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
+.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, LocationDetailsGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:struct:`metaf::Parser::Result` and :cpp:struct:`metaf::Parser::ExtendedResult`).
 
@@ -2470,22 +2470,24 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid and :cpp:enum:`Extent` returned by :cpp:func:`contaminationExtent()` is not a reserved value.
 
-.. index:: single: Wind Shear; Lower Layers
+
 
 .. index:: single: Group; Wind shear in the lower layers
 
-WindShearLowLayerGroup
+LocationDetailsGroup
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The following syntax corresponds to this group in METAR reports.
 
-.. image:: windshearlowlayergroup.svg
+.. image:: locationdetailsgroup.svg
 
 Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
-.. cpp:class:: WindShearLowLayerGroup
+.. cpp:class:: LocationDetailsGroup
 
-	Stores information on the existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations.
+	Stores additional info details in the secondary locations (e.g. runway).
+
+	Currently only reports the existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations.
 
 	**Acquiring group data**
 
@@ -3624,7 +3626,7 @@ See :doc:`getting_started` for more information.
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitWindShearLowLayerGroup(const WindShearLowLayerGroup & group) = 0
+	.. cpp:function:: protected virtual T visitLocationDetailsGroup(const LocationDetailsGroup & group) = 0
 
 	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group) = 0
 

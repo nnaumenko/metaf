@@ -206,8 +206,8 @@ Now add to class MyVisitor the group handling methods (to keep it simple we just
 	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
 		(void)group; return("RunwayStateGroup");
 	}
-	virtual std::string visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
-		(void)group; return("WindShearLowLayerGroup");
+	virtual std::string visitLocationDetailsGroup(const metaf::LocationDetailsGroup & group) {
+		(void)group; return("LocationDetailsGroup");
 	}
 	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group) {
 		(void)group; return("RainfallGroup");
@@ -370,8 +370,8 @@ At this point the file ``tutorial.cpp`` file looks like this: ::
 		virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
 			(void)group; return("RunwayStateGroup");
 		}
-		virtual std::string visitWindShearLowLayerGroup(const metaf::WindShearLowLayerGroup & group) {
-			(void)group; return("WindShearLowLayerGroup");
+		virtual std::string visitLocationDetailsGroup(const metaf::LocationDetailsGroup & group) {
+			(void)group; return("LocationDetailsGroup");
 		}
 		virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group) {
 			(void)group; return("RainfallGroup");
