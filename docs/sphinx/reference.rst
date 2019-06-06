@@ -977,11 +977,15 @@ PlainTextGroup
 
 .. cpp:class:: PlainTextGroup
 
-	Plain text group is generally a group which has no specific format. This group stores the original group text without changes.
-
-	.. warning:: Only the first 16 characters of the group are stored. Any group which contains text longer than 16 characters will be truncated (no error is generated when truncating the group).
+	Plain text group is generally a group which has no specific format. This group stores the original group text without changes. 
 
 	The groups in METAR or TAF report that were not recognised by the parser, are stored as Plain text groups.
+
+	If several sequential plain text groups are found in the report, they are combined into a single PlainTextGroup. For example, raw text in the report ``TEST1 TEST2`` is combined into a single PlainTextGroup which contains data ``TEST1 TEST2``, rather than two groups which contain data ``TEST1`` and ``TEST2`` respectively.
+
+	.. warning:: The length limit is 83 characters.Any group which contains text longer than 83 characters will be discarded (no error is generated when truncating the group). 
+
+	.. note:: If sequential plain text groups along with spaces separating them is longer than 83 characters, more than one PlainTextGroup will be added to parsing result and no portion of text will be lost.
 
 	**Acquiring group data**
 

@@ -111,7 +111,7 @@ private:
 std::string GroupVisitorExplain::visitPlainTextGroup(const metaf::PlainTextGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "This group is not recognised by parser: " << group.toString();
+	result << "These groups are not recognised by parser: " << group.toString();
 	return(result.str());
 }
 

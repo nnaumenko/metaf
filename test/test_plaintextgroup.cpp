@@ -51,3 +51,40 @@ TEST(PlainTextGroup, isValidFalse) {
 	EXPECT_FALSE(metaf::PlainTextGroup("").isValid());
 }
 
+TEST(PlainTextGroup, combine) {
+	const auto ptg1 = metaf::PlainTextGroup("PLAIN");
+	const auto ptg2 = metaf::PlainTextGroup("TEXT");
+
+	const auto combined = ptg1.combine(ptg2);
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined.value()));
+
+	const auto ptgCombined = std::get<metaf::PlainTextGroup>(combined.value());
+	EXPECT_EQ(ptgCombined.toString(), "PLAIN TEXT");
+
+}
+
+TEST(PlainTextGroup, combineMaxLength) {
+	static const std::string strMaxLengthMinus2 (metaf::PlainTextGroup::textMaxLength - 2, 'X');
+	static const std::string strSingleChar("A");
+
+	const auto ptgMaxLengthMinus2 = metaf::PlainTextGroup(strMaxLengthMinus2);
+	const auto ptg = metaf::PlainTextGroup(strSingleChar);
+
+	const auto combined = ptgMaxLengthMinus2.combine(ptg);
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined.value()));
+
+	const auto ptgCombined = std::get<metaf::PlainTextGroup>(combined.value());
+	EXPECT_EQ(ptgCombined.toString(), strMaxLengthMinus2 + " " + strSingleChar);
+}
+
+TEST(PlainTextGroup, combineTooLongText) {
+	static const std::string strMaxLengthMinus2 (metaf::PlainTextGroup::textMaxLength - 2, 'X');
+	static const std::string strTwoChars = ("AA");
+
+	const auto ptgMaxLengthMinus2 = metaf::PlainTextGroup(strMaxLengthMinus2);
+	const auto ptg = metaf::PlainTextGroup(strTwoChars);
+
+	EXPECT_FALSE(ptgMaxLengthMinus2.combine(ptg).has_value());
+}

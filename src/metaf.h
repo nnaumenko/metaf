@@ -548,7 +548,8 @@ namespace metaf {
 		}
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
-		static const size_t textMaxLength = 15;
+		static const size_t textMaxLength = 83; 
+		//on par with size of largest group (WindGroup)
 
 	private:
 		char text [textMaxLength + 1] = "\0";
@@ -2678,7 +2679,22 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Group> PlainTextGroup::combine(const Group & nextGroup) const { 
-		(void)nextGroup; return(std::optional<Group>());
+		static const std::optional<Group> notCombined;
+		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
+		const auto nextPlainTextGroup = std::get<PlainTextGroup>(nextGroup);
+
+		static const char delimiterStr[] = " ";
+
+		if (const auto textNewLength = 
+				strlen(text) + 
+				strlen(nextPlainTextGroup.text) + 
+				strlen(delimiterStr);
+			textNewLength > textMaxLength) return(notCombined);
+
+		PlainTextGroup combinedGroup = *this;
+		strcat(combinedGroup.text, delimiterStr);
+		strcat(combinedGroup.text, nextPlainTextGroup.text); 
+		return(combinedGroup);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////

@@ -710,10 +710,10 @@ TEST(ParserSyntaxValidMetarReports, correctionalReports) {
 }
 
 TEST(ParserSyntaxValidMetarReports, reportsWithRemarks) {
-	const auto result1 = metaf::Parser::parse("METAR ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST 9999 RMK=");
+	const auto result1 = metaf::Parser::parse("METAR ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST=");
 	EXPECT_EQ(result1.reportType, metaf::ReportType::METAR);
 	EXPECT_EQ(result1.error, metaf::Parser::Error::NONE);
-	EXPECT_EQ(result1.groups.size(), 13u);
+	EXPECT_EQ(result1.groups.size(), 11u);
 	EXPECT_TRUE(isMetar(result1.groups.at(0)));
 	EXPECT_TRUE(isLocation(result1.groups.at(1)));
 	EXPECT_TRUE(isReportTime(result1.groups.at(2)));
@@ -725,13 +725,11 @@ TEST(ParserSyntaxValidMetarReports, reportsWithRemarks) {
 	EXPECT_TRUE(isTrend(result1.groups.at(8)));
 	EXPECT_TRUE(isRmk(result1.groups.at(9)));
 	EXPECT_TRUE(isPlainText(result1.groups.at(10), "TEST"));
-	EXPECT_TRUE(isPlainText(result1.groups.at(11), "9999"));
-	EXPECT_TRUE(isPlainText(result1.groups.at(12), "RMK"));
 
-	const auto result2 = metaf::Parser::parse("SPECI ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST 9999 RMK=");
+	const auto result2 = metaf::Parser::parse("SPECI ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST=");
 	EXPECT_EQ(result2.reportType, metaf::ReportType::METAR);
 	EXPECT_EQ(result2.error, metaf::Parser::Error::NONE);
-	EXPECT_EQ(result2.groups.size(), 13u);
+	EXPECT_EQ(result2.groups.size(), 11u);
 	EXPECT_TRUE(isSpeci(result2.groups.at(0)));
 	EXPECT_TRUE(isLocation(result2.groups.at(1)));
 	EXPECT_TRUE(isReportTime(result2.groups.at(2)));
@@ -743,8 +741,40 @@ TEST(ParserSyntaxValidMetarReports, reportsWithRemarks) {
 	EXPECT_TRUE(isTrend(result2.groups.at(8)));
 	EXPECT_TRUE(isRmk(result2.groups.at(9)));
 	EXPECT_TRUE(isPlainText(result2.groups.at(10), "TEST"));
-	EXPECT_TRUE(isPlainText(result2.groups.at(11), "9999"));
-	EXPECT_TRUE(isPlainText(result2.groups.at(12), "RMK"));
+}
+
+TEST(ParserSyntaxValidMetarReports, reportsWithCombinedRemarks) {
+	const auto result1 = metaf::Parser::parse("METAR ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST 9999 RMK=");
+	EXPECT_EQ(result1.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result1.error, metaf::Parser::Error::NONE);
+	EXPECT_EQ(result1.groups.size(), 11u);
+	EXPECT_TRUE(isMetar(result1.groups.at(0)));
+	EXPECT_TRUE(isLocation(result1.groups.at(1)));
+	EXPECT_TRUE(isReportTime(result1.groups.at(2)));
+	EXPECT_TRUE(isWind(result1.groups.at(3)));
+	EXPECT_TRUE(isVisibility(result1.groups.at(4)));
+	EXPECT_TRUE(isCloud(result1.groups.at(5)));
+	EXPECT_TRUE(isTemperature(result1.groups.at(6)));
+	EXPECT_TRUE(isPressure(result1.groups.at(7)));
+	EXPECT_TRUE(isTrend(result1.groups.at(8)));
+	EXPECT_TRUE(isRmk(result1.groups.at(9)));
+	EXPECT_TRUE(isPlainText(result1.groups.at(10), "TEST 9999 RMK"));
+
+	const auto result2 = metaf::Parser::parse("SPECI ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST 9999 RMK=");
+	EXPECT_EQ(result2.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result2.error, metaf::Parser::Error::NONE);
+	EXPECT_EQ(result2.groups.size(), 11u);
+	EXPECT_TRUE(isSpeci(result2.groups.at(0)));
+	EXPECT_TRUE(isLocation(result2.groups.at(1)));
+	EXPECT_TRUE(isReportTime(result2.groups.at(2)));
+	EXPECT_TRUE(isWind(result2.groups.at(3)));
+	EXPECT_TRUE(isVisibility(result2.groups.at(4)));
+	EXPECT_TRUE(isCloud(result2.groups.at(5)));
+	EXPECT_TRUE(isTemperature(result2.groups.at(6)));
+	EXPECT_TRUE(isPressure(result2.groups.at(7)));
+	EXPECT_TRUE(isTrend(result2.groups.at(8)));
+	EXPECT_TRUE(isRmk(result2.groups.at(9)));
+	EXPECT_TRUE(isPlainText(result2.groups.at(10), "TEST 9999 RMK"));
 }
 
 TEST(ParserSyntaxValidMetarReports, reportTypeNotSpecified) {
@@ -761,10 +791,10 @@ TEST(ParserSyntaxValidMetarReports, reportTypeNotSpecified) {
 	EXPECT_TRUE(isPressure(result1.groups.at(6)));
 	EXPECT_TRUE(isTrend(result1.groups.at(7)));
 
-	const auto result2 = metaf::Parser::parse("ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST 9999 RMK=");
+	const auto result2 = metaf::Parser::parse("ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG RMK TEST=");
 	EXPECT_EQ(result2.reportType, metaf::ReportType::METAR);
 	EXPECT_EQ(result2.error, metaf::Parser::Error::NONE);
-	EXPECT_EQ(result2.groups.size(), 12u);
+	EXPECT_EQ(result2.groups.size(), 10u);
 	EXPECT_TRUE(isLocation(result2.groups.at(0)));
 	EXPECT_TRUE(isReportTime(result2.groups.at(1)));
 	EXPECT_TRUE(isWind(result2.groups.at(2)));
@@ -775,8 +805,6 @@ TEST(ParserSyntaxValidMetarReports, reportTypeNotSpecified) {
 	EXPECT_TRUE(isTrend(result2.groups.at(7)));
 	EXPECT_TRUE(isRmk(result2.groups.at(8)));
 	EXPECT_TRUE(isPlainText(result2.groups.at(9), "TEST"));
-	EXPECT_TRUE(isPlainText(result2.groups.at(10), "9999"));
-	EXPECT_TRUE(isPlainText(result2.groups.at(11), "RMK"));
 
 	const auto result3 = metaf::Parser::parse("ZZZZ 041115Z RMK TEST=");
 	EXPECT_EQ(result3.reportType, metaf::ReportType::METAR);
@@ -876,10 +904,10 @@ TEST(ParserSyntaxValidTafReports, reportsWithTemperatureForecasts) {
 }
 
 TEST(ParserSyntaxValidTafReports, reportWithRemarks) {
-	const auto result = metaf::Parser::parse("TAF ZZZZ 041115Z 0412/0512 24005KT 10SM FEW250 RMK TEST 9999 RMK=");
+	const auto result = metaf::Parser::parse("TAF ZZZZ 041115Z 0412/0512 24005KT 10SM FEW250 RMK TEST=");
 	EXPECT_EQ(result.reportType, metaf::ReportType::TAF);
 	EXPECT_EQ(result.error, metaf::Parser::Error::NONE);
-	EXPECT_EQ(result.groups.size(), 11u);
+	EXPECT_EQ(result.groups.size(), 9u);
 	EXPECT_TRUE(isTaf(result.groups.at(0)));
 	EXPECT_TRUE(isLocation(result.groups.at(1)));
 	EXPECT_TRUE(isReportTime(result.groups.at(2)));
@@ -889,8 +917,22 @@ TEST(ParserSyntaxValidTafReports, reportWithRemarks) {
 	EXPECT_TRUE(isCloud(result.groups.at(6)));
 	EXPECT_TRUE(isRmk(result.groups.at(7)));
 	EXPECT_TRUE(isPlainText(result.groups.at(8), "TEST"));
-	EXPECT_TRUE(isPlainText(result.groups.at(9), "9999"));
-	EXPECT_TRUE(isPlainText(result.groups.at(10), "RMK"));
+}
+
+TEST(ParserSyntaxValidTafReports, reportWithCombinedRemarks) {
+	const auto result = metaf::Parser::parse("TAF ZZZZ 041115Z 0412/0512 24005KT 10SM FEW250 RMK TEST 9999 RMK=");
+	EXPECT_EQ(result.reportType, metaf::ReportType::TAF);
+	EXPECT_EQ(result.error, metaf::Parser::Error::NONE);
+	EXPECT_EQ(result.groups.size(), 9u);
+	EXPECT_TRUE(isTaf(result.groups.at(0)));
+	EXPECT_TRUE(isLocation(result.groups.at(1)));
+	EXPECT_TRUE(isReportTime(result.groups.at(2)));
+	EXPECT_TRUE(isTimeSpan(result.groups.at(3)));
+	EXPECT_TRUE(isWind(result.groups.at(4)));
+	EXPECT_TRUE(isVisibility(result.groups.at(5)));
+	EXPECT_TRUE(isCloud(result.groups.at(6)));
+	EXPECT_TRUE(isRmk(result.groups.at(7)));
+	EXPECT_TRUE(isPlainText(result.groups.at(8), "TEST 9999 RMK"));
 }
 
 TEST(ParserSyntaxValidTafReports, reportWithTrends) {
@@ -1145,7 +1187,7 @@ TEST(ParserCombined, combinedGroups) {
 	ASSERT_EQ(result.reportType, metaf::ReportType::METAR);
 	ASSERT_EQ(result.error, metaf::Parser::Error::NONE);
 
-	EXPECT_EQ(result.groups.size(), 17u);
+	EXPECT_EQ(result.groups.size(), 15u);
 
 	EXPECT_TRUE(isMetar(result.groups.at(0)));
 	EXPECT_TRUE(isLocation(result.groups.at(1))); 
@@ -1159,20 +1201,18 @@ TEST(ParserCombined, combinedGroups) {
 	EXPECT_TRUE(isPressure(result.groups.at(9)));
 	EXPECT_TRUE(isRmk(result.groups.at(10)));
 	EXPECT_TRUE(isFixedGroup(result.groups.at(11)));
-	EXPECT_TRUE(isPlainText(result.groups.at(12), "SFC"));
-	EXPECT_TRUE(isPlainText(result.groups.at(13), "VIS"));
-	EXPECT_TRUE(isPlainText(result.groups.at(14), "4"));
-	EXPECT_TRUE(isPressure(result.groups.at(15)));
-	EXPECT_TRUE(isTemperature(result.groups.at(16)));
+	EXPECT_TRUE(isPlainText(result.groups.at(12), "SFC VIS 4"));
+	EXPECT_TRUE(isPressure(result.groups.at(13)));
+	EXPECT_TRUE(isTemperature(result.groups.at(14)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserExtendedParse, metar) {
 	const auto result = metaf::Parser::extendedParse(
-		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK SMOKE TO NE");
+		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK SMOKE");
 
-	EXPECT_EQ(result.extgroups.size(), 13u);
+	EXPECT_EQ(result.extgroups.size(), 11u);
 
 	EXPECT_TRUE(isMetar(std::get<metaf::Group>(result.extgroups.at(0))));
 	EXPECT_EQ(std::get<std::string>(result.extgroups.at(0)), "METAR");
@@ -1228,27 +1268,17 @@ TEST(ParserExtendedParse, metar) {
 	EXPECT_EQ(std::get<std::string>(result.extgroups.at(10)), "SMOKE");
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(10)), 
 		metaf::ReportPart::RMK);
-
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(11)), "TO"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(11)), "TO");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(11)), 
-		metaf::ReportPart::RMK);
-
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(12)), "NE"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(12)), "NE");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(12)), 
-		metaf::ReportPart::RMK);
 }
 
 TEST(ParserExtendedParse, taf) {
 	const auto result = metaf::Parser::extendedParse(
 		"TAF CYVQ 091738Z 0918/1006 VRB03KT P6SM FEW003 SCT120 BKN210"
 		" FM092000 25006KT P6SM FEW080 BKN120 BKN210"
-		" RMK NXT FCST BY 100000Z");
+		" RMK LAST");
 	EXPECT_EQ(result.reportType, metaf::ReportType::TAF);
 	EXPECT_EQ(result.error, metaf::Parser::Error::NONE);
 
-	EXPECT_EQ(result.extgroups.size(), 20u);
+	EXPECT_EQ(result.extgroups.size(), 17u);
 
 	EXPECT_TRUE(isTaf(std::get<metaf::Group>(result.extgroups.at(0))));
 	EXPECT_EQ(std::get<std::string>(result.extgroups.at(0)), "TAF");
@@ -1330,24 +1360,9 @@ TEST(ParserExtendedParse, taf) {
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(15)), 
 		metaf::ReportPart::TAF);
 
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(16)), "NXT"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(16)), "NXT");
+	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(16)), "LAST"));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(16)), "LAST");
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(16)), 
-		metaf::ReportPart::RMK);
-
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(17)), "FCST"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(17)), "FCST");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(17)), 
-		metaf::ReportPart::RMK);
-
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(18)), "BY"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(18)), "BY");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(18)), 
-		metaf::ReportPart::RMK);
-
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(19)), "100000Z"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(19)), "100000Z");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(19)), 
 		metaf::ReportPart::RMK);
 }
 
@@ -1392,11 +1407,11 @@ TEST(ParserExtendedParse, error) {
 TEST(ParserExtendedParse, combinedGroups) {
 	const auto result = metaf::Parser::extendedParse(
 		"METAR KLGA 111951Z 04004KT 2 1/2SM HZ BKN008 OVC015 23/21 A3012"
-		" RMK AO2 SFC VIS 4 SLP198 T02330206");
+		" RMK AO2 SLP198 T02330206");
 	ASSERT_EQ(result.reportType, metaf::ReportType::METAR);
 	ASSERT_EQ(result.error, metaf::Parser::Error::NONE);
 
-	EXPECT_EQ(result.extgroups.size(), 17u);
+	EXPECT_EQ(result.extgroups.size(), 14u);
 
 	EXPECT_TRUE(isMetar(std::get<metaf::Group>(result.extgroups.at(0))));
 	EXPECT_EQ(std::get<std::string>(result.extgroups.at(0)), "METAR");
@@ -1458,28 +1473,75 @@ TEST(ParserExtendedParse, combinedGroups) {
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(11)), 
 		metaf::ReportPart::RMK);
 
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(12)), "SFC"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(12)), "SFC");
+	EXPECT_TRUE(isPressure(std::get<metaf::Group>(result.extgroups.at(12))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(12)), "SLP198");
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(12)), 
 		metaf::ReportPart::RMK);
 
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(13)), "VIS"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(13)), "VIS");
+	EXPECT_TRUE(isTemperature(std::get<metaf::Group>(result.extgroups.at(13))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(13)), "T02330206");
 	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(13)), 
 		metaf::ReportPart::RMK);
+}
 
-	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(14)), "4"));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(14)), "4");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(14)), 
-		metaf::ReportPart::RMK);
+TEST(ParserExtendedParse, combinedRemarks) {
+	const auto result = metaf::Parser::extendedParse(
+		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK SMOKE TO NE");
 
-	EXPECT_TRUE(isPressure(std::get<metaf::Group>(result.extgroups.at(15))));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(15)), "SLP198");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(15)), 
-		metaf::ReportPart::RMK);
+	EXPECT_EQ(result.extgroups.size(), 11u);
 
-	EXPECT_TRUE(isTemperature(std::get<metaf::Group>(result.extgroups.at(16))));
-	EXPECT_EQ(std::get<std::string>(result.extgroups.at(16)), "T02330206");
-	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(16)), 
+	EXPECT_TRUE(isMetar(std::get<metaf::Group>(result.extgroups.at(0))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(0)), "METAR");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(0)), 
+		metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(std::get<metaf::Group>(result.extgroups.at(1)))); 
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(1)), "LMML");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(1)), 
+		metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(std::get<metaf::Group>(result.extgroups.at(2))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(2)), "092045Z");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(2)), 
+		metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isWind(std::get<metaf::Group>(result.extgroups.at(3))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(3)), "14004KT");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(3)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isVisibility(std::get<metaf::Group>(result.extgroups.at(4))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(4)), "9999");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(4)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(std::get<metaf::Group>(result.extgroups.at(5))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(5)), "FEW020");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(5)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isTemperature(std::get<metaf::Group>(result.extgroups.at(6))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(6)), "25/21");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(6)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isPressure(std::get<metaf::Group>(result.extgroups.at(7))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(7)), "Q1020");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(7)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isTrend(std::get<metaf::Group>(result.extgroups.at(8))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(8)), "NOSIG");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(8)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isRmk(std::get<metaf::Group>(result.extgroups.at(9))));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(9)), "RMK");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(9)), 
+		metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isPlainText(std::get<metaf::Group>(result.extgroups.at(10)), "SMOKE TO NE"));
+	EXPECT_EQ(std::get<std::string>(result.extgroups.at(10)), "SMOKE TO NE");
+	EXPECT_EQ(std::get<metaf::ReportPart>(result.extgroups.at(10)), 
 		metaf::ReportPart::RMK);
 }
