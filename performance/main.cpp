@@ -313,11 +313,19 @@ void addGroup(const string & group, vector< pair<int, string> > & dst) {
 }
 
 int addPlainTextGroups(const vector<metaf::Group> & src, vector< pair<int, string> > & dst){
-	auto count = 0;	for (const auto & group : src) {
+	auto count = 0;	
+	for (const auto & group : src) {
 		if (holds_alternative<metaf::PlainTextGroup>(group)) {
 			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&group);
-			if (plainTextGroup) addGroup(plainTextGroup->toString(), dst);
-			count++;
+			if (plainTextGroup) {
+				std::istringstream iss(plainTextGroup->toString());
+				std::istream_iterator<std::string> iter(iss);
+				while (iter != std::istream_iterator<std::string>()) {
+					addGroup(*iter, dst);
+					iter++;	
+				    count++;
+				}
+			}
 		}
 	}
 	return(count);
