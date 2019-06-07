@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 8;
-		static const int patch = 0;
+		static const int patch = 2;
 		inline static const char tag [] = "";
 	};
 
@@ -145,6 +145,8 @@ namespace metaf {
 		unsigned int hour() const { return(hourValue); }
 		unsigned int minute() const { return(minuteValue); }
 		inline bool isValid() const;
+		inline bool is3hourlyReportTime() const;
+		inline bool is6hourlyReportTime() const;
 
 		MetafTime() = default;
 		static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
@@ -534,6 +536,14 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
+	struct ReportGlobalData{
+		std::optional<MetafTime> reportTime;
+	};
+
+	static const inline ReportGlobalData noReportData;
+
+	///////////////////////////////////////////////////////////////////////////
+
 	class PlainTextGroup {
 	public:
 		std::string toString() const { return(std::string(text)); }
@@ -543,8 +553,11 @@ namespace metaf {
 		PlainTextGroup(const std::string & s) {
 			strncpy(text, s.c_str(), textMaxLength); text[textMaxLength] = '\0';
 		}
-		static std::optional<PlainTextGroup> parse(const std::string & group, ReportPart reportPart) {
-			(void)reportPart; return(PlainTextGroup(group));
+		static std::optional<PlainTextGroup> parse(const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData)
+		{
+			(void)reportPart; (void)reportData; return(PlainTextGroup(group));
 		}
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
@@ -589,7 +602,9 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		FixedGroup() = default;
-		static inline std::optional<FixedGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<FixedGroup> parse(const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -604,7 +619,8 @@ namespace metaf {
 
 		LocationGroup() = default;
 		static inline std::optional<LocationGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -618,7 +634,10 @@ namespace metaf {
 		bool isValid() const { return(t.isValid() && t.day().has_value()); }
 
 		ReportTimeGroup() = default;
-		static inline std::optional<ReportTimeGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<ReportTimeGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -655,7 +674,10 @@ namespace metaf {
 		inline bool isTimeSpanGroup() const;
 
 		TrendGroup() = default;
-		static inline std::optional<TrendGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<TrendGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -704,7 +726,10 @@ namespace metaf {
 		inline bool isValid() const;
 
 		WindGroup() = default;
-		static inline std::optional<WindGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<WindGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Status windStatus;
@@ -730,7 +755,10 @@ namespace metaf {
 		}
 
 		VisibilityGroup() = default;
-		inline static std::optional<VisibilityGroup> parse(const std::string & group, ReportPart reportPart);
+		inline static std::optional<VisibilityGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Distance vis;
@@ -777,7 +805,10 @@ namespace metaf {
 		bool isValid() const { return(heightOrVertVis.isValid()); }
 
 		CloudGroup () = default;
-		static inline std::optional<CloudGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<CloudGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Amount amnt = Amount::NOT_REPORTED;
@@ -847,7 +878,10 @@ namespace metaf {
 		bool isValid() const { return(true); } //TODO
 
 		WeatherGroup() = default;
-		static inline std::optional<WeatherGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<WeatherGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -874,7 +908,10 @@ namespace metaf {
 		inline bool isValid() const;
 
 		TemperatureGroup() = default;
-		static inline std::optional<TemperatureGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<TemperatureGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -895,8 +932,10 @@ namespace metaf {
 		bool isValid() const { return(tm.isValid()); }
 
 		TemperatureForecastGroup() = default;
-		static inline std::optional<TemperatureForecastGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+		static inline std::optional<TemperatureForecastGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -924,7 +963,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		PressureGroup() = default;
-		static inline std::optional<PressureGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<PressureGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -958,8 +1000,10 @@ namespace metaf {
 		}
 
 		RunwayVisualRangeGroup() = default;
-		static inline std::optional<RunwayVisualRangeGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+		static inline std::optional<RunwayVisualRangeGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1018,8 +1062,10 @@ namespace metaf {
 		}
 
 		RunwayStateGroup() = default;
-		static inline std::optional<RunwayStateGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+		static inline std::optional<RunwayStateGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1045,7 +1091,9 @@ namespace metaf {
 
 		LocationDetailsGroup() = default; 
 		static inline std::optional<LocationDetailsGroup> parse(
-			const std::string & group, ReportPart reportPart);
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		enum class Status {
@@ -1065,7 +1113,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		RainfallGroup() = default;
-		static inline std::optional<RainfallGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<RainfallGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1081,7 +1132,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		SeaSurfaceGroup() = default;
-		static inline std::optional<SeaSurfaceGroup> parse(const std::string & group, ReportPart reportPart);
+		static inline std::optional<SeaSurfaceGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1105,8 +1159,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		ColourCodeGroup() = default;
-		static inline std::optional<ColourCodeGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+		static inline std::optional<ColourCodeGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Code c = Code::BLUE;
@@ -1127,7 +1183,8 @@ namespace metaf {
 		MinMaxTemperatureGroup() = default;
 		static inline std::optional<MinMaxTemperatureGroup> parse(
 			const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		ObservationPeriod obsPeriod = ObservationPeriod::HOURS6;
@@ -1154,7 +1211,8 @@ namespace metaf {
 
 		PrecipitationGroup() = default;
 		static inline std::optional<PrecipitationGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
 		Type precType = Type::TOTAL_PRECIPITATION_HOURLY;
@@ -1196,7 +1254,8 @@ namespace metaf {
 
 		LayerForecastGroup() = default;
 		static inline std::optional<LayerForecastGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1235,8 +1294,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		PressureTendencyGroup() = default;
-		static inline std::optional<PressureTendencyGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+		static inline std::optional<PressureTendencyGroup> parse(
+			const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1272,7 +1333,8 @@ namespace metaf {
 
 		CloudTypesGroup() = default;
 		static inline std::optional<CloudTypesGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1331,7 +1393,8 @@ namespace metaf {
 
 		CloudLayersGroup() = default;
 		static inline std::optional<CloudLayersGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 
 	private:
@@ -1356,7 +1419,8 @@ namespace metaf {
 
 		MiscGroup() = default;
 		static inline std::optional<MiscGroup> parse(const std::string & group, 
-			ReportPart reportPart);
+			ReportPart reportPart,
+			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	
 	private:
@@ -1388,21 +1452,25 @@ namespace metaf {
 	class GenericGroupParser {
 	public:
 		using GroupType = GroupVariant;
-		static GroupVariant parse(const std::string & group, ReportPart reportPart) {
-			return(parseAlternative<0>(group, reportPart));
+		static GroupVariant parse(const std::string & group, 
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
+		{
+			return(parseAlternative<0>(group, reportPart, reportData));
 		}
 	private:
 		template <size_t I>
 		static GroupVariant parseAlternative(const std::string & group, 
-			ReportPart reportPart)
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
 		{
 			using Alternative = std::variant_alternative_t<I, GroupVariant>;
 			if constexpr (!std::is_same<Alternative, FallbackAlternative>::value) {
-				const auto parsed = Alternative::parse(group, reportPart);
+				const auto parsed = Alternative::parse(group, reportPart, reportData);
 				if (parsed.has_value()) return(parsed.value());
 			}
 			if constexpr (I < std::variant_size_v<GroupVariant> - 1) {
-				return(parseAlternative<I+1>(group, reportPart));
+				return(parseAlternative<I+1>(group, reportPart, reportData));
 			} 
 			return(FallbackAlternative(group));
 		} 
@@ -1456,6 +1524,7 @@ namespace metaf {
 			const auto result = parseInternal(report, true);
 			return(std::get<ExtendedResult>(result));
 		}
+
 	private:
 		using ParseInternalResult = std::variant<Result, ExtendedResult>;
 		static inline ParseInternalResult parseInternal(
@@ -1486,6 +1555,9 @@ namespace metaf {
 			ExtendedResult & extresult, 
 			ReportType reportType, 
 			Error error);
+
+		static inline void updateReportData(const GroupType & group, 
+			ReportGlobalData & reportData);
 
 		class Status {
 		public:
@@ -1818,6 +1890,20 @@ namespace metaf {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
+
+	bool MetafTime::is3hourlyReportTime() const {
+		switch(hour()) {
+			case 2: case 3: case 8: case 9: case 14: case 15: case 20: case 21: return(true);
+			default: return(false);
+		}
+	}
+
+	bool MetafTime::is6hourlyReportTime() const {
+		switch(hour()) {
+			case 0: case 5: case 6: case 11: case 12: case 17: case 18: case 23: return(true);
+			default: return(false);
+		}
+	}
 
 	std::optional<MetafTime> MetafTime::fromStringDDHHMM(const std::string & s) {
 		//static const std::regex rgx ("(\\d\\d)?(\\d\\d)(\\d\\d)");
@@ -2676,6 +2762,7 @@ namespace metaf {
 		}
 	}
 
+
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<Group> PlainTextGroup::combine(const Group & nextGroup) const { 
@@ -2700,8 +2787,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<FixedGroup> FixedGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData; 
 		if (reportPart == ReportPart::HEADER) {
 			if (group == "METAR") return(FixedGroup(Type::METAR));
 			if (group == "SPECI") return(FixedGroup(Type::SPECI));
@@ -2755,8 +2844,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<LocationGroup> LocationGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData; 
 		static const std::optional<LocationGroup> notRecognised;
 		if (reportPart != ReportPart::HEADER) return(notRecognised);
 		static const std::regex rgx = std::regex("[A-Z][A-Z0-9]{3}");		
@@ -2774,8 +2865,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<ReportTimeGroup> ReportTimeGroup::parse(const std::string & group, 
-		ReportPart reportPart) 
+		ReportPart reportPart,
+		const ReportGlobalData & reportData) 
 	{
+		(void)reportData;
 		static const std::optional<ReportTimeGroup> notRecognised;
 		static const std::regex rgx ("\\d\\d\\d\\d\\d\\dZ");
 		static const auto posTime = 0, lenTime = 6;
@@ -2796,8 +2889,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<TrendGroup> TrendGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 			// Detect trend type fixed groups
 			if (group == "BECMG") return(TrendGroup(Type::BECMG));
@@ -2997,8 +3092,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<WindGroup> WindGroup::parse(const std::string & group, 
-			ReportPart reportPart)
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<WindGroup> notRecognised;
 
 		static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
@@ -3094,8 +3191,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<VisibilityGroup> notRecognised;
 		if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return(notRecognised);
 		// Attempt to parse string as incomplete integer value
@@ -3152,8 +3251,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<CloudGroup> CloudGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<CloudGroup> notRecognised;
 		if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return(notRecognised);
 		// Attempt to parse fixed groups
@@ -3226,8 +3327,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<WeatherGroup> notRecognised;
 		if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return(notRecognised);
 
@@ -3370,8 +3473,10 @@ namespace metaf {
 	}
 
 	std::optional<TemperatureGroup> TemperatureGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<TemperatureGroup> notRecognised;
 		static const std::regex rgx("(M?\\d\\d|//)/(M?\\d\\d|//)?");
 		static const auto matchTemperature = 1, matchDewPoint = 2;
@@ -3413,8 +3518,10 @@ namespace metaf {
 
 	std::optional<TemperatureForecastGroup> TemperatureForecastGroup::parse(
 		const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<TemperatureForecastGroup> notRecognised;
 		if (reportPart != ReportPart::TAF) return (notRecognised);
 		static const std::regex rgx ("(TX?|TN?)(M?\\d\\d)/(\\d\\d\\d\\d)Z");
@@ -3441,8 +3548,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<PressureGroup> PressureGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<PressureGroup> notRecognised;
 		if (reportPart == metaf::ReportPart::METAR) {
 			const auto pressure = metaf::Pressure::fromString(group);
@@ -3485,8 +3594,11 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<RunwayVisualRangeGroup> RunwayVisualRangeGroup::parse(
-		const std::string & group, ReportPart reportPart)
+		const std::string & group, 
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<RunwayVisualRangeGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx("(R\\d\\d[RCL]?)/(////|[PM]?\\d\\d\\d\\d)"
@@ -3532,8 +3644,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & group, 
-			ReportPart reportPart)
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<RunwayStateGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx("(R\\d\\d[RCL]?)/"
@@ -3629,8 +3743,10 @@ namespace metaf {
 
 	std::optional<LocationDetailsGroup> LocationDetailsGroup::parse(
 			const std::string & group,
-			ReportPart reportPart)
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<LocationDetailsGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
 		if (group == "WS") return(LocationDetailsGroup());
@@ -3675,8 +3791,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<RainfallGroup> RainfallGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<RainfallGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx (
@@ -3704,8 +3822,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group, 
-			ReportPart reportPart)
+			ReportPart reportPart,
+			const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		static const std::optional<SeaSurfaceGroup> notRecognised;
 		if (reportPart != metaf::ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx ("W(\\d\\d|//)/([HS](?:\\d\\d?\\d?|///|/))");
@@ -3729,8 +3849,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<ColourCodeGroup> ColourCodeGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<ColourCodeGroup> notRecognised;
 		if (reportPart!=ReportPart::METAR) return(notRecognised);
 		ColourCodeGroup result;
@@ -3757,8 +3879,10 @@ namespace metaf {
 
 	std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::parse(
 		const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<MinMaxTemperatureGroup> notRecognised;
 		static const std::regex rgx6hourly("([12])([01]\\d\\d\\d|////)");
 		static const auto matchType6hourly = 1, matchValue6hourly = 2;
@@ -3829,8 +3953,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<PrecipitationGroup> notRecognised;
 		static const std::regex rgx(
 			"([P67])(\\d\\d\\d\\d|////)|(4/|93[13]|I[136])(\\d\\d\\d|///)");
@@ -3932,8 +4058,10 @@ namespace metaf {
 
 	std::optional<LayerForecastGroup> LayerForecastGroup::parse(
 		const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<LayerForecastGroup> notRecognised;
 		static const std::regex rgx("([65][\\dX])(\\d\\d\\d\\d)");
 		static const auto matchType = 1, matchHeight = 2;
@@ -4005,8 +4133,10 @@ namespace metaf {
 
 	std::optional<PressureTendencyGroup> PressureTendencyGroup::parse(
 		const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<PressureTendencyGroup> notRecognised;
 		static const std::regex rgx("5([\\d/])(\\d\\d\\d|///)");
 		static const auto matchType = 1, matchPressure = 2;
@@ -4043,8 +4173,10 @@ namespace metaf {
 
 
 	std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<CloudTypesGroup> notRecognised;
 		//"(CB|TCU|CU|CF|SC|NS|ST|SF|AS|AC|ACC|CI|CS|CC|FU)(\\d)"
 		static const std::regex matchRgx("(?:[ACNST][BCFISTU][CU]?[1-8])+");
@@ -4103,8 +4235,10 @@ namespace metaf {
 
 
 	std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & group, 
-		ReportPart reportPart)
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<CloudLayersGroup> notRecognised;
 		static const std::regex rgx("8/([\\d/])([\\d/])([\\d/])");
 		static const auto matchLowLayer = 1, matchMidLayer = 2, matchHighLayer = 3;
@@ -4185,8 +4319,10 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<MiscGroup> MiscGroup::parse(const std::string & group, 
-		ReportPart reportPart) 
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
+		(void)reportData;
 		std::optional<MiscGroup> notRecognised;
 		static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");
 		static const std::regex rgxCorrectionObservation("CC([A-Z])");
@@ -4276,6 +4412,7 @@ namespace metaf {
 			-1);
 		bool reportEnd = false;
 		Status status;
+		ReportGlobalData reportData;
 	
 		Result result;
 		ExtendedResult extresult;
@@ -4290,7 +4427,10 @@ namespace metaf {
 				GroupType group;
 				const auto reportPart = status.getReportPart();
 				do {
-					group = GenericGroupParser::parse(groupString, status.getReportPart());
+					group = GenericGroupParser::parse(groupString, 
+						status.getReportPart(),
+						reportData);
+					updateReportData(group, reportData);
 					status.transition(SyntaxGroupGetter(group));
 				} while(status.isReparseRequired());
 				const auto lastGroup = 
@@ -4757,6 +4897,19 @@ namespace metaf {
 			break;
 		}
 	}
+
+	template <class GenericGroupParser, 
+	SyntaxGroup (*SyntaxGroupGetter)(const typename GenericGroupParser::GroupType &)>
+	void GenericParser<GenericGroupParser, SyntaxGroupGetter>::updateReportData(
+		const GroupType & group,
+		ReportGlobalData & reportData)
+	{
+		if (std::holds_alternative<ReportTimeGroup>(group)) {
+			reportData.reportTime = std::get<ReportTimeGroup>(group).time();
+			return;
+		}
+	}
+
 
 
 } //namespace metaf

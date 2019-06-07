@@ -126,6 +126,16 @@ MetafTime
 
 			:returns: Time-of-day minute.
 
+	**Miscellaneous**
+
+		.. cpp:function:: bool is3hourlyReportTime() const
+
+			:returns: ``true`` if the this time qualifies as 3-hourly report release time in North America (i.e. reports issued within one hour before or after 03:00, 09:00, 15:00, and 21:00), according to Field Meteorology Handbook Number 1, chapter 12.4.
+
+
+		.. cpp:function:: bool is6hourlyReportTime() const
+
+			:returns: ``true`` if the this time qualifies as 6-hourly report release time in North America (i.e. reports issued within one hour before or after 00:00, 06:00, 12:00, and 18:00), according to Field Meteorology Handbook Number 1, chapter 12.4.
 
 	**Validating**
 
@@ -3390,6 +3400,19 @@ ReportPart
 			Remarks at the end of METAR or TAF report.
 
 
+GlobalReportData
+----------------
+
+.. cpp:struct:: ReportGlobalData
+
+	Stores information for the current report which may be needed by group parsing. The information is related not only to the individual groups but to entire report as well.
+
+		.. cpp:var:: std::optional<MetafTime> reportTime
+
+			Report release time, acquired from :cpp:class:`ReportTimeGroup` or empty optional if :cpp:class:`ReportTimeGroup` has not been encountered yet during the report parsing or is not present in the report.
+
+
+
 .. index:: single: Group parser
 
 GroupParser
@@ -3399,11 +3422,13 @@ GroupParser
 
 	The purpose of this class is to parse a single METAR or TAF group. To parse entire METAR 	or TAF report use :cpp:class:`metaf::Parser`.
 
-	.. cpp:function:: static Group parse(const std::string & group, ReportPart reportPart)
+	.. cpp:function:: static Group parse(const std::string & group, ReportPart reportPart, const ReportGlobalData & reportData)
 
 		:param group: Source string which contains a single METAR or TAF group.
 
 		:param reportPart: Report part to which the source string belongs.
+
+		:param reportData: Information related to the entire report rather than individual group. ``metaf::noReportData`` may be used for parsing individual groups if such information is not needed.
 
 		:returns: :cpp:type:`metaf::Group` holding a particular group type or :cpp:class:`metaf::PlainTextGroup` if the format was not recognised.
 

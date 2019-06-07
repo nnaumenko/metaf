@@ -218,7 +218,9 @@ int GroupPerformanceChecker::process() {
 	for (auto i = 0; i < testRepetitions; i++) {
 		for (auto src : *sources) {
 			const auto parseResult = 
-				metaf::GroupParser::parse(get<string>(src), get<metaf::ReportPart>(src));
+				metaf::GroupParser::parse(get<string>(src), 
+					get<metaf::ReportPart>(src),
+					metaf::noReportData);
 			(void)parseResult;
 			(void)index;
 			//if (parseResult.index() != index) return(0);
