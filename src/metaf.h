@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 8;
-		static const int patch = 2;
+		static const int patch = 4;
 		inline static const char tag [] = "";
 	};
 
@@ -44,7 +44,7 @@ namespace metaf {
 	class PressureGroup;
 	class RunwayVisualRangeGroup;
 	class RunwayStateGroup;
-	class LocationDetailsGroup;
+	class SecondaryLocationGroup;
 	class RainfallGroup;
 	class SeaSurfaceGroup;
 	class ColourCodeGroup;
@@ -72,7 +72,7 @@ namespace metaf {
 		PressureGroup,
 		RunwayVisualRangeGroup,
 		RunwayStateGroup,
-		LocationDetailsGroup,
+		SecondaryLocationGroup,
 		RainfallGroup,
 		SeaSurfaceGroup,
 		ColourCodeGroup,
@@ -1084,13 +1084,13 @@ namespace metaf {
 		static inline std::optional<Extent> extentFromString(const std::string & s);
 	};
 
-	class LocationDetailsGroup {
+	class SecondaryLocationGroup {
 	public:
 		Runway runway() const { return(rw); }
 		bool isValid() const { return(rw.isValid() && status == Status::COMPLETE); }
 
-		LocationDetailsGroup() = default; 
-		static inline std::optional<LocationDetailsGroup> parse(
+		SecondaryLocationGroup() = default; 
+		static inline std::optional<SecondaryLocationGroup> parse(
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
@@ -1641,7 +1641,7 @@ namespace metaf {
 		virtual T visitPressureGroup(const PressureGroup & group) = 0;
 		virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group) = 0;
 		virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0;
-		virtual T visitLocationDetailsGroup(const LocationDetailsGroup & group) = 0;
+		virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group) = 0;
 		virtual T visitRainfallGroup(const RainfallGroup & group) = 0;
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0;
@@ -1699,8 +1699,8 @@ namespace metaf {
 		if (std::holds_alternative<RunwayStateGroup>(group)) {
 			return(this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group)));
 		}
-		if (std::holds_alternative<LocationDetailsGroup>(group)) {
-			return(this->visitLocationDetailsGroup(std::get<LocationDetailsGroup>(group)));
+		if (std::holds_alternative<SecondaryLocationGroup>(group)) {
+			return(this->visitSecondaryLocationGroup(std::get<SecondaryLocationGroup>(group)));
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
 			return(this->visitRainfallGroup(std::get<RainfallGroup>(group)));
@@ -1793,8 +1793,8 @@ namespace metaf {
 			this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group));
 			return;
 		}
-		if (std::holds_alternative<LocationDetailsGroup>(group)) {
-			this->visitLocationDetailsGroup(std::get<LocationDetailsGroup>(group));
+		if (std::holds_alternative<SecondaryLocationGroup>(group)) {
+			this->visitSecondaryLocationGroup(std::get<SecondaryLocationGroup>(group));
 			return;
 		}
 		if (std::holds_alternative<RainfallGroup>(group)) {
@@ -3745,23 +3745,23 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<LocationDetailsGroup> LocationDetailsGroup::parse(
+	std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 			const std::string & group,
 			ReportPart reportPart,
 			const ReportGlobalData & reportData)
 	{
 		(void)reportData;
-		static const std::optional<LocationDetailsGroup> notRecognised;
+		static const std::optional<SecondaryLocationGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
-		if (group == "WS") return(LocationDetailsGroup());
+		if (group == "WS") return(SecondaryLocationGroup());
 		return(notRecognised);
 	}
 
-	std::optional<Group> LocationDetailsGroup::combine(const Group & nextGroup) const { 
-		static const std::optional<LocationDetailsGroup> notCombined;
+	std::optional<Group> SecondaryLocationGroup::combine(const Group & nextGroup) const { 
+		static const std::optional<SecondaryLocationGroup> notCombined;
 		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
 		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-		LocationDetailsGroup combinedGroup = *this;
+		SecondaryLocationGroup combinedGroup = *this;
 
 		switch (status) {
 			case Status::COMPLETE:

@@ -960,7 +960,7 @@ WaveHeight
 Group
 -----
 
-.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, LocationDetailsGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
+.. cpp:type:: Group = std::variant<PlainTextGroup, FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:struct:`metaf::Parser::Result` and :cpp:struct:`metaf::Parser::ExtendedResult`).
 
@@ -2492,16 +2492,16 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 .. index:: single: Group; Wind shear in the lower layers
 
-LocationDetailsGroup
+SecondaryLocationGroup
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The following syntax corresponds to this group in METAR reports.
 
-.. image:: locationdetailsgroup.svg
+.. image:: secondarylocationgroup.svg
 
 Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
-.. cpp:class:: LocationDetailsGroup
+.. cpp:class:: SecondaryLocationGroup
 
 	Stores additional info details in the secondary locations (e.g. runway).
 
@@ -3673,7 +3673,7 @@ See :doc:`getting_started` for more information.
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitLocationDetailsGroup(const LocationDetailsGroup & group) = 0
+	.. cpp:function:: protected virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group) = 0
 
 	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group) = 0
 
@@ -3681,6 +3681,20 @@ See :doc:`getting_started` for more information.
 
 	.. cpp:function:: protected virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0
 
+	.. cpp:function:: protected virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
+
+	.. cpp:function:: protected virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0;
+
+	.. cpp:function:: protected virtual T visitLayerForecastGroup(const LayerForecastGroup & group) = 0;
+
+	.. cpp:function:: protected virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group) = 0;
+	
+	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group) = 0;
+	
+	.. cpp:function:: protected virtual T visitCloudLayersGroup(const CloudLayersGroup & group) = 0;
+
+	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group) = 0;
+	protected virtual T visitOther(const Group & group) = 0;
 
 	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
 

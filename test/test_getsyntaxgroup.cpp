@@ -320,8 +320,8 @@ TEST(getSyntaxGroup, OTHER_RunwayStateGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_LocationDetailsGroup) {
-	const auto g = metaf::LocationDetailsGroup::parse("WS", metaf::ReportPart::METAR);
+TEST(getSyntaxGroup, OTHER_SecondaryLocationGroup) {
+	const auto g = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

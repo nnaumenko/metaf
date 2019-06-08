@@ -37,7 +37,7 @@ private:
 	virtual std::string visitPressureGroup(const metaf::PressureGroup & group);
 	virtual std::string visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group);
 	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group);
-	virtual std::string visitLocationDetailsGroup(const metaf::LocationDetailsGroup & group);
+	virtual std::string visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group);
 	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group);
@@ -548,8 +548,8 @@ std::string GroupVisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateG
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitLocationDetailsGroup(
-	const metaf::LocationDetailsGroup & group)
+std::string GroupVisitorExplain::visitSecondaryLocationGroup(
+	const metaf::SecondaryLocationGroup & group)
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;

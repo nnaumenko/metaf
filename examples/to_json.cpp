@@ -146,7 +146,7 @@ private:
 	virtual void visitPressureGroup(const metaf::PressureGroup & group);
 	virtual void visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group);
 	virtual void visitRunwayStateGroup(const metaf::RunwayStateGroup & group);
-	virtual void visitLocationDetailsGroup(const metaf::LocationDetailsGroup & group);
+	virtual void visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group);
 	virtual void visitRainfallGroup(const metaf::RainfallGroup & group);
 	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
 	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group);
@@ -725,7 +725,7 @@ void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & gro
 	json.finish();
 }
 
-void GroupVisitorJson::visitLocationDetailsGroup(const metaf::LocationDetailsGroup & group) {
+void GroupVisitorJson::visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group) {
 	json.startObject();
 	if (!group.isValid()) json.valueBool("windShearInLowerLayersValid", false);
 	if (group.isValid()) {
@@ -919,8 +919,8 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 			json.finish(); //json.startArray("runwayState");
 	}
 
-	if (!std::holds_alternative<metaf::LocationDetailsGroup>(group) && 
-		std::holds_alternative<metaf::LocationDetailsGroup>(lastGroup))	{
+	if (!std::holds_alternative<metaf::SecondaryLocationGroup>(group) && 
+		std::holds_alternative<metaf::SecondaryLocationGroup>(lastGroup))	{
 			json.finish(); //json.startArray("windShearInLowerLayers");
 	}
 
@@ -944,8 +944,8 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 		!std::holds_alternative<metaf::RunwayStateGroup>(lastGroup)) {
 			json.startArray("runwayState");
 	}
-	if (std::holds_alternative<metaf::LocationDetailsGroup>(group) && 
-		!std::holds_alternative<metaf::LocationDetailsGroup>(lastGroup)) {
+	if (std::holds_alternative<metaf::SecondaryLocationGroup>(group) && 
+		!std::holds_alternative<metaf::SecondaryLocationGroup>(lastGroup)) {
 			json.startArray("windShearInLowerLayers");
 	}
 }
