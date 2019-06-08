@@ -1787,6 +1787,12 @@ std::string GroupVisitorJson::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
 		return("waterEquivalentOfFrozenPrecipitationForLast3or6hours");
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
+		return("waterEquivalentOfFrozenPrecipitationForLast3hours");
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
+		return("waterEquivalentOfFrozenPrecipitationForLast6hours");
 	
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
 		return("waterEquivalentOfFrozenPrecipitationForLast24hours");

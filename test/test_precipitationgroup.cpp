@@ -345,3 +345,43 @@ TEST(PrecipitationGroup, parseWrongFormat93Group) {
 	EXPECT_FALSE(
 		metaf::PrecipitationGroup::parse("933////", metaf::ReportPart::RMK).has_value());
 }
+
+TEST(PrecipitationGroup, parse3hourly) {
+	const auto time3hourly = metaf::MetafTime::fromStringDDHHMM("310300");
+	ASSERT_TRUE(time3hourly.has_value());
+    ASSERT_TRUE(time3hourly->is3hourlyReportTime());
+
+    metaf::ReportGlobalData reportData;
+    reportData.reportTime = time3hourly;
+
+	const auto pg1 = metaf::PrecipitationGroup::parse("60217", 
+		metaf::ReportPart::RMK, 
+		reportData);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY);
+	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg1->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg1->amount().precipitation().has_value());
+	EXPECT_NEAR(pg1->amount().precipitation().value(), 2.17, margin);
+
+}
+
+TEST(PrecipitationGroup, parse6hourly) {
+	const auto time6hourly = metaf::MetafTime::fromStringDDHHMM("310600");
+	ASSERT_TRUE(time6hourly.has_value());
+    ASSERT_TRUE(time6hourly->is6hourlyReportTime());
+
+    metaf::ReportGlobalData reportData;
+    reportData.reportTime = time6hourly;
+    
+	const auto pg2 = metaf::PrecipitationGroup::parse("60217", 
+		metaf::ReportPart::RMK,
+		reportData);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY);
+	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg2->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg2->amount().precipitation().has_value());
+	EXPECT_NEAR(pg2->amount().precipitation().value(), 2.17, margin);
+
+}

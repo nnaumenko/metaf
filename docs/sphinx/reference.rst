@@ -130,12 +130,12 @@ MetafTime
 
 		.. cpp:function:: bool is3hourlyReportTime() const
 
-			:returns: ``true`` if the this time qualifies as 3-hourly report release time in North America (i.e. reports issued within one hour before or after 03:00, 09:00, 15:00, and 21:00), according to Field Meteorology Handbook Number 1, chapter 12.4.
+			:returns: ``true`` if the this time qualifies as 3-hourly report release time in North America (i.e. reports issued within one hour before or after 0300Z, 0900Z, 1500Z, and 2100Z), according to Field Meteorology Handbook Number 1, chapter 12.4.
 
 
 		.. cpp:function:: bool is6hourlyReportTime() const
 
-			:returns: ``true`` if the this time qualifies as 6-hourly report release time in North America (i.e. reports issued within one hour before or after 00:00, 06:00, 12:00, and 18:00), according to Field Meteorology Handbook Number 1, chapter 12.4.
+			:returns: ``true`` if the this time qualifies as 6-hourly report release time in North America (i.e. reports issued within one hour before or after 0000Z, 0600Z, 1200Z, and 1800Z), according to Field Meteorology Handbook Number 1, chapter 12.4.
 
 	**Validating**
 
@@ -2753,7 +2753,15 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 		.. cpp:enumerator:: FROZEN_PRECIP_3_OR_6_HOURLY
 
-			Water equivalent of frozen precipitation accumulated for last 3 hours (when reported at 0000Z, 0600Z, 1200Z, or 1800Z) or for last 6 hours (when reported at 0300Z, 0900Z, 1500Z, or 2100Z).
+			Water equivalent of frozen precipitation accumulated for last 3 or 6 hours. Used when this kind of precipitation parameter is reported at the time of day that qualifies neither as 3-hourly nor as 6-hourly report.
+
+		.. cpp:enumerator:: FROZEN_PRECIP_3_HOURLY
+
+			Water equivalent of frozen precipitation accumulated for last 3 hours (included in reports near 0300Z, 0900Z, 1500Z, or 2100Z, i.e. 3-hourly reports).
+
+		.. cpp:enumerator:: FROZEN_PRECIP_6_HOURLY
+
+			Water equivalent of frozen precipitation accumulated for last 3 hours (included in reports near 0000Z, 0600Z, 1200Z, or 1800Z, i.e. 6-hourly reports).
 
 		.. cpp:enumerator:: FROZEN_PRECIP_24_HOURLY
 

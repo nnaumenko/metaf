@@ -1198,12 +1198,14 @@ namespace metaf {
 			TOTAL_PRECIPITATION_HOURLY,	
 			SNOW_DEPTH_ON_GROUND,
 			FROZEN_PRECIP_3_OR_6_HOURLY,
+			FROZEN_PRECIP_3_HOURLY,
+			FROZEN_PRECIP_6_HOURLY,
 			FROZEN_PRECIP_24_HOURLY,
 			SNOW_6_HOURLY,
 			WATER_EQUIV_OF_SNOW_ON_GROUND,
 			ICE_ACCRETION_FOR_LAST_HOUR,
 			ICE_ACCRETION_FOR_LAST_3_HOURS,
-			ICE_ACCRETION_FOR_LAST_6_HOURS
+			ICE_ACCRETION_FOR_LAST_6_HOURS,
 		};
 		Type type() const { return(precType); }
 		Precipitation amount() const { return(precAmount); }
@@ -1218,7 +1220,9 @@ namespace metaf {
 		Type precType = Type::TOTAL_PRECIPITATION_HOURLY;
 		Precipitation precAmount;
 
-		static inline std::optional<Type> typeFromString(const std::string & s);
+		static inline std::optional<Type> typeFromString(const std::string & s,
+			bool is3hourly,
+			bool is6hourly);
 		static inline float factorFromType(Type type);
 	};
 
@@ -3956,7 +3960,6 @@ namespace metaf {
 		ReportPart reportPart,
 		const ReportGlobalData & reportData)
 	{
-		(void)reportData;
 		std::optional<PrecipitationGroup> notRecognised;
 		static const std::regex rgx(
 			"([P67])(\\d\\d\\d\\d|////)|(4/|93[13]|I[136])(\\d\\d\\d|///)");
@@ -3971,7 +3974,17 @@ namespace metaf {
 		std::string typeStr = match.str(matchType1) + match.str(matchType2);
 		std::string valueStr = match.str(matchValue1) + match.str(matchValue2);
 
-		const auto t = typeFromString(typeStr);
+		const bool is3hourlyReport = 
+			reportData.reportTime.has_value() ? 
+			reportData.reportTime->is3hourlyReportTime() :
+			false;
+
+		const bool is6hourlyReport = 
+			reportData.reportTime.has_value() ? 
+			reportData.reportTime->is6hourlyReportTime() :
+			false;
+
+		const auto t = typeFromString(typeStr, is3hourlyReport, is6hourlyReport);
 		if (!t.has_value()) return(notRecognised);
 		const auto type = t.value();
 		
@@ -3994,11 +4007,17 @@ namespace metaf {
 	}
 
 	std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
-		const std::string & s)
+		const std::string & s,
+		bool is3hourly,
+		bool is6hourly)
 	{
 		if (s == "P") return(Type::TOTAL_PRECIPITATION_HOURLY);
 		if (s == "4/") return(Type::SNOW_DEPTH_ON_GROUND);
-		if (s == "6") return(Type::FROZEN_PRECIP_3_OR_6_HOURLY);
+		if (s == "6") {
+			if (is3hourly) return(Type::FROZEN_PRECIP_3_HOURLY);
+			if (is6hourly) return(Type::FROZEN_PRECIP_6_HOURLY);
+			return(Type::FROZEN_PRECIP_3_OR_6_HOURLY);
+		}
 		if (s == "7") return(Type::FROZEN_PRECIP_24_HOURLY);
 		if (s == "931") return(Type::SNOW_6_HOURLY);
 		if (s == "933") return(Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
@@ -4019,6 +4038,8 @@ namespace metaf {
 
 			case Type::TOTAL_PRECIPITATION_HOURLY:
 			case Type::FROZEN_PRECIP_3_OR_6_HOURLY:
+			case Type::FROZEN_PRECIP_3_HOURLY:
+			case Type::FROZEN_PRECIP_6_HOURLY:
 			case Type::FROZEN_PRECIP_24_HOURLY:
 			case Type::ICE_ACCRETION_FOR_LAST_HOUR:
 			case Type::ICE_ACCRETION_FOR_LAST_3_HOURS:

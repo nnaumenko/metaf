@@ -1041,7 +1041,7 @@ std::string GroupVisitorExplain::explainPrecipitation(const metaf::Precipitation
 
 		case metaf::Precipitation::Status::REPORTED:
 		if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM); p.has_value()) {
-			result << static_cast<int>(*p) << " mm";
+			result << roundTo(*p, 1) << " mm";
 		} else {
 			result << "[unable to convert precipitation to mm]";
 		}
@@ -1599,6 +1599,12 @@ std::string_view GroupVisitorExplain::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
 		return("water equivalent of frozen precipitation for the last 3 or 6 hours");
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
+		return("water equivalent of frozen precipitation for the last 3 hours");
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
+		return("water equivalent of frozen precipitation for the last 6 hours");
 	
 		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
 		return("water equivalent of frozen precipitation for the last 24 hours");
