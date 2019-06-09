@@ -165,6 +165,7 @@ private:
 	int plainTextCounter = 0;
 	int layerForecastCounter = 0;
 	int notSpecifiedTemperatureForecastCounter = 0;
+	int secondaryLocationCounter = 0;
 	metaf::Group lastGroup;
 	void similarGroupsToArrays(const metaf::Group & group);
 
@@ -252,8 +253,12 @@ void GroupVisitorJson::toJson(metaf::ReportType reportType,
 	const std::vector<metaf::Group> & content)
 {
 	plainTextCounter = 0;
+	layerForecastCounter = 0;
+	notSpecifiedTemperatureForecastCounter = 0;
+	secondaryLocationCounter = 0;
 	isTrend = false;
 	isRemark = false;
+
 	lastGroup = metaf::PlainTextGroup();
 	json.valueStr("kind", "metaf");
 	if (const auto errorStr = parserErrorToString(error); 
@@ -461,7 +466,8 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 			break;
 
 		default:
-			json.startObject("unknownWindGroupStatus");
+			json.startObject("undefinedWindGroupStatus");
+			json.valueStr("status", undefinedToString(static_cast<int>(group.status())));
 			break;
 	}
 	if (!group.isValid()) json.valueBool("valid", false);
@@ -631,7 +637,7 @@ void GroupVisitorJson::visitTemperatureForecastGroup(
 
 void GroupVisitorJson::visitPressureGroup(const metaf::PressureGroup & group) {
 	if (!group.isValid()) json.valueBool("atmosphericPressureValid", false);
-	std::string pressureStr = "unknownPressure";
+	std::string pressureStr;
 	switch (group.type()) {
 		case metaf::PressureGroup::Type::OBSERVED_QNH:
 		pressureStr = "observedMeanSeaLevelPressure";
@@ -646,6 +652,7 @@ void GroupVisitorJson::visitPressureGroup(const metaf::PressureGroup & group) {
 		break;
 
 		default:
+		undefinedToString(static_cast<int>(group.type()));
 		break;
 	}
 	const std::string unitStr = pressureStr + "Unit";
@@ -726,11 +733,39 @@ void GroupVisitorJson::visitRunwayStateGroup(const metaf::RunwayStateGroup & gro
 }
 
 void GroupVisitorJson::visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group) {
-	json.startObject();
-	if (!group.isValid()) json.valueBool("windShearInLowerLayersValid", false);
-	if (group.isValid()) {
-		runwayToJson(group.runway(), "runway", "runwayDesignator", "lastMessageRepetition");
+	const auto name = "secondaryLocationInfo"s + std::to_string(secondaryLocationCounter++);
+	json.startObject(name);
+
+	if (!group.isValid()) json.valueBool("valid", false);
+
+	switch (group.type()) {
+		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
+		json.valueBool("incomplete", true);
+		json.valueStr("incompleteText", group.incompleteText());
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
+		json.valueStr("type", "windShearInLowerLayers");
+		break;
+
+		default:
+		json.valueStr("type", undefinedToString(static_cast<int>(group.type())));
+		break;
 	}
+
+	if (const auto rw = group.runway(); rw.has_value()) {
+		runwayToJson(rw.value(), "runway", "runwayDesignator", "lastMessageRepetition");
+	}
+
+	if (const auto dir = group.direction(); dir.has_value()) {
+		directionToJson(dir.value(), 
+			"direction", 
+			"directionCardinal",
+			"directionUnit", 
+			"directionType", 
+			true);
+	}
+
 	json.finish();
 }
 
@@ -786,7 +821,7 @@ void GroupVisitorJson::visitMinMaxTemperatureGroup(
 		break;
 
 		default:
-		periodStr = "unknown";
+		periodStr = undefinedToString(static_cast<int>(group.observationPeriod()));
 		break; 
 	}
 	json.valueStr("observationPeriod", periodStr);
@@ -919,11 +954,6 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 			json.finish(); //json.startArray("runwayState");
 	}
 
-	if (!std::holds_alternative<metaf::SecondaryLocationGroup>(group) && 
-		std::holds_alternative<metaf::SecondaryLocationGroup>(lastGroup))	{
-			json.finish(); //json.startArray("windShearInLowerLayers");
-	}
-
 	if (std::holds_alternative<metaf::VisibilityGroup>(group) && 
 		!std::holds_alternative<metaf::VisibilityGroup>(lastGroup)) {
 			json.startArray("visibility");
@@ -943,10 +973,6 @@ void GroupVisitorJson::similarGroupsToArrays(const metaf::Group & group) {
 	if (std::holds_alternative<metaf::RunwayStateGroup>(group) && 
 		!std::holds_alternative<metaf::RunwayStateGroup>(lastGroup)) {
 			json.startArray("runwayState");
-	}
-	if (std::holds_alternative<metaf::SecondaryLocationGroup>(group) && 
-		!std::holds_alternative<metaf::SecondaryLocationGroup>(lastGroup)) {
-			json.startArray("windShearInLowerLayers");
 	}
 }
 

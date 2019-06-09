@@ -2490,7 +2490,9 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 
 
-.. index:: single: Group; Wind shear in the lower layers
+.. index:: single: Wind; Wind shear in the lower layers
+
+.. index:: single: Group; Secondary Location Info
 
 SecondaryLocationGroup
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -2505,21 +2507,37 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
 	Stores additional info details in the secondary locations (e.g. runway).
 
-	Currently only reports the existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations.
+	.. cpp:enum-class::  Type
+
+		Type of information actually stored. 
+
+		.. cpp:enumerator:: INCOMPLETE
+
+			One or more groups have been recognised by the parser but the end of the report was reached unexpectedly.
+
+		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
+
+			This group indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways.
 
 	**Acquiring group data**
 
 	.. cpp:function:: Runway runway() const
 
-		:returns: Runway for which the wind shear in the lower layers is specified or 'all runways' for ``WS ALL RWY``.
+		:returns: Runway data if this secondary location is runway, and empty ``std::optional`` otherwise.
 
-		..warning:: If :cpp:func:`isValid()` returns ``false`` then runway value returned by the method runway() is not valid and should be disregarded.
+	.. cpp:function:: Direction direction() const
+
+		:returns: Direction data if this secondary location is a cardinal direction, and empty ``std::optional`` otherwise.
+
+	.. cpp:function:: std::string incompleteText() const
+
+		:returns: Raw string of groups partially recognised by parser as a secondary location group, or empty string if the group is not an incomplete one (i.e. return value of :cpp:func:`type()` is other than `Type::INCOMPLETE`).
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: ``true`` if the specified runway is valid and the complete sequence of groups following syntax diagram above was specified, and ``false`` otherwise. For example sequences of groups such as ``WS X32``, ``WS ALL``, and ``WS WS`` result in the invalid groups of this type.
+			:returns: ``false`` for incomplete groups. For complete groups returns ``true`` if the specified runway or direction is valid, and ``false`` otherwise.
 
 
 .. index:: single: Rainfall
@@ -3681,20 +3699,19 @@ See :doc:`getting_started` for more information.
 
 	.. cpp:function:: protected virtual T visitColourCodeGroup(const ColourCodeGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitPrecipitationGroup(const PrecipitationGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitLayerForecastGroup(const LayerForecastGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitLayerForecastGroup(const LayerForecastGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group) = 0
 	
-	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group) = 0
 	
-	.. cpp:function:: protected virtual T visitCloudLayersGroup(const CloudLayersGroup & group) = 0;
+	.. cpp:function:: protected virtual T visitCloudLayersGroup(const CloudLayersGroup & group) = 0
 
-	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group) = 0;
-	protected virtual T visitOther(const Group & group) = 0;
+	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group) = 0
 
 	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
 

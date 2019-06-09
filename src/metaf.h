@@ -1086,8 +1086,15 @@ namespace metaf {
 
 	class SecondaryLocationGroup {
 	public:
-		Runway runway() const { return(rw); }
-		bool isValid() const { return(rw.isValid() && status == Status::COMPLETE); }
+		enum class Type {
+			INCOMPLETE,
+			WIND_SHEAR_IN_LOWER_LAYERS
+		};
+		Type type() const { return(t); }
+		std::optional<Runway> runway() const { return(rw); }
+		std::optional<Direction> direction() const { return(dir); }
+		inline std::string incompleteText() const;
+		inline bool isValid() const;
 
 		SecondaryLocationGroup() = default; 
 		static inline std::optional<SecondaryLocationGroup> parse(
@@ -1096,13 +1103,18 @@ namespace metaf {
 			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
-		enum class Status {
-			COMPLETE,
-			INCOMPLETE_WS,
-			INCOMPLETE_WS_ALL,
+
+		enum class PartialText {
+			WS,
+			WS_ALL,
 		};
-		Runway rw;
-		Status status = Status::INCOMPLETE_WS;
+		PartialText partialText;
+
+		static const inline std::string groupDelimiterText = " ";
+
+		Type t;
+		std::optional<Runway> rw;
+		std::optional<Direction> dir;
 	};
 
 	class RainfallGroup {
@@ -3752,8 +3764,14 @@ namespace metaf {
 	{
 		(void)reportData;
 		static const std::optional<SecondaryLocationGroup> notRecognised;
-		if (reportPart != ReportPart::METAR) return(notRecognised);
-		if (group == "WS") return(SecondaryLocationGroup());
+		if (reportPart == ReportPart::METAR) {
+			if (group == "WS") {
+				SecondaryLocationGroup result;
+				result.t = Type::INCOMPLETE;
+				result.partialText = PartialText::WS;
+				return(result);
+			}
+		}
 		return(notRecognised);
 	}
 
@@ -3763,34 +3781,50 @@ namespace metaf {
 		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
 		SecondaryLocationGroup combinedGroup = *this;
 
-		switch (status) {
-			case Status::COMPLETE:
-			return(notCombined);
-
-			case Status::INCOMPLETE_WS:
+		if (type() != Type::INCOMPLETE) return(notCombined);
+	
+		switch (partialText) {
+			case PartialText::WS:
 			if (nextGroupStr == "ALL") {
-				combinedGroup.status = Status::INCOMPLETE_WS_ALL;
+				combinedGroup.partialText = PartialText::WS_ALL;
 				return(combinedGroup);
 			}
 			if (const auto runway = Runway::fromString(nextGroupStr, true); runway.has_value()) {
-				combinedGroup.status = Status::COMPLETE;
-				combinedGroup.rw = *runway;
-				return(combinedGroup);
-			} 
-			return(notCombined);
-
-			case Status::INCOMPLETE_WS_ALL:
-			if (nextGroupStr == "RWY") {
-				combinedGroup.status = Status::COMPLETE;
-				combinedGroup.rw = Runway::makeAllRunways();
+				combinedGroup.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+				combinedGroup.rw = runway.value();
 				return(combinedGroup);
 			}
-			return(notCombined);
+			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
+
+			case PartialText::WS_ALL:
+				if (nextGroupStr == "RWY") {
+					combinedGroup.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+					combinedGroup.rw = Runway::makeAllRunways();
+					return(combinedGroup);									
+				}
+			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
 
 			default:
-			return(notCombined);
+			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
 		}
 	}
+
+	std::string SecondaryLocationGroup::incompleteText() const {
+		if (type() != Type::INCOMPLETE) return("");
+		switch (partialText) {
+			case PartialText::WS:		return("WS");
+			case PartialText::WS_ALL:	return("WS" + groupDelimiterText + "ALL");
+		}
+	}
+
+	bool SecondaryLocationGroup::isValid() const {
+			if (type() == Type::INCOMPLETE) return(false);
+			if (rw.has_value() && !rw->isValid()) return(false);
+			if (dir.has_value() && !dir->isValid()) return(false);
+			return(true);
+		}
+
+
 
 	///////////////////////////////////////////////////////////////////////////
 

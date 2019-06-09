@@ -553,10 +553,26 @@ std::string GroupVisitorExplain::visitSecondaryLocationGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Wind shear significant to aircraft operations is present along ";
-	result << "the take-off path or approach path ";
-	result << "between runway level and 500 metres (1 600 ft)";
-	if (group.isValid()) result << " at " << explainRunway(group.runway());
+	switch (group.type()) {
+		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
+		result << "These groups were recognised by parser as ";
+		result << "an information about secondary location but the ";
+		result << "some of the text appears missing: ";
+		result << group.incompleteText();
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
+		result << "Wind shear significant to aircraft operations ";
+		result << "is present along the take-off path or approach path ";
+		result << "between runway level and 500 metres (1 600 ft)";
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(rw.value());
+		}
+		break;
+
+		default:
+		result << "[unknown secondary location info]";
+	}
 	return(result.str());
 }
 
