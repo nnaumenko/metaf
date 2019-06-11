@@ -19,13 +19,8 @@ build:
 
 tests:
   stage: test
-  image: trzeci/emscripten-ubuntu
+  image: nnaumenko/emscripten-firefox
   script:
-  # prepare Firefox browser
-  - apt-get update -y
-  - apt-get install -y firefox xvfb dbus-x11
-  - Xvfb :10 -ac &
-  - export DISPLAY=:10
   # list browsers, for reference only 
   - emrun --list_browsers
   # run tests with Firefox (will return exit code 1 if test failed)
