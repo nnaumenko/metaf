@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 8;
-		static const int patch = 4;
+		static const int patch = 5;
 		inline static const char tag [] = "";
 	};
 
@@ -1669,186 +1669,186 @@ namespace metaf {
 
 	template <typename T>
 	inline T GroupVisitor<T>::visit(const Group & group) {
-		if (std::holds_alternative<PlainTextGroup>(group)) {
-			return(this->visitPlainTextGroup(std::get<PlainTextGroup>(group)));
-		}
-		if (std::holds_alternative<FixedGroup>(group)) {
-			return(this->visitFixedGroup(std::get<FixedGroup>(group)));
-		}
-		if (std::holds_alternative<LocationGroup>(group)) {
-			return(this->visitLocationGroup(std::get<LocationGroup>(group)));
-		}
-		if (std::holds_alternative<ReportTimeGroup>(group)) {
-			return(this->visitReportTimeGroup(std::get<ReportTimeGroup>(group)));
-		}
-		if (std::holds_alternative<TrendGroup>(group)) {
-			return(this->visitTrendGroup(std::get<TrendGroup>(group)));
-		}
-		if (std::holds_alternative<WindGroup>(group)) {
-			return(this->visitWindGroup(std::get<WindGroup>(group)));
-		}
-		if (std::holds_alternative<VisibilityGroup>(group)) {
-			return(this->visitVisibilityGroup(std::get<VisibilityGroup>(group)));
-		}
-		if (std::holds_alternative<CloudGroup>(group)) {
-			return(this->visitCloudGroup(std::get<CloudGroup>(group)));
-		}
-		if (std::holds_alternative<WeatherGroup>(group)) {
-			return(this->visitWeatherGroup(std::get<WeatherGroup>(group)));
-		}
-		if (std::holds_alternative<TemperatureGroup>(group)) {
-			return(this->visitTemperatureGroup(std::get<TemperatureGroup>(group)));
-		}
-		if (std::holds_alternative<TemperatureForecastGroup>(group)) {
-			return(this->visitTemperatureForecastGroup(std::get<TemperatureForecastGroup>(group)));
-		}
-		if (std::holds_alternative<PressureGroup>(group)) {
-			return(this->visitPressureGroup(std::get<PressureGroup>(group)));
-		}
-		if (std::holds_alternative<RunwayVisualRangeGroup>(group)) {
-			return(this->visitRunwayVisualRangeGroup(std::get<RunwayVisualRangeGroup>(group)));
-		}
-		if (std::holds_alternative<RunwayStateGroup>(group)) {
-			return(this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group)));
-		}
-		if (std::holds_alternative<SecondaryLocationGroup>(group)) {
-			return(this->visitSecondaryLocationGroup(std::get<SecondaryLocationGroup>(group)));
-		}
-		if (std::holds_alternative<RainfallGroup>(group)) {
-			return(this->visitRainfallGroup(std::get<RainfallGroup>(group)));
-		}
-		if (std::holds_alternative<SeaSurfaceGroup>(group)) {
-			return(this->visitSeaSurfaceGroup(std::get<SeaSurfaceGroup>(group)));
-		}
-		if (std::holds_alternative<ColourCodeGroup>(group)) {
-			return(this->visitColourCodeGroup(std::get<ColourCodeGroup>(group)));
-		}
-		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
-			return(this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group)));
-		}
-		if (std::holds_alternative<PrecipitationGroup>(group)) {
-			return(this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group)));
-		}
-		if (std::holds_alternative<LayerForecastGroup>(group)) {
-			return(this->visitLayerForecastGroup(std::get<LayerForecastGroup>(group)));
-		}
-		if (std::holds_alternative<PressureTendencyGroup>(group)) {
-			return(this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group)));
-		}
-		if (std::holds_alternative<CloudTypesGroup>(group)) {
-			return(this->visitCloudTypesGroup(std::get<CloudTypesGroup>(group)));
-		}
-		if (std::holds_alternative<CloudLayersGroup>(group)) {
-			return(this->visitCloudLayersGroup(std::get<CloudLayersGroup>(group)));
-		}
-		if (std::holds_alternative<MiscGroup>(group)) {
-			return(this->visitMiscGroup(std::get<MiscGroup>(group)));
-		}
+		if (const auto gr = std::get_if<PlainTextGroup>(&group); gr) {
+			return(this->visitPlainTextGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
+			return(this->visitFixedGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
+			return(this->visitLocationGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<ReportTimeGroup>(&group); gr) {
+			return(this->visitReportTimeGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<TrendGroup>(&group); gr) {
+			return(this->visitTrendGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<WindGroup>(&group); gr) {
+			return(this->visitWindGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<VisibilityGroup>(&group); gr) {
+			return(this->visitVisibilityGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<CloudGroup>(&group); gr) {
+			return(this->visitCloudGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<WeatherGroup>(&group); gr) {
+			return(this->visitWeatherGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<TemperatureGroup>(&group); gr) {
+			return(this->visitTemperatureGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<TemperatureForecastGroup>(&group); gr) {
+			return(this->visitTemperatureForecastGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<PressureGroup>(&group); gr) {
+			return(this->visitPressureGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<RunwayVisualRangeGroup>(&group); gr) {
+			return(this->visitRunwayVisualRangeGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<RunwayStateGroup>(&group); gr) {
+			return(this->visitRunwayStateGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<SecondaryLocationGroup>(&group); gr) {
+			return(this->visitSecondaryLocationGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<RainfallGroup>(&group); gr) {
+			return(this->visitRainfallGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<SeaSurfaceGroup>(&group); gr) {
+			return(this->visitSeaSurfaceGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<ColourCodeGroup>(&group); gr) {
+			return(this->visitColourCodeGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<MinMaxTemperatureGroup>(&group); gr) {
+			return(this->visitMinMaxTemperatureGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<PrecipitationGroup>(&group); gr) {
+			return(this->visitPrecipitationGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<LayerForecastGroup>(&group); gr) {
+			return(this->visitLayerForecastGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<PressureTendencyGroup>(&group); gr) {
+			return(this->visitPressureTendencyGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<CloudTypesGroup>(&group); gr) {
+			return(this->visitCloudTypesGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
+			return(this->visitCloudLayersGroup(*gr));
+		} 
+		if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
+			return(this->visitMiscGroup(*gr));
+		} 
 		return(this->visitOther(group));
 	}
 
 	template<>
 	inline void GroupVisitor<void>::visit(const Group & group) {
-		if (std::holds_alternative<PlainTextGroup>(group)) {
-			this->visitPlainTextGroup(std::get<PlainTextGroup>(group));
+		if (const auto gr = std::get_if<PlainTextGroup>(&group); gr) {
+			this->visitPlainTextGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<FixedGroup>(group)) {
-			this->visitFixedGroup(std::get<FixedGroup>(group));
+		} 
+		if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
+			this->visitFixedGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<LocationGroup>(group)) {
-			this->visitLocationGroup(std::get<LocationGroup>(group));
+		} 
+		if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
+			this->visitLocationGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<ReportTimeGroup>(group)) {
-			this->visitReportTimeGroup(std::get<ReportTimeGroup>(group));
+		} 
+		if (const auto gr = std::get_if<ReportTimeGroup>(&group); gr) {
+			this->visitReportTimeGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<TrendGroup>(group)) {
-			this->visitTrendGroup(std::get<TrendGroup>(group));
+		} 
+		if (const auto gr = std::get_if<TrendGroup>(&group); gr) {
+			this->visitTrendGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<WindGroup>(group)) {
-			this->visitWindGroup(std::get<WindGroup>(group));
+		} 
+		if (const auto gr = std::get_if<WindGroup>(&group); gr) {
+			this->visitWindGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<VisibilityGroup>(group)) {
-			this->visitVisibilityGroup(std::get<VisibilityGroup>(group));
+		} 
+		if (const auto gr = std::get_if<VisibilityGroup>(&group); gr) {
+			this->visitVisibilityGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<CloudGroup>(group)) {
-			this->visitCloudGroup(std::get<CloudGroup>(group));
+		} 
+		if (const auto gr = std::get_if<CloudGroup>(&group); gr) {
+			this->visitCloudGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<WeatherGroup>(group)) {
-			this->visitWeatherGroup(std::get<WeatherGroup>(group));
+		} 
+		if (const auto gr = std::get_if<WeatherGroup>(&group); gr) {
+			this->visitWeatherGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<TemperatureGroup>(group)) {
-			this->visitTemperatureGroup(std::get<TemperatureGroup>(group));
+		} 
+		if (const auto gr = std::get_if<TemperatureGroup>(&group); gr) {
+			this->visitTemperatureGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<TemperatureForecastGroup>(group)) {
-			this->visitTemperatureForecastGroup(std::get<TemperatureForecastGroup>(group));
+		} 
+		if (const auto gr = std::get_if<TemperatureForecastGroup>(&group); gr) {
+			this->visitTemperatureForecastGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<PressureGroup>(group)) {
-			this->visitPressureGroup(std::get<PressureGroup>(group));
+		} 
+		if (const auto gr = std::get_if<PressureGroup>(&group); gr) {
+			this->visitPressureGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<RunwayVisualRangeGroup>(group)) {
-			this->visitRunwayVisualRangeGroup(std::get<RunwayVisualRangeGroup>(group));
+		} 
+		if (const auto gr = std::get_if<RunwayVisualRangeGroup>(&group); gr) {
+			this->visitRunwayVisualRangeGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<RunwayStateGroup>(group)) {
-			this->visitRunwayStateGroup(std::get<RunwayStateGroup>(group));
+		} 
+		if (const auto gr = std::get_if<RunwayStateGroup>(&group); gr) {
+			this->visitRunwayStateGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<SecondaryLocationGroup>(group)) {
-			this->visitSecondaryLocationGroup(std::get<SecondaryLocationGroup>(group));
+		} 
+		if (const auto gr = std::get_if<SecondaryLocationGroup>(&group); gr) {
+			this->visitSecondaryLocationGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<RainfallGroup>(group)) {
-			this->visitRainfallGroup(std::get<RainfallGroup>(group));
+		} 
+		if (const auto gr = std::get_if<RainfallGroup>(&group); gr) {
+			this->visitRainfallGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<SeaSurfaceGroup>(group)) {
-			this->visitSeaSurfaceGroup(std::get<SeaSurfaceGroup>(group));
+		} 
+		if (const auto gr = std::get_if<SeaSurfaceGroup>(&group); gr) {
+			this->visitSeaSurfaceGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<ColourCodeGroup>(group)) {
-			this->visitColourCodeGroup(std::get<ColourCodeGroup>(group));
+		} 
+		if (const auto gr = std::get_if<ColourCodeGroup>(&group); gr) {
+			this->visitColourCodeGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<MinMaxTemperatureGroup>(group)) {
-			this->visitMinMaxTemperatureGroup(std::get<MinMaxTemperatureGroup>(group));
+		} 
+		if (const auto gr = std::get_if<MinMaxTemperatureGroup>(&group); gr) {
+			this->visitMinMaxTemperatureGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<PrecipitationGroup>(group)) {
-			this->visitPrecipitationGroup(std::get<PrecipitationGroup>(group));
+		} 
+		if (const auto gr = std::get_if<PrecipitationGroup>(&group); gr) {
+			this->visitPrecipitationGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<LayerForecastGroup>(group)) {
-			this->visitLayerForecastGroup(std::get<LayerForecastGroup>(group));
+		} 
+		if (const auto gr = std::get_if<LayerForecastGroup>(&group); gr) {
+			this->visitLayerForecastGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<PressureTendencyGroup>(group)) {
-			this->visitPressureTendencyGroup(std::get<PressureTendencyGroup>(group));
+		} 
+		if (const auto gr = std::get_if<PressureTendencyGroup>(&group); gr) {
+			this->visitPressureTendencyGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<CloudTypesGroup>(group)) {
-			this->visitCloudTypesGroup(std::get<CloudTypesGroup>(group));
+		} 
+		if (const auto gr = std::get_if<CloudTypesGroup>(&group); gr) {
+			this->visitCloudTypesGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<CloudLayersGroup>(group)) {
-			this->visitCloudLayersGroup(std::get<CloudLayersGroup>(group));
+		} 
+		if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
+			this->visitCloudLayersGroup(*gr);
 			return;
-		}
-		if (std::holds_alternative<MiscGroup>(group)) {
-			this->visitMiscGroup(std::get<MiscGroup>(group));
+		} 
+		if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
+			this->visitMiscGroup(*gr);
 			return;
-		}
+		} 
 		this->visitOther(group);
 	}
 
@@ -2783,20 +2783,20 @@ namespace metaf {
 
 	std::optional<Group> PlainTextGroup::combine(const Group & nextGroup) const { 
 		static const std::optional<Group> notCombined;
-		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
-		const auto nextPlainTextGroup = std::get<PlainTextGroup>(nextGroup);
+		const auto nextPlainTextGroup = std::get_if<PlainTextGroup>(&nextGroup);
+		if (!nextPlainTextGroup) return(notCombined);
 
 		static const char delimiterStr[] = " ";
 
 		if (const auto textNewLength = 
 				strlen(text) + 
-				strlen(nextPlainTextGroup.text) + 
+				strlen(nextPlainTextGroup->text) + 
 				strlen(delimiterStr);
 			textNewLength > textMaxLength) return(notCombined);
 
 		PlainTextGroup combinedGroup = *this;
 		strcat(combinedGroup.text, delimiterStr);
-		strcat(combinedGroup.text, nextPlainTextGroup.text); 
+		strcat(combinedGroup.text, nextPlainTextGroup->text); 
 		return(combinedGroup);
 	}
 
@@ -2939,13 +2939,13 @@ namespace metaf {
 	}
 
 	std::optional<Group> TrendGroup::combine(const Group & nextGroup) const {
-		if (!std::holds_alternative<TrendGroup>(nextGroup)) return(std::optional<Group>());
-		auto nextTrendGroup = std::get<TrendGroup>(nextGroup);
+		const auto nextTrendGroup = std::get_if<TrendGroup>(&nextGroup);
+		if (!nextTrendGroup) return(std::optional<Group>());
 		TrendGroup combinedGroup = *this;
-		if (combinedGroup.combineProbAndTrendTypeGroups(nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineTrendTypeAndTimeGroup(nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineProbAndTimeSpanGroups(nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineIncompleteGroups(nextTrendGroup)) return(combinedGroup);
+		if (combinedGroup.combineProbAndTrendTypeGroups(*nextTrendGroup)) return(combinedGroup);
+		if (combinedGroup.combineTrendTypeAndTimeGroup(*nextTrendGroup)) return(combinedGroup);
+		if (combinedGroup.combineProbAndTimeSpanGroups(*nextTrendGroup)) return(combinedGroup);
+		if (combinedGroup.combineIncompleteGroups(*nextTrendGroup)) return(combinedGroup);
 		return(std::optional<Group>());
 	}
 
@@ -3161,16 +3161,16 @@ namespace metaf {
 
 	std::optional<Group> WindGroup::combine(const Group & nextGroup) const {
 		static const std::optional<Group> notCombined;
-		if (!std::holds_alternative<WindGroup>(nextGroup)) return(notCombined);
-		auto nextWindGroup = std::get<WindGroup>(nextGroup);
+		const auto nextWindGroup = std::get_if<WindGroup>(&nextGroup);
+		if (!nextWindGroup) return(notCombined);
 		switch (status()) {
 			case Status::SURFACE_WIND:
-			if (nextWindGroup.status() == Status::VARIABLE_WIND_SECTOR) {
+			if (nextWindGroup->status() == Status::VARIABLE_WIND_SECTOR) {
 				WindGroup combinedGroup = *this;
 				combinedGroup.windStatus = 
 					Status::SURFACE_WIND_WITH_VARIABLE_SECTOR;
-				combinedGroup.vsecBegin = nextWindGroup.vsecBegin;
-				combinedGroup.vsecEnd = nextWindGroup.vsecEnd;
+				combinedGroup.vsecBegin = nextWindGroup->vsecBegin;
+				combinedGroup.vsecEnd = nextWindGroup->vsecEnd;
 				return(combinedGroup);
 			}
 			return(notCombined); 
@@ -3246,15 +3246,15 @@ namespace metaf {
 	}
 
 	std::optional<Group> VisibilityGroup::combine(const Group & nextGroup) const {
-		if (!std::holds_alternative<VisibilityGroup>(nextGroup)) return(std::optional<Group>());
-		auto nextVisGroup = std::get<VisibilityGroup>(nextGroup);
+		const auto nextVisGroup = std::get_if<VisibilityGroup>(&nextGroup);
+		if (!nextVisGroup) return(std::optional<Group>());
 		if (visibility().unit() != Distance::Unit::STATUTE_MILES || 
-			nextVisGroup.visibility().unit() != Distance::Unit::STATUTE_MILES) {
+			nextVisGroup->visibility().unit() != Distance::Unit::STATUTE_MILES) {
 				return(std::optional<Group>());
 		}
-		if (incompleteInteger && nextVisGroup.visibility().isFraction()) {
+		if (incompleteInteger && nextVisGroup->visibility().isFraction()) {
 			auto v = Distance::fromIntegerAndFraction(visibility(), 
-				nextVisGroup.visibility());
+				nextVisGroup->visibility());
 			if (!v.has_value()) return(std::optional<Group>());
 			VisibilityGroup combinedGroup = *this;
 			combinedGroup.vis = v.value();
@@ -4964,8 +4964,6 @@ namespace metaf {
 			return;
 		}
 	}
-
-
 
 } //namespace metaf
 
