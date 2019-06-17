@@ -321,6 +321,7 @@ TEST(TrendGroup, parseTrendTimeAtWrongReportPart) {
 
 TEST(TrendGroup, parseTrendTimeWrongFormat) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("XT1530", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::TrendGroup::parse("AM1530", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse("AT01530", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse("AT530", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse("AT/15:30", metaf::ReportPart::METAR));

@@ -133,7 +133,7 @@ TEST(SecondaryLocationGroup, parseWsRWY27C) {
 	EXPECT_FALSE(wsR27c.direction().has_value());
 }
 
-TEST(SecondaryLocationGroup, windShearCombineWithWrongGroup) {
+TEST(SecondaryLocationGroup, windShearCombineWithWrongGroupWs) {
 	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(ws.has_value());
 
@@ -146,6 +146,25 @@ TEST(SecondaryLocationGroup, windShearCombineWithWrongGroup) {
 	ASSERT_TRUE(combined2.has_value());
 	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
 	EXPECT_EQ(std::get<metaf::PlainTextGroup>(combined2.value()).toString(), "WS TEST");
+}
+
+TEST(SecondaryLocationGroup, windShearCombineWithWrongGroupWsAll) {
+	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ws.has_value());
+
+	const auto all = metaf::PlainTextGroup::parse("ALL", metaf::ReportPart::METAR);
+	ASSERT_TRUE(all.has_value());
+
+	const auto combined1 = ws->combine(all.value());
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined1.value()));
+	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined1.value());
+
+	const auto combined2 = wsAll.combine(metaf::PlainTextGroup("R22"));
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(combined2.value()).toString(), "WS ALL R22");
+
 }
 
 TEST(SecondaryLocationGroup, windShearCombineCompleteGroups) {
