@@ -5,8 +5,8 @@ build:
     GIT_SUBMODULE_STRATEGY: normal
   script:
   - apt-get update
-  - apt-get -y install python3
-  - apt-get -y install python3-pip
+  - apt-get -y --no-install-recommends install python3
+  - apt-get -y --no-install-recommends install python3-pip
   - pip3 install -U sphinx
   - cmake .
   - emmake make
@@ -35,7 +35,7 @@ tests:
       - ci-build/    
     reports:
       junit: ci-build/test/test.xml
-
+ 
 pages:
   stage: deploy
   script:

@@ -13,39 +13,37 @@
 #ifdef __EMSCRIPTEN__
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
-#else
-    #include <filesystem>
-    namespace fs = std::filesystem;
+
+    void printFile(const std::string & path) {
+     	std::ifstream f(path);
+
+        if (!f.is_open()) {
+        	std::cout << "Cannot open MEMFS file " << path << std::endl;
+        	return;
+        }
+        std::cout << "MEMFS file " << path << " contents to follow" << std::endl;
+        std::cout << "<<<<" << path << ":BEGIN>>>>" << std::endl;
+        std::cout << f.rdbuf();
+        std::cout << "<<<<" << path << ":END>>>>" << std::endl;
+    }
+
+    void printFiles(const std::string & path) {
+        std::vector<std::string> subdirs;
+    	for (const auto & entry : fs::directory_iterator(path))
+            try {
+                if (fs::is_directory(entry)) {
+                    subdirs.push_back(entry.path());
+                }
+                if (fs::is_regular_file(entry)) {
+                    printFile(entry.path());
+                }
+            } catch (...) {}
+        for (auto p : subdirs) {
+            printFiles(p);
+        }
+    }
+
 #endif
-
-void printFile(const std::string & path) {
- 	std::ifstream f(path);
-
-    if (!f.is_open()) {
-    	std::cout << "Cannot open MEMFS file " << path << std::endl;
-    	return;
-    }
-    std::cout << "MEMFS file " << path << " contents to follow" << std::endl;
-    std::cout << "<<<<" << path << ":BEGIN>>>>" << std::endl;
-    std::cout << f.rdbuf();
-    std::cout << "<<<<" << path << ":END>>>>" << std::endl;
-}
-
-void printFiles(const std::string & path) {
-    std::vector<std::string> subdirs;
-	for (const auto & entry : fs::directory_iterator(path))
-        try {
-            if (fs::is_directory(entry)) {
-                subdirs.push_back(entry.path());
-            }
-            if (fs::is_regular_file(entry)) {
-                printFile(entry.path());
-            }
-        } catch (...) {}
-    for (auto p : subdirs) {
-        printFiles(p);
-    }
-}
 
 //Since webassembly file access is sandboxed to MEMFS filesystem, it is not 
 //possbile to create files (e.g. test xml output) directly. All files created 
