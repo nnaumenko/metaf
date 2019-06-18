@@ -4,7 +4,7 @@ project(metaf-test-coverage)
 
 set(CMAKE_CXX_STANDARD 17)
 enable_language(CXX)
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -std=c++17 -stdlib=libc++ -O0 -g --coverage")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -std=c++17 -stdlib=libc++ -O0 -g -fprofile-instr-generate -fcoverage-mapping")
 set(CMAKE_CXX_COMPILER clang++)
 
 include_directories(${PROJECT_SOURCE_DIR}/../../src)
@@ -27,5 +27,5 @@ target_include_directories(testcov PRIVATE
 set_target_properties(testcov PROPERTIES 
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../../bin/test
 	OUTPUT_NAME "testcov"
-	LINK_FLAGS "-lpthread -lm --coverage"
+	LINK_FLAGS "-lpthread -lm -fprofile-instr-generate"
 )
