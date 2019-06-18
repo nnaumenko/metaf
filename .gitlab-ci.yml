@@ -5,8 +5,7 @@ build:
     GIT_SUBMODULE_STRATEGY: normal
   script:
   - apt-get update
-  - apt-get -y --no-install-recommends install python3
-  - apt-get -y --no-install-recommends install python3-pip
+  - apt-get -y --no-install-recommends install python3 python3-pip
   - pip3 install -U sphinx
   - cmake .
   - emmake make
@@ -15,7 +14,30 @@ build:
   - cp -r bin/* ci-build
   artifacts:
     paths:
-      - ci-build/
+      - ci-build
+
+build_codecov:
+  stage: build
+  image: ubuntu:18.04
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+  - apt-get update
+  - apt-get -y --no-install-recommends install xz-utils build-essential curl cmake
+  - curl -SL http://releases.llvm.org/8.0.0/clang%2bllvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz | tar -xJC .
+  - mv clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04 /clang_8.0.0
+  - export PATH=/clang_8.0.0/bin:$PATH
+  - export LD_LIBRARY_PATH=/clang_8.0.0/lib:$LD_LIBRARY_PATH
+  - cd test/coverage
+  - cmake .
+  - make
+  - ../../bin/test/testcov
+  - mkdir ../../ci-coverage
+  - cp -r * ../../ci-coverage
+  artifacts:
+    paths:
+      - ci-coverage
 
 tests:
   stage: test
@@ -44,6 +66,7 @@ pages:
     - cp pages/* public
   dependencies:
     - build
+    - tests
   artifacts:
     paths:
       - public
