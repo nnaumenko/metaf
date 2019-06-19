@@ -2,6 +2,7 @@
 
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+[![Codecov](https://codecov.io/gl/nnaumenko/metaf/branch/master/graph/badge.svg)](https://codecov.io/gl/nnaumenko/metaf)
 
 ## Introduction
 
