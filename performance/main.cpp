@@ -25,7 +25,7 @@ using namespace std;
 /// Get an index from type included in variant type at compile time.
 /// @tparam V Variant type to search for index.
 /// @tparam T Type which index must be returned.
-/// @return Index of type T in variant V. If T is not in V, this won't compile.
+/// @return Index of type T in variant V; or variant size if V does not contain T.
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     if constexpr (I >= variant_size_v<V>) {

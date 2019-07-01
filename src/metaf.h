@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		static const int major = 2;
 		static const int minor = 8;
-		static const int patch = 5;
+		static const int patch = 6;
 		inline static const char tag [] = "";
 	};
 
@@ -141,12 +141,20 @@ namespace metaf {
 
 	class MetafTime {
 	public:
+		struct Date {
+			Date(unsigned int y, unsigned int m, unsigned int d) :
+				year(y), month(m), day(d) {}
+			unsigned int year;
+			unsigned int month;
+			unsigned int day;
+		};
 		std::optional<unsigned int> day() const { return(dayValue); }
 		unsigned int hour() const { return(hourValue); }
 		unsigned int minute() const { return(minuteValue); }
 		inline bool isValid() const;
 		inline bool is3hourlyReportTime() const;
 		inline bool is6hourlyReportTime() const;
+		inline Date dateBeforeRef(const Date & refDate) const;
 
 		MetafTime() = default;
 		static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
@@ -1920,6 +1928,24 @@ namespace metaf {
 			default: return(false);
 		}
 	}
+
+	MetafTime::Date MetafTime::dateBeforeRef(const Date & refDate) const {
+		if (!day().has_value()) return(refDate);
+		Date result = refDate;
+		result.day = day().value();
+		if (result.day > refDate.day) { //previous month
+			static const auto firstMonth = 1;
+			static const auto lastMonth = 12;
+			if (result.month == firstMonth) {
+				result.year--;
+				result.month = lastMonth;
+			} else {
+				result.month--;
+			}
+		}
+		return(result);
+	}
+
 
 	std::optional<MetafTime> MetafTime::fromStringDDHHMM(const std::string & s) {
 		//static const std::regex rgx ("(\\d\\d)?(\\d\\d)(\\d\\d)");

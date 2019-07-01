@@ -109,7 +109,6 @@ MetafTime
 
 	.. note:: METAR and TAF reports always use GMT time.
 
-
 	**Acquiring the data**
 
 		.. cpp:function:: std::optional<unsigned int> day() const
@@ -136,6 +135,30 @@ MetafTime
 		.. cpp:function:: bool is6hourlyReportTime() const
 
 			:returns: ``true`` if the this time qualifies as 6-hourly report release time in North America (i.e. reports issued within one hour before or after 0000Z, 0600Z, 1200Z, and 1800Z), according to Field Meteorology Handbook Number 1, chapter 12.4.
+
+		.. cpp:struct Date
+
+			.. cpp:var:: unsigned int year
+
+			Year component of the date. Can be specified as e.g. ``2019`` or just ``19``. Assumed to be a mon-zero value.
+
+			.. cpp:var:: unsigned int month
+
+			Month component of the date. Must be in range 1 to 12.
+
+			.. cpp:var:: unsigned int day
+
+			Day-of-month component of the date.
+
+		.. cpp:function:: Date dateBeforeRef(const Date & refDate) const
+
+			This function compliments MetafTime with year and month, based on supplied reference date, assuming that MetafTime refers to the time point at maximum 1 month before the supplied reference date.
+
+			:param refDate: Reference date; may equal current date for recent METAR or TAF report or date of METAR or TAF report retreival for archived/historical report.
+
+			:returns: Date including year and month for MetafTime instance, assuming that point of time info stored in this MetafTime instance is before refDate.
+
+			.. note:: This method does not validate supplied current date and day-of-month stored in the group. The inconsistensy of both input parameters and returned value (such as day-of-month exceeding max days in this month, month being in range 1 to 12, etc.) must be checked by others than Metaf.
 
 	**Validating**
 

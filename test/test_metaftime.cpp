@@ -312,3 +312,32 @@ TEST(MetafTime, is6hourlyReportTimeFalse) {
 	EXPECT_FALSE(t22->is6hourlyReportTime());
 }
 
+TEST(MetafTime, dateBeforeRefSameMonthAndYear) {
+	const auto t = metaf::MetafTime::fromStringDDHHMM("201730");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->isValid());
+	const auto tDate = t->dateBeforeRef(metaf::MetafTime::Date(2019, 6, 21));
+	EXPECT_EQ(tDate.year, 2019u);
+	EXPECT_EQ(tDate.month, 6u);
+	EXPECT_EQ(tDate.day, 20u);
+}
+
+TEST(MetafTime, dateBeforeRefDifferentMonth) {
+	const auto t = metaf::MetafTime::fromStringDDHHMM("301730");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->isValid());
+	const auto tDate = t->dateBeforeRef(metaf::MetafTime::Date(2019, 7, 1));
+	EXPECT_EQ(tDate.year, 2019u);
+	EXPECT_EQ(tDate.month, 6u);
+	EXPECT_EQ(tDate.day, 30u);
+}
+
+TEST(MetafTime, dateBeforeRefDifferentMonthAndYear) {
+	const auto t = metaf::MetafTime::fromStringDDHHMM("311730");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->isValid());
+	const auto tDate = t->dateBeforeRef(metaf::MetafTime::Date(2019, 1, 1));
+	EXPECT_EQ(tDate.year, 2018u);
+	EXPECT_EQ(tDate.month, 12u);
+	EXPECT_EQ(tDate.day, 31u);
+}
