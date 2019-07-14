@@ -916,3 +916,23 @@ TEST(Distance, hasFractionFalse) {
 	ASSERT_TRUE(d6.has_value());
 	EXPECT_FALSE(d6->hasInteger());
 }
+
+TEST(Distance, cavokVisibilityMeters) {
+	const auto d = metaf::Distance::cavokVisibility();
+	ASSERT_TRUE(d.integer().has_value());
+	EXPECT_EQ(d.integer().value(), 10000u);
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
+}
+
+TEST(Distance, cavokVisibilityMiles) {
+	const auto d = metaf::Distance::cavokVisibility(true);
+	ASSERT_TRUE(d.integer().has_value());
+	EXPECT_EQ(d.integer().value(), 6u);
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
+}

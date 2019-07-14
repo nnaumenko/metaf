@@ -24,9 +24,9 @@ namespace metaf {
 
 	// Metaf library version
 	struct Version {
-		static const int major = 2;
-		static const int minor = 8;
-		static const int patch = 6;
+		inline static const int major = 2;
+		inline static const int minor = 8;
+		inline static const int patch = 7;
 		inline static const char tag [] = "";
 	};
 
@@ -285,6 +285,7 @@ namespace metaf {
 		static inline std::optional<Distance> fromRvrString(const std::string & s, bool unitFeet);
 		static inline std::optional< std::pair<Distance,Distance> > fromLayerString(
 			const std::string & s);
+		static inline Distance cavokVisibility(bool unitMiles = false);
 	private:
 		Modifier distModifier = Modifier::NONE;
 		std::optional<unsigned int> distValueInt;
@@ -293,6 +294,9 @@ namespace metaf {
 		Unit distUnit = Unit::METERS;
 
 		static const unsigned int heightFactor = 100; //height unit is 100s of feet
+
+		static const unsigned int cavokVisibilityMiles = 6;
+		static const unsigned int cavokVisibilityMeters = 10000;
 
 		// Icing or turbulence layer depth is given in 1000s of feet
 		static const unsigned int layerDepthFactor = 1000;
@@ -2380,6 +2384,19 @@ namespace metaf {
 			default: return(std::optional<float>());
 		}
 	}
+
+	inline Distance Distance::cavokVisibility(bool unitMiles) {
+		Distance result;
+		result.distModifier = Modifier::MORE_THAN;
+		result.distValueInt = cavokVisibilityMeters;
+		result.distUnit = Unit::METERS;
+		if (unitMiles) {
+			result.distValueInt = cavokVisibilityMiles;
+			result.distUnit = Unit::STATUTE_MILES;
+		}
+		return(result);
+	}
+
 
 	////////////////////////////////////////////////////////////////////////////////
 
