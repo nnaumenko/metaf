@@ -269,6 +269,11 @@ Temperature
 				- if the original temperature value was in range (0.5 .. 0.0] which is encoded in METAR/TAF report as ``00``, then ``isFreezing()`` returns ``false``;
 
 
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored.
+
+
 		.. cpp:function:: bool isPrecise() const
 
 			:returns: ``true`` if the value is in tenth of degree Celsius, ``false`` if the value is rounded to integer.
@@ -325,6 +330,13 @@ Speed
 
 			:param unit: Measurement unit to convert the value to.
 			:returns: Stored speed value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
+
+
+	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored.
 
 
 .. index:: single: Distance
@@ -664,6 +676,13 @@ Pressure
 			:returns: Stored pressure value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
 
 
+	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored.
+
+
 .. index:: single: Precipitation amount
 
 .. index:: single: Accumulation of precipitation
@@ -737,6 +756,13 @@ Precipitation
 
 			:param unit: Measurement unit to convert the value to.
 			:returns: Stored precipitation amount/accumulation value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported or if the runway is not operational.
+
+
+	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored.
 
 
 .. index:: single: Surface friction
@@ -831,6 +857,18 @@ SurfaceFriction
 			:returns: Braking action value corresponding to stored value.
 
 				If friction coefficient was reported, a range of :cpp:enum:`BrakingAction` where this value of the friction coefficient fits is returned (e.g. if friction coefficient with value 0.33 was reported, then :cpp:enumerator:`BrakingAction::MEDIUM` is returned).
+
+
+	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:: `Status::NOT_REPORTED`.
+
+
+		.. cpp:function:: bool isUnreliable() const
+
+			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:: `Status::UNRELIABLE`.
 
 
 .. index:: single: Wave height
@@ -2099,6 +2137,14 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 			:returns: Vector of individual weather phenomena included in this group.
 
+	**Miscellaneous**
+
+		.. cpp:function:: bool contains(Weather weather) const
+
+			:param weather: A weacher phenomenon to check current group for.
+
+			:returns: ``true`` if this group contains the specified weather phenomenon or ``false`` if the specified weather phenomenon is not included in this group.
+
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
@@ -2188,6 +2234,13 @@ Examples of the raw report data are ``TX15/3111Z``, ``TN00/3103Z``, and ``T30/12
 		.. cpp:function:: MetafTime time() const
 
 			Time when the forecast temperature is expected.
+
+	**Additional data**
+
+		.. cpp:function:: std::optional<float> relativeHumidity()
+
+			:returns: Relative humidity value based on ambient air temperature and dew point stored in this group, or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
+
 
 	**Validating**
 
