@@ -166,3 +166,31 @@ TEST(SurfaceFriction, brakingActionNotReported) {
 	ASSERT_TRUE(sf.has_value());
 	EXPECT_EQ(sf->brakingAction(), metaf::SurfaceFriction::BrakingAction::NONE);
 }
+
+TEST(SurfaceFriction, isReported) {
+	const auto sf62 = metaf::SurfaceFriction::fromString("62");
+	ASSERT_TRUE(sf62.has_value());
+	EXPECT_TRUE(sf62->isReported());
+
+	const auto sfNr = metaf::SurfaceFriction::fromString("//");
+	ASSERT_TRUE(sfNr.has_value());
+	EXPECT_FALSE(sfNr->isReported());
+}
+
+TEST(SurfaceFriction, isUnreliable) {
+	const auto sf99 = metaf::SurfaceFriction::fromString("99");
+	ASSERT_TRUE(sf99.has_value());
+	EXPECT_TRUE(sf99->isUnreliable());
+
+	const auto sf93 = metaf::SurfaceFriction::fromString("93");
+	ASSERT_TRUE(sf93.has_value());
+	EXPECT_FALSE(sf93->isUnreliable());
+
+	const auto sf39 = metaf::SurfaceFriction::fromString("39");
+	ASSERT_TRUE(sf39.has_value());
+	EXPECT_FALSE(sf39->isUnreliable());
+
+	const auto sfNr = metaf::SurfaceFriction::fromString("//");
+	ASSERT_TRUE(sfNr.has_value());
+	EXPECT_FALSE(sfNr->isUnreliable());
+}

@@ -9,6 +9,7 @@
 #include "metaf.h"
 
 static const auto margin = 0.1/2;
+static const auto rhMargin = 0.1/2;
 
 TEST(TemperatureGroup, parseTemperatureAndDewPoint) {
 	const auto tg = metaf::TemperatureGroup::parse("25/18", metaf::ReportPart::METAR);
@@ -263,4 +264,16 @@ TEST(TemperatureGroup, isValidFalse) {
 	const auto tg2 = metaf::TemperatureGroup::parse("M00/00", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg2.has_value());
 	EXPECT_FALSE(tg2->isValid());
+}
+
+TEST(TemperatureGroup, relativeHumidity) {
+	const auto tg1 = metaf::TemperatureGroup::parse("35/05", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg1.has_value());
+	const auto rh1 = tg1->relativeHumidity();
+	EXPECT_NEAR(rh1.value(), 15.6, rhMargin);
+
+	const auto tg2 = metaf::TemperatureGroup::parse("17/08", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg2.has_value());
+	const auto rh2 = tg2->relativeHumidity();
+	EXPECT_NEAR(rh2.value(), 55.4, rhMargin);
 }

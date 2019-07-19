@@ -207,3 +207,13 @@ TEST(Speed, toUnitMphToKmh) {
 	ASSERT_TRUE(s.has_value());
 	EXPECT_NEAR(s.value(), 16.1, margin);
 }
+
+TEST(Speed, isReported) {
+	const auto snr = metaf::Speed::fromString("//", metaf::Speed::Unit::KNOTS);
+	ASSERT_TRUE(snr.has_value());
+	EXPECT_FALSE(snr->isReported());
+
+	const auto s12 = metaf::Speed::fromString("12", metaf::Speed::Unit::KNOTS);
+	ASSERT_TRUE(s12.has_value());
+	EXPECT_TRUE(s12->isReported());
+}

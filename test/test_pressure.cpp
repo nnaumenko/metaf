@@ -266,3 +266,29 @@ TEST(Pressure, toUnitMmHgToInHg) {
 	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::INCHES_HG).has_value());
 	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::INCHES_HG).value(), 30.12, margin);
 }
+
+TEST(Pressure, isReported) {
+	const auto pQ0994 = metaf::Pressure::fromString("Q0994");
+	ASSERT_TRUE(pQ0994.has_value());
+	EXPECT_TRUE(pQ0994->isReported());
+
+	const auto pSlp982 = metaf::Pressure::fromSlpString("SLP982");
+	ASSERT_TRUE(pSlp982.has_value());
+	EXPECT_TRUE(pSlp982->isReported());
+
+	const auto pQfe750 = metaf::Pressure::fromQfeString("QFE750");
+	ASSERT_TRUE(pQfe750.has_value());
+	EXPECT_TRUE(pQfe750->isReported());
+
+	const auto pT032 = metaf::Pressure::fromTendencyString("032");
+	ASSERT_TRUE(pT032.has_value());
+	EXPECT_TRUE(pT032->isReported());
+
+	const auto pTnr = metaf::Pressure::fromTendencyString("///");
+	ASSERT_TRUE(pTnr.has_value());
+	EXPECT_FALSE(pTnr->isReported());
+
+	const auto pnr = metaf::Pressure::fromString("Q////");
+	ASSERT_TRUE(pnr.has_value());
+	EXPECT_FALSE(pnr->isReported());
+}

@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		inline static const int major = 2;
 		inline static const int minor = 8;
-		inline static const int patch = 7;
+		inline static const int patch = 9;
 		inline static const char tag [] = "";
 	};
 
@@ -187,6 +187,7 @@ namespace metaf {
 		std::optional<float> inline toUnit(Unit unit) const;
 		bool isFreezing() const { return(freezing); }
 		bool isPrecise() const { return(precise); }
+		bool isReported() const { return(tempValue.has_value()); }
 		inline static std::optional<float> relativeHumidity(
 			const Temperature & airTemperature,
 			const Temperature & dewPoint);
@@ -221,6 +222,7 @@ namespace metaf {
 		std::optional<unsigned int> speed() const { return(speedValue); }
 		Unit unit() const { return(speedUnit); }
 		std::optional<float> inline toUnit(Unit unit) const;
+		bool isReported() const { return(speedValue.has_value()); }
 
 		Speed() = default;
 		static inline std::optional<Speed> fromString(const std::string & s, Unit unit);
@@ -295,8 +297,8 @@ namespace metaf {
 
 		static const unsigned int heightFactor = 100; //height unit is 100s of feet
 
-		static const unsigned int cavokVisibilityMiles = 6;
-		static const unsigned int cavokVisibilityMeters = 10000;
+		static const inline unsigned int cavokVisibilityMiles = 6;
+		static const inline unsigned int cavokVisibilityMeters = 10000;
 
 		// Icing or turbulence layer depth is given in 1000s of feet
 		static const unsigned int layerDepthFactor = 1000;
@@ -376,6 +378,7 @@ namespace metaf {
 		std::optional<float> pressure() const { return(pressureValue); }
 		Unit unit() const { return(pressureUnit); }
 		inline std::optional<float> toUnit(Unit unit) const;
+		bool isReported() const { return(pressureValue.has_value()); }
 
 		Pressure() = default;
 		static inline std::optional<Pressure> fromString(const std::string & s);
@@ -410,6 +413,7 @@ namespace metaf {
 		Unit unit() const { return(precipUnit); }
 		inline std::optional<float> toUnit(Unit unit) const;
 		Status status() const { return (precipStatus); }
+		bool isReported() const { return(status() == Status::REPORTED); }
 
 		Precipitation() = default;
 		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
@@ -460,6 +464,8 @@ namespace metaf {
 			return(sfCoefficient * coefficientDecimalPointShift);
 		}
 		inline BrakingAction brakingAction() const;
+		bool isReported() const { return(status() != Status::NOT_REPORTED); }
+		bool isUnreliable() const { return(status() == Status::UNRELIABLE); }
 
 		SurfaceFriction() = default;
 		static inline std::optional<SurfaceFriction> fromString(const std::string & s);
@@ -887,7 +893,11 @@ namespace metaf {
 			for (auto i = 0u; i < wSize; i++) result.push_back(w[i]);
 			return(result);
 		}
-		bool isValid() const { return(true); } //TODO
+		bool contains(Weather weather) const {
+			for (auto i = 0u; i < wSize; i++) { if (w[i] == weather) return(true); }
+			return(false);
+		}
+		inline bool isValid() const;
 
 		WeatherGroup() = default;
 		static inline std::optional<WeatherGroup> parse(
@@ -917,6 +927,9 @@ namespace metaf {
 	public:
 		Temperature airTemperature() const { return(t); }
 		Temperature dewPoint() const { return(dp); }
+		std::optional<float> relativeHumidity() const {
+			return(Temperature::relativeHumidity(airTemperature(), dewPoint()));
+		}
 		inline bool isValid() const;
 
 		TemperatureGroup() = default;
@@ -3514,6 +3527,11 @@ namespace metaf {
 		WeatherGroup result = notReported();
 		result.q = Qualifier::RECENT;
 		return(result);
+	}
+
+	bool WeatherGroup::isValid() const {
+		//TODO
+		return(true);		
 	}
 
 	///////////////////////////////////////////////////////////////////////////

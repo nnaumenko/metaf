@@ -416,3 +416,13 @@ TEST(Temperature, windChillNotDefined) {
 	EXPECT_FALSE(
 		metaf::Temperature::windChill(t9.value(), s4.value()).temperature().has_value());
 }
+
+TEST(Temperature, isReported) {
+	const auto t17 = metaf::Temperature::fromString("17");
+	ASSERT_TRUE(t17.has_value());
+	EXPECT_TRUE(t17->isReported());
+
+	const auto tnr = metaf::Temperature::fromString("//");
+	ASSERT_TRUE(tnr.has_value());
+	EXPECT_FALSE(tnr->isReported());
+}

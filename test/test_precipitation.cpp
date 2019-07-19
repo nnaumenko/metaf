@@ -299,3 +299,37 @@ TEST(Precipitation, toUnitInchesToMm) {
 	ASSERT_TRUE(p->toUnit(metaf::Precipitation::Unit::MM).has_value());
 	EXPECT_NEAR(p->toUnit(metaf::Precipitation::Unit::MM).value(), 25.4, margin);
 }
+
+TEST(Precipitation, isReported) {
+	const auto pRf0615 = metaf::Precipitation::fromRainfallString("061.5");
+	ASSERT_TRUE(pRf0615.has_value());
+	EXPECT_TRUE(pRf0615->isReported());
+
+	const auto pRf508 = metaf::Precipitation::fromRainfallString("50.8");
+	ASSERT_TRUE(pRf508.has_value());
+	EXPECT_TRUE(pRf508->isReported());
+
+	const auto pRfNr5 = metaf::Precipitation::fromRainfallString("///./");
+	ASSERT_TRUE(pRfNr5.has_value());
+	EXPECT_FALSE(pRfNr5->isReported());
+
+	const auto pRnNr4 = metaf::Precipitation::fromRainfallString("//./");
+	ASSERT_TRUE(pRnNr4.has_value());
+	EXPECT_FALSE(pRnNr4->isReported());
+
+	const auto pRd01 = metaf::Precipitation::fromRunwayDeposits("01");
+	ASSERT_TRUE(pRd01.has_value());
+	EXPECT_TRUE(pRd01->isReported());
+
+	const auto pRdNr = metaf::Precipitation::fromRunwayDeposits("//");
+	ASSERT_TRUE(pRdNr.has_value());
+	EXPECT_FALSE(pRdNr->isReported());
+
+	const auto pRmk010 = metaf::Precipitation::fromRemarkString("010", 0.1);
+	ASSERT_TRUE(pRmk010.has_value());
+	EXPECT_TRUE(pRmk010->isReported());
+
+	const auto pRmkNr = metaf::Precipitation::fromRemarkString("////", 0.01, true);
+	ASSERT_TRUE(pRmkNr.has_value());
+	EXPECT_FALSE(pRmkNr->isReported());
+}
