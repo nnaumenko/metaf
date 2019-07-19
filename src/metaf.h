@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		inline static const int major = 2;
 		inline static const int minor = 8;
-		inline static const int patch = 7;
+		inline static const int patch = 8;
 		inline static const char tag [] = "";
 	};
 
@@ -295,8 +295,8 @@ namespace metaf {
 
 		static const unsigned int heightFactor = 100; //height unit is 100s of feet
 
-		static const unsigned int cavokVisibilityMiles = 6;
-		static const unsigned int cavokVisibilityMeters = 10000;
+		static const inline unsigned int cavokVisibilityMiles = 6;
+		static const inline unsigned int cavokVisibilityMeters = 10000;
 
 		// Icing or turbulence layer depth is given in 1000s of feet
 		static const unsigned int layerDepthFactor = 1000;
