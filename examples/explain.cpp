@@ -429,10 +429,7 @@ std::string GroupVisitorExplain::visitTemperatureGroup(const metaf::TemperatureG
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Air temperature: " << explainTemperature(group.airTemperature()) << lineBreak;
 	result << "Dew point: " << explainTemperature(group.dewPoint()) << lineBreak;
-	if (const auto rh = metaf::Temperature::relativeHumidity(
-			group.airTemperature(), 
-			group.dewPoint()); 
-		rh.has_value()) {
+	if (const auto rh = group.relativeHumidity(); rh.has_value()) {
 			result << "Relative humidity: " << static_cast<int>(*rh) << " percent";
 			result << lineBreak; 
 	}

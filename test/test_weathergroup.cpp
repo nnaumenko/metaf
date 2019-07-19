@@ -785,3 +785,17 @@ TEST(WeatherGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSRARZ", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("+TSRARZ", metaf::ReportPart::METAR).has_value());
 }
+
+TEST(WeatherGroup, contains) {
+	const auto wgPlusTsRaGr = metaf::WeatherGroup::parse("+TSRAGR", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgPlusTsRaGr.has_value());
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::RAIN));
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::HAIL));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::SNOW));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::NOT_REPORTED));
+
+	const auto wgNr = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgNr.has_value());
+	EXPECT_FALSE(wgNr->contains(metaf::WeatherGroup::Weather::RAIN));
+	EXPECT_TRUE(wgNr->contains(metaf::WeatherGroup::Weather::NOT_REPORTED));
+}
