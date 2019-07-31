@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="Metaf library usage example: get and decode METAR/TAF report">
+	<title>Metaf example: get METARs and TAFs from nearest stations and produce a comprehensible summary</title>
+	<link rel="stylesheet" type="text/css" href="../style.css">
+	<style type="text/css">
+		.weatherdataitem {
+			border: 0.1em;
+			margin: 1em;
+			padding: 1em;
+			background-color: #557a95;
+			border-color: #ffffff;
+	}
+	</style>
+	<script>
+		//Get time zone offset (in minutes) based on time set on device and reference GMT time (e.g. server's responce) which is assumed to be correct
+		//Also assumed that the actual local time is set correctly (though time zone on device may be wrong)
+		function getActualTimeOffset(localTimeGMT, referenceTimeGMT) {
+			const localTimeWithTzOffset = new Date(
+				localTimeGMT.getTime() - localTimeGMT.getTimezoneOffset() * 60000);
+			return Math.round((referenceTimeGMT - localTimeWithTzOffset)/60000);
+		}
+
+		function distanceKm(lat1, lon1, lat2, lon2) {
+			//based on https://www.geodatasource.com/developers/javascript
+			//returns value in kilometers
+			if ((lat1 == lat2) && (lon1 == lon2)) {
+				return 0;
+			}
+			else {
+				var radlat1 = Math.PI * lat1/180;
+				var radlat2 = Math.PI * lat2/180;
+				var theta = lon1-lon2;
+				var radtheta = Math.PI * theta/180;
+				var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+				if (dist > 1) {
+					dist = 1;
+				}
+				const kmPerMile = 1.609344;
+				dist = Math.acos(dist);
+				dist = dist * 180/Math.PI;
+				dist = dist * 60 * 1.1515 * kmPerMile;
+				return dist;
+			}
+		}
+
+		function fetchAndParseXML(url) {
+			var actualOffsetFromGMT;
+			return fetch(url)
+				.catch(err => { 
+					console.log("Fetch from AWC failed: ", err, " (URL:", url, ")")
+				})
+				.then(response => {
+					actualOffsetFromGMT = getActualTimeOffset(
+						new Date(), 
+						new Date(response.headers.get("date")));
+					return response;
+				})
+				.then(response => response.text())
+				.then(responseText => [new window.DOMParser().parseFromString(responseText, "text/xml"), actualOffsetFromGMT])
+				.catch(err => {
+					console.log("XML processing failed: ", err, " (URL:", url, ")")
+				})			
+		}
+
+		function getStationFromNodeList(nodeList) {
+			var station_id, station_name;
+			nodeList.forEach(value => {
+				const valData = value.innerHTML;
+				switch(value.localName) {
+					case "station_id": station_id = valData; break;
+					case "site": station_name = valData; break;
+					default: break;	
+				}
+			});
+			return {id:station_id, name:station_name}
+		}
+
+		function getReportFromNodeList(nodeList) {
+			var station_id, station_lat, station_lon, station_report;
+			nodeList.forEach(value => {
+				const valData = value.innerHTML;
+				switch(value.localName) {
+					case "raw_text": station_report = valData; break;
+					case "station_id": station_id = valData; break;
+					case "latitude": station_lat = valData; break;
+					case "longitude": station_lon = valData; break;
+					default: break;				
+				}
+			});
+			return {id:station_id, lat:station_lat, lon:station_lon, report:station_report}
+		}
+
+		function nullIfNoValue(data, noValue) {
+			if (data == noValue) return(null);
+			return(data);
+		}
+
+		function adaptCurrentWeather(currentWeather, noValue) {
+			//Set values to null if they are not specified
+			currentWeather.windDirection = nullIfNoValue(currentWeather.windDirection, noValue);
+			currentWeather.windSpeed = nullIfNoValue(currentWeather.windSpeed, noValue);
+			currentWeather.gustSpeed = nullIfNoValue(currentWeather.gustSpeed, noValue);
+			currentWeather.visibility = nullIfNoValue(currentWeather.visibility, noValue);
+			currentWeather.airTemperature = nullIfNoValue(currentWeather.airTemperature, noValue);
+			currentWeather.perceivedTemperature = nullIfNoValue(currentWeather.perceivedTemperature, noValue);
+			currentWeather.airTemperatureHigh = nullIfNoValue(currentWeather.airTemperatureHigh, noValue);
+			currentWeather.airTemperatureLow = nullIfNoValue(currentWeather.airTemperatureLow, noValue);
+			currentWeather.relativeHumidity = nullIfNoValue(currentWeather.relativeHumidity, noValue);
+			currentWeather.atmosphericPressure = nullIfNoValue(currentWeather.atmosphericPressure, noValue);
+			//Convert vector<int> object to js array
+			var weatherArray = Array();
+			const weatherVector = currentWeather.weather;
+			for (var i = 0; i < weatherVector.size(); i++) {
+				weatherArray.push(weatherVector.get(i));
+			}
+			currentWeather.weather = weatherArray;
+			return(currentWeather);
+		}
+
+		function cloudToText (cloud) {
+			switch (cloud) {
+				case Module.Cloud.NOT_SPECIFIED.value: 	return "Cloud data not specified";
+				case Module.Cloud.CLEAR.value: 			return "Clear";
+				case Module.Cloud.MOSTLY_CLEAR.value: 	return "Mostly clear";
+				case Module.Cloud.MOSTLY_CLOUDY.value: 	return "Mostly cloudy";
+				case Module.Cloud.OVERCAST.value: 		return "Overcast";
+				default:								return "Cloud data unknown";
+			}
+		}
+
+		function weatherPhenomenaToText(phenomena) {
+			switch (phenomena) {
+				case Module.Weather.NOT_SPECIFIED.value:
+				return "Weather data not specified";
+
+				case Module.Weather.PRECIPITATION_IN_VICINITY.value:
+				return "Precipitation in vicinity";
+
+				case Module.Weather.THUNDERSTORM_IN_VICINITY.value:
+				return "Thunderstorm in vicinity";
+
+				case Module.Weather.FOG_IN_VICINITY.value:
+				return "Fog in vicinity";
+
+				case Module.Weather.VOLCANIC_ASH_IN_VICINITY.value:
+				return "Volcanic ash in vicinity";
+
+				case Module.Weather.DUST_WHIRLS_IN_VICINITY.value:
+				return "Sand or dust whirls in vicinity";
+
+				case Module.Weather.BLOWING_SNOW_IN_VICINITY.value:
+				return "Blowing snow in vicinity";
+
+				case Module.Weather.BLOWING_DUST_IN_VICINITY.value:
+				return "Blowing dust in vicinity";
+
+				case Module.Weather.BLOWING_SAND_IN_VICINITY.value:
+				return "Blowing sand in vicinity";
+
+				case Module.Weather.SANDSTORM_IN_VICINITY.value:
+				return "Sand storm in vicinity";
+
+				case Module.Weather.DUSTSTORM_IN_VICINITY.value:
+				return "Dust storm in vicinity";
+
+				case Module.Weather.DRIFTING_SAND.value:
+				return "Low drifting sand";
+
+				case Module.Weather.DRIFTING_DUST.value:
+				return "Low drifting dust";
+
+				case Module.Weather.DRIFTING_SNOW.value:
+				return "Low drifting snow";
+
+				case Module.Weather.BLOWING_SAND.value:
+				return "Blowing sand";
+
+				case Module.Weather.BLOWING_DUST.value:
+				return "Blowing dust";
+
+				case Module.Weather.BLOWING_SNOW.value:
+				return "Blowing snow";
+
+				case Module.Weather.BLOWING_SPRAY.value:
+				return "Blowing spray";
+
+				case Module.Weather.FOG.value:
+				return "Fog";
+
+				case Module.Weather.FOG_SHALLOW.value:
+				return "Ground fog";
+
+				case Module.Weather.FOG_PARTIAL.value:
+				return "Location partly covered by fog";
+
+				case Module.Weather.FOG_PATCHES.value:
+				return "Random patches of fog";
+
+				case Module.Weather.FOG_FREEZING.value:
+				return "Freezing fog";
+
+				case Module.Weather.ICE_CRYSTALS.value:
+				return "Airborne ice crystals (diamond dust)";
+
+				case Module.Weather.MIST.value:
+				return "Mist";
+
+				case Module.Weather.SMOKE.value:
+				return "Smoke";
+
+				case Module.Weather.VOLCANIC_ASH.value:
+				return "Volcanic ash";
+
+				case Module.Weather.WIDESPREAD_DUST.value:
+				return "Widespread dust";
+
+				case Module.Weather.SAND.value:
+				return "Airborne sand particles";
+
+				case Module.Weather.HAZE.value:
+				return "Haze";
+
+				case Module.Weather.DRIZZLE_LIGHT.value:
+				return "Light drizzle";
+
+				case Module.Weather.DRIZZLE_MODERATE.value:
+				return "Moderate drizzle";
+
+				case Module.Weather.DRIZZLE_HEAVY.value:
+				return "Heavy drizzle";
+
+				case Module.Weather.RAIN_LIGHT.value:
+				return "Light rain";
+
+				case Module.Weather.RAIN_MODERATE.value:
+				return "Moderate rain";
+
+				case Module.Weather.RAIN_HEAVY.value:
+				return "Heavy rain";
+
+				case Module.Weather.SNOW_LIGHT.value:
+				return "Light snow";
+
+				case Module.Weather.SNOW_MODERATE.value:
+				return "Moderate snow";
+
+				case Module.Weather.SNOW_HEAVY.value:
+				return "Heavy snow";
+
+				case Module.Weather.ICE_PELLETS_LIGHT.value:
+				return "Ice pellets (light intensity)";
+
+				case Module.Weather.ICE_PELLETS_MODERATE.value:
+				return "Ice pellets (moderate intensity)";
+
+				case Module.Weather.ICE_PELLETS_HEAVY.value:
+				return "Ice pellets (heavy intensity)";
+
+				case Module.Weather.SNOW_GRAINS_LIGHT.value:
+				return "Snow grains (light intensity)";
+
+				case Module.Weather.SNOW_GRAINS_MODERATE.value:
+				return "Snow grains (moderate intensity)";
+
+				case Module.Weather.SNOW_GRAINS_HEAVY.value:
+				return "Snow grains (heavy intensity)";
+
+				case Module.Weather.GRAUPEL.value:
+				return "Graupel";
+
+				case Module.Weather.HAIL.value:
+				return "Hail";
+
+				case Module.Weather.UNDETERMINED_LIGHT.value:
+				return "Undetermined precipitation (light)";
+
+				case Module.Weather.UNDETERMINED_MODERATE.value:
+				return "Undetermined precipitation (moderate)";
+
+				case Module.Weather.UNDETERMINED_HEAVY.value:
+				return "Undetermined precipitation (heavy)";
+
+				case Module.Weather.RAIN_SHOWERS_LIGHT.value:
+				return "Light showers";
+
+				case Module.Weather.RAIN_SHOWERS_MODERATE.value:
+				return "Moderate showers";
+
+				case Module.Weather.RAIN_SHOWERS_HEAVY.value:
+				return "Heavy showers";
+
+				case Module.Weather.SNOW_SHOWERS_LIGHT.value:
+				return "Light snow showers";
+
+				case Module.Weather.SNOW_SHOWERS_MODERATE.value:
+				return "Moderate snow showers";
+
+				case Module.Weather.SNOW_SHOWERS_HEAVY.value:
+				return "Heavy snow showers";
+
+				case Module.Weather.ICE_PELLETS_SHOWERS_LIGHT.value:
+				return "Light ice pellet showers";
+
+				case Module.Weather.ICE_PELLETS_SHOWERS_MODERATE.value:
+				return "Moderate ice pellet showers";
+
+				case Module.Weather.ICE_PELLETS_SHOWERS_HEAVY.value:
+				return "Heavy ice pellet showers";
+
+				case Module.Weather.DRIZZLE_FREEZING_LIGHT.value:
+				return "Light freezing drizzle";
+
+				case Module.Weather.DRIZZLE_FREEZING_MODERATE.value:
+				return "Moderate freezing drizzle";
+
+				case Module.Weather.DRIZZLE_FREEZING_HEAVY.value:
+				return "Heavy freezing drizzle";
+
+				case Module.Weather.RAIN_FREEZING_LIGHT.value:
+				return "Light freezing rain";
+
+				case Module.Weather.RAIN_FREEZING_MODERATE.value:
+				return "Moderate freezing rain";
+
+				case Module.Weather.RAIN_FREEZING_HEAVY.value:
+				return "Heavy freezing rain";
+
+				case Module.Weather.THUNDERSTORM.value:
+				return "Thunderstorm";
+
+				case Module.Weather.DUST_WHIRLS.value:
+				return "Sand or dust whirls";
+
+				case Module.Weather.SQUALLS.value:
+				return "Squalls";
+
+				case Module.Weather.FUNNEL_CLOUD.value:
+				return "Funnel cloud";
+
+				case Module.Weather.TORNADO.value:
+				return "Tornado or waterspout";
+
+				case Module.Weather.SANDSTORM.value:
+				return "Sand storm";
+
+				case Module.Weather.SANDSTORM_HEAVY.value:
+				return "Heavy sand storm";
+
+				case Module.Weather.DUSTSTORM.value:
+				return "Dust storm";
+
+				case Module.Weather.DUSTSTORM_HEAVY.value:
+				return "Heavy dust storm";
+
+				default:
+				return "Unknown weather phenomena";
+			}
+		}
+
+		function weatherToText (weather, eol) {
+			var result = "";
+			weather.forEach(value => {
+				result += weatherPhenomenaToText(value);
+				result += eol;
+			});
+			return result;
+		}
+
+		function currentWeatherToHTML(weather, imperialUnits, eol) {
+			var result = "";
+
+			const tempUnit = imperialUnits ? "&deg;F" : "&degC";
+			const pressureUnit = imperialUnits ? "&quot;Hg" : "hPa";
+			const speedUnit = imperialUnits ? "mph" : "km/h";
+			const visUnit = imperialUnits ? "miles" : "meters";
+			const dirUnit = "&deg;";			
+			//Weather
+			result += weatherToText(weather.weather, eol);
+			//Cloud data
+			result += cloudToText(weather.cloud);
+			if (weather.isStormClouds) result += " (storm clouds in the sky)";
+			result += eol;
+			//Temperature data
+			if (weather.airTemperature !== null) {
+				result += `Temperature ${weather.airTemperature}${tempUnit}`
+			} else {
+				result += `not specified`;
+			}
+			if (weather.airTemperatureHigh !== null) {
+				result += `, high ${weather.airTemperatureHigh}${tempUnit}`
+			}
+			if (weather.airTemperatureLow !== null) {
+				result += `, low ${weather.airTemperatureLow}${tempUnit}`
+			}
+			result += `${eol}`;
+			if (weather.perceivedTemperature !== null) {
+					result += `Feels like ${weather.airTemperature}${tempUnit}${eol}`;
+			}
+			//Wind data
+			if (weather.windDirection !== null || weather.windSpeed === null || weather.isWindVariable)
+			{
+				result += "Wind ";
+				if (weather.windDirection !== null) { 
+					result += `${weather.windDirection}${dirUnit}`;
+				} else {
+					result += `is variable`;
+				}
+				if (weather.windSpeed !== null) {
+					result += `, ${weather.windSpeed} ${speedUnit}`;
+				}
+				if (weather.gustSpeed !== null) {
+					result += ` with gusts up to ${weather.gustSpeed} ${speedUnit}`;
+				}
+				result += eol;
+			}
+			//Relative humidity, visibility and atmospheric pressure
+			if (weather.relativeHumidity !== null) {
+				result += `RH ${weather.relativeHumidity}%${eol}`;
+			}
+			if (weather.visibility !== null) {
+				result += `Visibility ${weather.visibility} ${visUnit}${eol}`;
+			}
+			if (weather.atmosphericPressure !== null) {
+				result += `Atmospheric pressure ${weather.atmosphericPressure} ${pressureUnit}${eol}`;
+			}
+			return(result);
+		}
+
+		function displayWeatherData(name, distKm, currWeather, imperialUnits) {
+			const eol = "<br>";
+			const begin = "<div class=\"weatherdataitem\">";
+			const end = "</div>";
+			var result = begin;
+			if (name !== null && name != "") {
+				result += name;
+			} else {
+				result += "STATION NAME UNKNOWN";
+			}
+			if (distKm !== null) {
+				const milesPerKm = 1.609344;
+				const distStr = imperialUnits ? 
+					`${Math.round(distKm/milesPerKm)} mile(s)` : 
+					`${Math.round(distKm)} km`;
+				result = result + " (" + distStr + " away)";
+			}
+			result += eol;
+			result += currentWeatherToHTML(currWeather, imperialUnits, eol);
+			result += end;
+			document.getElementById('weatherdataid').innerHTML += result;
+		}
+
+		function clearDisplayedWeatherData() {
+			document.getElementById('weatherdataid').innerHTML = "";	
+		}
+
+		function displayWeatherDataMessage(message) {
+			document.getElementById('weatherdataid').innerHTML = message;	
+		}
+
+		function findGetParameter(parameterName) {
+			//from https://stackoverflow.com/questions/5448545/how-to-retrieve-get-parameters-from-javascript
+			var result = null,
+				tmp = [];
+			var items = location.search.substr(1).split("&");
+			for (var index = 0; index < items.length; index++) {
+				tmp = items[index].split("=");
+				if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+			}
+			return result;
+		}
+
+		function AWCdataToMap(metarData, tafData, latitude, longitude) {
+			var weatherData = new Map();
+			//Add METARs to weather data
+			for (i = 0; i<metarData.length; i++) {
+				const metar = getReportFromNodeList(metarData[i].childNodes);
+				const dist = distanceKm(metar.lat, metar.lon, latitude, longitude);
+				weatherData.set(metar.id, 
+					{	name:"", 
+						lat:metar.lat,
+						lon:metar.lon, 
+						distKm:dist, 
+						metar:metar.report, 
+						taf:""
+					});
+			}
+			//Add TAFs to weather data
+			for (i = 0; i<tafData.length; i++) {
+				const taf = getReportFromNodeList(tafData[i].childNodes);
+				if (weatherData.has(taf.id)) {
+					var weatherDataElement = weatherData.get(taf.id);
+					weatherDataElement.taf = taf.report;
+					weatherData.set(taf.id, weatherDataElement);
+				} else {
+					const dist = distanceKm(taf.lat, taf.lon, latitude, longitude);
+					weatherData.set(taf.id,
+						{	name:"",
+							lat:taf.lat,
+							lon:taf.lon, 
+							distKm:dist, 
+							metar:"", 
+							taf:taf.report
+						});
+				}
+			}
+			return(weatherData);
+		}
+
+		function addStationNames(weatherData, stationData) {
+			for (i = 0; i<stationData.length; i++) {
+				const station = getStationFromNodeList(stationData[i].childNodes);
+				if (weatherData.has(station.id)) {
+					var weatherDataElement = weatherData.get(station.id);
+					weatherDataElement.name = station.name;
+					weatherData.set(station.id, weatherDataElement);
+				}
+			}
+			return(weatherData);
+		}
+
+		function getAWCweather(latitude, longitude, distance) {
+			const metarUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true&fields=raw_text,station_id,latitude,longitude`;			
+			const tafUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true`;
+			const stationUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=stations&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&fields=station_id,site`;
+			console.log("Fetching METAR & TAF data from AWC");
+			return Promise.all([fetchAndParseXML(metarUrl), 
+				fetchAndParseXML(tafUrl),
+				fetchAndParseXML(stationUrl)])
+				.catch(err => { 
+					console.log("Fetching data from AWC failes: ", err);
+					displayWeatherDataMessage("Unable to retreive weather data");
+				})
+				.then(metarTafData => {
+					const timeOffset = metarTafData[0][1];
+					const metarData = metarTafData[0][0].getElementsByTagName("METAR");
+					const tafData = metarTafData[1][0].getElementsByTagName("TAF");
+					const stationData = metarTafData[2][0].getElementsByTagName("Station");
+
+					console.log("Processing received AWC data");
+					var weatherData = AWCdataToMap(metarData, tafData, latitude, longitude);
+					weatherData = addStationNames(weatherData, stationData);
+					console.log("Actual time zone offset: ", timeOffset);
+					console.log("Weather data: ", weatherData);
+					console.log("Processing weather data");
+					const imperialUnits = (findGetParameter("unit") == "imperial"); 
+					clearDisplayedWeatherData();
+					weatherData.forEach( (value, key, map) => {
+						var currWeather = Module.getCurrentWeather(value.metar, value.taf, imperialUnits);
+						currWeather = adaptCurrentWeather(currWeather, Module.valueNotSpecified);
+						displayWeatherData(value.name, value.distKm, currWeather, imperialUnits);
+					});
+				})
+				.catch(err => {
+					console.log("Processing weather data failed: ", err);
+				})
+		}
+
+		function getPositionSuccess(pos) {
+			const latitude = Math.round(pos.coords.latitude * 100) / 100;
+			const longitude = Math.round(pos.coords.longitude * 100) / 100;
+			console.log("Geolocation latitude: ", latitude);
+			console.log("Geolocation longitude: ", longitude);
+			var distance = Number(findGetParameter("distance"));
+			if (isNaN(distance) || !distance) distance = 30;
+			console.log("Distance radius: ", distance);
+			getAWCweather(latitude, longitude, distance);
+		}
+
+		function getPositionFailure(err) {
+			console.log("Geolocation failed: ", err);
+			displayWeatherDataMessage("Unable to acquire position");
+		}
+
+		function getWeatherSummaryForPosition() {
+			const options = {
+			  enableHighAccuracy: true,
+			  timeout: 5000,
+			  maximumAge: 0
+			};
+			navigator.geolocation.getCurrentPosition(
+				getPositionSuccess, 
+				getPositionFailure, 
+				options);
+		}
+
+	var Module = {
+		onRuntimeInitialized: function() {
+		getWeatherSummaryForPosition();
+	  }
+	};
+
+
+	</script>
+
+	{{{ SCRIPT }}}
+
+</head>
+<body>
+  <ul class="navbar">
+	<li class="navitem"><a href="../index.html">About</a></li>
+	<li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
+	<li class="navitem navactive"><a href="../examples.html">Examples</a></li>
+	<li class="navitem"><a href="../docs/index.html" target="_blank">Documentation</a></li>
+  </ul>
+  <h1>METAR &amp; TAF reports explained</h1>
+  <div class="weatherdata" id="weatherdataid">Getting and processing data...</div>
+</body>
+</html>
+

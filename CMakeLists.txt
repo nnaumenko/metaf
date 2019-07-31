@@ -45,7 +45,6 @@ set_target_properties(example_json PROPERTIES
 )
 
 
-
 # Example: Explain METAR/TAF in English language
 
 add_executable(example_explain examples/explain.cpp)
@@ -54,6 +53,17 @@ set_target_properties(example_explain PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
 	OUTPUT_NAME "explain.html"
 	LINK_FLAGS "--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/explain_shell.html -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\""
+)
+
+
+# Example: Weather summary
+
+add_executable(example_summary examples/summary.cpp)
+
+set_target_properties(example_summary PROPERTIES 
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
+	OUTPUT_NAME "summary.html"
+	LINK_FLAGS "--emrun --bind --shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/summary_shell.html"
 )
 
 
