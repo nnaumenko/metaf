@@ -16,9 +16,12 @@ Metaf can do the following:
  * Check the validity of the report syntax, detect malformed reports and report errors.
  * Convert METAR or TAF report into the vector of classes which represent individual bits of info encoded in the weather report or forecast.
 
-[Example: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+[Live demo: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
 
-[Example: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+[Live demo: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+
+[Live demo: Short weather summary for aerodromes near your location based on METAR/TAF weather data](https://nnaumenko.gitlab.io/metaf/examples/summary.html).
+
 
 ## Documentation
 
