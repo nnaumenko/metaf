@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta name="description" content="Metaf library usage example: get and decode METAR/TAF report">
+	<meta name="description" content="Metaf library usage example: short weather summary for aerodromes near your location">
 	<title>Short weather summary for aerodromes near your location based on METAR/TAF weather data</title>
 	<link rel="stylesheet" type="text/css" href="../style.css">
 	<link rel="stylesheet" type="text/css" href="weather_widget/weather_widget.css">
@@ -23,12 +23,50 @@
 		.widget {
 			background-color: #445a69;
 			float:left;
-			margin: 0.5em;		
+			margin: 0.5em;	
 			padding: 0.5em;
 		}
 
 		.weathertext {
 			margin: 0.5em;		
+		}
+
+		.options {
+			list-style-type: none;
+			padding: 1em;
+			margin: 1em;
+			overflow: hidden;
+			background-color: #557a95;
+		}
+
+		.options_caption {
+			background-color: #445a69;
+			border:none;
+			display:block;
+		}
+
+		.option {
+			float: left;
+		}
+
+		.option a {
+			display: block;
+			color: #ffffff;
+			text-align: center;
+			margin:0.75em;
+			text-decoration: none;
+		}
+
+		.option a:focus {
+		    outline: none !important;
+		}
+
+		.option:hover:not(.option_on) {
+			background-color: #b1a296;
+		}
+
+		.option_on {
+			background-color: #445a69;
 		}
 
 	}
@@ -665,7 +703,7 @@
 			const rhStyle = "ww_rh";
 			const windStyle = imperialUnits ? "ww_wind_mph" : "ww_wind_kmh";
 			const gustStyle = imperialUnits ? "ww_gust_mph" : "ww_gust_kmh";
-			const visStyle = imperialUnits ? "ww_vis_sm" : "ww_vis_km";
+			const visStyle = imperialUnits ? "ww_vis_mile" : "ww_vis_km";
 			const windIconStyle = currentWeather.isWindVariable ? 
 				`` : ` style="transform: rotate(${currentWeather.windDirection}deg) scaleY(-1);"`;
 			const windIconClass = 
@@ -782,6 +820,41 @@
 			return result;
 		}
 
+		function displayUnitOptions(imperialUnits, distance) {
+			const metricUnitOn = imperialUnits ? "" : " option_on";
+			const imperialUnitOn = imperialUnits ? " option_on" : "";
+			var options = `
+				<ul class="options">
+				<div class="options_caption">Display units</div>
+				<li class="option${metricUnitOn}"><a href="?distance=${distance}">Metric<br>(&deg;C, km, km/h, hPa)</a></li>
+				<li class="option${imperialUnitOn}"><a href="?distance=${distance}&unit=imperial">Imperial<br>(&deg;F, sm, mph, &quot;Hg)</a>
+				</ul>`;
+			document.getElementById('options_units').innerHTML = options;	
+		}
+
+		function displayDistanceOptions(imperialUnits, distance) {
+			const dist3smOn = (distance == 3) ? " option_on" : "";
+			const dist10smOn = (distance == 10) ? " option_on" : "";
+			const dist30smOn = (distance == 30) ? " option_on" : "";
+			const dist75smOn = (distance == 75) ? " option_on" : "";
+			const dist140smOn = (distance == 140) ? " option_on" : "";
+			const dist320smOn = (distance == 320) ? " option_on" : "";
+			const dist500smOn = (distance == 500) ? " option_on" : "";
+			const unitParam = imperialUnits ? "&unit=imperial" : "";
+			var options = `
+				<ul class="options">
+				<div class="options_caption">Display aerodromes within</div>
+				<li class="option${dist3smOn}"><a href="?distance=3${unitParam}">3 miles / 5 km</a></li>
+				<li class="option${dist10smOn}"><a href="?distance=10${unitParam}">10 miles / 16 km</a></li>
+				<li class="option${dist30smOn}"><a href="?distance=30${unitParam}">30 miles / 48 km</a></li>
+				<li class="option${dist75smOn}"><a href="?distance=75${unitParam}">75 miles / 120 km</a></li>
+				<li class="option${dist140smOn}"><a href="?distance=140${unitParam}">140 miles / 225 km</a></li>
+				<li class="option${dist320smOn}"><a href="?distance=320${unitParam}">320 miles / 515 km</a></li>
+				<li class="option${dist500smOn}"><a href="?distance=500${unitParam}">500 miles / 804 km</a></li>
+				</ul>`;
+			document.getElementById('options_distance').innerHTML = options;
+		}
+
 		function AWCdataToMap(metarData, tafData, latitude, longitude) {
 			var weatherData = new Map();
 			//Add METARs to weather data
@@ -888,18 +961,27 @@
 		function getWeatherSummaryForPosition() {
 			const options = {
 			  enableHighAccuracy: true,
-			  timeout: 5000,
-			  maximumAge: 0
+			  timeout: 10000,
+			  maximumAge: 60000
 			};
 			navigator.geolocation.getCurrentPosition(
 				getPositionSuccess, 
-				getPositionFailure, 
+				getPositionFailure,
 				options);
+		}
+
+		function updateOptions(){
+			const paramUnit = (findGetParameter("unit") == "imperial");
+			var paramDistance = Number(findGetParameter("distance"));
+			if (!paramDistance || isNaN(paramDistance)) paramDistance = 30;
+			displayUnitOptions(paramUnit, paramDistance);
+			displayDistanceOptions(paramUnit, paramDistance);
 		}
 
 	var Module = {
 		onRuntimeInitialized: function() {
-		getWeatherSummaryForPosition();
+			updateOptions();
+			getWeatherSummaryForPosition();
 	  }
 	};
 
@@ -910,19 +992,27 @@
 
 </head>
 <body>
-  <ul class="navbar">
-	<li class="navitem"><a href="../index.html">About</a></li>
-	<li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
-	<li class="navitem navactive"><a href="../examples.html">Examples</a></li>
-	<li class="navitem"><a href="../docs/index.html" target="_blank">Documentation</a></li>
-  </ul>
-  <h1>Short weather summary for aerodromes near your location based on METAR/TAF weather data</h1>
-  <div class="weatherdata" id="weatherdataid">Getting and processing data...</div>
-  <div style="font-size: smaller">
-  The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular' icon</a>&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>.
-  </div>
-  <br>
-  <div style="font-size: smaller">The METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>.</div>
-  </body>
+ 
+	<ul class="navbar">
+		<li class="navitem"><a href="../index.html">About</a></li>
+		<li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
+		<li class="navitem navactive"><a href="../examples.html">Examples</a></li>
+		<li class="navitem"><a href="../docs/index.html" target="_blank">Documentation</a></li>
+	</ul>
+
+	<h1>Short weather summary for aerodromes near your location based on METAR/TAF weather data</h1>
+
+	<div id="options_units"></div>
+	<div id="options_distance"></div>
+
+	<div class="weatherdata" id="weatherdataid">Getting and processing data...</div>
+
+	<br>
+	<div style="font-size: smaller">
+	The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular' icon</a>&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>.
+	</div>
+	<br>
+	<div style="font-size: smaller">The METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>.</div>
+</body>
 </html>
 

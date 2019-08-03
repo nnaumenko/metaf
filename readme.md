@@ -107,7 +107,7 @@ This project uses [Emscripten](https://emscripten.org/) to compile examples into
 
 Unit tests included with the project use [Google Test](https://github.com/abseil/googletest) framework.
 
-[Gitlab CI/CD] is used for deployment of the [project website](https://nnaumenko.gitlab.io/metaf/).
+[Gitlab CI/CD](https://docs.gitlab.com/ee/ci/) is used for deployment of the [project website](https://nnaumenko.gitlab.io/metaf/).
 
 METAR, TAF, and weather station data used in [weather summary example](https://nnaumenko.gitlab.io/metaf/examples/summary.html) are from [Aviation Weather Center Text Data Server](https://www.aviationweather.gov/dataserver). 
 
