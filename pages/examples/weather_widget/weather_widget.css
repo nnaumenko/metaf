@@ -1,0 +1,223 @@
+@font-face {
+	font-family: 'weathericons';
+	src:  url('weathericons-regular-webfont.woff2') format('woff2'),
+	url('weathericons-regular-webfont.wofff') format('woff');
+}
+@font-face {
+	font-family: 'source_sans_pro';
+	src:  url('SourceSansPro-Regular.woff2') format('woff2'),
+	url('SourceSansPro-Regular.woff') format('woff');
+}
+
+.weather_widget {
+	float: left;
+	display: grid;
+	text-align: left;
+	vertical-align: middle;
+	grid-template-columns: auto auto auto auto;
+	grid-template-rows: auto auto auto auto;
+	grid-gap: 0em 0em;
+	grid-template-areas: 
+		"weather_icon weather_icon temp_icon temp_actual "
+		"weather_icon weather_icon temp_icon temp_feels"
+		"winddir_icon wind wind wind"
+		"winddir_icon gust gust gust"
+		"other other other other";
+}
+
+.ww_weather, .ww_temp_icon, .ww_wind_dir_icon, .ww_wind_vrb_icon {
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+}
+
+.ww_weather {
+	grid-area: weather_icon;
+	font-size: 2.2em;
+	margin-left: 0.05em;
+	margin-right: 0.15em;
+	margin-top: -0.3em;
+}
+
+.ww_temp_icon {
+	grid-area: temp_icon;
+	font-size: 2.2em; 
+	margin-left: -0.1em;
+	margin-right: -0.1em;
+	margin-top: -0.1em;
+	margin-bottom: -0.1em;
+}
+
+.ww_wind_dir_icon, .ww_wind_vrb_icon {
+	transform-origin: 0.38em 0.73em;
+	grid-area: winddir_icon;
+	font-size: 3em;
+	margin-right: 0.2em;
+	margin-top: -0.25em;
+	margin-bottom: -0.25em;
+}
+
+.ww_wind_vrb_icon {
+  animation-name: spin;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; 
+}
+
+@keyframes spin {
+	from {
+		transform:rotate(0deg);
+	}
+	to {
+		transform:rotate(360deg);
+	}
+}
+
+.ww_temp_c, .ww_temp_f {
+	grid-area: temp_actual;
+}
+
+.ww_temp_feels_c, .ww_temp_feels_f {
+	grid-area: temp_feels;
+}
+
+.ww_wind_kmh, .ww_wind_mph {
+	grid-area: wind;
+}
+
+.ww_gust_kmh, .ww_gust_mph {
+	grid-area: gust;
+}
+
+.ww_other {
+	grid-area: other;
+	line-height: 1em;
+}
+
+.ww_temp_c, .ww_temp_f, .ww_temp_feels_c, .ww_temp_feels_f, 
+.ww_wind_kmh, .ww_wind_mph, .ww_gust_kmh, .ww_gust_mph {
+	font-family: 'source_sans_pro';
+	font-size: 1.25em;
+	margin-top: -0.25em;
+	margin-bottom: -0.55em;
+}
+
+.ww_gust_kmh:before, .ww_gust_mph:before {
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 1.25em;
+	vertical-align: middle;		
+	content: "\f050";
+}
+
+.ww_wind_kmh:after, .ww_gust_kmh:after {
+	content: "km/h";
+}
+
+.ww_wind_mph:after, .ww_gust_mph:after {
+	content: "mph";
+}
+
+.ww_temp_c:after {
+	content: "\00b0 C";
+}
+
+.ww_temp_c:after {
+	content: "\00b0 F";
+}
+
+.ww_temp_feels_c:before, .ww_temp_feels_f:before {
+	content: "(";
+}
+
+.ww_temp_feels_c:after {
+	content: "\00b0 C)";
+}
+
+.ww_temp_feels_f:after {
+	content: "\00b0 F)";
+}
+
+.ww_temp_high_c, .ww_temp_low_c, .ww_rh, .ww_pres_hpa, .ww_vis_km,
+.ww_temp_high_f, .ww_temp_low_f, .ww_rh, .ww_pres_inhg, .ww_vis_mile {
+	font-family: 'source_sans_pro';
+	font-size: 1em;
+	margin-right: 0.5em;		
+	line-height: 1em;
+}
+
+.ww_temp_low_c:before, .ww_temp_low_f:before {
+	content: "\f044";
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 1.5em;
+	vertical-align: middle;		
+}
+
+.ww_temp_high_c:before, .ww_temp_high_f:before {
+	content: "\f058";
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 1.5em;
+	vertical-align: middle;		
+}
+
+.ww_temp_high_c:after, .ww_temp_low_c:after, .ww_temp_c:after {
+	content: "\00b0 C";
+}
+
+.ww_temp_high_f:after, .ww_temp_low_f:after, .ww_temp_f:after {
+	content: "\00b0 F";
+}
+
+.ww_rh:before {
+	content: "\f07a";
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 0.9em;
+	vertical-align: middle;
+}
+
+.ww_rh:after {
+	content: "%";
+}
+
+.ww_pres_hpa:before, .ww_pres_inhg:before {
+	content: "\f079";
+	font-family: 'weathericons';
+	font-weight: normal;
+	font-style: normal;
+	font-size: 1em;
+	vertical-align: middle;
+}
+
+.ww_pres_hpa:after {
+	content: " hPa";
+}
+
+.ww_pres_inhg:after {
+	content: "\" Hg";
+}
+
+.ww_vis_km:before, .ww_vis_mile:before {
+	background-image: url("eye-regular-wh.svg");
+	background-size: 1.25em 1.1em;
+	display: inline-block;
+	width: 1.25em; 
+	height: 1.1em;
+	content:"";
+	background-position: 0em 0.1em;
+	margin-right:0.1em; 
+}
+
+.ww_vis_km:after {
+	content: " km";
+}
+
+.ww_vis_mile:after {
+	content: " sm";
+}

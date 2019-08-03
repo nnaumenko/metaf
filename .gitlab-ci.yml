@@ -51,7 +51,7 @@ pages:
   script:
     - mkdir public
     - cp -r ci-build/* public
-    - cp pages/* public
+    - cp -R pages/* public
   dependencies:
     - build
     - tests

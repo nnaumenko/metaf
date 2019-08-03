@@ -70,7 +70,7 @@ set_target_properties(example_summary PROPERTIES
 
 # All examples
 
-add_custom_target(examples DEPENDS example_json example_explain)
+add_custom_target(examples DEPENDS example_json example_explain example_summary)
 
 
 

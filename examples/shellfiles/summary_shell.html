@@ -5,13 +5,32 @@
 	<meta name="description" content="Metaf library usage example: get and decode METAR/TAF report">
 	<title>Short weather summary for aerodromes near your location based on METAR/TAF weather data</title>
 	<link rel="stylesheet" type="text/css" href="../style.css">
+	<link rel="stylesheet" type="text/css" href="weather_widget/weather_widget.css">
 	<style type="text/css">
 		.weatherdataitem {
-			border: 0.1em;
-			margin: 1em;
+			margin: 1em;		
 			padding: 1em;
 			background-color: #557a95;
 			border-color: #ffffff;
+			overflow: hidden;
+		}
+
+		.weatherstation {
+			background-color: #445a69;
+			border:none;
+		}
+
+		.widget {
+			background-color: #445a69;
+			float:left;
+			margin: 0.5em;		
+			padding: 0.5em;
+		}
+
+		.weathertext {
+			margin: 0.5em;		
+		}
+
 	}
 	</style>
 	<script>
@@ -384,8 +403,9 @@
 			if (weather.isStormClouds) result += " (storm clouds in the sky)";
 			result += eol;
 			//Temperature data
+			result += `Temperature `;
 			if (weather.airTemperature !== null) {
-				result += `Temperature ${weather.airTemperature}${tempUnit}`
+				result += `${weather.airTemperature}${tempUnit}`
 			} else {
 				result += `not specified`;
 			}
@@ -397,7 +417,7 @@
 			}
 			result += `${eol}`;
 			if (weather.perceivedTemperature !== null) {
-					result += `Feels like ${weather.airTemperature}${tempUnit}${eol}`;
+					result += `Feels like ${weather.perceivedTemperature}${tempUnit}${eol}`;
 			}
 			//Wind data
 			if (weather.windDirection !== null || weather.windSpeed === null || weather.isWindVariable)
@@ -429,11 +449,287 @@
 			return(result);
 		}
 
+		function isHot (actualTemp, feelsTemp, imperialUnits) {
+			const hotTemp = imperialUnits ? 86 : 30; // 86F or 30C
+			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
+			if (temp === null) return false;
+			return (temp >= hotTemp);	
+		}
+
+		function isCold (actualTemp, feelsTemp, imperialUnits) {
+			const coldTemp = imperialUnits ? 5 : -15; // 5F or -15C
+			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
+			if (temp === null) return false;
+			return (temp <= coldTemp);
+		}
+
+		function isWindy (windSpeed, imperialUnits) {
+			if (windSpeed == null) return false;
+			const windySpeedThreshold = imperialUnits ? 24.85 : 40; //40 km/h or 24.85 mph
+			return (windSpeed >= windySpeedThreshold);
+		}
+
+		function makeWeatherIcon(currentWeather, imperialUnits) {
+			const isConsiderablyCloudy = (
+				currentWeather.cloud === Module.Cloud.MOSTLY_CLOUDY.value || 
+				currentWeather.cloud === Module.Cloud.OVERCAST.value);
+			const isFog = (
+				currentWeather.weather.includes(Module.Weather.FOG.value) ||
+				currentWeather.weather.includes(Module.Weather.FOG_SHALLOW.value) ||
+				currentWeather.weather.includes(Module.Weather.FOG_PARTIAL.value) ||
+				currentWeather.weather.includes(Module.Weather.FOG_PATCHES.value) ||
+				currentWeather.weather.includes(Module.Weather.FOG_FREEZING.value) ||
+				currentWeather.weather.includes(Module.Weather.FOG_IN_VICINITY.value));
+			const isSnow = (
+				currentWeather.weather.includes(Module.Weather.SNOW_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.SNOW_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.SNOW_HEAVY.value) ||
+				currentWeather.weather.includes(Module.Weather.SNOW_SHOWERS_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.SNOW_SHOWERS_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.SNOW_SHOWERS_HEAVY.value));
+			const isRainLight = (
+				currentWeather.weather.includes(Module.Weather.RAIN_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_SHOWERS_LIGHT.value));
+			const isRainModerateToHeavy = (
+				currentWeather.weather.includes(Module.Weather.RAIN_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_HEAVY.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_SHOWERS_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_SHOWERS_HEAVY.value));
+			const isRain = isRainLight || isRainModerateToHeavy;
+			const isWindyGustsSqualls = (
+				isWindy(currentWeather.windSpeed, imperialUnits) || 
+				isWindy(currentWeather.gustSpeed, imperialUnits) ||
+				currentWeather.weather.includes(Module.Weather.SQUALLS.value));
+
+			// Data not available
+			var result = "&#xf07b;";
+			// Clear or mostly clear
+			if (currentWeather.cloud === Module.Cloud.CLEAR.value ||
+				currentWeather.cloud === Module.Cloud.MOSTLY_CLEAR.value) 
+			{
+				result = "&#x0020;";
+			}
+			// Mostly cloudy or storm clouds
+			if (currentWeather.cloud === Module.Cloud.MOSTLY_CLOUDY.value ||
+				currentWeather.isStormClouds)
+			{
+				result = "&#xf041;";
+			}
+			// Overcast
+			if (currentWeather.cloud === Module.Cloud.OVERCAST.value) result = "&#xf013;";
+			// Hot / Cold
+			if (isHot(currentWeather.airTemperature, currentWeather.perceivedTemperature, imperialUnits)) result = "&#xf072;";
+			if (isCold(currentWeather.airTemperature, currentWeather.perceivedTemperature, imperialUnits)) result = "&#xf076;";
+			// Windy / gusts / squalls (distinct icon when considerably cloudy)
+			if (isWindyGustsSqualls)
+			{
+				result = isConsiderablyCloudy ? "&#xf011;" : "&#xf050;";
+			}
+			// Mist / haze (distinct icon when considerably cloudy)
+			if (currentWeather.weather.includes(Module.Weather.MIST.value) ||
+				currentWeather.weather.includes(Module.Weather.HAZE.value))
+			{
+				result = isConsiderablyCloudy ? "&#xf012;" : "&#xf021;";
+			}
+			// Fog
+			if (isFog) result = "&#xf014;";
+			// Smoke / smog
+			if (currentWeather.weather.includes(Module.Weather.SMOKE.value)) {
+				result = "&#xf062;";
+				if (currentWeather.weather.includes(Module.Weather.MIST.value) || isFog) {
+					result = "&#xf074;";
+				}
+			}
+			// Sand / widespread dust / ice crystals
+			if (currentWeather.weather.includes(Module.Weather.SAND.value) ||
+				currentWeather.weather.includes(Module.Weather.WIDESPREAD_DUST.value) ||
+				currentWeather.weather.includes(Module.Weather.ICE_CRYSTALS.value))
+			{
+				result = "&#xf063;";
+			}
+			// Precipitation in vicinity
+			if (currentWeather.weather.includes(Module.Weather.PRECIPITATION_IN_VICINITY.value))
+			{
+				result = "&#xf084;";
+			}
+			//Drifting / blowing sand or dust, or blowing snow in vicinity
+			if (currentWeather.weather.includes(Module.Weather.DRIFTING_DUST.value) ||
+				currentWeather.weather.includes(Module.Weather.DRIFTING_SAND.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_SAND.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_DUST.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_SPRAY.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_DUST_IN_VICINITY.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_SAND_IN_VICINITY.value) ||
+				currentWeather.weather.includes(Module.Weather.BLOWING_SNOW_IN_VICINITY.value))
+			{
+				result = "&#xf082;";
+			}
+			// Dust or sand whirls
+			if (currentWeather.weather.includes(Module.Weather.DUST_WHIRLS_IN_VICINITY.value) ||
+				currentWeather.weather.includes(Module.Weather.DUST_WHIRLS.value))
+			{
+				result = "&#xf056;";
+			}
+			// Drizzle
+			if (currentWeather.weather.includes(Module.Weather.DRIZZLE_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.DRIZZLE_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.DRIZZLE_HEAVY.value))
+			{
+				result = "&#xf063;";	
+			}
+			// Light rain or showers
+			if (isRainLight) result = "&#xf01a;";	
+			// Moderate to heavy rain or showers
+			if (isRainModerateToHeavy) result = "&#xf019;";
+			// Blowing snow
+			if (currentWeather.weather.includes(Module.Weather.BLOWING_SNOW.value))
+			{
+				result = "&#xf082;";
+			}
+			// Snow or snow showers
+			if (isSnow) result = "&#xf01b;";
+			// Windy with rain
+			if (isRain && isWindyGustsSqualls) result = "&#xf018;";
+			// Light rain and snow mix
+			if (isRainLight && isSnow) result = "&#xf017;";
+			// Moderate to heavy rain and snow mix
+			if (isRainModerateToHeavy && isSnow) result = "&#xf015;";
+			// Windy with snow or blowing snow with falling snow
+			if (isSnow && 
+					(isWindyGustsSqualls || 
+					currentWeather.weather.includes(Module.Weather.BLOWING_SNOW.value))
+				)
+			{
+				result = "&#xf064;";
+			}
+			// Sandstorm or duststorm
+			if (currentWeather.weather.includes(Module.Weather.SANDSTORM.value) ||
+				currentWeather.weather.includes(Module.Weather.SANDSTORM_HEAVY.value) ||
+				currentWeather.weather.includes(Module.Weather.SANDSTORM_IN_VICINITY.value) ||
+				currentWeather.weather.includes(Module.Weather.DUSTSTORM.value) ||
+				currentWeather.weather.includes(Module.Weather.DUSTSTORM_HEAVY.value) ||
+				currentWeather.weather.includes(Module.Weather.DUSTSTORM_IN_VICINITY.value))
+			{
+				result = "&#xf082;";
+			}
+			// Hail or graupel
+			if (currentWeather.weather.includes(Module.Weather.HAIL.value) ||
+				currentWeather.weather.includes(Module.Weather.GRAUPEL.value))
+			{
+				result = "&#xf0b5;";
+			}
+			// Thunderstorm in vicinity
+			if (currentWeather.weather.includes(Module.Weather.THUNDERSTORM_IN_VICINITY.value)) 
+			{
+				result = "&#xf016;";
+			}
+			// Thunderstorm
+			if (currentWeather.weather.includes(Module.Weather.THUNDERSTORM.value)) 
+			{
+				result = "&#xf016;";
+				if (isRainLight) result = "&#xf01d;";
+				if (isRainModerateToHeavy) result = "&#xf01e;";
+			}
+			// Freezing precipitation
+			if (currentWeather.weather.includes(Module.Weather.DRIZZLE_FREEZING_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.DRIZZLE_FREEZING_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.DRIZZLE_FREEZING_HEAVY.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_FREEZING_LIGHT.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_FREEZING_MODERATE.value) ||
+				currentWeather.weather.includes(Module.Weather.RAIN_FREEZING_HEAVY.value))
+			{
+				result = "&#x0021;";
+			}
+			// Volcanic ash (or in vicnity)
+			if (currentWeather.weather.includes(Module.Weather.VOLCANIC_ASH.value) ||
+				currentWeather.weather.includes(Module.Weather.VOLCANIC_ASH_IN_VICINITY.value))
+			{
+				result = "&#xf0c8;";
+			}
+			// Funnel cloud, tornado or waterspout
+			if (currentWeather.weather.includes(Module.Weather.FUNNEL_CLOUD.value) ||
+				currentWeather.weather.includes(Module.Weather.TORNADO.value))
+			{
+				result = "&#xf056;";
+			}
+			// Finally
+			return result;
+		}
+
+		function makeWeatherWidget(currentWeather, imperialUnits) {
+			const tempStyle = imperialUnits ? "ww_temp_f" : "ww_temp_c";
+			const tempFeelsStyle = imperialUnits ? "ww_temp_feels_f" : "ww_temp_feels_c";
+			const tempHighStyle = imperialUnits ? "ww_temp_high_f" : "ww_temp_high_c";
+			const tempLowStyle = imperialUnits ? "ww_temp_low_f" : "ww_temp_low_c";
+			const pressureStyle = imperialUnits ? "ww_pres_inhg" : "ww_pres_hpa";
+			const rhStyle = "ww_rh";
+			const windStyle = imperialUnits ? "ww_wind_mph" : "ww_wind_kmh";
+			const gustStyle = imperialUnits ? "ww_gust_mph" : "ww_gust_kmh";
+			const visStyle = imperialUnits ? "ww_vis_sm" : "ww_vis_km";
+			const windIconStyle = currentWeather.isWindVariable ? 
+				`` : ` style="transform: rotate(${currentWeather.windDirection}deg) scaleY(-1);"`;
+			const windIconClass = 
+				currentWeather.isWindVariable ? "ww_wind_vrb_icon" : "ww_wind_dir_icon";
+			const decimalRadix = 10;
+
+			const tempStr = 
+				valueOrNullToString(currentWeather.airTemperature, "==");
+			const tempFeelsStr = 
+				valueOrNullToString(currentWeather.perceivedTemperature, "==");
+			const tempHighStr = 
+				valueOrNullToString(currentWeather.airTemperatureHigh, "==");
+			const tempLowStr = 
+				valueOrNullToString(currentWeather.airTemperatureLow, "==");
+	
+			const rhStr = 
+				valueOrNullToString(currentWeather.relativeHumidity, "==");
+
+			const pressureVal = 
+				imperialUnits ? 
+				currentWeather.atmosphericPressure / 100.0 : 
+				currentWeather.atmosphericPressure;
+			const pressureStr = 
+				valueOrNullToString(pressureVal, "==");
+
+			const windStr = 
+				valueOrNullToString(currentWeather.windSpeed, "==");
+			const gustStr = 
+				valueOrNullToString(currentWeather.gustSpeed, "==");
+
+			const metersPerKm = 1000;
+			const vis = imperialUnits ? 
+				currentWeather.visibility : 
+				currentWeather.visibility / metersPerKm; 
+			const visStr = 
+				valueOrNullToString(vis, "==");
+
+			const weatherIconStr = makeWeatherIcon(currentWeather, imperialUnits);
+
+			return (`
+				<div class="weather_widget">
+					<div class="ww_weather">${weatherIconStr}</div>
+					<div class="ww_temp_icon">&#xf055;</div>
+					<div class="${tempStyle}">${tempStr}</div>
+					<div class="${tempFeelsStyle}">${tempFeelsStr}</div>
+					<div class="${windIconClass}"${windIconStyle}>&#xf0b1;</div>
+					<div class="${windStyle}">${windStr}</div>
+					<div class="${gustStyle}">${gustStr}</div>
+					<div class="ww_other">
+						<span class="${tempLowStyle}">${tempLowStr}</span>
+						<span class="${tempHighStyle}">${tempHighStr}</span>
+						<span class="${rhStyle}">${rhStr}</span>
+						<br>
+						<span class="${pressureStyle}">${pressureStr}</span>
+						<span class="${visStyle}">${visStr}</span>
+					</div>
+				</div>`
+			);
+		}
+
 		function displayWeatherData(name, distKm, currWeather, imperialUnits) {
 			const eol = "<br>";
-			const begin = "<div class=\"weatherdataitem\">";
-			const end = "</div>";
-			var result = begin;
+			var result = "<div class=\"weatherdataitem\">";
+			result += "<div class=\"weatherstation\">";
 			if (name !== null && name != "") {
 				result += name;
 			} else {
@@ -446,9 +742,17 @@
 					`${Math.round(distKm)} km`;
 				result = result + " (" + distStr + " away)";
 			}
-			result += eol;
+			result += "</div>";//div class=weatherstation
+	
+			result += '<div class="widget">'
+			result += makeWeatherWidget(currWeather, imperialUnits);
+			result += "</div>"//div class=widget
+
+			result += '<div class="weathertext">'
 			result += currentWeatherToHTML(currWeather, imperialUnits, eol);
-			result += end;
+			result += "</div>";//div class=weathertext
+			result += "</div>";//div class=weatherdataitem
+	
 			document.getElementById('weatherdataid').innerHTML += result;
 		}
 
@@ -458,6 +762,12 @@
 
 		function displayWeatherDataMessage(message) {
 			document.getElementById('weatherdataid').innerHTML = message;	
+		}
+
+		function valueOrNullToString (value, nullValue) {
+			const decimalRadix = 10;
+			if (value === null) return nullValue;
+			return value.toString(decimalRadix);
 		}
 
 		function findGetParameter(parameterName) {
@@ -544,7 +854,7 @@
 					weatherData = addStationNames(weatherData, stationData);
 					console.log("Actual time zone offset: ", timeOffset);
 					console.log("Weather data: ", weatherData);
-					console.log("Processing weather data");
+					console.log("Displaying weather data");
 					const imperialUnits = (findGetParameter("unit") == "imperial"); 
 					clearDisplayedWeatherData();
 					weatherData.forEach( (value, key, map) => {
@@ -552,6 +862,7 @@
 						currWeather = adaptCurrentWeather(currWeather, Module.valueNotSpecified);
 						displayWeatherData(value.name, value.distKm, currWeather, imperialUnits);
 					});
+					console.log("Finished");
 				})
 				.catch(err => {
 					console.log("Processing weather data failed: ", err);

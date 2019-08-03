@@ -15,8 +15,6 @@ using namespace emscripten;
 
 #include "metaf.h"
 
-#include <iostream>
-
 static const int valueNotSpecified = -250;
 
 enum Cloud {
@@ -538,7 +536,9 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 		if (const auto gr = std::get_if<metaf::PressureGroup>(&metarGroup); gr) {
 			if (gr->type() == metaf::PressureGroup::Type::OBSERVED_QNH) {
 				if (const auto p = gr->atmosphericPressure().toUnit(presUnit); p.has_value()) {
-					result.atmosphericPressure = p.value();
+					auto pressure = p.value();
+					if (presUnit == metaf::Pressure::Unit::INCHES_HG) pressure *= 100;
+					result.atmosphericPressure = pressure;
 				}
 			}
 		}
