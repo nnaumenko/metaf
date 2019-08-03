@@ -70,7 +70,7 @@ set_target_properties(example_summary PROPERTIES
 
 # All examples
 
-add_custom_target(examples DEPENDS example_json example_explain example_summary)
+add_custom_target(examples ALL DEPENDS example_json example_explain example_summary)
 
 
 
@@ -116,3 +116,12 @@ set_target_properties(tests PROPERTIES
 target_compile_options(tests PRIVATE
 	-s DISABLE_EXCEPTION_CATCHING=0 
 )
+
+#Copy assets for webpages
+
+add_custom_target(copy_assets ALL)
+
+add_custom_command(TARGET copy_assets 
+	PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E 
+    copy_directory ${CMAKE_SOURCE_DIR}/pages/ ${CMAKE_CURRENT_BINARY_DIR}/bin)

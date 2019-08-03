@@ -8,6 +8,12 @@
 
 Metaf is a header-only, dependency-free modern C++ library for parsing [METAR weather reports](https://en.wikipedia.org/wiki/METAR) and [TAF weather forecasts](https://en.wikipedia.org/wiki/Terminal_aerodrome_forecast) used in aviation.
 
+[Live demo: Short weather summary for aerodromes near your location based on METAR/TAF weather data](https://nnaumenko.gitlab.io/metaf/examples/summary.html).
+
+[Live demo: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
+
+[Live demo: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
 Metaf can do the following:
@@ -15,12 +21,6 @@ Metaf can do the following:
  * Parse METAR or TAF report and autodetect its type.
  * Check the validity of the report syntax, detect malformed reports and report errors.
  * Convert METAR or TAF report into the vector of classes which represent individual bits of info encoded in the weather report or forecast.
-
-[Live demo: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
-
-[Live demo: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
-
-[Live demo: Short weather summary for aerodromes near your location based on METAR/TAF weather data](https://nnaumenko.gitlab.io/metaf/examples/summary.html).
 
 
 ## Documentation
@@ -100,3 +100,17 @@ Example of a TAF report is as follows:
 ## License
 
 This project is available under MIT license.
+
+## Acknowledgements
+
+This project uses [Emscripten](https://emscripten.org/) to compile examples into Webassembly.
+
+Unit tests included with the project use [Google Test](https://github.com/abseil/googletest) framework.
+
+[Gitlab CI/CD] is used for deployment of the [project website](https://nnaumenko.gitlab.io/metaf/).
+
+METAR, TAF, and weather station data used in [weather summary example](https://nnaumenko.gitlab.io/metaf/examples/summary.html) are from [Aviation Weather Center Text Data Server](https://www.aviationweather.gov/dataserver). 
+
+Weather widget uses the following external content: [Weather Icons by Erik Flowers](http://weathericons.io) distributed under [SIL OFL 1.1 license](http://scripts.sil.org/OFL), [Source Sans Pro Font](https://fonts.google.com/specimen/Source+Sans+Pro) by Paul D. Hunt distributed under [Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web), ['eye-regular' icon](https://fontawesome.com/icons/eye?style=regular) by Font Awesome distributed under [Creative Commons Attribution 4.0 International license](https://fontawesome.com/license).
+
+The project repository is hosted on [Gitlab](https://about.gitlab.com/) and mirrored to [Github](https://github.com/).
