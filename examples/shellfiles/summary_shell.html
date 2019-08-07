@@ -676,7 +676,7 @@
 				currentWeather.weather.includes(Module.Weather.RAIN_FREEZING_MODERATE.value) ||
 				currentWeather.weather.includes(Module.Weather.RAIN_FREEZING_HEAVY.value))
 			{
-				result = "&#x0021;";
+				result = '<img class="ww_freezing_precip" src="weather_widget/icicles-solid-wh.svg">';
 			}
 			// Volcanic ash (or in vicnity)
 			if (currentWeather.weather.includes(Module.Weather.VOLCANIC_ASH.value) ||
@@ -702,13 +702,17 @@
 			const pressureStyle = imperialUnits ? "ww_pres_inhg" : "ww_pres_hpa";
 			const rhStyle = "ww_rh";
 			const windStyle = imperialUnits ? "ww_wind_mph" : "ww_wind_kmh";
-			const gustStyle = imperialUnits ? "ww_gust_mph" : "ww_gust_kmh";
 			const visStyle = imperialUnits ? "ww_vis_mile" : "ww_vis_km";
 			const windIconStyle = currentWeather.isWindVariable ? 
 				`` : ` style="transform: rotate(${currentWeather.windDirection}deg) scaleY(-1);"`;
 			const windIconClass = 
 				currentWeather.isWindVariable ? "ww_wind_vrb_icon" : "ww_wind_dir_icon";
 			const decimalRadix = 10;
+
+			var gustStyle = imperialUnits ? "ww_gust_mph" : "ww_gust_kmh";
+			if (currentWeather.gustSpeed === null) gustStyle = "ww_no_gust";
+			const gustStr = 
+				valueOrNullToString(currentWeather.gustSpeed, "");
 
 			const tempStr = 
 				valueOrNullToString(currentWeather.airTemperature, "==");
@@ -731,8 +735,6 @@
 
 			const windStr = 
 				valueOrNullToString(currentWeather.windSpeed, "==");
-			const gustStr = 
-				valueOrNullToString(currentWeather.gustSpeed, "==");
 
 			const metersPerKm = 1000;
 			const vis = imperialUnits ? 
@@ -1009,10 +1011,7 @@
 
 	<br>
 	<div style="font-size: smaller">
-	The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular' icon</a>&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>.
-	</div>
-	<br>
-	<div style="font-size: smaller">The METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>.</div>
+	The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular'</a>&nbsp;and&nbsp;<a href="https://fontawesome.com/icons/icicles?style=solid">'icicles-solid'</a>&nbsp;icons&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>. METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>.</div>
 </body>
 </html>
 

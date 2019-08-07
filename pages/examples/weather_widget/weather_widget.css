@@ -73,6 +73,14 @@
 	}
 }
 
+.ww_freezing_precip {
+	font-size: 2.1em;
+	margin-left: 0.05em;
+	margin-right: 0.15em;
+	position: relative;
+	top: 0.2em;
+}
+
 .ww_temp_c, .ww_temp_f {
 	grid-area: temp_actual;
 }
@@ -85,7 +93,7 @@
 	grid-area: wind;
 }
 
-.ww_gust_kmh, .ww_gust_mph {
+.ww_gust_kmh, .ww_gust_mph, .ww_no_gust {
 	grid-area: gust;
 }
 
@@ -95,14 +103,14 @@
 }
 
 .ww_temp_c, .ww_temp_f, .ww_temp_feels_c, .ww_temp_feels_f, 
-.ww_wind_kmh, .ww_wind_mph, .ww_gust_kmh, .ww_gust_mph {
+.ww_wind_kmh, .ww_wind_mph, .ww_gust_kmh, .ww_gust_mph, .ww_no_gust {
 	font-family: 'source_sans_pro';
 	font-size: 1.25em;
 	margin-top: -0.25em;
 	margin-bottom: -0.55em;
 }
 
-.ww_gust_kmh:before, .ww_gust_mph:before {
+.ww_gust_kmh:before, .ww_gust_mph:before, .ww_no_gust:before {
 	font-family: 'weathericons';
 	font-weight: normal;
 	font-style: normal;
@@ -111,8 +119,16 @@
 	content: "\f050";
 }
 
+.ww_no_gust {
+	letter-spacing: -1em;
+}
+
 .ww_wind_kmh:after, .ww_gust_kmh:after {
 	content: "km/h";
+}
+
+.ww_no_gust:after {
+	content: "/";
 }
 
 .ww_wind_mph:after, .ww_gust_mph:after {
