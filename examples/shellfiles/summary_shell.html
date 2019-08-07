@@ -426,6 +426,31 @@
 			return result;
 		}
 
+		function directionToCardinalText (degrees) {
+			if (degrees > 360) return(null);
+			if (degrees == 360) return("true north");
+			if (degrees == 90) return("true east");
+			if (degrees == 180) return("true south");
+			if (degrees == 270) return("true west");
+			if (degrees <= 11) return("north");
+			if (degrees <= 33) return("north-northeast");
+			if (degrees <= 56) return("northeast");
+			if (degrees <= 78) return("east-northeast");
+			if (degrees <= 101) return("east");
+			if (degrees <= 123) return("east-southeast");
+			if (degrees <= 146) return("southeast");
+			if (degrees <= 168) return("south-southeast");
+			if (degrees <= 191) return("south");
+			if (degrees <= 213) return("south-southwest");
+			if (degrees <= 236) return("southwest");
+			if (degrees <= 258) return("west-southwest");
+			if (degrees <= 281) return("west");
+			if (degrees <= 303) return("west-northwest");
+			if (degrees <= 326) return("northwest");
+			if (degrees <= 348) return("north-northwest");
+			return("north"); // 349 to 360
+		}
+
 		function currentWeatherToHTML(weather, imperialUnits, eol) {
 			var result = "";
 
@@ -462,6 +487,8 @@
 			{
 				result += "Wind ";
 				if (weather.windDirection !== null) { 
+					const cardinal = directionToCardinalText(weather.windDirection);
+					if (cardinal !== null) result += `is ${cardinal}ern, `;
 					result += `${weather.windDirection}${dirUnit}`;
 				} else {
 					result += `is variable`;
