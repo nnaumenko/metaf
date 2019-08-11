@@ -127,6 +127,11 @@ struct CurrentWeather {
 	int airTemperatureLow = valueNotSpecified;
 	int relativeHumidity = valueNotSpecified;
 	int atmosphericPressure = valueNotSpecified;
+	int updateYear = valueNotSpecified;
+	int updateMonth = valueNotSpecified;
+	int updateDay = valueNotSpecified;
+	int updateHour = valueNotSpecified;
+	int updateMinute = valueNotSpecified;
 };
 
 using GroupVector = std::vector<metaf::Group>;
@@ -635,16 +640,46 @@ void temperatureForecastFromTaf(
 	}
 }
 
-CurrentWeather getCurrentWeather(std::string metar, std::string taf, bool isImperialUnit) {
+void reportReleaseTime(CurrentWeather & currentWeather, 
+	const GroupVector & groups,
+	int year, 
+	int month, 
+	int day)
+{
+	for (const auto & group : groups) {
+		if (const auto gr = std::get_if<metaf::ReportTimeGroup>(&group); gr) {
+			const auto currDate = metaf::MetafTime::Date(year, month, day);
+			const auto reportTime = gr->time();
+			const auto reportDate = reportTime.dateBeforeRef(currDate);
+			currentWeather.updateYear = reportDate.year;
+			currentWeather.updateMonth = reportDate.month;
+			currentWeather.updateDay = reportDate.day;
+			currentWeather.updateHour = reportTime.hour();
+			currentWeather.updateMinute = reportTime.minute();	
+		}
+	}
+}
+
+CurrentWeather getCurrentWeather(
+	std::string metar, 
+	std::string taf,
+	int currYear,
+	int currMonth,
+	int currDay, 
+	bool isImperialUnit)
+{
 	CurrentWeather result;
 	const auto metarGroups = parseReport(metar, metaf::ReportType::METAR);
 	const auto tafGroups = parseReport(taf, metaf::ReportType::TAF);
 	if (!metarGroups.empty()) {
 		result = currentWeatherFromMetar(metarGroups, isImperialUnit);
+		reportReleaseTime(result, metarGroups, currYear, currMonth, currDay);
 	} else {
 		result = currentWeatherFromTaf(tafGroups, isImperialUnit);
+		reportReleaseTime(result, tafGroups, currYear, currMonth, currDay);
 	}
 	temperatureForecastFromTaf(result, tafGroups, isImperialUnit);
+
 	return(result);
 }
 
@@ -752,6 +787,11 @@ EMSCRIPTEN_BINDINGS(WeatherSummary) {
 		.field("airTemperatureLow", &CurrentWeather::airTemperatureLow)
 		.field("relativeHumidity", &CurrentWeather::relativeHumidity)
 		.field("atmosphericPressure", &CurrentWeather::atmosphericPressure)
+		.field("updateYear", &CurrentWeather::updateYear)
+		.field("updateMonth", &CurrentWeather::updateMonth)
+		.field("updateDay", &CurrentWeather::updateDay)
+		.field("updateHour", &CurrentWeather::updateHour)
+		.field("updateMinute", &CurrentWeather::updateMinute)
 		;
 
 	function("getCurrentWeather", &getCurrentWeather);

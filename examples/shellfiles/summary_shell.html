@@ -77,7 +77,7 @@
 		function getActualTimeOffset(localTimeGMT, referenceTimeGMT) {
 			const localTimeWithTzOffset = new Date(
 				localTimeGMT.getTime() - localTimeGMT.getTimezoneOffset() * 60000);
-			return Math.round((referenceTimeGMT - localTimeWithTzOffset)/60000);
+			return Math.round((localTimeWithTzOffset - referenceTimeGMT)/60000);
 		}
 
 		function distanceKm(lat1, lon1, lat2, lon2) {
@@ -167,6 +167,11 @@
 			currentWeather.airTemperatureLow = nullIfNoValue(currentWeather.airTemperatureLow, noValue);
 			currentWeather.relativeHumidity = nullIfNoValue(currentWeather.relativeHumidity, noValue);
 			currentWeather.atmosphericPressure = nullIfNoValue(currentWeather.atmosphericPressure, noValue);
+			currentWeather.updateYear = nullIfNoValue(currentWeather.updateYear, noValue);
+			currentWeather.updateMonth = nullIfNoValue(currentWeather.updateMonth, noValue);
+			currentWeather.updateDay = nullIfNoValue(currentWeather.updateDay, noValue);
+			currentWeather.updateHour = nullIfNoValue(currentWeather.updateHour, noValue);
+			currentWeather.updateMinute = nullIfNoValue(currentWeather.updateMinute, noValue);
 			//Convert vector<int> object to js array
 			var weatherArray = Array();
 			const weatherVector = currentWeather.weather;
@@ -451,7 +456,29 @@
 			return("north"); // 349 to 360
 		}
 
-		function currentWeatherToHTML(weather, imperialUnits, eol) {
+		function dateTimeToStr_DD_MMM_YYYY_HH_MM(time) {
+			var result = "";
+			const decimalRadix = 10;
+			result += time.getDate().toString(decimalRadix);
+			result += " ";
+			const monthStrs = [
+				"JAN", "FEB", "MAR", "APR", "MAY", "JUN", 
+				"JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+			result += monthStrs[time.getMonth()];
+			result += " ";
+			result += time.getFullYear().toString(decimalRadix);
+			result += " ";
+			var hourStr = time.getHours() < 10 ? "0" : ""; 
+			hourStr += time.getHours().toString(decimalRadix);
+			result += hourStr;
+			result += ":"
+			var minuteStr = time.getMinutes() < 10 ? "0" : ""; 
+			minuteStr += time.getMinutes().toString(decimalRadix);
+			result += minuteStr;
+			return result;
+ 		}
+
+		function currentWeatherToHTML(weather, imperialUnits, eol, tzOffsetMinutes) {
 			var result = "";
 
 			const tempUnit = imperialUnits ? "&deg;F" : "&degC";
@@ -510,6 +537,27 @@
 			}
 			if (weather.atmosphericPressure !== null) {
 				result += `Atmospheric pressure ${weather.atmosphericPressure} ${pressureUnit}${eol}`;
+			}
+			//Update time
+			if (weather.updateYear !== null && 
+				weather.updateMonth !== null && 
+				weather.updateDay !== null &&
+				weather.updateHour !== null &&
+				weather.updateMinute !== null) 
+			{
+				const updateTimeGMT = new Date(
+					weather.updateYear,
+					weather.updateMonth - 1,
+					weather.updateDay,
+					weather.updateHour,
+					weather.updateMinute,
+					0, //seconds
+					0); //milliseconds
+				const msPerMinute = 60000;
+				const updateTimeLocal = 
+					new Date(updateTimeGMT.getTime() + tzOffsetMinutes * msPerMinute);
+				const updateTimeStr = dateTimeToStr_DD_MMM_YYYY_HH_MM(updateTimeLocal);
+				result += `Weather data updated: ${updateTimeStr}${eol}`;
 			}
 			return(result);
 		}
@@ -793,7 +841,14 @@
 			);
 		}
 
-		function displayWeatherData(name, distKm, currWeather, imperialUnits) {
+		function displayAerodromeCount(count) {
+			const aerodromes = (count == 1) ? "aerodrome" : "aerodromes";
+			const decimalRadix = 10;
+			const c = (count > 0) ? count.toString(decimalRadix) : "No";
+			document.getElementById('weatherdataid').innerHTML += `<div class="weatherdataitem">${c} ${aerodromes} within selected range</div>`;
+		}
+
+		function displayWeatherData(name, distKm, currWeather, imperialUnits, tzOffsetMinutes) {
 			const eol = "<br>";
 			var result = "<div class=\"weatherdataitem\">";
 			result += "<div class=\"weatherstation\">";
@@ -813,10 +868,10 @@
 	
 			result += '<div class="widget">'
 			result += makeWeatherWidget(currWeather, imperialUnits);
-			result += "</div>"//div class=widget
+			result += "</div>";//div class=widget
 
-			result += '<div class="weathertext">'
-			result += currentWeatherToHTML(currWeather, imperialUnits, eol);
+			result += '<div class="weathertext">';
+			result += currentWeatherToHTML(currWeather, imperialUnits, eol, tzOffsetMinutes);
 			result += "</div>";//div class=weathertext
 			result += "</div>";//div class=weatherdataitem
 	
@@ -938,6 +993,7 @@
 			const tafUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true`;
 			const stationUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=stations&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&fields=station_id,site`;
 			console.log("Fetching METAR & TAF data from AWC");
+			displayWeatherDataMessage("Retreiving weather data...");
 			return Promise.all([fetchAndParseXML(metarUrl), 
 				fetchAndParseXML(tafUrl),
 				fetchAndParseXML(stationUrl)])
@@ -950,7 +1006,7 @@
 					const metarData = metarTafData[0][0].getElementsByTagName("METAR");
 					const tafData = metarTafData[1][0].getElementsByTagName("TAF");
 					const stationData = metarTafData[2][0].getElementsByTagName("Station");
-
+					displayWeatherDataMessage("Processing weather data...");
 					console.log("Processing received AWC data");
 					var weatherData = AWCdataToMap(metarData, tafData, latitude, longitude);
 					weatherData = addStationNames(weatherData, stationData);
@@ -959,10 +1015,12 @@
 					console.log("Displaying weather data");
 					const imperialUnits = (findGetParameter("unit") == "imperial"); 
 					clearDisplayedWeatherData();
+					displayAerodromeCount(weatherData.size);
+					const currDate = new Date();
 					weatherData.forEach( (value, key, map) => {
-						var currWeather = Module.getCurrentWeather(value.metar, value.taf, imperialUnits);
+						var currWeather = Module.getCurrentWeather(value.metar, value.taf, currDate.getFullYear(), currDate.getMonth() + 1, currDate.getDate(), imperialUnits);
 						currWeather = adaptCurrentWeather(currWeather, Module.valueNotSpecified);
-						displayWeatherData(value.name, value.distKm, currWeather, imperialUnits);
+						displayWeatherData(value.name, value.distKm, currWeather, imperialUnits, timeOffset);
 					});
 					console.log("Finished");
 				})
@@ -993,6 +1051,7 @@
 			  timeout: 10000,
 			  maximumAge: 60000
 			};
+			displayWeatherDataMessage("Geolocating...");
 			navigator.geolocation.getCurrentPosition(
 				getPositionSuccess, 
 				getPositionFailure,
@@ -1034,7 +1093,7 @@
 	<div id="options_units"></div>
 	<div id="options_distance"></div>
 
-	<div class="weatherdata" id="weatherdataid">Getting and processing data...</div>
+	<div class="weatherdata" id="weatherdataid">Preparing...</div>
 
 	<br>
 	<div style="font-size: smaller">
