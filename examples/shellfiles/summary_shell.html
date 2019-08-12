@@ -855,7 +855,7 @@
 			if (name !== null && name != "") {
 				result += name;
 			} else {
-				result += "STATION NAME UNKNOWN";
+				result += "NAME UNKNOWN";
 			}
 			if (distKm !== null) {
 				const milesPerKm = 1.609344;
@@ -939,6 +939,29 @@
 			document.getElementById('options_distance').innerHTML = options;
 		}
 
+		function displayErrors(caption, errors) {
+			const eol = "<br>";
+			var result = "";
+			var displayResult = false;
+			for (i = 0; i<errors.length; i++) {
+				errors[i].childNodes.forEach(value => {
+					const errorMessage = value.innerHTML;
+					if (errorMessage !== null && typeof errorMessage !== 'undefined') {
+						result += errorMessage;
+						result += eol;
+						displayResult = true;
+					}
+				});
+			}
+			if (displayResult) {
+			document.getElementById('weatherdataid').innerHTML += 
+				`<div class=\"weatherdataitem\">
+					<div class=\"weatherstation\">${caption}</div>
+					${result}
+				</div>`;
+			}
+		}
+
 		function AWCdataToMap(metarData, tafData, latitude, longitude) {
 			var weatherData = new Map();
 			//Add METARs to weather data
@@ -1006,6 +1029,9 @@
 					const metarData = metarTafData[0][0].getElementsByTagName("METAR");
 					const tafData = metarTafData[1][0].getElementsByTagName("TAF");
 					const stationData = metarTafData[2][0].getElementsByTagName("Station");
+					const metarErrors = metarTafData[0][0].getElementsByTagName("errors");
+					const tafErrors = metarTafData[1][0].getElementsByTagName("errors");
+					const stationErrors = metarTafData[2][0].getElementsByTagName("errors");
 					displayWeatherDataMessage("Processing weather data...");
 					console.log("Processing received AWC data");
 					var weatherData = AWCdataToMap(metarData, tafData, latitude, longitude);
@@ -1015,6 +1041,9 @@
 					console.log("Displaying weather data");
 					const imperialUnits = (findGetParameter("unit") == "imperial"); 
 					clearDisplayedWeatherData();
+					displayErrors("METAR errors", metarErrors);
+					displayErrors("TAF errors", tafErrors);
+					displayErrors("Station data errors", stationErrors);
 					displayAerodromeCount(weatherData.size);
 					const currDate = new Date();
 					weatherData.forEach( (value, key, map) => {
