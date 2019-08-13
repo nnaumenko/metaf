@@ -624,7 +624,7 @@
 				const updateTimeLocal = 
 					new Date(updateTimeGMT.getTime() + tzOffsetMinutes * msPerMinute);
 				const updatedMinutesAgo = 
-					Math.round((new Date().getTime() - updateTimeLocal.getTime()) / msPerMinute);
+					Math.trunc((new Date().getTime() - updateTimeLocal.getTime()) / msPerMinute);
 				const updatedAgo = timeDifferenceMinutesToString(updatedMinutesAgo); 
 				const updateTimeStr = dateTimeToStr_HH_MM(updateTimeLocal);
 				result += `Updated: ${updateTimeStr} (${updatedAgo} ago)${eol}`;
