@@ -456,6 +456,17 @@
 			return("north"); // 349 to 360
 		}
 
+		function dateTimeToStr_HH_MM(time) {
+			var result = "";
+			const decimalRadix = 10;
+			if (time.getHours() < 10) result += "0";
+			result += time.getHours().toString(decimalRadix);
+			result += ":"
+			if (time.getMinutes() < 10) result += "0";
+			result += time.getMinutes().toString(decimalRadix);
+			return result;
+ 		}
+
 		function dateTimeToStr_DD_MMM_YYYY_HH_MM(time) {
 			var result = "";
 			const decimalRadix = 10;
@@ -468,15 +479,49 @@
 			result += " ";
 			result += time.getFullYear().toString(decimalRadix);
 			result += " ";
-			var hourStr = time.getHours() < 10 ? "0" : ""; 
-			hourStr += time.getHours().toString(decimalRadix);
-			result += hourStr;
-			result += ":"
-			var minuteStr = time.getMinutes() < 10 ? "0" : ""; 
-			minuteStr += time.getMinutes().toString(decimalRadix);
-			result += minuteStr;
+			result += dateTimeToStr_HH_MM(time);
 			return result;
  		}
+
+ 		function timeDifferenceMinutesToString(timeDiffMinutes) {
+ 			if (!timeDiffMinutes) return("just now");
+ 			const minPerHour = 60;
+ 			const timeDiffHours = Math.trunc(timeDiffMinutes / minPerHour);
+ 			const timeDiffMinutesOfHour = timeDiffMinutes - timeDiffHours * minPerHour;
+ 			var result = "";
+ 			switch(timeDiffHours) {
+ 				case 0: break;
+ 				case 1: result += "1 hour"; break;
+ 				default: result += `${timeDiffHours} hours`; break;
+ 			}
+ 			if (timeDiffHours && timeDiffMinutesOfHour) result += " ";
+ 			switch (timeDiffMinutesOfHour) {
+ 				case 0: break;
+ 				case 1: result += "1 minute"; break;
+ 				default: result += `${timeDiffMinutesOfHour} minutes`; break;
+ 			}
+ 			return result;
+ 		}
+
+		function isHot (actualTemp, feelsTemp, imperialUnits) {
+			const hotTemp = imperialUnits ? 86 : 30; // 86F or 30C
+			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
+			if (temp === null) return false;
+			return (temp >= hotTemp);	
+		}
+
+		function isCold (actualTemp, feelsTemp, imperialUnits) {
+			const coldTemp = imperialUnits ? 5 : -15; // 5F or -15C
+			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
+			if (temp === null) return false;
+			return (temp <= coldTemp);
+		}
+
+		function isWindy (windSpeed, imperialUnits) {
+			if (windSpeed == null) return false;
+			const windySpeedThreshold = imperialUnits ? 24.85 : 40; //40 km/h or 24.85 mph
+			return (windSpeed >= windySpeedThreshold);
+		}
 
 		function currentWeatherToHTML(weather, imperialUnits, eol, tzOffsetMinutes) {
 			var result = "";
@@ -485,9 +530,28 @@
 			const pressureUnit = imperialUnits ? "&quot;Hg" : "hPa";
 			const speedUnit = imperialUnits ? "mph" : "km/h";
 			const visUnit = imperialUnits ? "miles" : "meters";
-			const dirUnit = "&deg;";			
+			const dirUnit = "&deg;";
 			//Weather
 			result += weatherToText(weather.weather, eol);
+			//Additional weather data: windy, gusts, hot, cold
+			if (isHot(weather.airTemperature, 
+				weather.perceivedTemperature,
+				imperialUnits))
+			{
+				result += "Hot"; result += eol;
+			}
+			if (isCold(weather.airTemperature, 
+				weather.perceivedTemperature,
+				imperialUnits))
+			{
+				result += "Cold"; result += eol;
+			}
+			if (isWindy(weather.windSpeed, imperialUnits)) {
+				result += "Windy"; result += eol;
+			} 
+			if (isWindy(weather.gustSpeed, imperialUnits)) {
+				result += "Gusty wind"; result += eol;
+			}
 			//Cloud data
 			result += cloudToText(weather.cloud);
 			if (weather.isStormClouds) result += " (storm clouds in the sky)";
@@ -536,7 +600,10 @@
 				result += `Visibility ${weather.visibility} ${visUnit}${eol}`;
 			}
 			if (weather.atmosphericPressure !== null) {
-				result += `Atmospheric pressure ${weather.atmosphericPressure} ${pressureUnit}${eol}`;
+				var pressure = weather.atmosphericPressure;
+				//in imperial units pressure is expressed in 1/100s of inch Hg
+				if (imperialUnits) pressure /= 100.0; 
+				result += `Atmospheric pressure ${pressure} ${pressureUnit}${eol}`;
 			}
 			//Update time
 			if (weather.updateYear !== null && 
@@ -556,30 +623,13 @@
 				const msPerMinute = 60000;
 				const updateTimeLocal = 
 					new Date(updateTimeGMT.getTime() + tzOffsetMinutes * msPerMinute);
-				const updateTimeStr = dateTimeToStr_DD_MMM_YYYY_HH_MM(updateTimeLocal);
-				result += `Weather data updated: ${updateTimeStr}${eol}`;
+				const updatedMinutesAgo = 
+					Math.round((new Date().getTime() - updateTimeLocal.getTime()) / msPerMinute);
+				const updatedAgo = timeDifferenceMinutesToString(updatedMinutesAgo); 
+				const updateTimeStr = dateTimeToStr_HH_MM(updateTimeLocal);
+				result += `Updated: ${updateTimeStr} (${updatedAgo} ago)${eol}`;
 			}
 			return(result);
-		}
-
-		function isHot (actualTemp, feelsTemp, imperialUnits) {
-			const hotTemp = imperialUnits ? 86 : 30; // 86F or 30C
-			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
-			if (temp === null) return false;
-			return (temp >= hotTemp);	
-		}
-
-		function isCold (actualTemp, feelsTemp, imperialUnits) {
-			const coldTemp = imperialUnits ? 5 : -15; // 5F or -15C
-			const temp = (feelsTemp !== null) ? feelsTemp : actualTemp;
-			if (temp === null) return false;
-			return (temp <= coldTemp);
-		}
-
-		function isWindy (windSpeed, imperialUnits) {
-			if (windSpeed == null) return false;
-			const windySpeedThreshold = imperialUnits ? 24.85 : 40; //40 km/h or 24.85 mph
-			return (windSpeed >= windySpeedThreshold);
 		}
 
 		function makeWeatherIcon(currentWeather, imperialUnits) {
@@ -860,7 +910,7 @@
 			if (distKm !== null) {
 				const milesPerKm = 1.609344;
 				const distStr = imperialUnits ? 
-					`${Math.round(distKm/milesPerKm)} mile(s)` : 
+					`${Math.round(distKm/milesPerKm)} miles` : 
 					`${Math.round(distKm)} km`;
 				result = result + " (" + distStr + " away)";
 			}
@@ -911,7 +961,7 @@
 				<ul class="options">
 				<div class="options_caption">Display units</div>
 				<li class="option${metricUnitOn}"><a href="?distance=${distance}">Metric<br>(&deg;C, km, km/h, hPa)</a></li>
-				<li class="option${imperialUnitOn}"><a href="?distance=${distance}&unit=imperial">Imperial<br>(&deg;F, sm, mph, &quot;Hg)</a>
+				<li class="option${imperialUnitOn}"><a href="?distance=${distance}&unit=imperial">Imperial<br>(&deg;F, miles, mph, &quot;Hg)</a>
 				</ul>`;
 			document.getElementById('options_units').innerHTML = options;	
 		}
@@ -1013,7 +1063,7 @@
 
 		function getAWCweather(latitude, longitude, distance) {
 			const metarUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true&fields=raw_text,station_id,latitude,longitude`;			
-			const tafUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true`;
+			const tafUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=24&mostRecentForEachStation=true`;
 			const stationUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=stations&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&fields=station_id,site`;
 			console.log("Fetching METAR & TAF data from AWC");
 			displayWeatherDataMessage("Retreiving weather data...");
@@ -1126,7 +1176,7 @@
 
 	<br>
 	<div style="font-size: smaller">
-	The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular'</a>&nbsp;and&nbsp;<a href="https://fontawesome.com/icons/icicles?style=solid">'icicles-solid'</a>&nbsp;icons&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>. METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>.</div>
+	The following external content was used in this page:&nbsp;<a href="http://weathericons.io">Weather Icons by Erik Flowers</a>&nbsp;distributed under&nbsp;<a href="http://scripts.sil.org/OFL">SIL OFL 1.1 license</a>,&nbsp;<a href="https://fonts.google.com/specimen/Source+Sans+Pro">Source Sans Pro Font</a>&nbsp;by Paul D. Hunt distributed under&nbsp;<a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web">Open Font License</a>,&nbsp;<a href="https://fontawesome.com/icons/eye?style=regular">'eye-regular'</a>&nbsp;and&nbsp;<a href="https://fontawesome.com/icons/icicles?style=solid">'icicles-solid'</a>&nbsp;icons&nbsp;by Font Awesome distributed under&nbsp;<a href="https://fontawesome.com/license">Creative Commons Attribution 4.0 International license</a>. METAR, TAF, and weather station data are acquired from&nbsp;<a href="https://www.aviationweather.gov/dataserver">Aviation Weather Center Text Data Server</a>&nbsp;using&nbsp;<a href="https://cors-anywhere.herokuapp.com/">CORS-anywhere</a>.</div>
 </body>
 </html>
 
