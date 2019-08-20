@@ -1529,9 +1529,9 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 	Stores information about surface wind (including variable wind direction sector if reported) or wind shear.
 
-	.. cpp:enum-class:: Status
+	.. cpp:enum-class:: Type
 
-		Group status which specifies what kind of data stored within this group.
+		Group type which specifies what kind of data stored within this group.
 
 		.. cpp:enumerator:: SURFACE_WIND
 
@@ -1551,9 +1551,9 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 	**Acquiring group data**
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			:returns: Wind group status, i.e. what kind of information is stored.
+			:returns: Wind group type, i.e. what kind of information is stored.
 
 		.. index:: single: Wind; Direction
 
@@ -1633,7 +1633,27 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 	See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
 
+	.. cpp:enum-class:: Type
+
+		Group type which specifies what kind of data stored within this group.
+
+		.. cpp:enumerator:: PREVAILING
+
+			Prevailing visibility information is stored. Use :cpp:func:`visibility()`.
+
+		.. cpp:enumerator:: PREVAILING_NDV
+
+			Prevailing visibility information is stored and this station cannot differentiate the directional variation of visibility. Use :cpp:func:`visibility()`.
+
+		.. cpp:enumerator:: DIRECTIONAL
+
+			Additional directional visibility information is stored. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
+
 	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Visibility group type, i.e. what kind of information is stored.
 
 		.. cpp:function:: Distance visibility() const
 
@@ -1651,11 +1671,11 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:function:: bool isPrevailing() const
 
-			:returns: ``true`` if the group contains prevailing visibility (no direction specified or No Directional Variation) and ``false`` otherwise.
+			:returns: ``true`` if the group contains prevailing visibility.
 
 		.. cpp:function:: bool isDirectional() const
 
-			:returns: ``true`` if the group contains directional visibility (cardinal direction specified) and ``false`` otherwise.
+			:returns: ``true`` if the group contains directional visibility.
 
 	**Validating**
 

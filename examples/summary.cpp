@@ -474,12 +474,14 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				result.cloud = Cloud::MOSTLY_CLEAR;
 			}
 		}
+		
 		if (const auto gr = std::get_if<metaf::TrendGroup>(&metarGroup); gr) {
 			break; //this version ignores trends
 		}
+
 		if (const auto gr = std::get_if<metaf::WindGroup>(&metarGroup); gr) {
-			if (gr->status() == metaf::WindGroup::Status::SURFACE_WIND ||
-				gr->status() == metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR)
+			if (gr->type() == metaf::WindGroup::Type::SURFACE_WIND ||
+				gr->type() == metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR)
 			{
 				if (const auto dir = gr->direction().degrees(); dir.has_value()) {
 					result.windDirection = dir.value();
@@ -496,11 +498,18 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				}				
 			}
 		}
+
 		if (const auto gr = std::get_if<metaf::VisibilityGroup>(&metarGroup); gr) {
-			if (const auto v = gr->visibility().toUnit(visUnit); v.has_value()) {
-				result.visibility = v.value();
+			const bool isPrevailing = 
+				gr->type() == metaf::VisibilityGroup::Type::PREVAILING ||
+				gr->type() == metaf::VisibilityGroup::Type::PREVAILING_NDV;
+			if (const auto v = gr->visibility().toUnit(visUnit); 
+				v.has_value() && isPrevailing)
+			{
+					result.visibility = v.value();
 			}
 		}
+
 		if (const auto gr = std::get_if<metaf::CloudGroup>(&metarGroup); gr) {
 			result.cloud = 
 				cloudFromCloudGroupAmount(static_cast<Cloud>(result.cloud), gr->amount());
@@ -508,6 +517,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				result.isStormClouds = true;
 			}
 		}
+
 		if (const auto gr = std::get_if<metaf::WeatherGroup>(&metarGroup); gr) {
 			const auto weather = weatherFromWeatherGroup(
 				gr->qualifier(), 
@@ -517,6 +527,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				result.weather.push_back(w);	
 			}
 		}
+		
 		if (const auto gr = std::get_if<metaf::TemperatureGroup>(&metarGroup); gr) {
 			if (const auto t = gr->airTemperature().toUnit(tempUnit); t.has_value()) {
 				result.airTemperature = t.value();
@@ -538,6 +549,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				result.perceivedTemperature = hidx.value();
 			}
 		}
+		
 		if (const auto gr = std::get_if<metaf::PressureGroup>(&metarGroup); gr) {
 			if (gr->type() == metaf::PressureGroup::Type::OBSERVED_QNH) {
 				if (const auto p = gr->atmosphericPressure().toUnit(presUnit); p.has_value()) {

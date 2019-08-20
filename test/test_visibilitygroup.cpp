@@ -11,6 +11,7 @@
 TEST(VisibilityGroup, parseMetersMetar) {
 	const auto vg = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
@@ -21,6 +22,7 @@ TEST(VisibilityGroup, parseMetersMetar) {
 TEST(VisibilityGroup, parseMetersTaf) {
 	const auto vg = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::TAF);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
@@ -31,6 +33,7 @@ TEST(VisibilityGroup, parseMetersTaf) {
 TEST(VisibilityGroup, parseMetersNDV) {
 	const auto vg = metaf::VisibilityGroup::parse("9999NDV", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_NDV);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 10000u);
@@ -42,6 +45,7 @@ TEST(VisibilityGroup, parseMetersNDV) {
 TEST(VisibilityGroup, parseMetersDirectionNorth) {
 	const auto vg = metaf::VisibilityGroup::parse("9999N", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::N);
 }
@@ -49,6 +53,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorth) {
 TEST(VisibilityGroup, parseMetersDirectionSouth) {
 	const auto vg = metaf::VisibilityGroup::parse("9999S", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::S);
 }
@@ -56,6 +61,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouth) {
 TEST(VisibilityGroup, parseMetersDirectionWest) {
 	const auto vg = metaf::VisibilityGroup::parse("9999W", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::W);
 }
@@ -63,6 +69,7 @@ TEST(VisibilityGroup, parseMetersDirectionWest) {
 TEST(VisibilityGroup, parseMetersDirectionEast) {
 	const auto vg = metaf::VisibilityGroup::parse("9999E", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::E);
 }
@@ -70,6 +77,7 @@ TEST(VisibilityGroup, parseMetersDirectionEast) {
 TEST(VisibilityGroup, parseMetersDirectionNorthWest) {
 	const auto vg = metaf::VisibilityGroup::parse("9999NW", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::NW);
 }
@@ -77,6 +85,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorthWest) {
 TEST(VisibilityGroup, parseMetersDirectionNorthEast) {
 	const auto vg = metaf::VisibilityGroup::parse("9999NE", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::NE);
 }
@@ -84,6 +93,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorthEast) {
 TEST(VisibilityGroup, parseMetersDirectionSouthWest) {
 	const auto vg = metaf::VisibilityGroup::parse("9999SW", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::SW);
 }
@@ -91,6 +101,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouthWest) {
 TEST(VisibilityGroup, parseMetersDirectionSouthEast) {
 	const auto vg = metaf::VisibilityGroup::parse("9999SE", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::SE);
 }
@@ -98,6 +109,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouthEast) {
 TEST(VisibilityGroup, parseMetersNotReported) {
 	const auto vg = metaf::VisibilityGroup::parse("////", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(!vg->visibility().isReported());
 	EXPECT_FALSE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
@@ -125,6 +137,7 @@ TEST(VisibilityGroup, parseWrongReportPart) {
 TEST(VisibilityGroup, parseMilesInteger) {
 	const auto vg = metaf::VisibilityGroup::parse("3SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 3u);
@@ -135,6 +148,7 @@ TEST(VisibilityGroup, parseMilesInteger) {
 TEST(VisibilityGroup, parseMilesIntegerTwoDigit) {
 	const auto vg = metaf::VisibilityGroup::parse("15SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 15u);
@@ -145,6 +159,7 @@ TEST(VisibilityGroup, parseMilesIntegerTwoDigit) {
 TEST(VisibilityGroup, parseMilesIntegerWithModifier) {
 	const auto vg = metaf::VisibilityGroup::parse("P6SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 6u);
@@ -156,6 +171,7 @@ TEST(VisibilityGroup, parseMilesIntegerWithModifier) {
 TEST(VisibilityGroup, parseMilesFraction) {
 	const auto vg = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isFraction());
 	ASSERT_TRUE(vg->visibility().numerator().has_value());
 	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
@@ -168,6 +184,7 @@ TEST(VisibilityGroup, parseMilesFraction) {
 TEST(VisibilityGroup, parseMilesFractionWithModifier) {
 	const auto vg = metaf::VisibilityGroup::parse("M1/4SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg->visibility().isFraction());
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
 	ASSERT_TRUE(vg->visibility().numerator().has_value());
@@ -181,6 +198,7 @@ TEST(VisibilityGroup, parseMilesFractionWithModifier) {
 TEST(VisibilityGroup, parseMilesIntegerNotReported) {
 	const auto vg = metaf::VisibilityGroup::parse("////SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
@@ -200,6 +218,7 @@ TEST(VisibilityGroup, parseMilesWrongFormat) {
 TEST(VisibilityGroup, parseMilesIncomplete) {
 	const auto vg1 = metaf::VisibilityGroup::parse("1", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg1->visibility().isInteger());
 	ASSERT_TRUE(vg1->visibility().integer().has_value());
 	EXPECT_EQ(vg1->visibility().integer().value(), 1u);
@@ -209,6 +228,7 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 
 	const auto vg9 = metaf::VisibilityGroup::parse("9", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg9.has_value());
+	EXPECT_EQ(vg9->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(vg9->visibility().isInteger());
 	ASSERT_TRUE(vg9->visibility().integer().has_value());
 	EXPECT_EQ(vg9->visibility().integer().value(), 9u);
@@ -234,6 +254,7 @@ TEST(VisibilityGroup, combineIncompleteAndFraction) {
 	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(combined.value()));
 
 	const auto vgCombined = std::get<metaf::VisibilityGroup>(combined.value());
+	EXPECT_EQ(vgCombined.type(), metaf::VisibilityGroup::Type::PREVAILING);
 	ASSERT_TRUE(vgCombined.visibility().integer().has_value());
 	EXPECT_EQ(vgCombined.visibility().integer().value(), 2u);
 	ASSERT_TRUE(vgCombined.visibility().numerator().has_value());

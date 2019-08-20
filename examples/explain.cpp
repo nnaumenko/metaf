@@ -309,14 +309,14 @@ std::string GroupVisitorExplain::visitTrendGroup(const metaf::TrendGroup & group
 std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch (group.status()) {
-		case metaf::WindGroup::Status::SURFACE_WIND:
-		case metaf::WindGroup::Status::VARIABLE_WIND_SECTOR:
-		case metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR:
+	switch (group.type()) {
+		case metaf::WindGroup::Type::SURFACE_WIND:
+		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
+		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
 		result << "Surface wind:";
 		break;
 
-		case metaf::WindGroup::Status::WIND_SHEAR:
+		case metaf::WindGroup::Type::WIND_SHEAR:
 		result << "Wind shear at height ";
 		result << explainDistance(group.height()) << ':';
 		break;
@@ -343,8 +343,8 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
 		}
 	}
-	if (group.status() == metaf::WindGroup::Status::VARIABLE_WIND_SECTOR ||
-		group.status() == metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR) {
+	if (group.type() == metaf::WindGroup::Type::VARIABLE_WIND_SECTOR ||
+		group.type() == metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR) {
 			result << "Variable wind direction sector from ";
 			result << explainDirection(group.varSectorBegin()) << " clockwise to ";
 			result << explainDirection(group.varSectorEnd());
@@ -355,11 +355,27 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 std::string GroupVisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & group) {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visibility ("; 
-	if (group.isPrevailing()) result << "prevailing";
-	if (group.isDirectional())result << explainDirection(group.direction());
+	result << "Visibility (";
+	switch (group.type()) {
+		case metaf::VisibilityGroup::Type::PREVAILING:
+		case metaf::VisibilityGroup::Type::PREVAILING_NDV:
+		result << "prevailing";
+		break;
+
+		case metaf::VisibilityGroup::Type::DIRECTIONAL:
+		result << explainDirection(group.direction());
+		break;
+
+		default:
+		result << "[unknown visibility group]:";
+		break;
+	}
 	result << ") ";
 	result << explainDistance(group.visibility());
+	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_NDV) {
+		result << lineBreak;
+		result << "This station does not distinguish directional variation of visibility";
+	}
 	return(result.str());
 }
 

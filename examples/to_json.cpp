@@ -454,20 +454,20 @@ void GroupVisitorJson::visitTrendGroup(const metaf::TrendGroup & group) {
 }
 
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
-	switch (group.status()) {
-		case metaf::WindGroup::Status::SURFACE_WIND:
-		case metaf::WindGroup::Status::VARIABLE_WIND_SECTOR:
-		case metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR:
+	switch (group.type()) {
+		case metaf::WindGroup::Type::SURFACE_WIND:
+		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
+		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
 			json.startObject("wind");
 			break;
 
-		case metaf::WindGroup::Status::WIND_SHEAR:
+		case metaf::WindGroup::Type::WIND_SHEAR:
 			json.startObject("windShear");
 			break;
 
 		default:
-			json.startObject("undefinedWindGroupStatus");
-			json.valueStr("status", undefinedToString(static_cast<int>(group.status())));
+			json.startObject("undefinedWindGroupType");
+			json.valueStr("type", undefinedToString(static_cast<int>(group.type())));
 			break;
 	}
 	if (!group.isValid()) json.valueBool("valid", false);
@@ -499,6 +499,20 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 void GroupVisitorJson::visitVisibilityGroup(const metaf::VisibilityGroup & group) {
 	json.startObject();
 	if (!group.isValid()) json.valueBool("valid", false);
+	switch (group.type()) {
+		case metaf::VisibilityGroup::Type::PREVAILING:
+		case metaf::VisibilityGroup::Type::PREVAILING_NDV: 
+		json.valueBool("directional", false);
+		break;
+
+		case metaf::VisibilityGroup::Type::DIRECTIONAL:
+		json.valueBool("directional", true);
+		break;
+
+		default:
+		json.valueStr("type", undefinedToString(static_cast<int>(group.type())));
+		break;
+	} 
 	distanceToJson(group.visibility(), "visibility", "visibilityUnit", "visibilityModifier");
 	directionToJson(group.direction(), 
 		"direction", 

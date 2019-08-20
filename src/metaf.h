@@ -727,13 +727,13 @@ namespace metaf {
 
 	class WindGroup {
 	public:
-		enum class Status {
+		enum class Type {
 			SURFACE_WIND,
 			VARIABLE_WIND_SECTOR,
 			SURFACE_WIND_WITH_VARIABLE_SECTOR,
 			WIND_SHEAR,
 		};
-		Status status() const { return(windStatus); }
+		Type type() const { return(windType); }
 		Direction direction() const { return(windDir); }
 		Speed windSpeed() const { return(wSpeed); }
 		Speed gustSpeed() const { return(gSpeed); }
@@ -750,7 +750,7 @@ namespace metaf {
 			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
-		Status windStatus;
+		Type windType;
 		Direction windDir;
 		Speed wSpeed;
 		Speed gSpeed;
@@ -761,13 +761,18 @@ namespace metaf {
 
 	class VisibilityGroup {
 	public:
+		enum class Type {
+			PREVAILING,
+			PREVAILING_NDV,
+			DIRECTIONAL
+		};
+		Type type() const { return(visType); }
 		Distance visibility() const { return(vis); }
 		Direction direction() const { return(dir); }
 		bool isPrevailing() const { 
-			return(direction().status() == Direction::Status::OMMITTED ||
-				direction().status() == Direction::Status::NDV); 
+			return(type() == Type::PREVAILING || type() == Type::PREVAILING_NDV);
 		}
-		bool isDirectional() const { return(!isPrevailing()); }
+		bool isDirectional() const { return(type() == Type::DIRECTIONAL); }
 		bool isValid() const { 
 			return(!incompleteInteger && vis.isValid() && dir.isValid());
 		}
@@ -779,6 +784,7 @@ namespace metaf {
 			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
 	private:
+		Type visType = Type::PREVAILING;
 		Distance vis;
 		Direction dir;
 		bool incompleteInteger = false; 
@@ -3194,9 +3200,9 @@ namespace metaf {
 			const auto gust = Speed::fromString(match.str(matchWindGust), speedUnit.value());
 			if (gust.has_value()) result.gSpeed = gust.value();
 			const auto wsHeight = Distance::fromHeightString(match.str(matchWindShearHeight));
-			result.windStatus = Status::SURFACE_WIND;
+			result.windType = Type::SURFACE_WIND;
 			if (wsHeight.has_value()) {
-				result.windStatus = Status::WIND_SHEAR;
+				result.windType = Type::WIND_SHEAR;
 				result.wShHeight = wsHeight.value();
 			}
 			return(result);
@@ -3209,7 +3215,7 @@ namespace metaf {
 			const auto end = Direction::fromDegreesString(match.str(matchVarWindEnd));
 			if (!end.has_value()) return(notRecognised);
 			result.vsecEnd = end.value();
-			result.windStatus = Status::VARIABLE_WIND_SECTOR;
+			result.windType = Type::VARIABLE_WIND_SECTOR;
 			return(result);
 		}
 		return(notRecognised);
@@ -3219,12 +3225,12 @@ namespace metaf {
 		static const std::optional<Group> notCombined;
 		const auto nextWindGroup = std::get_if<WindGroup>(&nextGroup);
 		if (!nextWindGroup) return(notCombined);
-		switch (status()) {
-			case Status::SURFACE_WIND:
-			if (nextWindGroup->status() == Status::VARIABLE_WIND_SECTOR) {
+		switch (type()) {
+			case Type::SURFACE_WIND:
+			if (nextWindGroup->type() == Type::VARIABLE_WIND_SECTOR) {
 				WindGroup combinedGroup = *this;
-				combinedGroup.windStatus = 
-					Status::SURFACE_WIND_WITH_VARIABLE_SECTOR;
+				combinedGroup.windType = 
+					Type::SURFACE_WIND_WITH_VARIABLE_SECTOR;
 				combinedGroup.vsecBegin = nextWindGroup->vsecBegin;
 				combinedGroup.vsecEnd = nextWindGroup->vsecEnd;
 				return(combinedGroup);
@@ -3236,7 +3242,7 @@ namespace metaf {
 	}
 
 	bool WindGroup::isCalm() const {
-		return (status() == Status::SURFACE_WIND && 
+		return (type() == Type::SURFACE_WIND && 
 			direction().status() == Direction::Status::VALUE_DEGREES &&
 			!direction().degrees().value_or(1) && 
 			!windSpeed().speed().value_or(1) && 
@@ -3291,6 +3297,10 @@ namespace metaf {
 			VisibilityGroup result;
 			result.vis = v.value();
 			result.dir = d.value();
+			if (result.dir.isValue()) result.visType = Type::DIRECTIONAL; 
+			if (result.dir.status() == Direction::Status::NDV) {
+				result.visType = Type::PREVAILING_NDV;
+			}
 			return(result);
 		}
 		// Attempt to parse as visibility in miles

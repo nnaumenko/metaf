@@ -11,7 +11,7 @@
 TEST(WindGroup, parseKnotsMetar) {
 	const auto wg = metaf::WindGroup::parse("18005KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -27,7 +27,7 @@ TEST(WindGroup, parseKnotsMetar) {
 TEST(WindGroup, parseKnotsTaf) {
 	const auto wg = metaf::WindGroup::parse("18005KT", metaf::ReportPart::TAF);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -43,7 +43,7 @@ TEST(WindGroup, parseKnotsTaf) {
 TEST(WindGroup, parseMps) {
 	const auto wg = metaf::WindGroup::parse("18005MPS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);	
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);	
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::METERS_PER_SECOND);
 	EXPECT_EQ(wg->windSpeed().speed().value(), 5u);
@@ -53,7 +53,7 @@ TEST(WindGroup, parseMps) {
 TEST(WindGroup, parseKmh) {
 	const auto wg = metaf::WindGroup::parse("18005KMH", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);	
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);	
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 	EXPECT_EQ(wg->windSpeed().speed().value(), 5u);
@@ -63,7 +63,7 @@ TEST(WindGroup, parseKmh) {
 TEST(WindGroup, parseGusts) {
 	const auto wg = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -81,7 +81,7 @@ TEST(WindGroup, parseGusts) {
 TEST(WindGroup, parseWindThreeDigits) {
 	const auto wg = metaf::WindGroup::parse("180102KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -97,7 +97,7 @@ TEST(WindGroup, parseWindThreeDigits) {
 TEST(WindGroup, parseGustsThreeDigits) {
 	const auto wg = metaf::WindGroup::parse("18099G105KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -115,7 +115,7 @@ TEST(WindGroup, parseGustsThreeDigits) {
 TEST(WindGroup, parseWindAndGustsThreeDigits) {
 	const auto wg = metaf::WindGroup::parse("180101G105KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 180u);
@@ -133,7 +133,7 @@ TEST(WindGroup, parseWindAndGustsThreeDigits) {
 TEST(WindGroup, parseVariableDirection) {
 	const auto wg = metaf::WindGroup::parse("VRB05KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VARIABLE);
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
@@ -147,7 +147,7 @@ TEST(WindGroup, parseVariableDirection) {
 TEST(WindGroup, parseNotReported) {
 	const auto wg = metaf::WindGroup::parse("/////KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::SURFACE_WIND);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
@@ -160,7 +160,7 @@ TEST(WindGroup, parseNotReported) {
 TEST(WindGroup, parseWindShear) {
 	const auto wg = metaf::WindGroup::parse("WS020/05035KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::WIND_SHEAR);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::VALUE_DEGREES);
 	ASSERT_TRUE(wg->direction().degrees().has_value());
 	EXPECT_EQ(wg->direction().degrees().value(), 50u);
@@ -179,7 +179,7 @@ TEST(WindGroup, parseWindShear) {
 
 TEST(WindGroup, parseVariableWindSectorMetar) {
 	const auto wg = metaf::WindGroup::parse("180V240", metaf::ReportPart::METAR);
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::VARIABLE_WIND_SECTOR);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::VARIABLE_WIND_SECTOR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
@@ -195,7 +195,7 @@ TEST(WindGroup, parseVariableWindSectorMetar) {
 
 TEST(WindGroup, parseVariableWindSectorTaf) {
 	const auto wg = metaf::WindGroup::parse("180V240", metaf::ReportPart::TAF);
-	EXPECT_EQ(wg->status(), metaf::WindGroup::Status::VARIABLE_WIND_SECTOR);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::VARIABLE_WIND_SECTOR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
@@ -387,8 +387,8 @@ TEST(WindGroup, combineWindGroupAndWindSectorGroup) {
 	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
 
 	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
-	EXPECT_EQ(wgCombined.status(), 
-		metaf::WindGroup::Status::SURFACE_WIND_WITH_VARIABLE_SECTOR);
+	EXPECT_EQ(wgCombined.type(), 
+		metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR);
 	ASSERT_TRUE(wgCombined.direction().degrees().has_value());
 	EXPECT_EQ(wgCombined.direction().degrees().value(), 180u);
 	ASSERT_TRUE(wgCombined.windSpeed().speed().has_value());
