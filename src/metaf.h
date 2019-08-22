@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 2;
-		inline static const int minor = 8;
-		inline static const int patch = 9;
+		inline static const int minor = 9;
+		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -92,10 +92,6 @@ namespace metaf {
 		TAF,
 		RMK
 	};
-
-	inline std::optional<unsigned int> strToUint(const std::string & str,
-		std::size_t startPos,
-		std::size_t digits);
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -421,6 +417,8 @@ namespace metaf {
 		static inline std::optional<Precipitation> fromRemarkString(const std::string & s, 
 			float factorInches,
 			bool allowNotReported = false);
+		static inline std::optional<std::pair<Precipitation, Precipitation> > 
+			fromSnincrString(const std::string & s);
 
 	private:
 		Status precipStatus = Status::NOT_REPORTED;
@@ -1249,9 +1247,11 @@ namespace metaf {
 			ICE_ACCRETION_FOR_LAST_HOUR,
 			ICE_ACCRETION_FOR_LAST_3_HOURS,
 			ICE_ACCRETION_FOR_LAST_6_HOURS,
+			SNOW_INCREASING_RAPIDLY
 		};
 		Type type() const { return(precType); }
 		Precipitation amount() const { return(precAmount); }
+		Precipitation tendency() const { return(precChange); }
 		bool isValid() const { return(true); }
 
 		PrecipitationGroup() = default;
@@ -1262,6 +1262,7 @@ namespace metaf {
 	private:
 		Type precType = Type::TOTAL_PRECIPITATION_HOURLY;
 		Precipitation precAmount;
+		Precipitation precChange;
 
 		static inline std::optional<Type> typeFromString(const std::string & s,
 			bool is3hourly,
@@ -1883,6 +1884,15 @@ namespace metaf {
 		this->visitOther(group);
 	}
 
+inline std::optional<unsigned int> strToUint(const std::string & str, 
+	std::size_t startPos,
+	std::size_t digits);
+
+inline std::optional<std::pair<unsigned int, unsigned int> > 
+	fractionStrToUint(const std::string & str, 
+		std::size_t startPos,
+		std::size_t length);
+
 } //namespace metaf
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1905,6 +1915,32 @@ namespace metaf {
 		return(value);
 	}
 
+	std::optional<std::pair<unsigned int, unsigned int> > 
+		fractionStrToUint(const std::string & str, 
+			std::size_t startPos, 
+			std::size_t length)
+	{
+		//Equivalent regex "(\\d\\d?)/(\\d\\d?)"
+		std::optional<std::pair<unsigned int, unsigned int> > error;
+		if (length > str.length()) length = str.length();
+
+		const auto slashPos = str.find('/', startPos);
+		if (slashPos == std::string::npos) return(error);
+
+		static const int minDigits = 1, maxDigits = 2;
+
+		const int numeratorPos = startPos;
+		const int numeratorLength = slashPos - startPos;
+		if (numeratorLength < minDigits || numeratorLength > maxDigits) return(error);
+		const int denominatorPos = slashPos + 1;
+		const int denominatorLength = length - denominatorPos;
+		if (denominatorLength < minDigits || denominatorLength > maxDigits) return(error);
+
+		const auto numerator = strToUint(str, numeratorPos, numeratorLength);
+		const auto denominator = strToUint(str, denominatorPos, denominatorLength);
+		if (!numerator.has_value() || !denominator.has_value()) return(error);
+		return(std::pair(numerator.value(), denominator.value()));
+}
 
 	std::optional<Runway> Runway::fromString(const std::string & s, bool enableRwy) {
 		//static const std::regex rgx("R(?:WY)?(\\d\\d)([RLC])?");
@@ -2243,42 +2279,40 @@ namespace metaf {
 		static const auto unitStr = std::string ("SM"); 
 		static const auto unitLength = unitStr.length();
 		if (s.length() < unitLength + 1) return(error); //1 digit minimum
+
 		Distance distance;
 		distance.distUnit = Unit::STATUTE_MILES;
 		if (s == "////SM") return(distance);
 		if (s.substr(s.length() - unitLength, unitLength) != unitStr) return(error); //s.endsWith(unitStr)
 		const auto modifier = modifierFromChar(s[0]);
+		if (modifier.has_value()) {
+			distance.distModifier = modifier.value();
+		}
+
 		if (const auto slashPos = s.find('/'); slashPos == std::string::npos) {
-			//Integer value
-			int intPos = 0, intLength = s.length() - unitLength;
-			if (modifier.has_value()) {
-				distance.distModifier = modifier.value();
-				intPos++;
-				intLength--;
-			}
-			if (intLength <= 0 || intLength > 2) return (error);
+			//The value is integer, e.g. 3SM or 15SM
+			const int intPos = static_cast<int>(modifier.has_value());
+			const int intLength = 
+				s.length() - unitLength - static_cast<int>(modifier.has_value());
+			static const int minDigits = 1, maxDigits = 2;
+			if (intLength < minDigits || intLength > maxDigits) return (error);
 			const auto dist = strToUint(s, intPos, intLength);
 			if (!dist.has_value()) return(error);
 			distance.distValueInt = dist.value();
 		} else {
-			//Fraction value
-			int numPos = 0, numLength = slashPos;
-			if (modifier.has_value()) {
-				distance.distModifier = modifier.value();
-				numPos++;
-				numLength--;
-			}
-			int denPos = slashPos + 1, denLength = s.length() - unitLength - denPos;
-			if (numLength < 0 || numLength > 2 || denLength < 0 || denLength > 2 || denPos < 0) return(error);
-			const auto distNum = strToUint(s, numPos, numLength);
-			const auto distDen = strToUint(s, denPos, denLength);
-			if (!distNum.has_value() || !distDen.has_value()) return(error);
-			distance.distValueNum = distNum.value();
-			distance.distValueDen = distDen.value();
-			if (distNum.value() >= distDen.value()) {
+			//Fraction value, e.g. 1/2SM, 11/2SM, 5/16SM, 11/16SM
+			const auto fraction = fractionStrToUint(s, 
+				static_cast<int>(modifier.has_value()), 
+				s.length() - unitLength);
+			if (!fraction.has_value()) return(error);
+			const auto numerator = std::get<0>(fraction.value());
+			const auto denominator = std::get<1>(fraction.value());
+			distance.distValueNum = numerator; 
+			distance.distValueDen = denominator;
+			if (numerator >= denominator) { //e.g. 11/2SM = 1 1/2SM
 				static const auto decimalRadix = 10u;
-				distance.distValueInt = distNum.value() / decimalRadix;
-				distance.distValueNum = distNum.value() % decimalRadix;
+				distance.distValueInt = numerator / decimalRadix;
+				distance.distValueNum = numerator % decimalRadix;
 			}
 		}
 		return(distance);
@@ -2685,6 +2719,27 @@ namespace metaf {
 		if (!pr.has_value()) return(error);
 		precipitation.precipValue = pr.value() * factorInches;
 		return(precipitation);
+	}
+
+	std::optional<std::pair<Precipitation, Precipitation>> 
+		Precipitation::fromSnincrString(const std::string & s)
+	{
+		//static const std::regex rgx("\\d?\\d)/(\\d?\\d");
+		static const std::optional<std::pair<Precipitation, Precipitation>> error;
+		const auto fraction = fractionStrToUint(s, 0, s.length());
+		if (!fraction.has_value()) return(error);
+
+		Precipitation total;
+		total.precipStatus = Precipitation::Status::REPORTED;
+		total.precipUnit = Precipitation::Unit::INCHES;
+		total.precipValue = std::get<0>(fraction.value());
+
+		Precipitation change;
+		change.precipStatus = Precipitation::Status::REPORTED;
+		change.precipUnit = Precipitation::Unit::INCHES;
+		change.precipValue = std::get<1>(fraction.value());
+
+		return(std::pair(total, change));
 	}
 
 
@@ -4072,6 +4127,12 @@ namespace metaf {
 		static const auto matchValue1 = 2, matchValue2 = 4;
 
 		if (reportPart != ReportPart::RMK) return(notRecognised);
+		if (group == "SNINCR") {
+			PrecipitationGroup result;
+			result.precType = Type::SNOW_INCREASING_RAPIDLY; 
+			return(result);
+		}
+
 		std::smatch match;
 		if (!std::regex_match(group, match, rgx)) return(notRecognised);
 
@@ -4108,7 +4169,19 @@ namespace metaf {
 
 
 	std::optional<Group> PrecipitationGroup::combine(const Group & nextGroup) const { 
-		(void)nextGroup; return(std::optional<Group>());
+		static const std::optional<Group> notCombined;
+		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);	
+		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
+
+		if (type() != Type::SNOW_INCREASING_RAPIDLY) return(notCombined);
+		if (amount().isReported() || tendency().isReported()) return(notCombined);
+		const auto precip = Precipitation::fromSnincrString(nextGroupStr);
+		if (!precip.has_value()) return(notCombined);
+		PrecipitationGroup combinedGroup;
+		combinedGroup.precType = Type::SNOW_INCREASING_RAPIDLY;
+		combinedGroup.precChange = std::get<0>(precip.value());
+		combinedGroup.precAmount = std::get<1>(precip.value());
+		return(combinedGroup);
 	}
 
 	std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
@@ -4135,6 +4208,7 @@ namespace metaf {
 	float PrecipitationGroup::factorFromType(Type type) {
 		switch(type) {
 			case Type::SNOW_DEPTH_ON_GROUND:
+			case Type::SNOW_INCREASING_RAPIDLY:
 			return(1);
 
 			case Type::WATER_EQUIV_OF_SNOW_ON_GROUND:

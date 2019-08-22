@@ -676,6 +676,14 @@ std::string GroupVisitorExplain::visitPrecipitationGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (group.type() == metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY) {
+		result << "Snow increasing rapidly" << lineBreak;
+		result << "Snow increased by ";
+		result << explainPrecipitation(group.tendency());
+		result << " for the last hour, total snowfall is ";
+		result << explainPrecipitation(group.amount());
+		return(result.str());
+	};
 	if (group.amount().status() == metaf::Precipitation::Status::REPORTED &&
 		!group.amount().precipitation().value())
 	{

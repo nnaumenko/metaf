@@ -852,13 +852,19 @@ void GroupVisitorJson::visitMinMaxTemperatureGroup(
 void GroupVisitorJson::visitPrecipitationGroup(
 	const metaf::PrecipitationGroup & group)
 {
-	const std::string typeStr = precipitationGroupTypeToString(group.type());
+	const std::string typeStr = precipitationGroupTypeToString(group.type());	
 	precipitationToJson(group.amount(),
 		typeStr,
 		typeStr + "Unit",
 		"",
 		typeStr + "Status",
-		true);	
+		true);
+	precipitationToJson(group.tendency(),
+		typeStr + "LastHourIncrease",
+		typeStr + "LastHourIncreaseUnit",
+		"",
+		typeStr + "LastHourIncreaseStatus",
+		true);
 }
 
 void GroupVisitorJson::visitLayerForecastGroup(
@@ -1208,24 +1214,24 @@ void GroupVisitorJson::precipitationToJson(const metaf::Precipitation & precipit
 
 		case metaf::Precipitation::Status::REPORTED:
 		if (const auto p = precipitation.precipitation(); p.has_value()) {
-		if (!*p && allowTrace) {
-			json.valueStr(valueName, "traceAmount");
-		} else {
-			json.valueFloat(valueName, *p);
-		}
-		switch(precipitation.unit()) {
-			case metaf::Precipitation::Unit::MM:
-			json.valueStr(unitName, "mm");
-			break;
+			if (!*p && allowTrace) {
+				json.valueStr(valueName, "traceAmount");
+			} else {
+				json.valueFloat(valueName, *p);
+			}
+			switch(precipitation.unit()) {
+				case metaf::Precipitation::Unit::MM:
+				json.valueStr(unitName, "mm");
+				break;
 
-			case metaf::Precipitation::Unit::INCHES:
-			json.valueStr(unitName, "inches");
-			break;
+				case metaf::Precipitation::Unit::INCHES:
+				json.valueStr(unitName, "inches");
+				break;
 
-			default:
-			undefinedToJson(static_cast<int>(precipitation.unit()), unitName);
-			break;
-		}
+				default:
+				undefinedToJson(static_cast<int>(precipitation.unit()), unitName);
+				break;
+			}
 		}
 		break;
 
@@ -1850,6 +1856,9 @@ std::string GroupVisitorJson::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
 		return("iceAccretionForLast6Hours");
+
+		case metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY:
+		return("snowIncreasingRapidly");
 
 		default: return(undefinedToString(static_cast<int>(type)));
 	}

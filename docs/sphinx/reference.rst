@@ -2901,6 +2901,10 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 			Amount of ice accretion during the last 6 hours.
 
+		.. cpp:enumerator:: SNOW_INCREASING_RAPIDLY
+
+			Indicates that snow is increasing rapidly and total snowfall; use also ..cpp-func:`tendency()` for snow increase during last hour.
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -2910,6 +2914,10 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 		.. cpp:function:: Precipitation amount() const
 
 			:returns: Amount of precipitation of specified type. May be a non-reported value.
+
+		.. cpp:function:: Precipitation tendency() const
+
+			:returns: Increase of decrease of precipitation during recent period.
 
 	**Validating**
 
