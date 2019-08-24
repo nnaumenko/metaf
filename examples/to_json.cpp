@@ -361,14 +361,6 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueBool("stationIssuesSpeciReports", false);
 		break;
 
-		case metaf::FixedGroup::Type::PRESFR:
-		json.valueBool("atmosphericPressureFallingRapidly", true);
-		break;
-
-		case metaf::FixedGroup::Type::PRESRR:
-		json.valueBool("atmosphericPressureRisingRapidly", true);
-		break;
-
 		case metaf::FixedGroup::Type::RVRNO:
 		json.valueNull("runwayVisualRange");
 		break;
@@ -894,6 +886,10 @@ void GroupVisitorJson::visitPressureTendencyGroup(
 		if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED) {
 			json.valueStr("tendency", 
 				pressureTendencyTypeToString(group.type()));
+		}
+		if (metaf::PressureTendencyGroup::trend(group.type()) 
+				!= metaf::PressureTendencyGroup::Trend::NOT_REPORTED)
+		{
 			json.valueStr("trend", 
 				pressureTendencyTrendToString(
 					metaf::PressureTendencyGroup::trend(group.type())));
@@ -1898,6 +1894,12 @@ std::string GroupVisitorJson::pressureTendencyTypeToString(
 		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
 		return("decreasingMoreRapidly");
 		
+		case metaf::PressureTendencyGroup::Type::RISING_RAPIDLY:
+		return("risingRapidly");
+
+		case metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY:
+		return("fallingRapidly");
+
 		default:
 		return(undefinedToString(static_cast<int>(type)));
 	}

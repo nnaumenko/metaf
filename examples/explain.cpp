@@ -198,20 +198,6 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		result << "This manual station does not issue SPECI (unscheduled) reports";
 		break;
 
-		case metaf::FixedGroup::Type::PRESFR:
-		result << "Pressure is rapidly falling at a rate of at least 0.06 inch of mercury ";
-		result << "(2.03 hectopascal) per hour and the pressure change totals ";
-		result << "0.02 inch of mercury (0.68 hectopascal) or more ";
-		result << "at the time of the observation";
-		break;
-
-		case metaf::FixedGroup::Type::PRESRR:
-		result << "Pressure is rapidly rising at a rate of at least 0.06 inch of mercury ";
-		result << "(2.03 hectopascal) per hour and the pressure change totals ";
-		result << "0.02 inch of mercury (0.68 hectopascal) or more ";
-		result << "at the time of the observation";
-		break;
-
 		case metaf::FixedGroup::Type::RVRNO:
 		result << "Runway visual range should be reported but is missing";
 		break;
@@ -713,6 +699,18 @@ std::string GroupVisitorExplain::visitPressureTendencyGroup(
 {
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (group.type() == metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY) {
+		return ("Pressure is rapidly falling at a rate of at least 0.06 inch of mercury "
+			"(2.03 hectopascal) per hour and the pressure change totals "
+			"0.02 inch of mercury (0.68 hectopascal) or more "
+			"at the time of the observation");
+	}
+	if (group.type() == metaf::PressureTendencyGroup::Type::RISING_RAPIDLY) {
+		return ("Pressure is rapidly rising at a rate of at least 0.06 inch of mercury "
+			"(2.03 hectopascal) per hour and the pressure change totals "
+			"0.02 inch of mercury (0.68 hectopascal) or more "
+			"at the time of the observation");
+	}
 	if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED) {
 		result << "During last 3 hours the atmospheric pressure was ";
 		result << pressureTendencyTypeToString (group.type()) << lineBreak;

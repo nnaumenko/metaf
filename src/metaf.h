@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		inline static const int major = 2;
 		inline static const int minor = 9;
-		inline static const int patch = 0;
+		inline static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -604,8 +604,6 @@ namespace metaf {
 			AO1,
 			AO2,
 			NOSPECI,
-			PRESFR,
-			PRESRR,
 			RVRNO,
 			PWINO,
 			PNO,
@@ -1327,6 +1325,8 @@ namespace metaf {
 			DECREASING_MORE_SLOWLY,
 			DECREASING,
 			DECREASING_MORE_RAPIDLY,
+			RISING_RAPIDLY,
+			FALLING_RAPIDLY
 		};
 		enum class Trend {
 			NOT_REPORTED,
@@ -1922,7 +1922,8 @@ namespace metaf {
 	{
 		//Equivalent regex "(\\d\\d?)/(\\d\\d?)"
 		std::optional<std::pair<unsigned int, unsigned int> > error;
-		if (length > str.length()) length = str.length();
+		if (length + startPos > str.length()) length = str.length() - startPos;
+		const int endPos = startPos + length;
 
 		const auto slashPos = str.find('/', startPos);
 		if (slashPos == std::string::npos) return(error);
@@ -1933,7 +1934,7 @@ namespace metaf {
 		const int numeratorLength = slashPos - startPos;
 		if (numeratorLength < minDigits || numeratorLength > maxDigits) return(error);
 		const int denominatorPos = slashPos + 1;
-		const int denominatorLength = length - denominatorPos;
+		const int denominatorLength = endPos - denominatorPos;
 		if (denominatorLength < minDigits || denominatorLength > maxDigits) return(error);
 
 		const auto numerator = strToUint(str, numeratorPos, numeratorLength);
@@ -2289,7 +2290,7 @@ namespace metaf {
 			distance.distModifier = modifier.value();
 		}
 
-		if (const auto slashPos = s.find('/'); slashPos == std::string::npos) {
+		if (s.find('/') == std::string::npos) {
 			//The value is integer, e.g. 3SM or 15SM
 			const int intPos = static_cast<int>(modifier.has_value());
 			const int intLength = 
@@ -2303,7 +2304,7 @@ namespace metaf {
 			//Fraction value, e.g. 1/2SM, 11/2SM, 5/16SM, 11/16SM
 			const auto fraction = fractionStrToUint(s, 
 				static_cast<int>(modifier.has_value()), 
-				s.length() - unitLength);
+				s.length() - unitLength - static_cast<int>(modifier.has_value()));
 			if (!fraction.has_value()) return(error);
 			const auto numerator = std::get<0>(fraction.value());
 			const auto denominator = std::get<1>(fraction.value());
@@ -2956,8 +2957,6 @@ namespace metaf {
 			if (group == "AO1") return(FixedGroup(Type::AO1));
 			if (group == "AO2") return(FixedGroup(Type::AO2));
 			if (group == "NOSPECI") return(FixedGroup(Type::NOSPECI));
-			if (group == "PRESFR") return(FixedGroup(Type::PRESFR));
-			if (group == "PRESRR") return(FixedGroup(Type::PRESRR));
 			if (group == "RVRNO") return(FixedGroup(Type::RVRNO));
 			if (group == "PWINO") return(FixedGroup(Type::PWINO));
 			if (group == "PNO") return(FixedGroup(Type::PNO));
@@ -4309,6 +4308,8 @@ namespace metaf {
 			return(Trend::LOWER);
 
 			case Type::NOT_REPORTED:
+			case Type::RISING_RAPIDLY:
+			case Type::FALLING_RAPIDLY:
 			return(Trend::NOT_REPORTED);
 		}
 	}
@@ -4338,10 +4339,23 @@ namespace metaf {
 	{
 		(void)reportData;
 		std::optional<PressureTendencyGroup> notRecognised;
+
+		if (reportPart != ReportPart::RMK) return(notRecognised);
+
+		if (group == "PRESRR") {
+			PressureTendencyGroup result;
+			result.tendencyType = Type::RISING_RAPIDLY;
+			return(result);
+		}
+		if (group == "PRESFR") {
+			PressureTendencyGroup result;
+			result.tendencyType = Type::FALLING_RAPIDLY;
+			return(result);
+		}
+
 		static const std::regex rgx("5([\\d/])(\\d\\d\\d|///)");
 		static const auto matchType = 1, matchPressure = 2;
 
-		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
 		if (!std::regex_match(group, match, rgx)) return(notRecognised);
 		const auto type = typeFromChar(match.str(matchType)[0]);

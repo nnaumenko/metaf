@@ -288,34 +288,6 @@ TEST(FixedGroup, parseNospeci) {
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
-TEST(FixedGroup, parsePresfr) {
-	static const char gs[] = "PRESFR";
-	static const auto type = metaf::FixedGroup::Type::PRESFR;
-
-	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), type);
-
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
-}
-
-TEST(FixedGroup, parsePresrr) {
-	static const char gs[] = "PRESRR";
-	static const auto type = metaf::FixedGroup::Type::PRESRR;
-
-	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), type);
-
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
-}
-
 TEST(FixedGroup, parseRvrno) {
 	static const char gs[] = "RVRNO";
 	static const auto type = metaf::FixedGroup::Type::RVRNO;
@@ -485,14 +457,6 @@ TEST(FixedGroup, isValid) {
 	const auto fg16 = metaf::FixedGroup::parse("NOSPECI", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg16.has_value());
 	EXPECT_TRUE(fg16->isValid());
-
-	const auto fg17 = metaf::FixedGroup::parse("PRESFR", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg17.has_value());
-	EXPECT_TRUE(fg17->isValid());
-
-	const auto fg18 = metaf::FixedGroup::parse("PRESRR", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg18.has_value());
-	EXPECT_TRUE(fg18->isValid());
 
 	const auto fg19 = metaf::FixedGroup::parse("RVRNO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg19.has_value());

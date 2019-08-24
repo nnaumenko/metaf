@@ -1232,18 +1232,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.
 
-		.. index:: single: Atmospheric pressure; Falling rapidly
-
-		.. cpp:enumerator:: PRESFR
-
-			Pressure is rapidly falling at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
-
-		.. index:: single: Atmospheric pressure; Rising rapidly
-
-		.. cpp:enumerator:: PRESRR
-
-			Pressure is rapidly rising at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
-
 		.. index:: single: Runway visual range; Missing
 
 		.. cpp:enumerator:: RVRNO
@@ -2847,7 +2835,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: precipitationgroup.svg
 
-Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, and ``I6012``. 
+Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, ``I6012``, and ``SNINCR 2/12``.
 
 .. cpp:class:: PrecipitationGroup
 
@@ -3060,7 +3048,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: pressuretendencygroup.svg
 
-Example of the raw report data is ``52032``, and ``5////``. 
+Example of the raw report data is ``52032``, ``5////``, ``PRESRR``, and ``PRESFR``. 
 
 .. cpp:class:: PressureTendencyGroup
 
@@ -3109,6 +3097,15 @@ Example of the raw report data is ``52032``, and ``5////``.
 		.. cpp:enumerator:: DECREASING_MORE_RAPIDLY
 
 			Atmospheric pressure was steady or increasing, then decreasing; or decreasing then decreasing more rapidly.
+
+		.. cpp:enumerator:: PRESFR
+
+			Atmospheric pressure is rapidly falling at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
+
+		.. cpp:enumerator:: PRESRR
+
+			Atmospheric pressure is rapidly rising at a rate of at least 0.06 inch of mercury (2.03 hectopascal) per hour and the pressure change totals 0.02 inch of mercury (0.68 hectopascal) or more at the time of the observation.
+
 
 	.. cpp:enum-class:: Trend
 
