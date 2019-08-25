@@ -386,6 +386,584 @@ TEST(FixedGroup, parseFroin) {
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
+TEST(FixedGroup, parseMisg) {
+	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(FixedGroup, parseCld) {
+	static const char gs[] = "CLD";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseCldMisg) {
+	static const char gs[] = "CLD";
+	static const auto type = metaf::FixedGroup::Type::CLD_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseCldAndOther) {
+	static const char gs[] = "CLD";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "CLD MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "CLD 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "CLD ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseIcg) {
+	static const char gs[] = "ICG";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseIcgMisg) {
+	static const char gs[] = "ICG";
+	static const auto type = metaf::FixedGroup::Type::ICG_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseIcgAndOther) {
+	static const char gs[] = "ICG";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "ICG MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "ICG 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "ICG ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parsePcpn) {
+	static const char gs[] = "PCPN";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parsePcpnMisg) {
+	static const char gs[] = "PCPN";
+	static const auto type = metaf::FixedGroup::Type::PCPN_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parsePcpnAndOther) {
+	static const char gs[] = "PCPN";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "PCPN MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "PCPN 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "PCPN ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parsePres) {
+	static const char gs[] = "PRES";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parsePresMisg) {
+	static const char gs[] = "PRES";
+	static const auto type = metaf::FixedGroup::Type::PRES_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parsePresAndOther) {
+	static const char gs[] = "PRES";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "PRES MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "PRES 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "PRES ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseRvr) {
+	static const char gs[] = "RVR";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseRvrMisg) {
+	static const char gs[] = "RVR";
+	static const auto type = metaf::FixedGroup::Type::RVR_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseRvrAndOther) {
+	static const char gs[] = "RVR";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "RVR MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "RVR 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "RVR ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseT) {
+	static const char gs[] = "T";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseTMisg) {
+	static const char gs[] = "T";
+	static const auto type = metaf::FixedGroup::Type::T_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseTAndOther) {
+	static const char gs[] = "T";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "T MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "T 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "T ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseTd) {
+	static const char gs[] = "TD";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseTdMisg) {
+	static const char gs[] = "TD";
+	static const auto type = metaf::FixedGroup::Type::TD_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseTdAndOther) {
+	static const char gs[] = "TD";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "TD MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "TD 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "TD ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseVis) {
+	static const char gs[] = "VIS";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseVisMisg) {
+	static const char gs[] = "VIS";
+	static const auto type = metaf::FixedGroup::Type::VIS_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseVisAndOther) {
+	static const char gs[] = "VIS";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "VIS MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "VIS 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "VIS ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseWnd) {
+	static const char gs[] = "WND";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseWndMisg) {
+	static const char gs[] = "WND";
+	static const auto type = metaf::FixedGroup::Type::WND_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseWndAndOther) {
+	static const char gs[] = "WND";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "WND MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "WND 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "WND ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseWx) {
+	static const char gs[] = "WX";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseWxMisg) {
+	static const char gs[] = "WX";
+	static const auto type = metaf::FixedGroup::Type::WX_MISG;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	EXPECT_EQ(fgCombined.type(), type);
+}
+
+TEST(FixedGroup, parseWxAndOther) {
+	static const char gs[] = "WX";
+
+	const auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("MSSG"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "WX MSSG");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "WX 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "WX ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
 TEST(FixedGroup, parseOther) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::FixedGroup::parse("METAF", metaf::ReportPart::HEADER).has_value());

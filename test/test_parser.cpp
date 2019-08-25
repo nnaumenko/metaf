@@ -1187,7 +1187,7 @@ TEST(ParserCombined, combinedGroups) {
 	ASSERT_EQ(result.reportType, metaf::ReportType::METAR);
 	ASSERT_EQ(result.error, metaf::Parser::Error::NONE);
 
-	EXPECT_EQ(result.groups.size(), 15u);
+	EXPECT_EQ(result.groups.size(), 16u);
 
 	EXPECT_TRUE(isMetar(result.groups.at(0)));
 	EXPECT_TRUE(isLocation(result.groups.at(1))); 
@@ -1201,9 +1201,10 @@ TEST(ParserCombined, combinedGroups) {
 	EXPECT_TRUE(isPressure(result.groups.at(9)));
 	EXPECT_TRUE(isRmk(result.groups.at(10)));
 	EXPECT_TRUE(isFixedGroup(result.groups.at(11)));
-	EXPECT_TRUE(isPlainText(result.groups.at(12), "SFC VIS 4"));
-	EXPECT_TRUE(isPressure(result.groups.at(13)));
-	EXPECT_TRUE(isTemperature(result.groups.at(14)));
+	EXPECT_TRUE(isPlainText(result.groups.at(12), "SFC"));
+	EXPECT_TRUE(isPlainText(result.groups.at(13), "VIS 4"));
+	EXPECT_TRUE(isPressure(result.groups.at(14)));
+	EXPECT_TRUE(isTemperature(result.groups.at(15)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

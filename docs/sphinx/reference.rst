@@ -1096,6 +1096,10 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 		Designates the fixed text which is represented by this group.
 
+		.. cpp:enumerator:: INCOMPLETE
+
+			One or more groups have been recognised by the parser as fixed group(s) but the end of the report was reached unexpectedly.
+
 		.. index:: single: Report type; METAR
 
 		.. cpp:enumerator:: METAR
@@ -1271,6 +1275,47 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 		.. cpp:enumerator:: FROIN
 
 			Frost on the instrument (e.g. due to fog depositing rime).
+
+		.. cpp:enumerator:: CLD_MISG
+
+			Sky condition data (cloud data) is missing.
+
+		.. cpp:enumerator:: ICG_MISG
+
+			Icing data is missing.
+
+		.. cpp:enumerator:: PCPN_MISG
+
+			Precipitation data is missing.
+
+		.. cpp:enumerator:: PRES_MISG
+
+			Atmospheric pressure (altimeter) data is missing.
+
+		.. cpp:enumerator:: RVR_MISG
+
+			Runway visual range data is missing.
+
+		.. cpp:enumerator:: T_MISG
+
+			Temperature data is missing.
+
+		.. cpp:enumerator:: TD_MISG
+
+			Dew point data is missing.
+
+		.. cpp:enumerator:: VIS_MISG
+
+			Visibility data is missing.
+
+		.. cpp:enumerator:: WND_MISG
+
+			Wind data is missing.
+
+		.. cpp:enumerator:: WX_MISG
+
+			Weather phenomena data is missing.
+
 
 	**Acquiring group data**
 

@@ -287,6 +287,9 @@ void GroupVisitorJson::visitPlainTextGroup(const metaf::PlainTextGroup & group) 
 
 void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 	switch (group.type()) {
+		case metaf::FixedGroup::Type::INCOMPLETE:
+		json.valueStr("incompleteFixedGroupText", group.incompleteText());
+
 		case metaf::FixedGroup::Type::METAR:
 		case metaf::FixedGroup::Type::SPECI:
 		case metaf::FixedGroup::Type::TAF:
@@ -313,7 +316,7 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueBool("automatedReport", true);
 		break;
 
-	case metaf::FixedGroup::Type::NSW:
+		case metaf::FixedGroup::Type::NSW:
 		json.valueBool("weatherPhenomenaEnded", true);
 		break;
 
@@ -388,6 +391,47 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		case metaf::FixedGroup::Type::FROIN:
 		json.valueBool("frostOnInstrument", true);
 		break;
+
+		case metaf::FixedGroup::Type::CLD_MISG:
+		json.valueBool("skyConditionDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::ICG_MISG:
+		json.valueBool("icingDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::PCPN_MISG:
+		json.valueBool("precipitationDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::PRES_MISG:
+		json.valueBool("pressureDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::RVR_MISG:
+		json.valueBool("rvrDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::T_MISG:
+		json.valueBool("temperatureDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::TD_MISG:
+		json.valueBool("dewpointDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::VIS_MISG:
+		json.valueBool("visibilityDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::WND_MISG:
+		json.valueBool("windDataMissing", true);
+		break;
+
+		case metaf::FixedGroup::Type::WX_MISG:
+		json.valueBool("weatherDataMissing", true);
+		break;
+
 
 		default:
 		json.startObject("fixedGroup");
@@ -894,7 +938,12 @@ void GroupVisitorJson::visitPressureTendencyGroup(
 				pressureTendencyTrendToString(
 					metaf::PressureTendencyGroup::trend(group.type())));
 		}
-		json.valueStr("observationPeriod", "3-hourly");
+
+		if (group.type() != metaf::PressureTendencyGroup::Type::RISING_RAPIDLY &&
+			group.type() != metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY)
+		{
+			json.valueStr("observationPeriod", "3-hourly");
+		}
 		pressureToJson(group.difference(), 
 			"pressureChange",
 			"pressureChangeUnit");

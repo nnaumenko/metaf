@@ -120,6 +120,12 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
+		case metaf::FixedGroup::Type::INCOMPLETE:
+		result << "One or more groups were recognised by parser as ";
+		result << "a fixed group but some of the text appears missing: ";
+		result << group.incompleteText();
+		break;
+
 		case metaf::FixedGroup::Type::METAR:
 		result << "Report type: METAR (weather observation report)";
 		break;
@@ -228,6 +234,46 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 
 		case metaf::FixedGroup::Type::FROIN:
 		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
+		break;
+
+		case metaf::FixedGroup::Type::CLD_MISG:
+		result << "Sky condition data (cloud data) is missing";
+		break;
+
+		case metaf::FixedGroup::Type::ICG_MISG:
+		result << "Icing data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::PCPN_MISG:
+		result << "Precipitation data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::PRES_MISG:
+		result << "Atmospheric pressure (altimeter) data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::RVR_MISG:
+		result << "Runway visual range data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::T_MISG:
+		result << "Temperature data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::TD_MISG:
+		result << "Dew point data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::VIS_MISG:
+		result << "Visibility data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::WND_MISG:
+		result << "Wind data is missing";
+		break;
+
+		case metaf::FixedGroup::Type::WX_MISG:
+		result << "Weather phenomena data is missing";
 		break;
 
 		default:
@@ -556,7 +602,7 @@ std::string GroupVisitorExplain::visitSecondaryLocationGroup(
 	switch (group.type()) {
 		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
 		result << "These groups were recognised by parser as ";
-		result << "an information about secondary location but the ";
+		result << "an information about secondary location but ";
 		result << "some of the text appears missing: ";
 		result << group.incompleteText();
 		break;

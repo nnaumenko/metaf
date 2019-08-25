@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 2;
-		inline static const int minor = 9;
-		inline static const int patch = 1;
+		inline static const int minor = 10;
+		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -92,6 +92,8 @@ namespace metaf {
 		TAF,
 		RMK
 	};
+
+	static const inline std::string groupDelimiterText = " ";
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -587,6 +589,7 @@ namespace metaf {
 	class FixedGroup {
 	public:
 		enum class Type {
+			INCOMPLETE,
 			METAR,
 			SPECI,
 			TAF,
@@ -610,20 +613,47 @@ namespace metaf {
 			FZRANO,
 			TSNO,
 			SLPNO,
-			FROIN
+			FROIN,
+			CLD_MISG,
+			ICG_MISG,
+			PCPN_MISG,
+			PRES_MISG,
+			RVR_MISG,
+			T_MISG,
+			TD_MISG,
+			VIS_MISG,
+			WND_MISG,
+			WX_MISG,
 		};
 		Type type() const { return(t); }
-		bool isValid() const { return(true); }
+		bool isValid() const { return(type() != Type::INCOMPLETE); }
 
 		FixedGroup() = default;
 		static inline std::optional<FixedGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
 		inline std::optional<Group> combine(const Group & nextGroup) const;
+		inline std::string incompleteText() const;
 
 	private:
-		FixedGroup(Type type) :t (type) {}
 		Type t; 
+
+		enum class PartialText {
+			CLD,
+			ICG,
+			PCPN,
+			PRES,
+			RVR,
+			T,
+			TD,
+			VIS,
+			WND,
+			WX
+		};
+		PartialText partialText;
+
+		FixedGroup(Type type) :t (type) {}
+		FixedGroup(PartialText pt) :t (Type::INCOMPLETE), partialText(pt) {}
 	};
 
 	class LocationGroup {
@@ -1136,8 +1166,6 @@ namespace metaf {
 			WS_ALL,
 		};
 		PartialText partialText;
-
-		static const inline std::string groupDelimiterText = " ";
 
 		Type t;
 		std::optional<Runway> rw;
@@ -2964,13 +2992,61 @@ namespace metaf {
 			if (group == "TSNO") return(FixedGroup(Type::TSNO));
 			if (group == "SLPNO") return(FixedGroup(Type::SLPNO));
 			if (group == "FROIN") return(FixedGroup(Type::FROIN));
+			if (group == "CLD") return(FixedGroup(PartialText::CLD));
+			if (group == "ICG") return(FixedGroup(PartialText::ICG));
+			if (group == "PCPN") return(FixedGroup(PartialText::PCPN));
+			if (group == "PRES") return(FixedGroup(PartialText::PRES));
+			if (group == "RVR") return(FixedGroup(PartialText::RVR));
+			if (group == "T") return(FixedGroup(PartialText::T));
+			if (group == "TD") return(FixedGroup(PartialText::TD));
+			if (group == "VIS") return(FixedGroup(PartialText::VIS));
+			if (group == "WND") return(FixedGroup(PartialText::WND));
+			if (group == "WX") return(FixedGroup(PartialText::WX));
 		}
 		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
 	}
 
 	std::optional<Group> FixedGroup::combine(const Group & nextGroup) const { 
-		(void)nextGroup; return(std::optional<Group>());
+		static const std::optional<Group> notCombined;
+
+		if (type() != Type::INCOMPLETE) return(notCombined);
+
+		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);		
+		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
+	
+		if (nextGroupStr == "MISG") {
+			switch (partialText) {
+				case PartialText::CLD:	return(FixedGroup(Type::CLD_MISG));
+				case PartialText::ICG:	return(FixedGroup(Type::ICG_MISG));
+				case PartialText::PCPN:	return(FixedGroup(Type::PCPN_MISG));
+				case PartialText::PRES:	return(FixedGroup(Type::PRES_MISG));
+				case PartialText::RVR:	return(FixedGroup(Type::RVR_MISG));
+				case PartialText::T:	return(FixedGroup(Type::T_MISG));
+				case PartialText::TD:	return(FixedGroup(Type::TD_MISG));
+				case PartialText::VIS:	return(FixedGroup(Type::VIS_MISG));
+				case PartialText::WND:	return(FixedGroup(Type::WND_MISG));
+				case PartialText::WX:	return(FixedGroup(Type::WX_MISG));
+				default:				return(notCombined);
+			}
+		}
+		return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
+	}
+
+	std::string FixedGroup::incompleteText() const {
+		if (type() != Type::INCOMPLETE) return("");
+		switch (partialText) {
+			case PartialText::CLD:	return("CLD");
+			case PartialText::ICG:	return("ICG");
+			case PartialText::PCPN:	return("PCPN");
+			case PartialText::PRES:	return("PRES");
+			case PartialText::RVR:	return("RVR");
+			case PartialText::T:	return("T");
+			case PartialText::TD:	return("TD");
+			case PartialText::VIS:	return("VIS");
+			case PartialText::WND:	return("WND");
+			case PartialText::WX:	return("WX");
+		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
