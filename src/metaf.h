@@ -26,7 +26,7 @@ namespace metaf {
 	struct Version {
 		inline static const int major = 2;
 		inline static const int minor = 10;
-		inline static const int patch = 0;
+		inline static const int patch = 1;
 		inline static const char tag [] = "";
 	};
 
@@ -1577,8 +1577,7 @@ namespace metaf {
 			UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY,
 			AMD_ALLOWED_IN_TAF_ONLY,
 			CNL_ALLOWED_IN_TAF_ONLY,
-			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
-			INTERNAL_PARSER_STATE
+			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
 		};
 		struct Result {
 			ReportType reportType;
@@ -3027,7 +3026,6 @@ namespace metaf {
 				case PartialText::VIS:	return(FixedGroup(Type::VIS_MISG));
 				case PartialText::WND:	return(FixedGroup(Type::WND_MISG));
 				case PartialText::WX:	return(FixedGroup(Type::WX_MISG));
-				default:				return(notCombined);
 			}
 		}
 		return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
@@ -4004,9 +4002,6 @@ namespace metaf {
 					return(combinedGroup);									
 				}
 			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
-
-			default:
-			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
 		}
 	}
 
@@ -4933,10 +4928,6 @@ namespace metaf {
 
 			case State::ERROR:
 			break;
-
-			default:
-			setError(Error::INTERNAL_PARSER_STATE);
-			break;
 		}
 	}
 
@@ -5180,10 +5171,6 @@ namespace metaf {
 			case State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE:
 			case State::REPORT_BODY_BEGIN_TAF:
 			setError(Error::UNEXPECTED_REPORT_END);
-			break;
-
-			default:
-			setError(Error::INTERNAL_PARSER_STATE);
 			break;
 		}
 	}

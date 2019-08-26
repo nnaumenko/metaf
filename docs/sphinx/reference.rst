@@ -3724,13 +3724,6 @@ Parser
 			This error occurs if maintenance indicator ($) is encountered in a TAF report.
 
 
-		.. cpp:enumerator:: INTERNAL_PARSER_STATE
-
-			This error means that the state machine used by parser to detect the report syntax has switched to undefined state. This error is a safeguard for the extension of the syntax parser and should never occur in current version.
-
-			.. note: If such error is ever encountered please report it to author at `Gitlab <https://gitlab.com/nnaumenko/metaf>` or `Github <https://github.com/nnaumenko/metaf>` along with the source report string that has caused it.
-
-
 		.. cpp:struct:: Result
 
 			Contains result of report parsing using :cpp:func:`parse()` method.

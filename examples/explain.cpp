@@ -894,9 +894,6 @@ std::string_view GroupVisitorExplain::reportErrorToString(metaf::Parser::Error e
 		case metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
 		return("Maintenance indicator is allowed only in METAR reports");
 				
-		case metaf::Parser::Error::INTERNAL_PARSER_STATE:
-		return("internal error, unknown parser state");
-				
 		default: 
 		return("unknown error");
 	}
