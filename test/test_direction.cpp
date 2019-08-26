@@ -247,6 +247,16 @@ TEST(Direction, сardinalWest) {
 	EXPECT_EQ(d2->cardinal(), metaf::Direction::Cardinal::W);
 }
 
+TEST(Direction, сardinalInvalid) {
+	const auto d1 = metaf::Direction::fromDegreesString("370");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_EQ(d1->cardinal(), metaf::Direction::Cardinal::NONE);
+
+	const auto d2 = metaf::Direction::fromDegreesString("720");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_EQ(d2->cardinal(), metaf::Direction::Cardinal::NONE);
+}
+
 TEST(Direction, сardinalNorthWest) {
 	const auto d1 = metaf::Direction::fromDegreesString("300");
 	ASSERT_TRUE(d1.has_value());

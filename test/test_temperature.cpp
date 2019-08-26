@@ -257,42 +257,64 @@ TEST(Temperature, relativeHumidity100percent) {
 	ASSERT_TRUE(rh6.has_value());
 	EXPECT_NEAR(rh6.value(), 100.0, rhMargin);	
 }
-	
-	TEST(Temperature, heatIndex) {
-		const auto t42 = metaf::Temperature::fromString("42");
-		ASSERT_TRUE(t42.has_value());
-		ASSERT_TRUE(t42->temperature().has_value());
-		ASSERT_NEAR(t42->temperature().value(), 42, tempMargin);
-	
-		const auto t27 = metaf::Temperature::fromString("27");
-		ASSERT_TRUE(t27.has_value());
-		ASSERT_TRUE(t27->temperature().has_value());
-		ASSERT_NEAR(t27->temperature().value(), 27, tempMargin);
-	
-		const auto t33_5 = metaf::Temperature::fromRemarkString("0335");
-		ASSERT_TRUE(t33_5.has_value());
-		ASSERT_TRUE(t33_5->temperature().has_value());
-		ASSERT_NEAR(t33_5->temperature().value(), 33.5, tempMargin);
-	
-		const auto hi1 = metaf::Temperature::heatIndex(t27.value(), 40);
-		ASSERT_TRUE(hi1.temperature().has_value());
-		EXPECT_NEAR(hi1.temperature().value(), 26.9, tempMargin);
 
-		const auto hi2 = metaf::Temperature::heatIndex(t27.value(), 100);
-		ASSERT_TRUE(hi2.temperature().has_value());
-		EXPECT_NEAR(hi2.temperature().value(), 31.8, tempMargin);
+TEST(Temperature, relativeHumidityNotDefined) {
+	const auto t17 = metaf::Temperature::fromString("17");
+	ASSERT_TRUE(t17.has_value());
+	ASSERT_TRUE(t17->temperature().has_value());
+	ASSERT_NEAR(t17->temperature().value(), 17, tempMargin);
 
-		const auto hi3 = metaf::Temperature::heatIndex(t42.value(), 40);
-		ASSERT_TRUE(hi3.temperature().has_value());
-		EXPECT_NEAR(hi3.temperature().value(), 53.7, tempMargin);
+	const auto tnr = metaf::Temperature::fromString("//");
+	ASSERT_TRUE(tnr.has_value());
+	ASSERT_FALSE(tnr->temperature().has_value());
 
-		const auto hi4 = metaf::Temperature::heatIndex(t42.value(), 68);
-		ASSERT_TRUE(hi4.temperature().has_value());
-		EXPECT_NEAR(hi4.temperature().value(), 79.9, tempMargin);
+	EXPECT_FALSE(metaf::Temperature::relativeHumidity(t17.value(), tnr.value()).has_value());
+	EXPECT_FALSE(metaf::Temperature::relativeHumidity(tnr.value(), t17.value()).has_value());
+}
 
-		const auto hi5 = metaf::Temperature::heatIndex(t33_5.value(), 65);
-		ASSERT_TRUE(hi5.temperature().has_value());
-		EXPECT_NEAR(hi5.temperature().value(), 42.9, tempMargin);
+TEST(Temperature, heatIndex) {
+	const auto t42 = metaf::Temperature::fromString("42");
+	ASSERT_TRUE(t42.has_value());
+	ASSERT_TRUE(t42->temperature().has_value());
+	ASSERT_NEAR(t42->temperature().value(), 42, tempMargin);
+	ASSERT_EQ(t42->unit(), metaf::Temperature::Unit::C);
+
+	const auto t27 = metaf::Temperature::fromString("27");
+	ASSERT_TRUE(t27.has_value());
+	ASSERT_TRUE(t27->temperature().has_value());
+	ASSERT_NEAR(t27->temperature().value(), 27, tempMargin);
+	ASSERT_EQ(t27->unit(), metaf::Temperature::Unit::C);
+
+	const auto t33_5 = metaf::Temperature::fromRemarkString("0335");
+	ASSERT_TRUE(t33_5.has_value());
+	ASSERT_TRUE(t33_5->temperature().has_value());
+	ASSERT_NEAR(t33_5->temperature().value(), 33.5, tempMargin);
+	ASSERT_EQ(t33_5->unit(), metaf::Temperature::Unit::C);
+
+	const auto hi1 = metaf::Temperature::heatIndex(t27.value(), 40);
+	ASSERT_TRUE(hi1.temperature().has_value());
+	EXPECT_NEAR(hi1.temperature().value(), 26.9, tempMargin);
+	EXPECT_EQ(hi1.unit(), metaf::Temperature::Unit::C);
+
+	const auto hi2 = metaf::Temperature::heatIndex(t27.value(), 100);
+	ASSERT_TRUE(hi2.temperature().has_value());
+	EXPECT_NEAR(hi2.temperature().value(), 31.8, tempMargin);
+	EXPECT_EQ(hi2.unit(), metaf::Temperature::Unit::C);
+
+	const auto hi3 = metaf::Temperature::heatIndex(t42.value(), 40);
+	ASSERT_TRUE(hi3.temperature().has_value());
+	EXPECT_NEAR(hi3.temperature().value(), 53.7, tempMargin);
+	EXPECT_EQ(hi3.unit(), metaf::Temperature::Unit::C);
+
+	const auto hi4 = metaf::Temperature::heatIndex(t42.value(), 68);
+	ASSERT_TRUE(hi4.temperature().has_value());
+	EXPECT_NEAR(hi4.temperature().value(), 79.9, tempMargin);
+	EXPECT_EQ(hi4.unit(), metaf::Temperature::Unit::C);
+
+	const auto hi5 = metaf::Temperature::heatIndex(t33_5.value(), 65);
+	ASSERT_TRUE(hi5.temperature().has_value());
+	EXPECT_NEAR(hi5.temperature().value(), 42.9, tempMargin);
+	EXPECT_EQ(hi5.unit(), metaf::Temperature::Unit::C);
 }
 
 TEST(Temperature, heatIndexNotDefined) {
@@ -321,6 +343,10 @@ TEST(Temperature, heatIndexNotDefined) {
 	ASSERT_TRUE(tm0_1->temperature().has_value());
 	ASSERT_NEAR(tm0_1->temperature().value(), -0.1, tempMargin);	
 
+	const auto tnr = metaf::Temperature::fromString("//");
+	ASSERT_TRUE(tnr.has_value());
+	ASSERT_FALSE(tnr->temperature().has_value());
+
 	EXPECT_FALSE(
 		metaf::Temperature::heatIndex(t26_9.value(), 50.0).temperature().has_value());
 	EXPECT_FALSE(
@@ -331,6 +357,36 @@ TEST(Temperature, heatIndexNotDefined) {
 		metaf::Temperature::heatIndex(tm0_1.value(), 50.0).temperature().has_value());
 	EXPECT_FALSE(
 		metaf::Temperature::heatIndex(t27.value(), 39.9).temperature().has_value());
+	EXPECT_FALSE(
+		metaf::Temperature::heatIndex(tnr.value(), 50.0).temperature().has_value());
+}
+
+TEST(Temperature, heatIndexTempDewPoint) {
+	const auto t30 = metaf::Temperature::fromString("30");
+	ASSERT_TRUE(t30.has_value());
+	ASSERT_TRUE(t30->temperature().has_value());
+	ASSERT_NEAR(t30->temperature().value(), 30, tempMargin);
+	ASSERT_EQ(t30->unit(), metaf::Temperature::Unit::C);
+
+	const auto t33 = metaf::Temperature::fromString("33");
+	ASSERT_TRUE(t33.has_value());
+	ASSERT_TRUE(t33->temperature().has_value());
+	ASSERT_NEAR(t33->temperature().value(), 33, tempMargin);
+	ASSERT_EQ(t33->unit(), metaf::Temperature::Unit::C);
+
+	const auto rh = metaf::Temperature::relativeHumidity(t33.value(), t30.value());
+	ASSERT_TRUE(rh.has_value());
+	ASSERT_NEAR(rh.value(), 84.4, rhMargin);
+
+	const auto hi1 = metaf::Temperature::heatIndex(t33.value(), rh.value());
+	ASSERT_TRUE(hi1.temperature().has_value());
+	EXPECT_NEAR(hi1.temperature().value(), 50.4, tempMargin);
+	EXPECT_EQ(hi1.unit(), metaf::Temperature::Unit::C);
+
+	const auto hi2 = metaf::Temperature::heatIndex(t33.value(), t30.value());
+	ASSERT_TRUE(hi2.temperature().has_value());
+	EXPECT_NEAR(hi2.temperature().value(), 50.4, tempMargin);
+	EXPECT_EQ(hi2.unit(), metaf::Temperature::Unit::C);
 }
 
 TEST(Temperature, windChill) {
@@ -338,21 +394,25 @@ TEST(Temperature, windChill) {
 	ASSERT_TRUE(t10.has_value());
 	ASSERT_TRUE(t10->temperature().has_value());
 	ASSERT_NEAR(t10->temperature().value(), 10.0, tempMargin);
+	ASSERT_EQ(t10->unit(), metaf::Temperature::Unit::C);
 
 	const auto tm14_5 = metaf::Temperature::fromRemarkString("1145");
 	ASSERT_TRUE(tm14_5.has_value());
 	ASSERT_TRUE(tm14_5->temperature().has_value());
 	ASSERT_NEAR(tm14_5->temperature().value(), -14.5, tempMargin);
+	ASSERT_EQ(tm14_5->unit(), metaf::Temperature::Unit::C);
 
 	const auto t0 = metaf::Temperature::fromString("00");
 	ASSERT_TRUE(t0.has_value());
 	ASSERT_TRUE(t0->temperature().has_value());
 	ASSERT_NEAR(t0->temperature().value(), 0, tempMargin);
+	ASSERT_EQ(t0->unit(), metaf::Temperature::Unit::C);
 
 	const auto tm0 = metaf::Temperature::fromString("M00");
 	ASSERT_TRUE(tm0.has_value());
 	ASSERT_TRUE(tm0->temperature().has_value());
 	ASSERT_NEAR(tm0->temperature().value(), 0, tempMargin);
+	ASSERT_EQ(tm0->unit(), metaf::Temperature::Unit::C);
 
 	const auto s5 = metaf::Speed::fromString("05", metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 	ASSERT_TRUE(s5.has_value());
@@ -372,22 +432,27 @@ TEST(Temperature, windChill) {
 	const auto wc1 = metaf::Temperature::windChill(t10.value(), s5.value());
 	ASSERT_TRUE(wc1.temperature().has_value());
 	EXPECT_NEAR(wc1.temperature().value(), 9.8, tempMargin);
+	EXPECT_EQ(wc1.unit(), metaf::Temperature::Unit::C);
 
 	const auto wc2 = metaf::Temperature::windChill(tm14_5.value(), s35.value());
 	ASSERT_TRUE(wc2.temperature().has_value());
 	EXPECT_NEAR(wc2.temperature().value(), -26.1, tempMargin);
+	EXPECT_EQ(wc2.unit(), metaf::Temperature::Unit::C);
 
 	const auto wc3 = metaf::Temperature::windChill(tm14_5.value(), s15.value());
 	ASSERT_TRUE(wc3.temperature().has_value());
 	EXPECT_NEAR(wc3.temperature().value(), -22.3, tempMargin);
+	EXPECT_EQ(wc3.unit(), metaf::Temperature::Unit::C);
 
 	const auto wc4 = metaf::Temperature::windChill(t0.value(), s15.value());
 	ASSERT_TRUE(wc4.temperature().has_value());
 	EXPECT_NEAR(wc4.temperature().value(), -4.4, tempMargin);
+	EXPECT_EQ(wc4.unit(), metaf::Temperature::Unit::C);
 
 	const auto wc5 = metaf::Temperature::windChill(tm0.value(), s15.value());
 	ASSERT_TRUE(wc5.temperature().has_value());
 	EXPECT_NEAR(wc5.temperature().value(), -4.4, tempMargin);
+	EXPECT_EQ(wc5.unit(), metaf::Temperature::Unit::C);
 }
 
 TEST(Temperature, windChillNotDefined) {
@@ -395,26 +460,44 @@ TEST(Temperature, windChillNotDefined) {
 	ASSERT_TRUE(t10_1.has_value());
 	ASSERT_TRUE(t10_1->temperature().has_value());
 	ASSERT_NEAR(t10_1->temperature().value(), 10.1, tempMargin);
+	ASSERT_EQ(t10_1->unit(), metaf::Temperature::Unit::C);
 
 	const auto t9 = metaf::Temperature::fromString("09");
 	ASSERT_TRUE(t9.has_value());
 	ASSERT_TRUE(t9->temperature().has_value());
 	ASSERT_NEAR(t9->temperature().value(), 9, tempMargin);
+	ASSERT_EQ(t9->unit(), metaf::Temperature::Unit::C);
+
+	const auto tnr = metaf::Temperature::fromString("//");
+	ASSERT_TRUE(tnr.has_value());
+	ASSERT_FALSE(tnr->isReported());
 
 	const auto s4 = metaf::Speed::fromString("04", metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 	ASSERT_TRUE(s4.has_value());
 	ASSERT_TRUE(s4->speed().has_value());
 	ASSERT_EQ(s4->speed().value(), 4u);
+	ASSERT_EQ(s4->unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 
 	const auto s5 = metaf::Speed::fromString("05", metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 	ASSERT_TRUE(s5.has_value());
 	ASSERT_TRUE(s5->speed().has_value());
 	ASSERT_EQ(s5->speed().value(), 5u);
+	ASSERT_EQ(s5->unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+
+	const auto snr = metaf::Speed::fromString("//", metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+	ASSERT_TRUE(snr.has_value());
+	ASSERT_FALSE(snr->isReported());
 
 	EXPECT_FALSE(
-		metaf::Temperature::windChill(t10_1.value(), s5.value()).temperature().has_value());
+		metaf::Temperature::windChill(t10_1.value(), s5.value()).isReported());
 	EXPECT_FALSE(
-		metaf::Temperature::windChill(t9.value(), s4.value()).temperature().has_value());
+		metaf::Temperature::windChill(t9.value(), s4.value()).isReported());
+
+	EXPECT_FALSE(
+		metaf::Temperature::windChill(tnr.value(), s5.value()).isReported());
+	EXPECT_FALSE(
+		metaf::Temperature::windChill(t9.value(), snr.value()).isReported());
+
 }
 
 TEST(Temperature, isReported) {

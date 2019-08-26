@@ -374,3 +374,8 @@ TEST(WaveHeight, waveHeightToUnitNotReported) {
 	EXPECT_FALSE(wh->toUnit(metaf::WaveHeight::Unit::METERS).has_value());
 	EXPECT_FALSE(wh->toUnit(metaf::WaveHeight::Unit::FEET).has_value());
 }
+
+TEST(WaveHeight, fromStringWrongDesignator) {
+	EXPECT_FALSE(metaf::WaveHeight::fromString("X59").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromString("X5").has_value());
+}	
