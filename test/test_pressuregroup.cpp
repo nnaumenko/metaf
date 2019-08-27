@@ -167,3 +167,48 @@ TEST(PressureGroup, parseQfeRemarkWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761Q/1015", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761/1015Q", metaf::ReportPart::RMK).has_value());
 }
+
+TEST(PressureGroup, combine) {
+	const auto pg1 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+
+	const auto pg2 = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg2.has_value());
+
+	const auto pg3 = metaf::PressureGroup::parse("QNH2957INS", metaf::ReportPart::TAF);
+	ASSERT_TRUE(pg3.has_value());
+
+	const auto pg4 = metaf::PressureGroup::parse("QFE750", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(pg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(pg1->combine(pg1.value()).has_value());
+	EXPECT_FALSE(pg1->combine(pg2.value()).has_value());
+	EXPECT_FALSE(pg1->combine(pg3.value()).has_value());
+	EXPECT_FALSE(pg1->combine(pg4.value()).has_value());
+	EXPECT_FALSE(pg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(pg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(pg2->combine(pg1.value()).has_value());
+	EXPECT_FALSE(pg2->combine(pg2.value()).has_value());
+	EXPECT_FALSE(pg2->combine(pg3.value()).has_value());
+	EXPECT_FALSE(pg2->combine(pg4.value()).has_value());
+	EXPECT_FALSE(pg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(pg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(pg3->combine(pg1.value()).has_value());
+	EXPECT_FALSE(pg3->combine(pg2.value()).has_value());
+	EXPECT_FALSE(pg3->combine(pg3.value()).has_value());
+	EXPECT_FALSE(pg3->combine(pg4.value()).has_value());
+	EXPECT_FALSE(pg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(pg4->combine(rmk.value()).has_value());
+	EXPECT_FALSE(pg4->combine(pg1.value()).has_value());
+	EXPECT_FALSE(pg4->combine(pg2.value()).has_value());
+	EXPECT_FALSE(pg4->combine(pg3.value()).has_value());
+	EXPECT_FALSE(pg4->combine(pg4.value()).has_value());
+	EXPECT_FALSE(pg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

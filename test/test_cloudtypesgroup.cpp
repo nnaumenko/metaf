@@ -245,3 +245,24 @@ TEST(CloudTypesGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2CI3AB5", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2/CI3", metaf::ReportPart::RMK).has_value());
 }
+
+TEST(CloudTypesGroup, combine) {
+	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg1.has_value());
+
+	const auto ctg2 = metaf::CloudTypesGroup::parse("SC3", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(ctg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ctg1->combine(ctg1.value()).has_value());
+	EXPECT_FALSE(ctg1->combine(ctg2.value()).has_value());
+	EXPECT_FALSE(ctg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(ctg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ctg2->combine(ctg1.value()).has_value());
+	EXPECT_FALSE(ctg2->combine(ctg2.value()).has_value());
+	EXPECT_FALSE(ctg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

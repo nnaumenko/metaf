@@ -428,4 +428,43 @@ TEST(RunwayStateGroup, isValidExtentFalse) {
 	const auto rsg5 = metaf::RunwayStateGroup::parse("R88/280155", metaf::ReportPart::METAR);
 	ASSERT_TRUE(rsg5.has_value());
 	ASSERT_TRUE(rsg5->runway().isValid());
-	EXPECT_FALSE(rsg5->isValid());}
+	EXPECT_FALSE(rsg5->isValid());
+}
+
+TEST(RunwayStateGroup, combine) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R16/710155", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R21R/CLRD70", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R21/SNOCLO", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+
+	const auto rsg4 = metaf::RunwayStateGroup::parse("R21///////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg4.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(rsg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rsg1->combine(rsg1.value()).has_value());
+	EXPECT_FALSE(rsg1->combine(rsg2.value()).has_value());
+	EXPECT_FALSE(rsg1->combine(rsg3.value()).has_value());
+	EXPECT_FALSE(rsg1->combine(rsg4.value()).has_value());
+	EXPECT_FALSE(rsg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rsg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rsg2->combine(rsg1.value()).has_value());
+	EXPECT_FALSE(rsg2->combine(rsg2.value()).has_value());
+	EXPECT_FALSE(rsg2->combine(rsg3.value()).has_value());
+	EXPECT_FALSE(rsg2->combine(rsg4.value()).has_value());
+	EXPECT_FALSE(rsg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rsg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rsg3->combine(rsg1.value()).has_value());
+	EXPECT_FALSE(rsg3->combine(rsg2.value()).has_value());
+	EXPECT_FALSE(rsg3->combine(rsg3.value()).has_value());
+	EXPECT_FALSE(rsg3->combine(rsg4.value()).has_value());
+	EXPECT_FALSE(rsg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

@@ -188,3 +188,28 @@ TEST(ColourCodeGroup, isValidCodeBlack) {
 	ASSERT_TRUE(ccg7.has_value());
 	EXPECT_TRUE(ccg7->isValid());
 }
+
+
+TEST(ColourCodeGroup, combine) {
+	const auto ccg1 = metaf::ColourCodeGroup::parse("BLACKAMB", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ccg1.has_value());
+
+	const auto ccg2 = metaf::ColourCodeGroup::parse("RED", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ccg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(text.has_value());
+
+	EXPECT_FALSE(ccg1->combine(ccg1.value()).has_value());
+	EXPECT_FALSE(ccg1->combine(ccg2.value()).has_value());
+	EXPECT_FALSE(ccg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ccg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(ccg2->combine(ccg1.value()).has_value());
+	EXPECT_FALSE(ccg2->combine(ccg2.value()).has_value());
+	EXPECT_FALSE(ccg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ccg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

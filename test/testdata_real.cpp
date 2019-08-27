@@ -238,6 +238,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"YBAS", "Alice Springs Arpt", {2018, 9, 9},		
+		"METAR YBAS 090030Z AUTO 08013KT 9999 // NCD 21/M03 Q1026 RF00.0/000.0"
+		" PRESENT WEATHER SENSOR US"
+		"=",
+		"TAF YBAS 082312Z 0900/0924 10014KT CAVOK"
+		" FM090800 10005KT CAVOK"
+		" FM091500 07005KT CAVOK"
+		"="
+	},
+
+	{
 		"BGKK", "Kulusuk Arpt", {2018, 9, 9},
 		"METAR BGKK 091950Z AUTO 08010KT 9999NDV -DZ OVC025/// 06/04 Q1003"
 		"=",

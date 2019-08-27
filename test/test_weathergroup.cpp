@@ -799,3 +799,102 @@ TEST(WeatherGroup, contains) {
 	EXPECT_FALSE(wgNr->contains(metaf::WeatherGroup::Weather::RAIN));
 	EXPECT_TRUE(wgNr->contains(metaf::WeatherGroup::Weather::NOT_REPORTED));
 }
+
+TEST(WeatherGroup, combine) {
+	const auto wg1 = metaf::WeatherGroup::parse("RERA", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg1.has_value());
+
+	const auto wg2 = metaf::WeatherGroup::parse("RE//", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg2.has_value());
+
+	const auto wg3 = metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg3.has_value());
+
+	const auto wg4 = metaf::WeatherGroup::parse("TS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg4.has_value());
+
+	const auto wg5 = metaf::WeatherGroup::parse("SHRASN", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg5.has_value());
+
+	const auto wg6 = metaf::WeatherGroup::parse("BLDU", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg6.has_value());
+
+	const auto wg7 = metaf::WeatherGroup::parse("FG", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg7.has_value());
+
+	const auto rmk = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(text.has_value());
+
+	EXPECT_FALSE(wg1->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg1->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg2->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg2->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg3->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg4->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg4->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg4->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg4->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg4->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg3->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg4->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg5->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg5->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg5->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg5->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg6->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg6->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg6->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg6->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(wg7->combine(wg1.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg2.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg3.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg4.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg5.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg6.value()).has_value());
+	EXPECT_FALSE(wg7->combine(wg7.value()).has_value());
+	EXPECT_FALSE(wg7->combine(rmk.value()).has_value());
+	EXPECT_FALSE(wg7->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

@@ -644,3 +644,47 @@ TEST(RunwayVisualRangeGroup, isValidFalse) {
 	EXPECT_FALSE(rvrg3->isValid());
 }
 
+TEST(RunwayVisualRangeGroup, combine) {
+	const auto rvrg1 = metaf::RunwayVisualRangeGroup::parse("R88/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg1.has_value());
+
+	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R99/2600V3200FT/D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg2.has_value());
+
+	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R36R/////FT/N", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg3.has_value());
+
+	const auto rvrg4 = metaf::RunwayVisualRangeGroup::parse("R06L//////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rvrg4.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(rvrg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rvrg1->combine(rvrg1.value()).has_value());
+	EXPECT_FALSE(rvrg1->combine(rvrg2.value()).has_value());
+	EXPECT_FALSE(rvrg1->combine(rvrg3.value()).has_value());
+	EXPECT_FALSE(rvrg1->combine(rvrg4.value()).has_value());
+	EXPECT_FALSE(rvrg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rvrg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rvrg2->combine(rvrg1.value()).has_value());
+	EXPECT_FALSE(rvrg2->combine(rvrg2.value()).has_value());
+	EXPECT_FALSE(rvrg2->combine(rvrg3.value()).has_value());
+	EXPECT_FALSE(rvrg2->combine(rvrg4.value()).has_value());
+	EXPECT_FALSE(rvrg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rvrg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rvrg3->combine(rvrg1.value()).has_value());
+	EXPECT_FALSE(rvrg3->combine(rvrg2.value()).has_value());
+	EXPECT_FALSE(rvrg3->combine(rvrg3.value()).has_value());
+	EXPECT_FALSE(rvrg3->combine(rvrg4.value()).has_value());
+	EXPECT_FALSE(rvrg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rvrg4->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rvrg4->combine(rvrg1.value()).has_value());
+	EXPECT_FALSE(rvrg4->combine(rvrg2.value()).has_value());
+	EXPECT_FALSE(rvrg4->combine(rvrg3.value()).has_value());
+	EXPECT_FALSE(rvrg4->combine(rvrg4.value()).has_value());
+	EXPECT_FALSE(rvrg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

@@ -194,3 +194,35 @@ TEST(TemperatureForecastGroup, isValidFalse) {
 	ASSERT_TRUE(tfg3.has_value());
 	EXPECT_FALSE(tfg3->isValid());
 }
+
+TEST(TemperatureForecastGroup, combine) {
+	const auto tfg1 = metaf::TemperatureForecastGroup::parse("T24/1306Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(tfg1.has_value());
+
+	const auto tfg2 = metaf::TemperatureForecastGroup::parse("TNM03/2204Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(tfg2.has_value());
+
+	const auto tfg3 = metaf::TemperatureForecastGroup::parse("TX03/0620Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(tfg3.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(tfg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tfg1->combine(tfg1.value()).has_value());
+	EXPECT_FALSE(tfg1->combine(tfg2.value()).has_value());
+	EXPECT_FALSE(tfg1->combine(tfg3.value()).has_value());
+	EXPECT_FALSE(tfg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tfg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tfg2->combine(tfg1.value()).has_value());
+	EXPECT_FALSE(tfg2->combine(tfg2.value()).has_value());
+	EXPECT_FALSE(tfg2->combine(tfg3.value()).has_value());
+	EXPECT_FALSE(tfg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tfg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tfg3->combine(tfg1.value()).has_value());
+	EXPECT_FALSE(tfg3->combine(tfg2.value()).has_value());
+	EXPECT_FALSE(tfg3->combine(tfg3.value()).has_value());
+	EXPECT_FALSE(tfg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

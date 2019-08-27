@@ -76,3 +76,24 @@ TEST(ReportTimeGroup, isValidMinuteIncorrect) {
 	ASSERT_TRUE(rtg.has_value());
 	EXPECT_FALSE(rtg->isValid());
 }
+
+TEST(ReportTimeGroup, combine) {
+	const auto rtg1 = metaf::ReportTimeGroup::parse("201700Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg1.has_value());
+
+	const auto rtg2 = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);
+	ASSERT_TRUE(rtg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(rtg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rtg1->combine(rtg1.value()).has_value());
+	EXPECT_FALSE(rtg1->combine(rtg2.value()).has_value());
+	EXPECT_FALSE(rtg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(rtg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(rtg2->combine(rtg1.value()).has_value());
+	EXPECT_FALSE(rtg2->combine(rtg2.value()).has_value());
+	EXPECT_FALSE(rtg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

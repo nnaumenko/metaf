@@ -156,3 +156,24 @@ TEST(SeaSurfaceGroup, parseWaveHeightWrongFormat) {
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/H//", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/H////", metaf::ReportPart::METAR));
 }
+
+TEST(SeaSurfaceGroup, combine) {
+	const auto ssg1 = metaf::SeaSurfaceGroup::parse("W15/S4", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg1.has_value());
+
+	const auto ssg2 = metaf::SeaSurfaceGroup::parse("W20/H5", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(ssg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ssg1->combine(ssg1.value()).has_value());
+	EXPECT_FALSE(ssg1->combine(ssg2.value()).has_value());
+	EXPECT_FALSE(ssg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(ssg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ssg2->combine(ssg1.value()).has_value());
+	EXPECT_FALSE(ssg2->combine(ssg2.value()).has_value());
+	EXPECT_FALSE(ssg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

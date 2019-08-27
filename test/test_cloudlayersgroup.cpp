@@ -254,3 +254,24 @@ TEST(CloudLayersGroup, isValidFalse) {
 	ASSERT_TRUE(clg3.has_value());
 	EXPECT_FALSE(clg3->isValid());
 }
+
+TEST(CloudLayersGroup, combine) {
+	const auto clg1 = metaf::CloudLayersGroup::parse("8/578", metaf::ReportPart::RMK);
+	ASSERT_TRUE(clg1.has_value());
+
+	const auto clg2 = metaf::CloudLayersGroup::parse("8/52/", metaf::ReportPart::RMK);
+	ASSERT_TRUE(clg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(clg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(clg1->combine(clg1.value()).has_value());
+	EXPECT_FALSE(clg1->combine(clg2.value()).has_value());
+	EXPECT_FALSE(clg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(clg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(clg2->combine(clg1.value()).has_value());
+	EXPECT_FALSE(clg2->combine(clg2.value()).has_value());
+	EXPECT_FALSE(clg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

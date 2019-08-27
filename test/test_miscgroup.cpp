@@ -76,3 +76,22 @@ TEST(MiscGroup, parseCorrectedObservationDurationWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("XCA", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::MiscGroup::parse("CXA", metaf::ReportPart::METAR));
 }
+
+TEST(MiscGroup, combine) {
+	const auto ssg1 = metaf::MiscGroup::parse("98096", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ssg1.has_value());
+
+	const auto ssg2 = metaf::MiscGroup::parse("CCA", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	EXPECT_FALSE(ssg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ssg1->combine(ssg1.value()).has_value());
+	EXPECT_FALSE(ssg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(ssg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(ssg2->combine(ssg2.value()).has_value());
+	EXPECT_FALSE(ssg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

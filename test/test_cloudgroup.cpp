@@ -466,3 +466,87 @@ TEST(CloudGroup, isVerticalVisibilityFalse) {
 	ASSERT_TRUE(cg9.has_value());
 	EXPECT_FALSE(cg9->isVerticalVisibility());
 }
+
+TEST(CloudGroup, combine) {
+	const auto cg1 = metaf::CloudGroup::parse("CLR", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_FALSE(cg1->isCloudLayer());
+
+	const auto cg2 = metaf::CloudGroup::parse("SKC", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_FALSE(cg2->isCloudLayer());
+
+	const auto cg3 = metaf::CloudGroup::parse("NCD", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_FALSE(cg3->isCloudLayer());
+
+	const auto cg4 = metaf::CloudGroup::parse("NSC", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_FALSE(cg4->isCloudLayer());
+
+	const auto cg5 = metaf::CloudGroup::parse("FEW040", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg5.has_value());
+
+	const auto cg6 = metaf::CloudGroup::parse("VV004", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg6.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(text.has_value());
+
+	EXPECT_FALSE(cg1->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg1->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg1->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg1->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg1->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg1->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg1->combine(text.value()).has_value());
+
+	EXPECT_FALSE(cg2->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg2->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg2->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg2->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg2->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg2->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg2->combine(text.value()).has_value());
+
+	EXPECT_FALSE(cg3->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg3->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg3->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg3->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg3->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg3->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg3->combine(text.value()).has_value());
+
+	EXPECT_FALSE(cg4->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg4->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg4->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg4->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg4->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg4->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg4->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg4->combine(text.value()).has_value());
+
+	EXPECT_FALSE(cg5->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg5->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg5->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg5->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg5->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg5->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg5->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg5->combine(text.value()).has_value());
+
+	EXPECT_FALSE(cg6->combine(cg1.value()).has_value());
+	EXPECT_FALSE(cg6->combine(cg2.value()).has_value());
+	EXPECT_FALSE(cg6->combine(cg3.value()).has_value());
+	EXPECT_FALSE(cg6->combine(cg4.value()).has_value());
+	EXPECT_FALSE(cg6->combine(cg5.value()).has_value());
+	EXPECT_FALSE(cg6->combine(cg6.value()).has_value());
+	EXPECT_FALSE(cg6->combine(rmk.value()).has_value());
+	EXPECT_FALSE(cg6->combine(text.value()).has_value());
+}

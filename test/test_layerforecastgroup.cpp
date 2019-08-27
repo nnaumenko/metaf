@@ -182,3 +182,27 @@ TEST(LayerForecastGroup, wrongFormat) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("620A24", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62A324", metaf::ReportPart::TAF).has_value());
 }
+
+TEST(LayerForecastGroup, combine) {
+	const auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg1.has_value());
+
+	const auto lfg2 = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg2.has_value());
+
+	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(text.has_value());
+
+	EXPECT_FALSE(lfg1->combine(lfg1.value()).has_value());
+	EXPECT_FALSE(lfg1->combine(lfg2.value()).has_value());
+	EXPECT_FALSE(lfg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(lfg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(lfg2->combine(lfg1.value()).has_value());
+	EXPECT_FALSE(lfg2->combine(lfg2.value()).has_value());
+	EXPECT_FALSE(lfg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(lfg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+}

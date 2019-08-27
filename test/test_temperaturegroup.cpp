@@ -277,3 +277,66 @@ TEST(TemperatureGroup, relativeHumidity) {
 	const auto rh2 = tg2->relativeHumidity();
 	EXPECT_NEAR(rh2.value(), 55.4, rhMargin);
 }
+
+TEST(TemperatureGroup, combine) {
+	const auto tg1 = metaf::TemperatureGroup::parse("07/03", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg1.has_value());
+
+	const auto tg2 = metaf::TemperatureGroup::parse("02/M00", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg2.has_value());
+
+	const auto tg3 = metaf::TemperatureGroup::parse("M03/M07", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg3.has_value());
+
+	const auto tg4 = metaf::TemperatureGroup::parse("///12", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg4.has_value());
+
+	const auto tg5 = metaf::TemperatureGroup::parse("00///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg5.has_value());
+
+	const auto rmk = metaf::TemperatureGroup::parse("/////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rmk.has_value());
+
+	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(text.has_value());
+
+	EXPECT_FALSE(tg1->combine(tg1.value()).has_value());
+	EXPECT_FALSE(tg1->combine(tg2.value()).has_value());
+	EXPECT_FALSE(tg1->combine(tg3.value()).has_value());
+	EXPECT_FALSE(tg1->combine(tg4.value()).has_value());
+	EXPECT_FALSE(tg1->combine(tg5.value()).has_value());
+	EXPECT_FALSE(tg1->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tg2->combine(tg1.value()).has_value());
+	EXPECT_FALSE(tg2->combine(tg2.value()).has_value());
+	EXPECT_FALSE(tg2->combine(tg3.value()).has_value());
+	EXPECT_FALSE(tg2->combine(tg4.value()).has_value());
+	EXPECT_FALSE(tg2->combine(tg5.value()).has_value());
+	EXPECT_FALSE(tg2->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tg3->combine(tg1.value()).has_value());
+	EXPECT_FALSE(tg3->combine(tg2.value()).has_value());
+	EXPECT_FALSE(tg3->combine(tg3.value()).has_value());
+	EXPECT_FALSE(tg3->combine(tg4.value()).has_value());
+	EXPECT_FALSE(tg3->combine(tg5.value()).has_value());
+	EXPECT_FALSE(tg3->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tg4->combine(tg1.value()).has_value());
+	EXPECT_FALSE(tg4->combine(tg2.value()).has_value());
+	EXPECT_FALSE(tg4->combine(tg3.value()).has_value());
+	EXPECT_FALSE(tg4->combine(tg4.value()).has_value());
+	EXPECT_FALSE(tg4->combine(tg5.value()).has_value());
+	EXPECT_FALSE(tg4->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+
+	EXPECT_FALSE(tg5->combine(tg1.value()).has_value());
+	EXPECT_FALSE(tg5->combine(tg2.value()).has_value());
+	EXPECT_FALSE(tg5->combine(tg3.value()).has_value());
+	EXPECT_FALSE(tg5->combine(tg4.value()).has_value());
+	EXPECT_FALSE(tg5->combine(tg5.value()).has_value());
+	EXPECT_FALSE(tg5->combine(rmk.value()).has_value());
+	EXPECT_FALSE(tg5->combine(metaf::PlainTextGroup("TEST")).has_value());
+}
