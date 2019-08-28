@@ -299,3 +299,29 @@ TEST(PressureTendencyGroup, combine) {
 	EXPECT_FALSE(ptg6->combine(ptg6.value()).has_value());
 	EXPECT_FALSE(ptg6->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(PressureTendencyGroup, isValid) {
+	const auto ptg1 = metaf::PressureTendencyGroup::parse("56132", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg1.has_value());
+	EXPECT_TRUE(ptg1->isValid());	
+
+	const auto ptg2 = metaf::PressureTendencyGroup::parse("52///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg2.has_value());
+	EXPECT_TRUE(ptg2->isValid());	
+
+	const auto ptg3 = metaf::PressureTendencyGroup::parse("5/132", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg3.has_value());
+	EXPECT_TRUE(ptg3->isValid());	
+
+	const auto ptg4 = metaf::PressureTendencyGroup::parse("5////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg4.has_value());
+	EXPECT_TRUE(ptg4->isValid());	
+
+	const auto ptg5 = metaf::PressureTendencyGroup::parse("PRESRR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg5.has_value());
+	EXPECT_TRUE(ptg5->isValid());	
+
+	const auto ptg6 = metaf::PressureTendencyGroup::parse("PRESFR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg6.has_value());
+	EXPECT_TRUE(ptg6->isValid());	
+}

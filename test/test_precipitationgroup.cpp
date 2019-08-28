@@ -427,15 +427,15 @@ TEST(PrecipitationGroup, parse3hourly) {
     metaf::ReportGlobalData reportData;
     reportData.reportTime = time3hourly;
 
-	const auto pg1 = metaf::PrecipitationGroup::parse("60217", 
+	const auto pg = metaf::PrecipitationGroup::parse("60217", 
 		metaf::ReportPart::RMK, 
 		reportData);
-	ASSERT_TRUE(pg1.has_value());
-	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY);
-	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::REPORTED);
-	EXPECT_EQ(pg1->amount().unit(), metaf::Precipitation::Unit::INCHES);
-	ASSERT_TRUE(pg1->amount().precipitation().has_value());
-	EXPECT_NEAR(pg1->amount().precipitation().value(), 2.17, margin);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY);
+	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg->amount().precipitation().has_value());
+	EXPECT_NEAR(pg->amount().precipitation().value(), 2.17, margin);
 
 }
 
@@ -447,14 +447,105 @@ TEST(PrecipitationGroup, parse6hourly) {
     metaf::ReportGlobalData reportData;
     reportData.reportTime = time6hourly;
     
-	const auto pg2 = metaf::PrecipitationGroup::parse("60217", 
+	const auto pg = metaf::PrecipitationGroup::parse("60217", 
 		metaf::ReportPart::RMK,
 		reportData);
-	ASSERT_TRUE(pg2.has_value());
-	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY);
-	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::REPORTED);
-	EXPECT_EQ(pg2->amount().unit(), metaf::Precipitation::Unit::INCHES);
-	ASSERT_TRUE(pg2->amount().precipitation().has_value());
-	EXPECT_NEAR(pg2->amount().precipitation().value(), 2.17, margin);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY);
+	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg->amount().precipitation().has_value());
+	EXPECT_NEAR(pg->amount().precipitation().value(), 2.17, margin);
+}
 
+TEST(PrecipitationGroup, isValid4digit) {
+	const auto pg1 = metaf::PrecipitationGroup::parse("P2168", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_TRUE(pg1->isValid());
+
+	const auto pg2 = metaf::PrecipitationGroup::parse("P////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_TRUE(pg2->isValid());
+
+	const auto pg3 = metaf::PrecipitationGroup::parse("60217", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg3.has_value());
+	EXPECT_TRUE(pg3->isValid());
+
+	const auto pg4 = metaf::PrecipitationGroup::parse("6////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_TRUE(pg4->isValid());
+
+	const auto pg5 = metaf::PrecipitationGroup::parse("70125", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_TRUE(pg5->isValid());
+
+	const auto pg6 = metaf::PrecipitationGroup::parse("7////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg6.has_value());
+	EXPECT_TRUE(pg6->isValid());
+}
+
+TEST(PrecipitationGroup, isValid3digit) {
+	const auto pg1 = metaf::PrecipitationGroup::parse("4/021", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_TRUE(pg1->isValid());
+
+	const auto pg2 = metaf::PrecipitationGroup::parse("4////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_TRUE(pg2->isValid());
+
+	const auto pg3 = metaf::PrecipitationGroup::parse("I1010", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg3.has_value());
+	EXPECT_TRUE(pg3->isValid());
+
+	const auto pg4 = metaf::PrecipitationGroup::parse("I1///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_TRUE(pg4->isValid());
+
+	const auto pg5 = metaf::PrecipitationGroup::parse("I3015", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_TRUE(pg5->isValid());
+
+	const auto pg6 = metaf::PrecipitationGroup::parse("I3///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg6.has_value());
+	EXPECT_TRUE(pg6->isValid());
+
+	const auto pg7 = metaf::PrecipitationGroup::parse("I6022", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg7.has_value());
+	EXPECT_TRUE(pg7->isValid());
+
+	const auto pg8 = metaf::PrecipitationGroup::parse("I6///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg8.has_value());
+	EXPECT_TRUE(pg8->isValid());
+
+	const auto pg9 = metaf::PrecipitationGroup::parse("931011", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg9.has_value());
+	EXPECT_TRUE(pg9->isValid());
+
+	const auto pg10 = metaf::PrecipitationGroup::parse("931///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg10.has_value());
+	EXPECT_TRUE(pg10->isValid());
+
+	const auto pg11 = metaf::PrecipitationGroup::parse("933125", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg11.has_value());
+	EXPECT_TRUE(pg11->isValid());
+
+	const auto pg13 = metaf::PrecipitationGroup::parse("933///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg13.has_value());
+	EXPECT_TRUE(pg13->isValid());
+}
+
+TEST(PrecipitationGroup, isValidSnincr) {
+	const auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_TRUE(pg->isValid());
+
+	const auto fraction = metaf::PlainTextGroup::parse("4/12", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fraction.has_value());
+
+	const auto combined = pg->combine(fraction.value());
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PrecipitationGroup>(combined.value()));
+
+	const auto pgCombined = std::get<metaf::PrecipitationGroup>(combined.value());
+	EXPECT_TRUE(pgCombined.isValid());
 }

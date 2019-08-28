@@ -177,3 +177,41 @@ TEST(SeaSurfaceGroup, combine) {
 	EXPECT_FALSE(ssg2->combine(ssg2.value()).has_value());
 	EXPECT_FALSE(ssg2->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(SeaSurfaceGroup, isValid) {
+	const auto ssg1 = metaf::SeaSurfaceGroup::parse("W16/H7", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg1.has_value());
+	EXPECT_TRUE(ssg1->isValid());
+
+	const auto ssg2 = metaf::SeaSurfaceGroup::parse("W15/H23", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg2.has_value());
+	EXPECT_TRUE(ssg2->isValid());
+
+	const auto ssg3 = metaf::SeaSurfaceGroup::parse("W17/H100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg3.has_value());
+	EXPECT_TRUE(ssg3->isValid());
+
+	const auto ssg4 = metaf::SeaSurfaceGroup::parse("W15/H///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg4.has_value());
+	EXPECT_TRUE(ssg4->isValid());
+
+	const auto ssg5 = metaf::SeaSurfaceGroup::parse("W///H///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg5.has_value());
+	EXPECT_TRUE(ssg5->isValid());
+
+	const auto ssg6 = metaf::SeaSurfaceGroup::parse("W15/S4", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg6.has_value());
+	EXPECT_TRUE(ssg6->isValid());
+
+	const auto ssg7 = metaf::SeaSurfaceGroup::parse("W///S4", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg7.has_value());
+	EXPECT_TRUE(ssg7->isValid());
+
+	const auto ssg8 = metaf::SeaSurfaceGroup::parse("W15/S/", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg8.has_value());
+	EXPECT_TRUE(ssg8->isValid());
+
+	const auto ssg9 = metaf::SeaSurfaceGroup::parse("W///S/", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg9.has_value());
+	EXPECT_TRUE(ssg9->isValid());
+}

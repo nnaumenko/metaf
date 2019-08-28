@@ -212,3 +212,37 @@ TEST(PressureGroup, combine) {
 	EXPECT_FALSE(pg4->combine(pg4.value()).has_value());
 	EXPECT_FALSE(pg4->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(PressureGroup, isValid) {
+	const auto pg1 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_TRUE(pg1->isValid());
+
+	const auto pg2 = metaf::PressureGroup::parse("A////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_TRUE(pg2->isValid());
+
+	const auto pg3 = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg3.has_value());
+	EXPECT_TRUE(pg3->isValid());
+
+	const auto pg4 = metaf::PressureGroup::parse("Q////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_TRUE(pg4->isValid());
+
+	const auto pg5 = metaf::PressureGroup::parse("QNH2957INS", metaf::ReportPart::TAF);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_TRUE(pg5->isValid());
+
+	const auto pg6 = metaf::PressureGroup::parse("QFE750", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg6.has_value());
+	EXPECT_TRUE(pg6->isValid());
+
+	const auto pg7 = metaf::PressureGroup::parse("QFE761/1015", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg7.has_value());
+	EXPECT_TRUE(pg7->isValid());
+
+	const auto pg8 = metaf::PressureGroup::parse("SLP982", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg8.has_value());
+	EXPECT_TRUE(pg8->isValid());
+}

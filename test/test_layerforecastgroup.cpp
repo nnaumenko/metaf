@@ -206,3 +206,13 @@ TEST(LayerForecastGroup, combine) {
 	EXPECT_FALSE(lfg2->combine(rmk.value()).has_value());
 	EXPECT_FALSE(lfg2->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(LayerForecastGroup, isValid) {
+	const auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg1.has_value());
+	EXPECT_TRUE(lfg1->isValid());
+
+	const auto lfg2 = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg2.has_value());
+	EXPECT_TRUE(lfg2->isValid());
+}

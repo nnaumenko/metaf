@@ -95,3 +95,13 @@ TEST(MiscGroup, combine) {
 	EXPECT_FALSE(ssg2->combine(ssg2.value()).has_value());
 	EXPECT_FALSE(ssg2->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(MiscGroup, isValid) {
+	const auto ssg1 = metaf::MiscGroup::parse("98096", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ssg1.has_value());
+	EXPECT_TRUE(ssg1->isValid());
+
+	const auto ssg2 = metaf::MiscGroup::parse("CCA", metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg2.has_value());
+	EXPECT_TRUE(ssg2->isValid());
+}

@@ -266,3 +266,21 @@ TEST(RainfallGroup, combine) {
 	EXPECT_FALSE(rg4->combine(rmk.value()).has_value());
 	EXPECT_FALSE(rg4->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(RainfallGroup, isValid) {
+	const auto rg1 = metaf::RainfallGroup::parse("RF02.7/010.5", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rg1.has_value());
+	EXPECT_TRUE(rg1->isValid());
+
+	const auto rg2 = metaf::RainfallGroup::parse("RF//./////./", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rg2.has_value());
+	EXPECT_TRUE(rg2->isValid());
+
+	const auto rg3 = metaf::RainfallGroup::parse("RF21.5/112.4/031.8", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rg3.has_value());
+	EXPECT_TRUE(rg3->isValid());
+
+	const auto rg4 = metaf::RainfallGroup::parse("RF//./////.//031.8", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rg4.has_value());
+	EXPECT_TRUE(rg4->isValid());
+}

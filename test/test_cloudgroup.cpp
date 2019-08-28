@@ -550,3 +550,77 @@ TEST(CloudGroup, combine) {
 	EXPECT_FALSE(cg6->combine(rmk.value()).has_value());
 	EXPECT_FALSE(cg6->combine(text.value()).has_value());
 }
+
+TEST(CloudGroup, isValidClear) {
+	const auto cg1 = metaf::CloudGroup::parse("CLR", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_TRUE(cg1->isValid());
+
+	const auto cg2 = metaf::CloudGroup::parse("SKC", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_TRUE(cg2->isValid());
+
+	const auto cg3 = metaf::CloudGroup::parse("NCD", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_TRUE(cg3->isValid());
+
+	const auto cg4 = metaf::CloudGroup::parse("NSC", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_TRUE(cg4->isValid());
+}
+
+TEST(CloudGroup, isValidCloudTypes) {
+	const auto cg1 = metaf::CloudGroup::parse("FEW040", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_TRUE(cg1->isValid());
+
+	const auto cg2 = metaf::CloudGroup::parse("SCT017", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_TRUE(cg2->isValid());
+
+	const auto cg3 = metaf::CloudGroup::parse("BKN026", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_TRUE(cg3->isValid());
+
+	const auto cg4 = metaf::CloudGroup::parse("OVC002", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_TRUE(cg4->isValid());
+
+	const auto cg5 = metaf::CloudGroup::parse("SCT014TCU", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_TRUE(cg5->isValid());
+
+	const auto cg6 = metaf::CloudGroup::parse("SCT014CB", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_TRUE(cg6->isValid());
+
+	const auto cg7 = metaf::CloudGroup::parse("///014", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg7.has_value());
+	EXPECT_TRUE(cg7->isValid());
+
+	const auto cg8 = metaf::CloudGroup::parse("FEW///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg8.has_value());
+	EXPECT_TRUE(cg8->isValid());
+
+	const auto cg9 = metaf::CloudGroup::parse("SCT014///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg9.has_value());
+	EXPECT_TRUE(cg9->isValid());
+
+	const auto cg10 = metaf::CloudGroup::parse("BKN000", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg10.has_value());
+	EXPECT_TRUE(cg10->isValid());
+}
+
+TEST(CloudGroup, isValidVertVisibility) {
+	const auto cg1 = metaf::CloudGroup::parse("VV001", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_TRUE(cg1->isValid());
+
+	const auto cg2 = metaf::CloudGroup::parse("VV000", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_TRUE(cg2->isValid());
+
+	const auto cg3 = metaf::CloudGroup::parse("VV///", metaf::ReportPart::METAR);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_TRUE(cg3->isValid());
+}

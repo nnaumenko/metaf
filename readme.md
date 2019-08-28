@@ -67,7 +67,7 @@ Example of a TAF report is as follows:
 
 * Report type METAR, SPECI, and TAF
 * Various amended or correctional report indicators
-* Missing report indicator NIL and cancelled TAF report indicator CNL
+* Indicators for missing report, cancelled TAF report, and various indicator for missing data given in remarks section
 * Automated report indicator, automated station type remark, and maintenance indicator
 * ICAO location
 * Report issue time

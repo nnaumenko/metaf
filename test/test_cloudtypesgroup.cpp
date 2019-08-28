@@ -266,3 +266,13 @@ TEST(CloudTypesGroup, combine) {
 	EXPECT_FALSE(ctg2->combine(ctg2.value()).has_value());
 	EXPECT_FALSE(ctg2->combine(metaf::PlainTextGroup("TEST")).has_value());
 }
+
+TEST(CloudTypesGroup, isValid) {
+	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg1.has_value());
+	EXPECT_TRUE(ctg1->isValid());
+
+	const auto ctg2 = metaf::CloudTypesGroup::parse("SC3", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg2.has_value());
+	EXPECT_TRUE(ctg2->isValid());
+}
