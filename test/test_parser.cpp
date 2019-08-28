@@ -184,6 +184,29 @@ TEST(ParserSyntaxMalformedReports, typeLocation) {
 	EXPECT_TRUE(isLocation(result3.groups.at(1)));
 }
 
+TEST(ParserSyntaxMalformedReports, strayGroupInPlaceOfLocation) {
+	const auto result1 = metaf::Parser::parse("METAR 9999=");
+	EXPECT_EQ(result1.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result1.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result1.groups.size(), 2u);
+	EXPECT_TRUE(isMetar(result1.groups.at(0)));
+	EXPECT_TRUE(isPlainText(result1.groups.at(1), "9999"));
+
+	const auto result2 = metaf::Parser::parse("SPECI 9999=");
+	EXPECT_EQ(result2.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result2.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result2.groups.size(), 2u);
+	EXPECT_TRUE(isSpeci(result2.groups.at(0)));
+	EXPECT_TRUE(isPlainText(result2.groups.at(1), "9999"));
+
+	const auto result3 = metaf::Parser::parse("TAF 9999=");
+	EXPECT_EQ(result3.reportType, metaf::ReportType::TAF);
+	EXPECT_EQ(result3.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result3.groups.size(), 2u);
+	EXPECT_TRUE(isTaf(result3.groups.at(0)));
+	EXPECT_TRUE(isPlainText(result3.groups.at(1), "9999"));
+}
+
 TEST(ParserSyntaxMalformedReports, locationTime) {
 	const auto result = metaf::Parser::parse("ZZZZ 041115Z=");
 	EXPECT_EQ(result.reportType, metaf::ReportType::UNKNOWN);
@@ -347,6 +370,34 @@ TEST(ParserSyntaxNilReports, tafAmdLocationNil) {
 	EXPECT_TRUE(isAmd(result.groups.at(1)));
 	EXPECT_TRUE(isLocation(result.groups.at(2)));
 	EXPECT_TRUE(isNil(result.groups.at(3)));
+}
+
+TEST(ParserSyntaxMalformedReports, corStrayGroupInPlaceOfLocation) {
+	const auto result1 = metaf::Parser::parse("METAR COR 9999=");
+	EXPECT_EQ(result1.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result1.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result1.groups.size(), 3u);
+	EXPECT_TRUE(isMetar(result1.groups.at(0)));
+	EXPECT_TRUE(isCor(result1.groups.at(1)));
+	EXPECT_TRUE(isPlainText(result1.groups.at(2), "9999"));
+
+	const auto result2 = metaf::Parser::parse("TAF COR 9999=");
+	EXPECT_EQ(result2.reportType, metaf::ReportType::TAF);
+	EXPECT_EQ(result2.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result2.groups.size(), 3u);
+	EXPECT_TRUE(isTaf(result2.groups.at(0)));
+	EXPECT_TRUE(isCor(result2.groups.at(1)));
+	EXPECT_TRUE(isPlainText(result2.groups.at(2), "9999"));
+}
+
+TEST(ParserSyntaxMalformedReports, amdStrayGroupInPlaceOfLocation) {
+	const auto result = metaf::Parser::parse("TAF AMD 9999=");
+	EXPECT_EQ(result.reportType, metaf::ReportType::TAF);
+	EXPECT_EQ(result.error, metaf::Parser::Error::EXPECTED_LOCATION);
+	EXPECT_EQ(result.groups.size(), 3u);
+	EXPECT_TRUE(isTaf(result.groups.at(0)));
+	EXPECT_TRUE(isAmd(result.groups.at(1)));
+	EXPECT_TRUE(isPlainText(result.groups.at(2), "9999"));
 }
 
 TEST(ParserSyntaxNilReports, locationTimeNil) {
@@ -1087,6 +1138,20 @@ TEST(ParserSyntaxDesignatorsAndSeparators, strayTextAfterReportEndDesignator) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtMetarBodyBegin) {
+	const auto result = metaf::Parser::parse("METAR ZZZZ 041115Z $");
+	EXPECT_EQ(result.reportType, metaf::ReportType::METAR);
+	EXPECT_EQ(result.error, metaf::Parser::Error::NONE);
+	EXPECT_TRUE(isMaintenanceIndicator(result.groups.back()));
+}
+
+TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTafBodyBegin) {
+	const auto result = metaf::Parser::parse("TAF ZZZZ 180712Z 1807/1821 $");
+	EXPECT_EQ(result.reportType, metaf::ReportType::TAF);
+	EXPECT_EQ(result.error, metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
+	EXPECT_TRUE(isMaintenanceIndicator(result.groups.back()));
+}
 
 TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfMetar) {
 	const auto result = metaf::Parser::parse(
