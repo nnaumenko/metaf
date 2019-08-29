@@ -301,6 +301,24 @@ TEST(getSyntaxGroup, WX_MISG) {
 	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, TS_LTNG_TEMPO_UNAVBL) {
+	const auto fg = metaf::FixedGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("TEMPO"));
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined1.value()));
+
+	const auto combined2 = std::get<metaf::FixedGroup>(
+		combined1.value()).combine(metaf::PlainTextGroup("UNAVBL"));
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined1.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined2.value());
+
+	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_NOSIG) {
 	const auto g = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());

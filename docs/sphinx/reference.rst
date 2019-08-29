@@ -1316,6 +1316,10 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Weather phenomena data is missing.
 
+		.. cpp:enumerator:: TS_LTNG_TEMPO_UNAVBL
+
+			Thunderstorm/lightning data is missing.
+
 
 	**Acquiring group data**
 

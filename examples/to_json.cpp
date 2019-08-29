@@ -432,6 +432,9 @@ void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 		json.valueBool("weatherDataMissing", true);
 		break;
 
+		case metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL:
+		json.valueBool("thunderstormLightningDataMissing", true);
+		break;
 
 		default:
 		json.startObject("fixedGroup");

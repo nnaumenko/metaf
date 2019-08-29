@@ -394,6 +394,22 @@ TEST(FixedGroup, parseMisg) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
 }
 
+TEST(FixedGroup, parseTempo) {
+	EXPECT_FALSE(metaf::FixedGroup::parse("TEMPO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("TEMPO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("TEMPO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("TEMPO", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("TEMPO", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(FixedGroup, parseUnavbl) {
+	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::RMK).has_value());
+}
+
 TEST(FixedGroup, parseCld) {
 	static const char gs[] = "CLD";
 
@@ -960,6 +976,122 @@ TEST(FixedGroup, parseWxAndOther) {
 	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
 	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
 		combined3.value()).toString(), "WX ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseTsLtng) {
+	static const char gs[] = "TS/LTNG";
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	ASSERT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fg->incompleteText(), std::string(gs));	
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseTsLtngTempo) {
+	static const char gs1[] = "TS/LTNG";
+	static const char gs2[] = "TEMPO";
+
+	auto fg = metaf::FixedGroup::parse(gs1, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup(gs2));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	ASSERT_EQ(fgCombined.type(), metaf::FixedGroup::Type::INCOMPLETE);
+	ASSERT_EQ(fgCombined.incompleteText(), "TS/LTNG TEMPO"); 
+}
+
+TEST(FixedGroup, parseTsLtngAndOther) {
+	static const char gs1[] = "TS/LTNG";
+
+	auto fg = metaf::FixedGroup::parse(gs1, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup("TEMP"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "TS/LTNG TEMP");
+
+	const auto combined2 = fg->combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "TS/LTNG 4000");
+
+	const auto combined3 = fg->combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "TS/LTNG ////");
+
+	EXPECT_FALSE(fg->combine(fg.value()).has_value());
+}
+
+TEST(FixedGroup, parseTsLtngTempoUnavbl) {
+	static const char gs1[] = "TS/LTNG";
+	static const char gs2[] = "TEMPO";
+	static const char gs3[] = "UNAVBL";
+	static const auto type = metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL;
+
+	auto fg = metaf::FixedGroup::parse(gs1, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined1 = fg->combine(metaf::PlainTextGroup(gs2));
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined1.value()));
+
+	const auto fgCombined1 = std::get<metaf::FixedGroup>(combined1.value());
+
+	const auto combined2 = fgCombined1.combine(metaf::PlainTextGroup(gs3));
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined2.value()));
+
+	const auto fgCombined2 = std::get<metaf::FixedGroup>(combined2.value());
+
+	ASSERT_EQ(fgCombined2.type(), type);
+}
+
+TEST(FixedGroup, parseTsLtngTempoAndOther) {
+	static const char gs1[] = "TS/LTNG";
+	static const char gs2[] = "TEMPO";
+
+	auto fg = metaf::FixedGroup::parse(gs1, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+
+	const auto combined = fg->combine(metaf::PlainTextGroup(gs2));
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
+
+	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
+
+	const auto combined1 = fgCombined.combine(metaf::PlainTextGroup("TEMPO"));
+    ASSERT_TRUE(combined1.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined1.value()).toString(), "TS/LTNG TEMPO TEMPO");
+
+	const auto combined2 = fgCombined.combine(metaf::PlainTextGroup("4000"));
+    ASSERT_TRUE(combined2.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined2.value()).toString(), "TS/LTNG TEMPO 4000");
+
+	const auto combined3 = fgCombined.combine(metaf::PlainTextGroup("////"));	
+    ASSERT_TRUE(combined3.has_value());
+	EXPECT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	EXPECT_EQ(std::get<metaf::PlainTextGroup>(
+		combined3.value()).toString(), "TS/LTNG TEMPO ////");
 
 	EXPECT_FALSE(fg->combine(fg.value()).has_value());
 }

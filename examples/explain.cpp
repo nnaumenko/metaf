@@ -276,6 +276,10 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 		result << "Weather phenomena data is missing";
 		break;
 
+		case metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL:
+		result << "Thunderstorm / lightning data is missing";
+		break;
+
 		default:
 		result << "Unknown fixed group";
 		break;

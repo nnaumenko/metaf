@@ -25,8 +25,8 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 2;
-		inline static const int minor = 10;
-		inline static const int patch = 1;
+		inline static const int minor = 11;
+		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
 
@@ -624,6 +624,7 @@ namespace metaf {
 			VIS_MISG,
 			WND_MISG,
 			WX_MISG,
+			TS_LTNG_TEMPO_UNAVBL
 		};
 		Type type() const { return(t); }
 		bool isValid() const { return(type() != Type::INCOMPLETE); }
@@ -648,7 +649,9 @@ namespace metaf {
 			TD,
 			VIS,
 			WND,
-			WX
+			WX,
+			TS_LTNG,
+			TS_LTNG_TEMPO
 		};
 		PartialText partialText;
 
@@ -3001,6 +3004,7 @@ namespace metaf {
 			if (group == "VIS") return(FixedGroup(PartialText::VIS));
 			if (group == "WND") return(FixedGroup(PartialText::WND));
 			if (group == "WX") return(FixedGroup(PartialText::WX));
+			if (group == "TS/LTNG") return(FixedGroup(PartialText::TS_LTNG));
 		}
 		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
@@ -3013,37 +3017,80 @@ namespace metaf {
 
 		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);		
 		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-	
-		if (nextGroupStr == "MISG") {
-			switch (partialText) {
-				case PartialText::CLD:	return(FixedGroup(Type::CLD_MISG));
-				case PartialText::ICG:	return(FixedGroup(Type::ICG_MISG));
-				case PartialText::PCPN:	return(FixedGroup(Type::PCPN_MISG));
-				case PartialText::PRES:	return(FixedGroup(Type::PRES_MISG));
-				case PartialText::RVR:	return(FixedGroup(Type::RVR_MISG));
-				case PartialText::T:	return(FixedGroup(Type::T_MISG));
-				case PartialText::TD:	return(FixedGroup(Type::TD_MISG));
-				case PartialText::VIS:	return(FixedGroup(Type::VIS_MISG));
-				case PartialText::WND:	return(FixedGroup(Type::WND_MISG));
-				case PartialText::WX:	return(FixedGroup(Type::WX_MISG));
-			}
+
+		switch (partialText) {
+			case PartialText::CLD:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::CLD_MISG));
+			break;
+
+			case PartialText::ICG:	
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::ICG_MISG));
+			break;
+
+			case PartialText::PCPN:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::PCPN_MISG));
+			break;
+
+			case PartialText::PRES:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::PRES_MISG));
+			break;
+
+			case PartialText::RVR:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::RVR_MISG));
+			break;
+
+			case PartialText::T:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::T_MISG));
+			break;
+
+			case PartialText::TD:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::TD_MISG));
+			break;
+
+			case PartialText::VIS:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::VIS_MISG));
+			break;
+
+			case PartialText::WND:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::WND_MISG));
+			break;
+
+			case PartialText::WX:
+			if (nextGroupStr == "MISG") return(FixedGroup(Type::WX_MISG));
+			break;
+
+			case PartialText::TS_LTNG:
+			// Here assuming that trend group parsing ignores comments, 
+			// since group TEMPO may be part of trend group, see also 
+			// TrendGroup::parse() and TrendGroup::combine().
+			if (nextGroupStr == "TEMPO") 
+				return(FixedGroup(PartialText::TS_LTNG_TEMPO));
+			break;
+
+			case PartialText::TS_LTNG_TEMPO:
+			if (nextGroupStr == "UNAVBL") 
+				return(FixedGroup(Type::TS_LTNG_TEMPO_UNAVBL));
+			break;
 		}
+
 		return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
 	}
 
 	std::string FixedGroup::incompleteText() const {
 		if (type() != Type::INCOMPLETE) return("");
 		switch (partialText) {
-			case PartialText::CLD:	return("CLD");
-			case PartialText::ICG:	return("ICG");
-			case PartialText::PCPN:	return("PCPN");
-			case PartialText::PRES:	return("PRES");
-			case PartialText::RVR:	return("RVR");
-			case PartialText::T:	return("T");
-			case PartialText::TD:	return("TD");
-			case PartialText::VIS:	return("VIS");
-			case PartialText::WND:	return("WND");
-			case PartialText::WX:	return("WX");
+			case PartialText::CLD:			return("CLD");
+			case PartialText::ICG:			return("ICG");
+			case PartialText::PCPN:			return("PCPN");
+			case PartialText::PRES:			return("PRES");
+			case PartialText::RVR:			return("RVR");
+			case PartialText::T:			return("T");
+			case PartialText::TD:			return("TD");
+			case PartialText::VIS:			return("VIS");
+			case PartialText::WND:			return("WND");
+			case PartialText::WX:			return("WX");
+			case PartialText::TS_LTNG:		return("TS/LTNG");
+			case PartialText::TS_LTNG_TEMPO:return("TS/LTNG TEMPO");
 		}
 	}
 
@@ -3099,6 +3146,9 @@ namespace metaf {
 		const ReportGlobalData & reportData)
 	{
 		(void)reportData;
+		// Warning: if TrendGroup is ever changed to parse remarks, note 
+		// that TEMPO can be part of group TS/LTNG TEMPO UNAVBL
+		// FixedGroup::combine relies on TrendGroup::parse skipping remarks
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 			// Detect trend type fixed groups
 			if (group == "BECMG") return(TrendGroup(Type::BECMG));
