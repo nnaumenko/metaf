@@ -1586,6 +1586,15 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
 
+		.. cpp:enumerator:: WIND_SHIFT
+
+			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Use :cpp:func:`eventTime()`.
+
+		.. cpp:enumerator:: WIND_SHIFT_FROPA
+
+			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Wind shift is associated with frontal passage. Use :cpp:func:`eventTime()`.
+
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -1627,6 +1636,10 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 		.. cpp:function:: Distance height() const
 
 			:returns: Height at which wind shear occurs or a non-reported value if surface wind data are specified.
+
+		.. cpp:function:: std::optional<MetafTime> eventTime() const
+
+			:returns: Time when a certain weather event related to wind has happened (e.g. time when wind shift began, etc).
 
 	**Miscellaneous**
 

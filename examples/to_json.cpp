@@ -497,17 +497,31 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 		case metaf::WindGroup::Type::SURFACE_WIND:
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
-			json.startObject("wind");
-			break;
+		json.startObject("wind");
+		break;
 
 		case metaf::WindGroup::Type::WIND_SHEAR:
-			json.startObject("windShear");
-			break;
+		json.startObject("windShear");
+		break;
+
+		case metaf::WindGroup::Type::WIND_SHIFT:
+		case metaf::WindGroup::Type::WIND_SHIFT_FROPA:
+		if (group.eventTime().has_value()) {
+			metafTimeToJson(group.eventTime().value(), 
+				"windShiftBeginDay", 
+				"windShiftBeginTime");
+		} else {
+			json.valueBool("windShift", true);
+		}
+		if (group.type() == metaf::WindGroup::Type::WIND_SHIFT_FROPA) {
+			json.valueBool("frontalPassage", true);
+		}
+		break;
 
 		default:
-			json.startObject("undefinedWindGroupType");
-			json.valueStr("type", undefinedToString(static_cast<int>(group.type())));
-			break;
+		json.startObject("undefinedWindGroupType");
+		json.valueStr("type", undefinedToString(static_cast<int>(group.type())));
+		break;
 	}
 	if (!group.isValid()) json.valueBool("valid", false);
 	if (group.isCalm()) json.valueBool("calm", true);

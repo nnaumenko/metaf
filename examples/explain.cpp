@@ -357,6 +357,19 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 		result << explainDistance(group.height()) << ':';
 		break;
 
+		case metaf::WindGroup::Type::WIND_SHIFT:		
+		case metaf::WindGroup::Type::WIND_SHIFT_FROPA:
+		result << "Wind direction changed 45&deg; or more in less than 15 minutes ";
+		result << "with sustained wind speed of 10 knots (5.1 m/s / 18.5 km/h / 11.5 mph)";
+		if (group.eventTime().has_value()) {
+			result << lineBreak << "Wind shift began at ";
+			result << explainMetafTime(group.eventTime().value());
+		}
+		if (group.type() == metaf::WindGroup::Type::WIND_SHIFT_FROPA) {
+			result << lineBreak << "This wind shift is associated with weather front passage";
+		}
+		return(result.str());
+
 		default:
 		result << "[unknown wind group]:";
 		break;

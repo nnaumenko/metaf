@@ -341,3 +341,19 @@ TEST(MetafTime, dateBeforeRefDifferentMonthAndYear) {
 	EXPECT_EQ(tDate.month, 12u);
 	EXPECT_EQ(tDate.day, 31u);
 }
+
+TEST(MetafTime, constructorHourMinute) {
+	const auto t = metaf::MetafTime(11, 25);
+	EXPECT_FALSE(t.day().has_value());
+	EXPECT_EQ(t.hour(), 11u);
+	EXPECT_EQ(t.minute(), 25u);
+	EXPECT_TRUE(t.isValid());
+}
+
+TEST(MetafTime, constructorHourMinuteInvalidTime) {
+	const auto t = metaf::MetafTime(25, 90);
+	EXPECT_FALSE(t.day().has_value());
+	EXPECT_EQ(t.hour(), 25u);
+	EXPECT_EQ(t.minute(), 90u);
+	EXPECT_FALSE(t.isValid());
+}
