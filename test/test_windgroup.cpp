@@ -631,3 +631,216 @@ TEST(WindGroup, combineWshftAndOther) {
 	EXPECT_FALSE(wgWshft->combine(metaf::PlainTextGroup("320V340"), reportData).has_value());
 	EXPECT_FALSE(wgWshft->combine(metaf::PlainTextGroup("/////KT"), reportData).has_value());
 }
+
+TEST(WindGroup, parsePk) {
+	const auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wg->incompleteText(), "PK");
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wg->windSpeed().isReported());
+	EXPECT_FALSE(wg->gustSpeed().isReported());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+}
+
+TEST(WindGroup, parsePkWrongReportPart) {
+	EXPECT_FALSE(metaf::WindGroup::parse("PK", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("PK", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("PK", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("PK", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WindGroup, combinePkAndWndPlainText) {
+	const auto wgPk = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wgPk.has_value());
+	EXPECT_EQ(wgPk->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgPk->incompleteText(), "PK");
+
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("232135");
+	ASSERT_TRUE(reportTime.has_value());
+	metaf::ReportGlobalData reportData;
+	reportData.reportTime = reportTime.value();
+
+	const auto ptgWnd = metaf::PlainTextGroup("WND");
+
+	const auto combined = wgPk->combine(ptgWnd, reportData);
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
+
+	EXPECT_EQ(wgCombined.type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgCombined.incompleteText(), "PK WND");
+
+	EXPECT_EQ(wgCombined.direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wgCombined.windSpeed().isReported());
+	EXPECT_FALSE(wgCombined.gustSpeed().isReported());
+	EXPECT_FALSE(wgCombined.height().isReported());
+	EXPECT_EQ(wgCombined.varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wgCombined.varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wgCombined.eventTime().has_value());
+}
+
+TEST(WindGroup, combinePkAndWndIncompleteFixed) {
+	const auto wgPk = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wgPk.has_value());
+	EXPECT_EQ(wgPk->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgPk->incompleteText(), "PK");
+
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("232135");
+	ASSERT_TRUE(reportTime.has_value());
+	metaf::ReportGlobalData reportData;
+	reportData.reportTime = reportTime.value();
+
+	const auto fgWnd = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fgWnd.has_value());
+
+	const auto combined = wgPk->combine(fgWnd.value(), reportData);
+	ASSERT_TRUE(combined.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined.value());
+
+	EXPECT_EQ(wgCombined.type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgCombined.incompleteText(), "PK WND");
+
+	EXPECT_EQ(wgCombined.direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wgCombined.windSpeed().isReported());
+	EXPECT_FALSE(wgCombined.gustSpeed().isReported());
+	EXPECT_FALSE(wgCombined.height().isReported());
+	EXPECT_EQ(wgCombined.varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wgCombined.varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wgCombined.eventTime().has_value());
+}
+
+TEST(WindGroup, combinePkAndOtherPlainText) {
+	const auto wgPk = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wgPk.has_value());
+	EXPECT_EQ(wgPk->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgPk->incompleteText(), "PK");
+
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("232135");
+	ASSERT_TRUE(reportTime.has_value());
+	metaf::ReportGlobalData reportData;
+	reportData.reportTime = reportTime.value();
+
+	const auto combined1 = wgPk->combine(metaf::PlainTextGroup("WIND"), reportData);
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
+	const auto ptgCombined1 = std::get<metaf::PlainTextGroup>(combined1.value());
+	EXPECT_EQ(ptgCombined1.toString(), "PK WIND");
+
+	const auto combined2 = wgPk->combine(metaf::PlainTextGroup("WSHFT"), reportData);
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
+	const auto ptgCombined2 = std::get<metaf::PlainTextGroup>(combined2.value());
+	EXPECT_EQ(ptgCombined2.toString(), "PK WSHFT");
+
+	const auto combined3 = wgPk->combine(metaf::PlainTextGroup("PK"), reportData);
+	ASSERT_TRUE(combined3.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined3.value()));
+	const auto ptgCombined3 = std::get<metaf::PlainTextGroup>(combined3.value());
+	EXPECT_EQ(ptgCombined3.toString(), "PK PK");
+
+	const auto combined4 = wgPk->combine(metaf::PlainTextGroup("W"), reportData);
+	ASSERT_TRUE(combined4.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined4.value()));
+	const auto ptgCombined4 = std::get<metaf::PlainTextGroup>(combined4.value());
+	EXPECT_EQ(ptgCombined4.toString(), "PK W");
+}
+
+TEST(WindGroup, combinePkWndDirSpeedHourMinute) {
+	const auto wgPk = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wgPk.has_value());
+	EXPECT_EQ(wgPk->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgPk->incompleteText(), "PK");
+
+	const auto fgWnd = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fgWnd.has_value());
+
+	const auto ptgData = metaf::PlainTextGroup("31076/1547");	
+
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("061553");
+	ASSERT_TRUE(reportTime.has_value());
+	metaf::ReportGlobalData reportData;
+	reportData.reportTime = reportTime.value();
+
+	const auto combined1 = wgPk->combine(fgWnd.value(), reportData);
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined1.value()));
+
+	const auto combined2 = 
+		std::get<metaf::WindGroup>(combined1.value()).combine(ptgData, reportData);
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined2.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined2.value());
+
+	EXPECT_EQ(wgCombined.type(), metaf::WindGroup::Type::PEAK_WIND);
+
+	EXPECT_EQ(wgCombined.direction().status(), metaf::Direction::Status::VALUE_DEGREES);
+	ASSERT_TRUE(wgCombined.direction().degrees().has_value());
+	EXPECT_EQ(wgCombined.direction().degrees().value(), 310u);
+	ASSERT_TRUE(wgCombined.windSpeed().speed().has_value());
+	EXPECT_EQ(wgCombined.windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_EQ(wgCombined.windSpeed().speed().value(), 76u);
+	EXPECT_FALSE(wgCombined.gustSpeed().speed().has_value());
+	EXPECT_FALSE(wgCombined.height().isReported());
+	EXPECT_EQ(wgCombined.varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wgCombined.varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+
+	ASSERT_TRUE(wgCombined.eventTime().has_value());
+	EXPECT_FALSE(wgCombined.eventTime()->day().has_value());
+	EXPECT_EQ(wgCombined.eventTime()->hour(), 15u);
+	EXPECT_EQ(wgCombined.eventTime()->minute(), 47u);
+}
+
+TEST(WindGroup, combinePkWndDirSpeedMinute) {
+	const auto wgPk = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wgPk.has_value());
+	EXPECT_EQ(wgPk->type(), metaf::WindGroup::Type::INCOMPLETE);
+	EXPECT_EQ(wgPk->incompleteText(), "PK");
+
+	const auto fgWnd = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fgWnd.has_value());
+
+	const auto ptgData = metaf::PlainTextGroup("24029/06");
+
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("211156");
+	ASSERT_TRUE(reportTime.has_value());
+	metaf::ReportGlobalData reportData;
+	reportData.reportTime = reportTime.value();
+
+	const auto combined1 = wgPk->combine(fgWnd.value(), reportData);
+	ASSERT_TRUE(combined1.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined1.value()));
+
+	const auto combined2 = 
+		std::get<metaf::WindGroup>(combined1.value()).combine(ptgData, reportData);
+	ASSERT_TRUE(combined2.has_value());
+	ASSERT_TRUE(std::holds_alternative<metaf::WindGroup>(combined2.value()));
+
+	const auto wgCombined = std::get<metaf::WindGroup>(combined2.value());
+
+	EXPECT_EQ(wgCombined.type(), metaf::WindGroup::Type::PEAK_WIND);
+
+	EXPECT_EQ(wgCombined.direction().status(), metaf::Direction::Status::VALUE_DEGREES);
+	ASSERT_TRUE(wgCombined.direction().degrees().has_value());
+	EXPECT_EQ(wgCombined.direction().degrees().value(), 240u);
+	ASSERT_TRUE(wgCombined.windSpeed().speed().has_value());
+	EXPECT_EQ(wgCombined.windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_EQ(wgCombined.windSpeed().speed().value(), 29u);
+	EXPECT_FALSE(wgCombined.gustSpeed().speed().has_value());
+	EXPECT_FALSE(wgCombined.height().isReported());
+	EXPECT_EQ(wgCombined.varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wgCombined.varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+
+	ASSERT_TRUE(wgCombined.eventTime().has_value());
+	EXPECT_FALSE(wgCombined.eventTime()->day().has_value());
+	EXPECT_EQ(wgCombined.eventTime()->hour(), reportTime->hour());
+	EXPECT_EQ(wgCombined.eventTime()->minute(), 06u);
+}
+

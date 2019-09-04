@@ -25,7 +25,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 2;
-		inline static const int minor = 12;
+		inline static const int minor = 13;
 		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -764,12 +764,14 @@ namespace metaf {
 	class WindGroup {
 	public:
 		enum class Type {
+			INCOMPLETE,
 			SURFACE_WIND,
 			VARIABLE_WIND_SECTOR,
 			SURFACE_WIND_WITH_VARIABLE_SECTOR,
 			WIND_SHEAR,
 			WIND_SHIFT,
-			WIND_SHIFT_FROPA
+			WIND_SHIFT_FROPA,
+			PEAK_WIND
 		};
 		Type type() const { return(windType); }
 		Direction direction() const { return(windDir); }
@@ -781,6 +783,7 @@ namespace metaf {
 		std::optional<MetafTime> eventTime() const { return(evTime); }
 		inline bool isCalm() const;
 		inline bool isValid() const;
+		inline std::string incompleteText() const; 
 
 		WindGroup() = default;
 		static inline std::optional<WindGroup> parse(
@@ -790,6 +793,13 @@ namespace metaf {
 		inline std::optional<Group> combine(const Group & nextGroup,
 			const ReportGlobalData &reportData = noReportData) const;
 	private:
+		enum class IncompleteText {
+			PK,
+			PK_WND
+		};
+		static inline Group parsePeakWind(const std::string & group, 
+			const MetafTime & reportTime);
+
 		Type windType;
 		Direction windDir;
 		Speed wSpeed;
@@ -798,6 +808,7 @@ namespace metaf {
 		Direction vsecBegin;
 		Direction vsecEnd;
 		std::optional<MetafTime> evTime;
+		IncompleteText incmplText;
 	};
 
 	class VisibilityGroup {
@@ -3406,12 +3417,21 @@ namespace metaf {
 		static const std::regex varWindRgx("(\\d\\d0)V(\\d\\d0)");
 		static const auto matchVarWindBegin = 1, matchVarWindEnd = 2;
 
-		// WSHFT
-		if (reportPart == ReportPart::RMK && group == "WSHFT") {
-			WindGroup result;
-			result.windType = Type::WIND_SHIFT;
-			return(result);
-		}
+		if (reportPart == ReportPart::RMK) {
+			// WSHFT group
+			if (group == "WSHFT") {
+				WindGroup result;
+				result.windType = Type::WIND_SHIFT;
+				return(result);
+			}
+			// PK WND group
+			if (group == "PK") {
+				WindGroup result;
+				result.windType = Type::INCOMPLETE;
+				result.incmplText = IncompleteText::PK;
+				return(result);
+			}
+		} 
 
 		if (reportPart != ReportPart::METAR && 
 			reportPart != ReportPart::TAF) return(notRecognised);
@@ -3457,7 +3477,7 @@ namespace metaf {
 		const ReportGlobalData &reportData) const
 	{
 		static const std::optional<Group> notCombined;
-		
+
 		//Combine surface wind group and variable wind sector group
 		if (const auto nextWindGroup = std::get_if<WindGroup>(&nextGroup);
 			nextWindGroup && 
@@ -3472,13 +3492,53 @@ namespace metaf {
 			return(combinedGroup);			
 		}
 
+		//Combine PK WND groups
+		if (type() == Type::INCOMPLETE)
+		{
+			// WND can be part of FixedGroup (see FixedGroup::Type::WND_MISG)
+			// Get text of next group (either Plain Text or Incomplete Fixed)
+			// We do not rely on FixedGroup being parsed (in case something 
+			// changes in future) and check both 
+			// PlainTextGroup and FixedGroup
+			std::string nextGroupStr;
+			if (const auto nextTextGroup = std::get_if<PlainTextGroup>(&nextGroup); 
+				nextTextGroup) 
+			{
+				nextGroupStr = nextTextGroup->toString();
+			}
+			if (const auto nextFixedGroup = std::get_if<FixedGroup>(&nextGroup); 
+				nextFixedGroup && nextFixedGroup->type() == FixedGroup::Type::INCOMPLETE) 
+			{
+				nextGroupStr = nextFixedGroup->incompleteText();
+			}
+			// At this point nextGroupStr contains raw string from the next 
+			// group (either plain text group or incomplete fixed group)
+			if (!reportData.reportTime.has_value()) {
+				return(PlainTextGroup(
+					incompleteText() + groupDelimiterText + nextGroupStr));
+			}
+			//Combine PK and WND
+			switch (incmplText) {
+				case IncompleteText::PK:
+				if (nextGroupStr == "WND") {
+					WindGroup combinedGroup = *this;
+					combinedGroup.incmplText = IncompleteText::PK_WND;
+					return(combinedGroup);
+				}
+				return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
+
+				case IncompleteText::PK_WND:
+				return(parsePeakWind(nextGroupStr, reportData.reportTime.value()));
+			}
+		}
+
 		//Combine WSHFT and other group
 		if (const auto nextTextGroup = std::get_if<PlainTextGroup>(&nextGroup);
 			nextTextGroup && 
 			type() == Type::WIND_SHIFT)
 		{
-			//Combine WSHFT xxxx FROPA, WSHFT xx FROPA and WSHFT FROPA
 			const auto nextGroupStr = nextTextGroup->toString(); 
+			//Combine WSHFT xxxx FROPA, WSHFT xx FROPA and WSHFT FROPA
 			if (nextGroupStr == "FROPA") {
 				WindGroup combinedGroup = *this;
 				combinedGroup.windType = Type::WIND_SHIFT_FROPA;
@@ -3515,6 +3575,37 @@ namespace metaf {
 		return(notCombined);
 	}
 
+	Group WindGroup::parsePeakWind(const std::string & group, 
+		const MetafTime & reportTime)
+	{
+		static const std::regex pkWndRgx("(\\d\\d0)([1-9]?\\d\\d)/(\\d\\d)?(\\d\\d)");
+		static const auto matchDir = 1, matchSpeed = 2; 
+		static const auto matchHour = 3, matchMinute = 4;
+		const auto error = PlainTextGroup(
+			"PK" + groupDelimiterText + "WND" + groupDelimiterText + group);
+
+		std::smatch match;
+		if (!std::regex_match(group, match, pkWndRgx)) return(error);
+
+		WindGroup result;
+		result.windType = Type::PEAK_WIND;
+		const auto dir = Direction::fromDegreesString(match.str(matchDir));
+		if (!dir.has_value()) return(error);
+		result.windDir = dir.value();
+		const auto speed = 
+			Speed::fromString(match.str(matchSpeed), Speed::Unit::KNOTS);
+		if (!speed.has_value()) return(error);
+		result.wSpeed = speed.value();
+
+		const auto minute = stoi(match.str(matchMinute));
+		const auto hour = match.str(matchHour).empty() ? 
+			reportTime.hour() : stoi(match.str(matchHour));
+
+		result.evTime = MetafTime(hour, minute);
+
+		return(result);
+	}
+
 	bool WindGroup::isCalm() const {
 		return (type() == Type::SURFACE_WIND && 
 			direction().status() == Direction::Status::VALUE_DEGREES &&
@@ -3523,7 +3614,19 @@ namespace metaf {
 			!gustSpeed().speed().has_value());
 	}
 
+	std::string WindGroup::incompleteText() const {
+		switch(incmplText) {
+			case IncompleteText::PK:
+			return("PK");
+			
+			case IncompleteText::PK_WND:
+			return("PK" + groupDelimiterText + "WND");
+		}
+	}
+
 	bool WindGroup::isValid() const {
+		// Incomplete group is treated as non-valid
+		if (type() == Type::INCOMPLETE) return(false);
 		// If both wind and gust speed reported, wind speed cannot be greater 
 		// than gust speed
 		if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) {

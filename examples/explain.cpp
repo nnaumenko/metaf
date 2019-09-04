@@ -346,6 +346,12 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
+		case metaf::WindGroup::Type::INCOMPLETE:
+		result << "One or more groups were recognised by parser as ";
+		result << "a wind group but some of the text appears missing: ";
+		result << group.incompleteText();
+		break;
+
 		case metaf::WindGroup::Type::SURFACE_WIND:
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
@@ -369,6 +375,10 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 			result << lineBreak << "This wind shift is associated with weather front passage";
 		}
 		return(result.str());
+
+		case metaf::WindGroup::Type::PEAK_WIND:
+		result << "Peak wind: ";
+		break;
 
 		default:
 		result << "[unknown wind group]:";
@@ -398,6 +408,13 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 			result << explainDirection(group.varSectorBegin()) << " clockwise to ";
 			result << explainDirection(group.varSectorEnd());
 	}
+	if (group.type() == metaf::WindGroup::Type::PEAK_WIND && 
+		group.eventTime().has_value()) 
+	{
+		result << "Peak wind was observed at ";
+		result << explainMetafTime(group.eventTime().value());
+	}
+
 	return(result.str());
 }
 

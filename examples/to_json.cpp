@@ -494,6 +494,10 @@ void GroupVisitorJson::visitTrendGroup(const metaf::TrendGroup & group) {
 
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 	switch (group.type()) {
+		case metaf::WindGroup::Type::INCOMPLETE:
+		json.valueStr("incompleteWindGroupText", group.incompleteText());
+		break;
+
 		case metaf::WindGroup::Type::SURFACE_WIND:
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
@@ -505,17 +509,16 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHIFT:
+		json.startObject("windShift");
+		break;
+
 		case metaf::WindGroup::Type::WIND_SHIFT_FROPA:
-		if (group.eventTime().has_value()) {
-			metafTimeToJson(group.eventTime().value(), 
-				"windShiftBeginDay", 
-				"windShiftBeginTime");
-		} else {
-			json.valueBool("windShift", true);
-		}
-		if (group.type() == metaf::WindGroup::Type::WIND_SHIFT_FROPA) {
-			json.valueBool("frontalPassage", true);
-		}
+		json.startObject("windShift");
+		json.valueBool("frontalPassage", true);
+		break;
+
+		case metaf::WindGroup::Type::PEAK_WIND:
+		json.startObject("peakWind");		
 		break;
 
 		default:
@@ -546,6 +549,9 @@ void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 		"varDirectionHighRangeUnit", 
 		"varDirectionHighRangeType", 
 		true);
+	metafTimeToJson(group.eventTime().value(), 
+			"occurredDay", 
+			"occurredTime");		
 	json.finish();
 }
 
