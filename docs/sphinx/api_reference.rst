@@ -3827,6 +3827,8 @@ See :doc:`getting_started` for more information.
 
 		Checks concrete group type and calls one of the virtual methods below.
 
+		:return: Value returned by corresponding virtual method or T() if the suitable method cannot be found for the Group variant alternative.
+
 	.. cpp:function:: protected virtual T visitPlainTextGroup(const PlainTextGroup & group) = 0
 
 	.. cpp:function:: protected virtual T visitFixedGroup(const FixedGroup & group) = 0
@@ -3878,7 +3880,3 @@ See :doc:`getting_started` for more information.
 	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group) = 0
 
 	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
-
-	.. cpp:function:: protected virtual T visitOther(const Group & group) = 0
-
-	This method is called if :cpp:func:`visit()` cannot recognise an alternative in the Group variant.
