@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="1322" height="328" viewBox="0 0 1322 328">
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="1322" height="289" viewBox="0 0 1322 289">
 <style>
 /* <![CDATA[ */
 svg.railroad-diagram {
@@ -546,77 +546,6 @@ svg.railroad-diagram g.diagram-text:hover path.diagram-text {
 </g>
 </g>
 <path d="M1262 219a10 10 0 0 0 10 -10v-60a10 10 0 0 1 10 -10"></path>
-<path d="M40 61a10 10 0 0 1 10 10v216a10 10 0 0 0 10 10"></path>
-<g>
-<path d="M60 297h347"></path>
-<path d="M915 297h347"></path>
-<g class="terminal">
-<path d="M407 297h0"></path>
-<path d="M469.5 297h0"></path>
-<rect x="407" y="286" width="62.5" height="22" rx="10" ry="10"></rect>
-<text x="438.25" y="301">WSHFT</text>
-</g>
-<path d="M469.5 297h10"></path>
-<path d="M479.5 297h10"></path>
-<g class="terminal">
-<path d="M489.5 297h0"></path>
-<path d="M518 297h0"></path>
-<rect x="489.5" y="286" width="28.5" height="22" rx="10" ry="10"></rect>
-<text x="503.75" y="301"> </text>
-</g>
-<path d="M518 297h10"></path>
-<g>
-<path d="M528 297h0"></path>
-<path d="M656 297h0"></path>
-<path d="M528 297a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
-<g>
-<path d="M548 277h88"></path>
-</g>
-<path d="M636 277a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
-<path d="M528 297h20"></path>
-<g class="non-terminal">
-<path d="M548 297h0"></path>
-<path d="M636 297h0"></path>
-<rect x="548" y="286" width="88" height="22"></rect>
-<text x="592" y="301">00 to 24</text>
-</g>
-<path d="M636 297h20"></path>
-</g>
-<path d="M656 297h10"></path>
-<g class="non-terminal">
-<path d="M666 297h0"></path>
-<path d="M754 297h0"></path>
-<rect x="666" y="286" width="88" height="22"></rect>
-<text x="710" y="301">00 to 59</text>
-</g>
-<path d="M754 297h10"></path>
-<path d="M764 297h10"></path>
-<g class="terminal">
-<path d="M774 297h0"></path>
-<path d="M802.5 297h0"></path>
-<rect x="774" y="286" width="28.5" height="22" rx="10" ry="10"></rect>
-<text x="788.25" y="301"> </text>
-</g>
-<path d="M802.5 297h10"></path>
-<g>
-<path d="M812.5 297h0"></path>
-<path d="M915 297h0"></path>
-<path d="M812.5 297a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
-<g>
-<path d="M832.5 277h62.5"></path>
-</g>
-<path d="M895 277a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
-<path d="M812.5 297h20"></path>
-<g class="terminal">
-<path d="M832.5 297h0"></path>
-<path d="M895 297h0"></path>
-<rect x="832.5" y="286" width="62.5" height="22" rx="10" ry="10"></rect>
-<text x="863.75" y="301">FROPA</text>
-</g>
-<path d="M895 297h20"></path>
-</g>
-</g>
-<path d="M1262 297a10 10 0 0 0 10 -10v-138a10 10 0 0 1 10 -10"></path>
 </g>
 <path d="M 1282 139 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
 </g>

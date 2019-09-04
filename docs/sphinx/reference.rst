@@ -1556,15 +1556,19 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 WindGroup
 ^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
+The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
 
 .. image:: windgroup.svg
 
-Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, and ``WS020/05065KT``.
+The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
+
+.. image:: windgrouprmk.svg
+
+Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, ``WS020/05065KT``, ``WSHFT 1851``, ``WSHFT 30 FROPA``, and ``PK WND 29026/2204``.
 
 .. cpp:class:: WindGroup
 
-	Stores information about surface wind (including variable wind direction sector if reported) or wind shear.
+	Stores information about surface wind (including variable wind direction sector if reported), wind shear, wind shift, and peak wind.
 
 	.. cpp:enum-class:: Type
 
@@ -1593,6 +1597,10 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 		.. cpp:enumerator:: WIND_SHIFT_FROPA
 
 			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Wind shift is associated with frontal passage. Use :cpp:func:`eventTime()`.
+
+		.. cpp:enumerator:: PEAK_WIND
+
+			Information on peak wind since last METAR is stored in this group. Use :cpp:func:`direction()`, :cpp:func:`speed()`, and :cpp:func:`eventTime()`.
 
 
 	**Acquiring group data**
