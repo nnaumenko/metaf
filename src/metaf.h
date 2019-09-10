@@ -27,7 +27,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "phase1";
+		inline static const char tag [] = "phase2";
 	};
 
 	class PlainTextGroup;
@@ -92,10 +92,6 @@ namespace metaf {
 		TAF,
 		RMK
 	};
-
-	static const inline std::string groupDelimiterText = " ";
-
-	using FallbackGroup = PlainTextGroup;
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -558,11 +554,55 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
+	// Data related to the entire report rather than separate group
+	// Some groups have to infer the information from this, e.g. Peak
+	// Wind or Wind Shift groups may need to get an hour from report 
+	// release time
 	struct ReportGlobalData{
 		std::optional<MetafTime> reportTime;
 	};
-
 	static const inline ReportGlobalData noReportData;
+
+	// Result of appending string to an existing group
+	enum class AppendResult {
+		// String was appended to the group (i.e. the string is a continuation of
+		// the previous group); all info from the string is already absorbed into 
+		// the group; no need to parse the string.
+		// E.g. visibility group "1" will append string "1/2SM" since together
+		// they form visibility group "1 1/2SM". 
+		APPENDED,
+		// String could not be appended to this group (i.e. the string is a 
+		// separate group independent from last group); the parser must attempt
+		// to parse the string as a group
+		// E.g. group "BKN040" will not append string "22/20" since these two 
+		// groups represent unrelated data (clouds and temperature).
+		NOT_APPENDED,
+		// The group expected particular string to follow and this expectation 
+		// was not met; the group is not valid without the expected string and
+		// must be converted to raw string; the following string must still be
+		// attempted to be parsed.
+		// E.g. group "PK" expects next group string "WND", and if instead 
+		// string "AO2" follows, it means that the original group "PK" is not 
+		// valid and must be converted to raw string, whereas "AO2" may still 
+		// represent a valid group and must be parsed separately.
+		GROUP_INVALIDATED,
+	};
+
+	// Default delimiter between groups
+	// Note: only used to append raw strings, see also groupDelimiterRegex
+	static const inline char groupDelimiterChar = ' ';
+
+	// This is the regex is used by parser to split report into separate
+	// group strings 
+	static const inline std::regex groupDelimiterRegex("\\s+");
+
+	// Everything after this char is ignored by parser
+	static const inline char reportEndChar = '=';
+
+	// Fallback group is the group which stores raw string in
+	// case when no other group is able to recognise the content
+	// (i.e. if anything else fails) 
+	using FallbackGroup = PlainTextGroup;
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -581,8 +621,10 @@ namespace metaf {
 		{
 			(void)reportPart; (void)reportData; return(PlainTextGroup(group));
 		}
-		inline std::optional<Group> combine(const Group & nextGroup, 
-			const ReportGlobalData &reportData = noReportData) const;
+
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 		static const size_t textMaxLength = 83; 
 		//on par with size of largest group (WindGroup)
@@ -638,14 +680,14 @@ namespace metaf {
 		static inline std::optional<FixedGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
-		inline std::string incompleteText() const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Type t; 
 
-		enum class PartialText {
+		enum class IncompleteText {
 			CLD,
 			ICG,
 			PCPN,
@@ -659,10 +701,10 @@ namespace metaf {
 			TS_LTNG,
 			TS_LTNG_TEMPO
 		};
-		PartialText partialText;
+		IncompleteText incompleteText;
 
 		FixedGroup(Type type) :t (type) {}
-		FixedGroup(PartialText pt) :t (Type::INCOMPLETE), partialText(pt) {}
+		FixedGroup(IncompleteText pt) :t (Type::INCOMPLETE), incompleteText(pt) {}
 	};
 
 	class LocationGroup {
@@ -674,8 +716,9 @@ namespace metaf {
 		static inline std::optional<LocationGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		static const inline auto locationLength = 4; 
@@ -692,8 +735,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		MetafTime t;	
@@ -733,8 +777,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		TrendGroup(Type type) : t(type) {}
@@ -785,22 +830,22 @@ namespace metaf {
 		std::optional<MetafTime> eventTime() const { return(evTime); }
 		inline bool isCalm() const;
 		inline bool isValid() const;
-		inline std::string incompleteText() const; 
 
 		WindGroup() = default;
 		static inline std::optional<WindGroup> parse(
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		enum class IncompleteText {
 			PK,
 			PK_WND
 		};
-		static inline Group parsePeakWind(const std::string & group, 
-			const MetafTime & reportTime);
+		inline AppendResult parsePeakWind(const std::string & group, 
+			const ReportGlobalData & reportData);
 
 		Type windType;
 		Direction windDir;
@@ -810,7 +855,7 @@ namespace metaf {
 		Direction vsecBegin;
 		Direction vsecEnd;
 		std::optional<MetafTime> evTime;
-		IncompleteText incmplText;
+		IncompleteText incompleteText;
 	};
 
 	class VisibilityGroup {
@@ -836,8 +881,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		Type visType = Type::PREVAILING;
 		Distance vis;
@@ -888,8 +934,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		Amount amnt = Amount::NOT_REPORTED;
 		Distance heightOrVertVis;
@@ -966,8 +1013,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Qualifier q = Qualifier::NONE;
@@ -1000,8 +1048,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Temperature t;
@@ -1025,8 +1074,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Point p = Point::NOT_SPECIFIED;
@@ -1057,8 +1107,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Type t = Type::OBSERVED_QNH;
@@ -1095,8 +1146,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Runway rw;
@@ -1158,8 +1210,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Runway rw;
@@ -1186,7 +1239,6 @@ namespace metaf {
 		Type type() const { return(t); }
 		std::optional<Runway> runway() const { return(rw); }
 		std::optional<Direction> direction() const { return(dir); }
-		inline std::string incompleteText() const;
 		inline bool isValid() const;
 
 		SecondaryLocationGroup() = default; 
@@ -1194,15 +1246,16 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 
-		enum class PartialText {
+		enum class IncompleteText {
 			WS,
 			WS_ALL,
 		};
-		PartialText partialText;
+		IncompleteText incompleteText;
 
 		Type t;
 		std::optional<Runway> rw;
@@ -1221,8 +1274,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Precipitation last10m;
@@ -1241,8 +1295,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Temperature t;
@@ -1269,8 +1324,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		Code c = Code::BLUE;
 		bool cBlack = false; //Is colour code BLACK reported along with main code
@@ -1292,8 +1348,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		ObservationPeriod obsPeriod = ObservationPeriod::HOURS6;
 		Temperature minTemp;
@@ -1325,8 +1382,9 @@ namespace metaf {
 		static inline std::optional<PrecipitationGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	private:
 		Type precType = Type::TOTAL_PRECIPITATION_HOURLY;
 		Precipitation precAmount;
@@ -1372,8 +1430,9 @@ namespace metaf {
 		static inline std::optional<LayerForecastGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Type layerType;
@@ -1417,8 +1476,9 @@ namespace metaf {
 			const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		Type tendencyType;
@@ -1455,8 +1515,9 @@ namespace metaf {
 		static inline std::optional<CloudTypesGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		size_t cloudTypesSize = 0;
@@ -1516,8 +1577,9 @@ namespace metaf {
 		static inline std::optional<CloudLayersGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 
 	private:
 		LowLayer cloudLowLayer = LowLayer::NONE;
@@ -1543,8 +1605,9 @@ namespace metaf {
 		static inline std::optional<MiscGroup> parse(const std::string & group, 
 			ReportPart reportPart,
 			const ReportGlobalData & reportData = noReportData);
-		inline std::optional<Group> combine(const Group & nextGroup,
-			const ReportGlobalData &reportData = noReportData) const;
+		AppendResult inline append(const std::string & group, 
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportGlobalData & reportData = noReportData);
 	
 	private:
 		Type groupType;
@@ -1552,24 +1615,28 @@ namespace metaf {
 	};
 
 	///////////////////////////////////////////////////////////////////////////////
-	
+
+	// Syntax Group is a delimiter of structural part of METAR/TAF report	
 	enum class SyntaxGroup {
-		OTHER,
-		METAR,
-		SPECI,
-		TAF,
-		COR,
-		AMD,
-		LOCATION,
-		REPORT_TIME,
-		TIME_SPAN,
-		CNL,
-		NIL,
-		RMK,
-		MAINTENANCE_INDICATOR
+		OTHER,			// Group is not important for report syntax
+		METAR,			// Keyword METAR (beginning of METAR report)
+		SPECI,			// Keyword SPECI (beginning of METAR report)
+		TAF,			// Keyword TAF (beginning of TAF report)
+		COR,			// Keyword COR (correctional report)
+		AMD,			// Keyword AMD (amended report)
+		LOCATION,		// ICAO location, 4 alphanumeric chars, 1st char must be alpha
+		REPORT_TIME,	// Report release time, 6 digits and letter Z (xxxxxxZ)
+		TIME_SPAN,		// TAF report validity time (xxxx/xxxx)
+		CNL,			// Keyword CNL (cancelled report)
+		NIL,			// Keyword NIL (missing report)
+		RMK,			// Keyword RMK (remarks to follow)
+		MAINTENANCE_INDICATOR //Keyword $ added at the end of automated METARs
 	};
 
+	// Determines groups important for report syntax 
 	inline SyntaxGroup getSyntaxGroup(const Group & group);
+
+	///////////////////////////////////////////////////////////////////////////////
 
 	class GroupParser {
 	public:
@@ -1621,59 +1688,34 @@ namespace metaf {
 			CNL_ALLOWED_IN_TAF_ONLY,
 			MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
 		};
+
 		struct Result {
 			ReportType reportType;
 			Error error;
-			std::vector<Group> groups;
+			struct GroupInfo {
+				GroupInfo(Group g, ReportPart rp, std::string rawstr) :
+					group(std::move(g)), reportPart(rp), rawString(std::move(rawstr)) {}
+				Group group;
+				ReportPart reportPart;
+				std::string rawString;
+			};
+			std::vector<GroupInfo> groups;
 		};
 
-		struct ExtendedResult {
-			ReportType reportType;
-			Error error;
-			std::vector< std::tuple<Group, ReportPart, std::string> > extgroups;
-		};
-
-		static Result parse (const std::string & report) {
-			const auto result = parseInternal(report, false);
-			return(std::get<Result>(result));
-		}
-		static ExtendedResult extendedParse(const std::string & report) {
-			const auto result = parseInternal(report, true);
-			return(std::get<ExtendedResult>(result));
-		}
+		static inline Result parse (const std::string & report);
 
 	private:
-		using ParseInternalResult = std::variant<Result, ExtendedResult>;
-		static inline ParseInternalResult parseInternal(
-			const std::string & report, 
-			bool extendedReport);
-		static inline std::optional<Group> combineWithLastGroup(
-			const std::optional<Group> & lastGroup,
-			const Group & group,
-			const ReportGlobalData & reportData);
-		static inline std::optional<Group> getLastGroup(const Result & result);
-		static inline std::optional<Group> getLastGroup(const ExtendedResult & result);
-
-		static inline void saveToResult(Result & result, 
-			Group group,
-			const std::optional<Group> & combinedGroup);
-
-		static inline void saveToResult(ExtendedResult & extresult, 
-			Group group,
-			const std::optional<Group> & combinedGroup, 
+		static inline bool appendToLastResultGroup(Result & result, 
+			const std::string & groupStr,
 			ReportPart reportPart,
-			const std::string & groupString);
-
-		static inline void saveToResult(
-			Result & result, 
+			const ReportGlobalData & reportData);
+		static inline void addGroupToResult(Result & result, 
+			Group group, 
+			ReportPart reportPart, 
+			std::string groupString);
+		static inline void saveInfoToResult(Result & result, 
 			ReportType reportType, 
 			Error error);
-
-		static inline void saveToResult(
-			ExtendedResult & extresult, 
-			ReportType reportType, 
-			Error error);
-
 		static inline void updateReportData(const Group & group, 
 			ReportGlobalData & reportData);
 
@@ -2963,26 +3005,19 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<Group> PlainTextGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult PlainTextGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData;
-		static const std::optional<Group> notCombined;
-		const auto nextPlainTextGroup = std::get_if<PlainTextGroup>(&nextGroup);
-		if (!nextPlainTextGroup) return(notCombined);
+		(void)reportData; (void)reportPart;
+		if (const auto textNewLength = strlen(text) + group.length() + 1;
+			textNewLength > textMaxLength) return(AppendResult::NOT_APPENDED);
 
-		static const char delimiterStr[] = " ";
-
-		if (const auto textNewLength = 
-				strlen(text) + 
-				strlen(nextPlainTextGroup->text) + 
-				strlen(delimiterStr);
-			textNewLength > textMaxLength) return(notCombined);
-
-		PlainTextGroup combinedGroup = *this;
-		strcat(combinedGroup.text, delimiterStr);
-		strcat(combinedGroup.text, nextPlainTextGroup->text); 
-		return(combinedGroup);
+		const auto len = strlen(text);
+		text[len] = groupDelimiterChar;
+		text[len + 1] = '\0';
+		strcat(text, group.c_str()); 
+		return(AppendResult::APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -3031,107 +3066,89 @@ namespace metaf {
 			if (group == "TSNO") return(FixedGroup(Type::TSNO));
 			if (group == "SLPNO") return(FixedGroup(Type::SLPNO));
 			if (group == "FROIN") return(FixedGroup(Type::FROIN));
-			if (group == "CLD") return(FixedGroup(PartialText::CLD));
-			if (group == "ICG") return(FixedGroup(PartialText::ICG));
-			if (group == "PCPN") return(FixedGroup(PartialText::PCPN));
-			if (group == "PRES") return(FixedGroup(PartialText::PRES));
-			if (group == "RVR") return(FixedGroup(PartialText::RVR));
-			if (group == "T") return(FixedGroup(PartialText::T));
-			if (group == "TD") return(FixedGroup(PartialText::TD));
-			if (group == "VIS") return(FixedGroup(PartialText::VIS));
-			if (group == "WND") return(FixedGroup(PartialText::WND));
-			if (group == "WX") return(FixedGroup(PartialText::WX));
-			if (group == "TS/LTNG") return(FixedGroup(PartialText::TS_LTNG));
+			if (group == "CLD") return(FixedGroup(IncompleteText::CLD));
+			if (group == "ICG") return(FixedGroup(IncompleteText::ICG));
+			if (group == "PCPN") return(FixedGroup(IncompleteText::PCPN));
+			if (group == "PRES") return(FixedGroup(IncompleteText::PRES));
+			if (group == "RVR") return(FixedGroup(IncompleteText::RVR));
+			if (group == "T") return(FixedGroup(IncompleteText::T));
+			if (group == "TD") return(FixedGroup(IncompleteText::TD));
+			if (group == "VIS") return(FixedGroup(IncompleteText::VIS));
+			if (group == "WND") return(FixedGroup(IncompleteText::WND));
+			if (group == "WX") return(FixedGroup(IncompleteText::WX));
+			if (group == "TS/LTNG") return(FixedGroup(IncompleteText::TS_LTNG));
 		}
 		if (group == "$") return(FixedGroup(Type::MAINTENANCE_INDICATOR));
 		return(std::optional<FixedGroup>());
 	}
 
-	std::optional<Group> FixedGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult FixedGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData;
-		static const std::optional<Group> notCombined;
+		(void)reportData; (void)reportPart;
 
-		if (type() != Type::INCOMPLETE) return(notCombined);
+		if (type() != Type::INCOMPLETE) return(AppendResult::NOT_APPENDED);
 
-		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);		
-		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-
-		switch (partialText) {
-			case PartialText::CLD:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::CLD_MISG));
+		switch (incompleteText) {
+			case IncompleteText::CLD:
+			if (group == "MISG") {t = Type::CLD_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::ICG:	
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::ICG_MISG));
+			case IncompleteText::ICG:	
+			if (group == "MISG") {t = Type::ICG_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::PCPN:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::PCPN_MISG));
+			case IncompleteText::PCPN:
+			if (group == "MISG") {t = Type::PCPN_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::PRES:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::PRES_MISG));
+			case IncompleteText::PRES:
+			if (group == "MISG") {t = Type::PRES_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::RVR:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::RVR_MISG));
+			case IncompleteText::RVR:
+			if (group == "MISG") {t = Type::RVR_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::T:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::T_MISG));
+			case IncompleteText::T:
+			if (group == "MISG") {t = Type::T_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::TD:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::TD_MISG));
+			case IncompleteText::TD:
+			if (group == "MISG") {t = Type::TD_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::VIS:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::VIS_MISG));
+			case IncompleteText::VIS:
+			if (group == "MISG") {t = Type::VIS_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::WND:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::WND_MISG));
+			case IncompleteText::WND:
+			if (group == "MISG") {t = Type::WND_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::WX:
-			if (nextGroupStr == "MISG") return(FixedGroup(Type::WX_MISG));
+			case IncompleteText::WX:
+			if (group == "MISG") {t = Type::WX_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case PartialText::TS_LTNG:
+			case IncompleteText::TS_LTNG:
 			// Here assuming that trend group parsing ignores comments, 
 			// since group TEMPO may be part of trend group, see also 
-			// TrendGroup::parse() and TrendGroup::combine().
-			if (nextGroupStr == "TEMPO") 
-				return(FixedGroup(PartialText::TS_LTNG_TEMPO));
+			// TrendGroup::parse() and TrendGroup::apppend().
+			if (group == "TEMPO") {
+				incompleteText = IncompleteText::TS_LTNG_TEMPO;
+				return(AppendResult::APPENDED);
+			}
 			break;
 
-			case PartialText::TS_LTNG_TEMPO:
-			if (nextGroupStr == "UNAVBL") 
-				return(FixedGroup(Type::TS_LTNG_TEMPO_UNAVBL));
+			case IncompleteText::TS_LTNG_TEMPO:
+			if (group == "UNAVBL") {
+				t = Type::TS_LTNG_TEMPO_UNAVBL;
+				return(AppendResult::APPENDED);
+			}
 			break;
 		}
-
-		return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
-	}
-
-	std::string FixedGroup::incompleteText() const {
-		if (type() != Type::INCOMPLETE) return("");
-		switch (partialText) {
-			case PartialText::CLD:			return("CLD");
-			case PartialText::ICG:			return("ICG");
-			case PartialText::PCPN:			return("PCPN");
-			case PartialText::PRES:			return("PRES");
-			case PartialText::RVR:			return("RVR");
-			case PartialText::T:			return("T");
-			case PartialText::TD:			return("TD");
-			case PartialText::VIS:			return("VIS");
-			case PartialText::WND:			return("WND");
-			case PartialText::WX:			return("WX");
-			case PartialText::TS_LTNG:		return("TS/LTNG");
-			case PartialText::TS_LTNG_TEMPO:return("TS/LTNG TEMPO");
-		}
+		return(AppendResult::GROUP_INVALIDATED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -3151,10 +3168,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> LocationGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult LocationGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart; 
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -3177,10 +3196,12 @@ namespace metaf {
 		return(g);
 	}
 
-	std::optional<Group> ReportTimeGroup::combine(const Group & nextGroup, 
-		const ReportGlobalData &reportData) const
+	AppendResult ReportTimeGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -3192,7 +3213,7 @@ namespace metaf {
 		(void)reportData;
 		// Warning: if TrendGroup is ever changed to parse remarks, note 
 		// that TEMPO can be part of group TS/LTNG TEMPO UNAVBL
-		// FixedGroup::combine relies on TrendGroup::parse skipping remarks
+		// FixedGroup::append relies on TrendGroup::parse skipping remarks
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 			// Detect trend type fixed groups
 			if (group == "BECMG") return(TrendGroup(Type::BECMG));
@@ -3222,18 +3243,18 @@ namespace metaf {
 		return(std::optional<TrendGroup>());
 	}
 
-	std::optional<Group> TrendGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult TrendGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
 		(void)reportData;
-		const auto nextTrendGroup = std::get_if<TrendGroup>(&nextGroup);
-		if (!nextTrendGroup) return(std::optional<Group>());
-		TrendGroup combinedGroup = *this;
-		if (combinedGroup.combineProbAndTrendTypeGroups(*nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineTrendTypeAndTimeGroup(*nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineProbAndTimeSpanGroups(*nextTrendGroup)) return(combinedGroup);
-		if (combinedGroup.combineIncompleteGroups(*nextTrendGroup)) return(combinedGroup);
-		return(std::optional<Group>());
+		const auto nextGroup = parse(group, reportPart, reportData);
+		if (!nextGroup.has_value()) return(AppendResult::NOT_APPENDED);
+		if (combineProbAndTrendTypeGroups(nextGroup.value())) return(AppendResult::APPENDED);
+		if (combineTrendTypeAndTimeGroup(nextGroup.value())) return(AppendResult::APPENDED);
+		if (combineProbAndTimeSpanGroups(nextGroup.value())) return(AppendResult::APPENDED);
+		if (combineIncompleteGroups(nextGroup.value())) return(AppendResult::APPENDED);
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	std::optional<TrendGroup> TrendGroup::fromTimeSpan(const std::string & s) {
@@ -3420,7 +3441,7 @@ namespace metaf {
 			if (group == "PK") {
 				WindGroup result;
 				result.windType = Type::INCOMPLETE;
-				result.incmplText = IncompleteText::PK;
+				result.incompleteText = IncompleteText::PK;
 				return(result);
 			}
 		} 
@@ -3465,137 +3486,103 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> WindGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult WindGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
-		static const std::optional<Group> notCombined;
-
-		//Combine surface wind group and variable wind sector group
-		if (const auto nextWindGroup = std::get_if<WindGroup>(&nextGroup);
-			nextWindGroup && 
+		//Append variable wind sector group to surface wind group 
+		if (const auto nextGroup = parse(group, reportPart, reportData);
+			nextGroup.has_value() && 
 			type() == Type::SURFACE_WIND &&
-			nextWindGroup->type() == Type::VARIABLE_WIND_SECTOR)
+			nextGroup->type() == Type::VARIABLE_WIND_SECTOR)
 		{
-			WindGroup combinedGroup = *this;
-			combinedGroup.windType = 
-				Type::SURFACE_WIND_WITH_VARIABLE_SECTOR;
-			combinedGroup.vsecBegin = nextWindGroup->vsecBegin;
-			combinedGroup.vsecEnd = nextWindGroup->vsecEnd;
-			return(combinedGroup);			
+			windType = Type::SURFACE_WIND_WITH_VARIABLE_SECTOR;
+			vsecBegin = nextGroup->vsecBegin;
+			vsecEnd = nextGroup->vsecEnd;
+			return(AppendResult::APPENDED);
 		}
 
-		//Combine PK WND groups
+		//PK WND groups
 		if (type() == Type::INCOMPLETE)
 		{
-			// WND can be part of FixedGroup (see FixedGroup::Type::WND_MISG)
-			// Get text of next group (either Plain Text or Incomplete Fixed)
-			// We do not rely on FixedGroup being parsed (in case something 
-			// changes in future) and check both 
-			// PlainTextGroup and FixedGroup
-			std::string nextGroupStr;
-			if (const auto nextTextGroup = std::get_if<PlainTextGroup>(&nextGroup); 
-				nextTextGroup) 
-			{
-				nextGroupStr = nextTextGroup->toString();
-			}
-			if (const auto nextFixedGroup = std::get_if<FixedGroup>(&nextGroup); 
-				nextFixedGroup && nextFixedGroup->type() == FixedGroup::Type::INCOMPLETE) 
-			{
-				nextGroupStr = nextFixedGroup->incompleteText();
-			}
-			// At this point nextGroupStr contains raw string from the next 
-			// group (either plain text group or incomplete fixed group)
-			if (!reportData.reportTime.has_value()) {
-				return(PlainTextGroup(
-					incompleteText() + groupDelimiterText + nextGroupStr));
-			}
-			//Combine PK and WND
-			switch (incmplText) {
+			switch (incompleteText) {
 				case IncompleteText::PK:
-				if (nextGroupStr == "WND") {
-					WindGroup combinedGroup = *this;
-					combinedGroup.incmplText = IncompleteText::PK_WND;
-					return(combinedGroup);
+				if (group == "WND") {
+					incompleteText = IncompleteText::PK_WND;
+					return(AppendResult::APPENDED);
 				}
-				return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
+				return(AppendResult::GROUP_INVALIDATED);
 
 				case IncompleteText::PK_WND:
-				return(parsePeakWind(nextGroupStr, reportData.reportTime.value()));
+				return(parsePeakWind(group, reportData));
 			}
 		}
 
-		//Combine WSHFT and other group
-		if (const auto nextTextGroup = std::get_if<PlainTextGroup>(&nextGroup);
-			nextTextGroup && 
-			type() == Type::WIND_SHIFT)
+		//Apped to WSHFT
+		if (type() == Type::WIND_SHIFT)
 		{
-			const auto nextGroupStr = nextTextGroup->toString(); 
-			//Combine WSHFT xxxx FROPA, WSHFT xx FROPA and WSHFT FROPA
-			if (nextGroupStr == "FROPA") {
-				WindGroup combinedGroup = *this;
-				combinedGroup.windType = Type::WIND_SHIFT_FROPA;
-				return(combinedGroup);
+			//Append FROPA to wind shift group with or without time
+			if (group == "FROPA") {
+				windType = Type::WIND_SHIFT_FROPA;
+				return(AppendResult::APPENDED);
 			}
-			//Combine WSHFT and 2-digit time
+			if (eventTime().has_value()) return(AppendResult::NOT_APPENDED);
+			//Append 2-digit time to WSHFT
 			if (!eventTime().has_value() &&
 				reportData.reportTime.has_value() &&
-				nextGroupStr.length() == 2)
+				group.length() == 2)
 			{
-				const auto minuteVal = strToUint(nextTextGroup->toString(), 0, 2);
-				if (!minuteVal.has_value()) return(notCombined);
-				WindGroup combinedGroup = *this;
-				combinedGroup.evTime = 
-					MetafTime(reportData.reportTime->hour(), minuteVal.value());
-				return(combinedGroup);
+				const auto minuteVal = strToUint(group, 0, 2);
+				if (!minuteVal.has_value()) return(AppendResult::NOT_APPENDED);
+				evTime = MetafTime(reportData.reportTime->hour(), minuteVal.value());
+				return(AppendResult::APPENDED);
 			}
-			//Combine WSHFT and 4-digit time
-			if (!eventTime().has_value() &&
-				reportData.reportTime.has_value() &&
-				nextGroupStr.length() == 4)
+			//Append 4-digit time to WSHFT
+			if (!eventTime().has_value() && group.length() == 4)
 			{
-				const auto hourMinuteVal = strToUint(nextTextGroup->toString(), 0, 4);
-				if (!hourMinuteVal.has_value()) return(notCombined);
-				WindGroup combinedGroup = *this;
+				const auto hourMinuteVal = strToUint(group, 0, 4);
+				if (!hourMinuteVal.has_value()) return(AppendResult::NOT_APPENDED);
 				// hourMinuteVal.value() has 4 digits, format hhmm 
 				const auto hour = hourMinuteVal.value() / 100;
 				const auto minute = hourMinuteVal.value() % 100;
-				combinedGroup.evTime = MetafTime (hour, minute);
-				return(combinedGroup);
+				evTime = MetafTime (hour, minute);
+				return(AppendResult::APPENDED);
 			}
-			return(notCombined);
+			return(AppendResult::NOT_APPENDED);
 		}
-		return(notCombined);
+
+		return(AppendResult::NOT_APPENDED);
 	}
 
-	Group WindGroup::parsePeakWind(const std::string & group, 
-		const MetafTime & reportTime)
+	AppendResult WindGroup::parsePeakWind(const std::string & group, 
+		const ReportGlobalData & reportData)
 	{
 		static const std::regex pkWndRgx("(\\d\\d0)([1-9]?\\d\\d)/(\\d\\d)?(\\d\\d)");
 		static const auto matchDir = 1, matchSpeed = 2; 
 		static const auto matchHour = 3, matchMinute = 4;
-		const auto error = PlainTextGroup(
-			"PK" + groupDelimiterText + "WND" + groupDelimiterText + group);
 
 		std::smatch match;
-		if (!std::regex_match(group, match, pkWndRgx)) return(error);
+		if (!std::regex_match(group, match, pkWndRgx)) return(AppendResult::GROUP_INVALIDATED);
 
-		WindGroup result;
-		result.windType = Type::PEAK_WIND;
+		windType = Type::PEAK_WIND;
 		const auto dir = Direction::fromDegreesString(match.str(matchDir));
-		if (!dir.has_value()) return(error);
-		result.windDir = dir.value();
+		if (!dir.has_value()) return(AppendResult::GROUP_INVALIDATED);
+		windDir = dir.value();
+
 		const auto speed = 
 			Speed::fromString(match.str(matchSpeed), Speed::Unit::KNOTS);
-		if (!speed.has_value()) return(error);
-		result.wSpeed = speed.value();
+		if (!speed.has_value()) return(AppendResult::GROUP_INVALIDATED);
+		wSpeed = speed.value();
 
-		const auto minute = stoi(match.str(matchMinute));
+		if (!reportData.reportTime.has_value() && match.str(matchHour).empty()) {
+			return(AppendResult::GROUP_INVALIDATED);
+		}
 		const auto hour = match.str(matchHour).empty() ? 
-			reportTime.hour() : stoi(match.str(matchHour));
+			reportData.reportTime->hour() : stoi(match.str(matchHour));
+		const auto minute = stoi(match.str(matchMinute));
+		evTime = MetafTime(hour, minute);
 
-		result.evTime = MetafTime(hour, minute);
-
-		return(result);
+		return(AppendResult::APPENDED);
 	}
 
 	bool WindGroup::isCalm() const {
@@ -3604,16 +3591,6 @@ namespace metaf {
 			!direction().degrees().value_or(1) && 
 			!windSpeed().speed().value_or(1) && 
 			!gustSpeed().speed().has_value());
-	}
-
-	std::string WindGroup::incompleteText() const {
-		switch(incmplText) {
-			case IncompleteText::PK:
-			return("PK");
-			
-			case IncompleteText::PK_WND:
-			return("PK" + groupDelimiterText + "WND");
-		}
 	}
 
 	bool WindGroup::isValid() const {
@@ -3680,26 +3657,27 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> VisibilityGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult VisibilityGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{
 		(void)reportData;
-		const auto nextVisGroup = std::get_if<VisibilityGroup>(&nextGroup);
-		if (!nextVisGroup) return(std::optional<Group>());
-		if (visibility().unit() != Distance::Unit::STATUTE_MILES || 
-			nextVisGroup->visibility().unit() != Distance::Unit::STATUTE_MILES) {
-				return(std::optional<Group>());
+
+		if (!incompleteInteger || visibility().unit() != Distance::Unit::STATUTE_MILES) {
+			return(AppendResult::NOT_APPENDED);
 		}
-		if (incompleteInteger && nextVisGroup->visibility().isFraction()) {
-			auto v = Distance::fromIntegerAndFraction(visibility(), 
-				nextVisGroup->visibility());
-			if (!v.has_value()) return(std::optional<Group>());
-			VisibilityGroup combinedGroup = *this;
-			combinedGroup.vis = v.value();
-			combinedGroup.incompleteInteger = false;
-			return(combinedGroup);
-		}
-		return (std::optional<Group>());
+
+		const auto nextGroup = parse(group, reportPart, reportData);
+		if (!nextGroup) return(AppendResult::GROUP_INVALIDATED);
+		if (nextGroup->visibility().unit() != Distance::Unit::STATUTE_MILES &&
+			nextGroup->visibility().isFraction()) return(AppendResult::GROUP_INVALIDATED); 
+
+		auto v = Distance::fromIntegerAndFraction(visibility(), nextGroup->visibility());
+		if (!v.has_value()) return(AppendResult::GROUP_INVALIDATED);
+
+		vis = v.value();
+		incompleteInteger = false;
+		return(AppendResult::APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -3742,10 +3720,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> CloudGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult CloudGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string & s) {
@@ -3821,10 +3801,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> WeatherGroup::combine(const Group & nextGroup, 
-		const ReportGlobalData &reportData) const
+	AppendResult WeatherGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	bool WeatherGroup::isModerateQualifier() const {
@@ -3973,10 +3955,12 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> TemperatureGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult TemperatureGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -4006,10 +3990,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> TemperatureForecastGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult TemperatureForecastGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart; 
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -4054,10 +4040,12 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> PressureGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult PressureGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
@@ -4095,10 +4083,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> RunwayVisualRangeGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult RunwayVisualRangeGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	std::optional<RunwayVisualRangeGroup::Trend> RunwayVisualRangeGroup::trendFromString(
@@ -4149,10 +4139,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> RunwayStateGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult RunwayStateGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	RunwayStateGroup RunwayStateGroup::runwaySnoclo(Runway runway) {
@@ -4225,52 +4217,41 @@ namespace metaf {
 			if (group == "WS") {
 				SecondaryLocationGroup result;
 				result.t = Type::INCOMPLETE;
-				result.partialText = PartialText::WS;
+				result.incompleteText = IncompleteText::WS;
 				return(result);
 			}
 		}
 		return(notRecognised);
 	}
 
-	std::optional<Group> SecondaryLocationGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{ 
-		(void)reportData;
-		static const std::optional<SecondaryLocationGroup> notCombined;
-		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);
-		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-		SecondaryLocationGroup combinedGroup = *this;
+	AppendResult SecondaryLocationGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{
+		(void)reportData; (void)reportPart;
 
-		if (type() != Type::INCOMPLETE) return(notCombined);
+		if (type() != Type::INCOMPLETE) return(AppendResult::NOT_APPENDED);
 	
-		switch (partialText) {
-			case PartialText::WS:
-			if (nextGroupStr == "ALL") {
-				combinedGroup.partialText = PartialText::WS_ALL;
-				return(combinedGroup);
+		switch (incompleteText) {
+			case IncompleteText::WS:
+			if (group == "ALL") {
+				incompleteText = IncompleteText::WS_ALL;
+				return(AppendResult::APPENDED);
 			}
-			if (const auto runway = Runway::fromString(nextGroupStr, true); runway.has_value()) {
-				combinedGroup.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
-				combinedGroup.rw = runway.value();
-				return(combinedGroup);
+			if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+				t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+				rw = runway.value();
+				return(AppendResult::APPENDED);
 			}
-			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
+			return(AppendResult::GROUP_INVALIDATED);
 
-			case PartialText::WS_ALL:
-				if (nextGroupStr == "RWY") {
-					combinedGroup.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
-					combinedGroup.rw = Runway::makeAllRunways();
-					return(combinedGroup);									
-				}
-			return(PlainTextGroup(incompleteText() + groupDelimiterText + nextGroupStr));
-		}
-	}
-
-	std::string SecondaryLocationGroup::incompleteText() const {
-		if (type() != Type::INCOMPLETE) return("");
-		switch (partialText) {
-			case PartialText::WS:		return("WS");
-			case PartialText::WS_ALL:	return("WS" + groupDelimiterText + "ALL");
+			case IncompleteText::WS_ALL:
+			if (group == "RWY") {
+				t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+				rw = Runway::makeAllRunways();
+				return(AppendResult::APPENDED);
+			}
+			return(AppendResult::GROUP_INVALIDATED);
 		}
 	}
 
@@ -4280,8 +4261,6 @@ namespace metaf {
 			if (dir.has_value() && !dir->isValid()) return(false);
 			return(true);
 		}
-
-
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -4310,10 +4289,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> RainfallGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult RainfallGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -4339,10 +4320,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> SeaSurfaceGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const 
+	AppendResult SeaSurfaceGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -4370,10 +4353,12 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> ColourCodeGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult ColourCodeGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -4425,33 +4410,28 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> MinMaxTemperatureGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult MinMaxTemperatureGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
 		(void)reportData;
-		static const std::optional<Group> notCombined;
-		if (!std::holds_alternative<MinMaxTemperatureGroup>(nextGroup)) {
-			return(notCombined);	
-		}
-		auto nextMinMaxGroup = std::get<MinMaxTemperatureGroup>(nextGroup);
-		if (observationPeriod() != ObservationPeriod::HOURS6) return(notCombined);
-		if (nextMinMaxGroup.observationPeriod() != observationPeriod()) return(notCombined);
+		if (observationPeriod() != ObservationPeriod::HOURS6) 
+			return(AppendResult::NOT_APPENDED);
+		const auto nextGroup = parse(group, reportPart, reportData);
+		if (!nextGroup.has_value()) return(AppendResult::NOT_APPENDED);
 
+		if (nextGroup->observationPeriod() != observationPeriod()) 
+			return(AppendResult::NOT_APPENDED);
 		if (minimum().temperature().has_value() &&
-			nextMinMaxGroup.minimum().temperature().has_value()) return(notCombined);
+			nextGroup->minimum().temperature().has_value()) return(AppendResult::NOT_APPENDED);
 		if (maximum().temperature().has_value() &&
-			nextMinMaxGroup.maximum().temperature().has_value()) return(notCombined);
+			nextGroup->maximum().temperature().has_value()) return(AppendResult::NOT_APPENDED);
 
-		MinMaxTemperatureGroup combinedGroup = *this;
-		if (!combinedGroup.minimum().temperature().has_value() &&
-			nextMinMaxGroup.minimum().temperature().has_value()) {
-				combinedGroup.minTemp = nextMinMaxGroup.minTemp;
-		}
-		if (!combinedGroup.maximum().temperature().has_value() &&
-			nextMinMaxGroup.maximum().temperature().has_value()) {
-				combinedGroup.maxTemp = nextMinMaxGroup.maxTemp;
-		}
-		return(combinedGroup);
+		if (!minimum().temperature().has_value() &&
+			nextGroup->minimum().temperature().has_value()) minTemp = nextGroup->minTemp;
+		if (!maximum().temperature().has_value() &&
+			nextGroup->maximum().temperature().has_value()) maxTemp = nextGroup->maxTemp;
+		return(AppendResult::APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -4508,23 +4488,19 @@ namespace metaf {
 	}
 
 
-	std::optional<Group> PrecipitationGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
+	AppendResult PrecipitationGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
 	{ 
-		(void)reportData;
-		static const std::optional<Group> notCombined;
-		if (!std::holds_alternative<PlainTextGroup>(nextGroup)) return(notCombined);	
-		const auto nextGroupStr = std::get<PlainTextGroup>(nextGroup).toString();
-
-		if (type() != Type::SNOW_INCREASING_RAPIDLY) return(notCombined);
-		if (amount().isReported() || tendency().isReported()) return(notCombined);
-		const auto precip = Precipitation::fromSnincrString(nextGroupStr);
-		if (!precip.has_value()) return(notCombined);
-		PrecipitationGroup combinedGroup;
-		combinedGroup.precType = Type::SNOW_INCREASING_RAPIDLY;
-		combinedGroup.precChange = std::get<0>(precip.value());
-		combinedGroup.precAmount = std::get<1>(precip.value());
-		return(combinedGroup);
+		(void)reportData; (void)reportPart;
+		if (type() != Type::SNOW_INCREASING_RAPIDLY) return(AppendResult::NOT_APPENDED);
+		if (amount().isReported() || tendency().isReported()) 
+			return(AppendResult::NOT_APPENDED);
+		const auto precip = Precipitation::fromSnincrString(group);
+		if (!precip.has_value()) return(AppendResult::NOT_APPENDED);
+		precChange = std::get<0>(precip.value());
+		precAmount = std::get<1>(precip.value());
+		return(AppendResult::APPENDED);
 	}
 
 	std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
@@ -4624,10 +4600,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> LayerForecastGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+	AppendResult LayerForecastGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{ 
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -4715,10 +4693,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> PressureTendencyGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());			
+	AppendResult PressureTendencyGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{ 
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -4763,10 +4743,12 @@ namespace metaf {
 		return(result);
 	}
 
-	std::optional<Group> CloudTypesGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+	AppendResult CloudTypesGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{ 
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
@@ -4825,10 +4807,12 @@ namespace metaf {
 		return(result);
 	}
 
-	inline std::optional<Group> CloudLayersGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());
+	AppendResult CloudLayersGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{ 
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	std::optional<CloudLayersGroup::LowLayer> CloudLayersGroup::lowLayerFromChar(char c) {
@@ -4917,10 +4901,12 @@ namespace metaf {
 		return(notRecognised);
 	}
 
-	std::optional<Group> MiscGroup::combine(const Group & nextGroup,
-		const ReportGlobalData &reportData) const
-	{
-		(void)reportData; (void)nextGroup; return(std::optional<Group>());			
+	AppendResult MiscGroup::append(const std::string & group,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{ 
+		(void)reportData; (void)group; (void)reportPart;
+		return(AppendResult::NOT_APPENDED);
 	}
 
 	bool MiscGroup::isValid() const {
@@ -4967,59 +4953,130 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	Parser::ParseInternalResult Parser::parseInternal(
-		const std::string & report, 
-		bool extendedResult)
-	{
-		static const std::regex delimiterRegex("\\s+");
+	Parser::Result Parser::parse(const std::string & report) {
 		std::sregex_token_iterator iter(report.begin(), report.end(), 
-			delimiterRegex, 
+			groupDelimiterRegex, 
 			-1);
 		bool reportEnd = false;
 		Status status;
 		ReportGlobalData reportData;
-	
 		Result result;
-		ExtendedResult extresult;
 
 		while (iter != std::sregex_token_iterator() && !reportEnd && !status.isError()) {
-			std::string groupString = *iter;
-			if (const char endChar = '='; groupString.back() == endChar) {
+			std::string groupStr = *iter;
+
+			if (groupStr.back() == reportEndChar) {
 				reportEnd = true;
-				groupString.pop_back();
+				groupStr.pop_back();
 			}
-			if (groupString.length()) {
+			if (groupStr.length()) {
+
 				Group group;
-				const auto reportPart = status.getReportPart();
-				do {
-					group = GroupParser::parse(groupString, 
-						status.getReportPart(),
-						reportData);
+				ReportPart reportPart = status.getReportPart();
+				if (!appendToLastResultGroup(result, groupStr, reportPart, reportData)) {
+					do {
+						reportPart = status.getReportPart();
+						group = GroupParser::parse(groupStr, reportPart, reportData);
+						status.transition(getSyntaxGroup(group));
+					} while(status.isReparseRequired());
 					updateReportData(group, reportData);
-					status.transition(getSyntaxGroup(group));
-				} while(status.isReparseRequired());
-				const auto lastGroup = 
-					(!extendedResult) ? getLastGroup(result) : getLastGroup(extresult);
-				const auto combinedGroup = combineWithLastGroup(lastGroup, group, reportData);
-				if (!extendedResult) {
-					saveToResult(result, group, combinedGroup);	
-				} else {
-					saveToResult(extresult, group, combinedGroup, reportPart, groupString);
+					addGroupToResult(result, 
+						std::move(group), 
+						reportPart, 
+						std::move(groupStr));
 				}
-				
 			}
 			iter++;
 		}
 		status.finalTransition();
-		if (!extendedResult) {
-			saveToResult(result, status.getReportType(), status.getError());
-			return(result);
-		} else {
-			saveToResult(extresult, status.getReportType(), status.getError());
-			return(extresult);
+		saveInfoToResult(result, status.getReportType(), status.getError());
+		return(result);
+	}
+
+	bool Parser::appendToLastResultGroup(Result & result,
+		const std::string & groupStr,
+		ReportPart reportPart,
+		const ReportGlobalData & reportData)
+	{
+		// Unable to append if this is the first group
+		if (result.groups.empty()) return(false);
+
+		// Do not append last group in result is fallback (plain text) group
+		// Fallback group is for case 'when everything else fails' and must be
+		// used only if all parse attempts by other groups failed
+		if (std::holds_alternative<FallbackGroup>(result.groups.back().group)) return(false);
+		Result::GroupInfo & lastGroupInfo = result.groups.back();
+		Group lastGroup = lastGroupInfo.group;
+
+		const auto appendResult = std::visit(
+			[&](auto && gr) -> AppendResult { 
+				return (gr.append(groupStr, reportPart, reportData)); 
+			}, lastGroup);
+
+		switch (appendResult) {
+			case AppendResult::APPENDED:
+			lastGroupInfo.group = std::move(lastGroup);			
+			lastGroupInfo.rawString += groupDelimiterChar;
+			lastGroupInfo.rawString += groupStr;
+			return(true);
+			
+			case AppendResult::NOT_APPENDED:
+			return(false);
+
+			case AppendResult::GROUP_INVALIDATED:
+			const auto invalidatedGroupStr = std::move(result.groups.back().rawString);
+			const auto invalidatedGroupReportPart = result.groups.back().reportPart;
+			result.groups.pop_back();
+			addGroupToResult(result,
+				FallbackGroup(invalidatedGroupStr),
+				invalidatedGroupReportPart,
+				std::move(invalidatedGroupStr));
+			return(false);
 		}
 	}
 
+	void Parser::addGroupToResult(Result & result, 
+		Group group, 
+		ReportPart reportPart, 
+		std::string groupString)
+	{
+		if (!result.groups.empty() && std::holds_alternative<FallbackGroup>(group)) {
+			// Check if both last group in result and curent group are
+			// fallback group (plain text), if yes, try to append current group 
+			Result::GroupInfo & lastGroupInfo = result.groups.back();
+			auto lastFallbackGroup = std::get_if<FallbackGroup>(&lastGroupInfo.group);
+			if (lastFallbackGroup)
+			{
+				// Both last group and group being saved are fallback groups and 
+				// should be appended if possible
+				const auto appendResult = 
+					lastFallbackGroup->append(groupString, reportPart, noReportData);			
+
+				if (appendResult == AppendResult::APPENDED) {
+					// Appended successfully, just append raw group string as well
+					// Append may fail if max length of text that may be stored in 
+					// the fallback (plain text) group is exceeded
+					lastGroupInfo.rawString += groupDelimiterChar;
+					lastGroupInfo.rawString += groupString;
+					return;
+				}
+				// Unable to append to previous fallback group, add new group normally
+			}
+		}
+		Result::GroupInfo groupInfo(std::move(group), reportPart, groupString);
+		result.groups.push_back(std::move(groupInfo));
+	}
+
+	void Parser::saveInfoToResult(Result & result, 
+		ReportType reportType,
+		Error error)
+	{
+		result.reportType = reportType;
+		result.error = error;
+	}
+
+
+/*
 	std::optional<Group> Parser::combineWithLastGroup(
 		const std::optional<Group> & lastGroup,
 		const Group & group,
@@ -5083,7 +5140,7 @@ namespace metaf {
 		extresult.reportType = reportType;
 		extresult.error = error;
 	}
-
+*/
 
 	ReportPart Parser::Status::getReportPart() {
 		switch (state) {

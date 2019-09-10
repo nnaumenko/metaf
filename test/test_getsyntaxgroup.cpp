@@ -171,152 +171,92 @@ TEST(getSyntaxGroup, OTHER_FROIN) {
 }
 
 TEST(getSyntaxGroup, CLD_MISG) {
-	const auto fg = metaf::FixedGroup::parse("CLD", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("CLD", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, ICG_MISG) {
-	const auto fg = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, PCPN_MISG) {
-	const auto fg = metaf::FixedGroup::parse("PCPN", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("PCPN", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, PRES_MISG) {
-	const auto fg = metaf::FixedGroup::parse("PRES", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("PRES", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, RVR_MISG) {
-	const auto fg = metaf::FixedGroup::parse("RVR", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("RVR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, T_MISG) {
-	const auto fg = metaf::FixedGroup::parse("T", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("T", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 
 TEST(getSyntaxGroup, TD_MISG) {
-	const auto fg = metaf::FixedGroup::parse("TD", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("TD", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, VIS_MISG) {
-	const auto fg = metaf::FixedGroup::parse("VIS", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("VIS", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, WND_MISG) {
-	const auto fg = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, WX_MISG) {
-	const auto fg = metaf::FixedGroup::parse("WX", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("WX", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined = fg->combine(metaf::PlainTextGroup("MISG"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, TS_LTNG_TEMPO_UNAVBL) {
-	const auto fg = metaf::FixedGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	auto fg = metaf::FixedGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-
-	const auto combined1 = fg->combine(metaf::PlainTextGroup("TEMPO"));
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined1.value()));
-
-	const auto combined2 = std::get<metaf::FixedGroup>(
-		combined1.value()).combine(metaf::PlainTextGroup("UNAVBL"));
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::FixedGroup>(combined1.value()));
-
-	const auto fgCombined = std::get<metaf::FixedGroup>(combined2.value());
-
-	EXPECT_EQ(metaf::getSyntaxGroup(fgCombined), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(fg->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(fg->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, OTHER_NOSIG) {

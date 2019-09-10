@@ -265,15 +265,15 @@ GroupsTestSet::GroupsTestSet() {
 
 void GroupsTestSet::getGroupsFromReport(const std::string & report)
 {
-	const auto parseResult = metaf::Parser::extendedParse(report);
-	for (const auto extgr : parseResult.extgroups) {
-		std::istringstream iss(std::get<std::string>(extgr));
+	const auto parseResult = metaf::Parser::parse(report);
+	for (const auto gr : parseResult.groups) {
+		std::istringstream iss(gr.rawString);
 		std::vector<std::string> individualGroups(
 			std::istream_iterator<std::string>{iss},
             std::istream_iterator<std::string>());
 		for (const auto grstr : individualGroups) {
-			auto resultPair = make_pair(grstr,std::get<metaf::ReportPart>(extgr));
-			const auto index = std::get<metaf::Group>(extgr).index();
+			auto resultPair = make_pair(grstr, gr.reportPart);
+			const auto index = gr.group.index();
 			testSet.at(index).push_back(resultPair);
 		}
 	}
@@ -314,11 +314,11 @@ void addGroup(const string & group, vector< pair<int, string> > & dst) {
 	dst.push_back(make_pair(1, group));
 }
 
-int addPlainTextGroups(const vector<metaf::Group> & src, vector< pair<int, string> > & dst){
+int addPlainTextGroups(const metaf::Parser::Result & src, vector< pair<int, string> > & dst){
 	auto count = 0;	
-	for (const auto & group : src) {
-		if (holds_alternative<metaf::PlainTextGroup>(group)) {
-			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&group);
+	for (const auto & gr : src.groups) {
+		if (holds_alternative<metaf::PlainTextGroup>(gr.group)) {
+			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&gr.group);
 			if (plainTextGroup) {
 				std::istringstream iss(plainTextGroup->toString());
 				std::istream_iterator<std::string> iter(iss);
@@ -385,14 +385,14 @@ void checkRecognisedGroups() {
 	for (const auto & data : testdata::realDataSet) {
  		if (strlen(data.metar)) {
 			const auto parseResult = metaf::Parser::parse(data.metar);
-			auto count = addPlainTextGroups(parseResult.groups, flaggedGroups);
+			auto count = addPlainTextGroups(parseResult, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.metar));
 			metarTotalGroupCount += parseResult.groups.size();
 			metarUnrecognisedGroupCount += count;
 		}
 		if (strlen(data.taf)) {
 			const auto parseResult = metaf::Parser::parse(data.taf);
-			auto count = addPlainTextGroups(parseResult.groups, flaggedGroups);
+			auto count = addPlainTextGroups(parseResult, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.taf));
 			tafTotalGroupCount += parseResult.groups.size();
 			tafUnrecognisedGroupCount += count;

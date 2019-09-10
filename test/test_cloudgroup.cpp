@@ -467,88 +467,135 @@ TEST(CloudGroup, isVerticalVisibilityFalse) {
 	EXPECT_FALSE(cg9->isVerticalVisibility());
 }
 
-TEST(CloudGroup, combine) {
-	const auto cg1 = metaf::CloudGroup::parse("CLR", metaf::ReportPart::METAR);
+TEST(CloudGroup, append) {
+	const metaf::ReportPart metarRp = metaf::ReportPart::METAR;
+
+	const std::string cgStr1 ("CLR"); 
+	const std::string cgStr2 ("SKC"); 
+	const std::string cgStr3 ("NCD"); 
+	const std::string cgStr4 ("NSC"); 
+	const std::string cgStr5 ("FEW040"); 
+	const std::string cgStr6 ("VV004");
+	const std::string cgStr7 ("SCT020TCU");
+	const std::string cgStr8 ("SCT020CB");
+	const std::string tStr1 ("RMK"); 
+	const std::string tStr2 ("TEST"); 
+
+	auto cg1 = metaf::CloudGroup::parse(cgStr1, metarRp);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_FALSE(cg1->isCloudLayer());
 
-	const auto cg2 = metaf::CloudGroup::parse("SKC", metaf::ReportPart::METAR);
+	auto cg2 = metaf::CloudGroup::parse(cgStr2, metarRp);
 	ASSERT_TRUE(cg2.has_value());
 	EXPECT_FALSE(cg2->isCloudLayer());
 
-	const auto cg3 = metaf::CloudGroup::parse("NCD", metaf::ReportPart::METAR);
+	auto cg3 = metaf::CloudGroup::parse(cgStr3, metarRp);
 	ASSERT_TRUE(cg3.has_value());
 	EXPECT_FALSE(cg3->isCloudLayer());
 
-	const auto cg4 = metaf::CloudGroup::parse("NSC", metaf::ReportPart::METAR);
+	auto cg4 = metaf::CloudGroup::parse(cgStr4, metarRp);
 	ASSERT_TRUE(cg4.has_value());
 	EXPECT_FALSE(cg4->isCloudLayer());
 
-	const auto cg5 = metaf::CloudGroup::parse("FEW040", metaf::ReportPart::METAR);
+	auto cg5 = metaf::CloudGroup::parse(cgStr5, metarRp);
 	ASSERT_TRUE(cg5.has_value());
 
-	const auto cg6 = metaf::CloudGroup::parse("VV004", metaf::ReportPart::METAR);
+	auto cg6 = metaf::CloudGroup::parse(cgStr6, metarRp);
 	ASSERT_TRUE(cg6.has_value());
 
-	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	auto cg7 = metaf::CloudGroup::parse(cgStr7, metarRp);
+	ASSERT_TRUE(cg7.has_value());
 
-	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
-	ASSERT_TRUE(text.has_value());
+	auto cg8 = metaf::CloudGroup::parse(cgStr8, metarRp);
+	ASSERT_TRUE(cg8.has_value());
 
-	EXPECT_FALSE(cg1->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg1->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg1->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg1->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg1->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg1->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg1->combine(text.value()).has_value());
+	EXPECT_EQ(cg1->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(cg2->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg2->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg2->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg2->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg2->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg2->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg2->combine(text.value()).has_value());
+	EXPECT_EQ(cg2->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(cg3->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg3->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg3->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg3->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg3->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg3->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg3->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg3->combine(text.value()).has_value());
+	EXPECT_EQ(cg3->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(cg4->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg4->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg4->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg4->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg4->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg4->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg4->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg4->combine(text.value()).has_value());
+	EXPECT_EQ(cg4->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg4->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(cg5->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg5->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg5->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg5->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg5->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg5->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg5->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg5->combine(text.value()).has_value());
+	EXPECT_EQ(cg5->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg5->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(cg6->combine(cg1.value()).has_value());
-	EXPECT_FALSE(cg6->combine(cg2.value()).has_value());
-	EXPECT_FALSE(cg6->combine(cg3.value()).has_value());
-	EXPECT_FALSE(cg6->combine(cg4.value()).has_value());
-	EXPECT_FALSE(cg6->combine(cg5.value()).has_value());
-	EXPECT_FALSE(cg6->combine(cg6.value()).has_value());
-	EXPECT_FALSE(cg6->combine(rmk.value()).has_value());
-	EXPECT_FALSE(cg6->combine(text.value()).has_value());
+	EXPECT_EQ(cg6->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg6->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(cg7->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg7->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(cg8->append(cgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(cgStr8, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg8->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(CloudGroup, isValidClear) {

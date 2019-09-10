@@ -77,23 +77,44 @@ TEST(ReportTimeGroup, isValidMinuteIncorrect) {
 	EXPECT_FALSE(rtg->isValid());
 }
 
-TEST(ReportTimeGroup, combine) {
-	const auto rtg1 = metaf::ReportTimeGroup::parse("201700Z", metaf::ReportPart::HEADER);
+TEST(ReportTimeGroup, append) {
+	auto rtg1 = metaf::ReportTimeGroup::parse("201700Z", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(rtg1.has_value());
 
-	const auto rtg2 = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);
+	auto rtg2 = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(rtg2.has_value());
 
-	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	EXPECT_EQ(rtg1->append("201730Z", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("FM1250", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("TL1830", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("AT1800", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("2016/2019", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("AUTO", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("31003KT", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg1->append("RMK", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(rtg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rtg1->combine(rtg1.value()).has_value());
-	EXPECT_FALSE(rtg1->combine(rtg2.value()).has_value());
-	EXPECT_FALSE(rtg1->combine(metaf::PlainTextGroup("TEST")).has_value());
-
-	EXPECT_FALSE(rtg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rtg2->combine(rtg1.value()).has_value());
-	EXPECT_FALSE(rtg2->combine(rtg2.value()).has_value());
-	EXPECT_FALSE(rtg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(rtg2->append("201730Z", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("FM1250", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("TL1830", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("AT1800", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("2016/2019", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("AUTO", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("31003KT", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rtg2->append("RMK", metaf::ReportPart::HEADER), 
+		metaf::AppendResult::NOT_APPENDED);
 }

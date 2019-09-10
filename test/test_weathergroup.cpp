@@ -801,100 +801,206 @@ TEST(WeatherGroup, contains) {
 }
 
 TEST(WeatherGroup, combine) {
-	const auto wg1 = metaf::WeatherGroup::parse("RERA", metaf::ReportPart::METAR);
+	const std::string wgStr1("RERA");
+	const std::string wgStr2("RE//");
+	const std::string wgStr3("VCSH");
+	const std::string wgStr4("TS");
+	const std::string wgStr5("SHRASN");
+	const std::string wgStr6("BLDU");
+	const std::string wgStr7("FG");
+	const std::string wgStr8("//");
+	const std::string tStr1("RMK");
+	const std::string tStr2("TEST");
+
+	auto wg1 = metaf::WeatherGroup::parse(wgStr1, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 
-	const auto wg2 = metaf::WeatherGroup::parse("RE//", metaf::ReportPart::METAR);
+	auto wg2 = metaf::WeatherGroup::parse(wgStr2, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 
-	const auto wg3 = metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::METAR);
+	auto wg3 = metaf::WeatherGroup::parse(wgStr3, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 
-	const auto wg4 = metaf::WeatherGroup::parse("TS", metaf::ReportPart::METAR);
+	auto wg4 = metaf::WeatherGroup::parse(wgStr4, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
 
-	const auto wg5 = metaf::WeatherGroup::parse("SHRASN", metaf::ReportPart::METAR);
+	auto wg5 = metaf::WeatherGroup::parse(wgStr5, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
 
-	const auto wg6 = metaf::WeatherGroup::parse("BLDU", metaf::ReportPart::METAR);
+	auto wg6 = metaf::WeatherGroup::parse(wgStr6, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg6.has_value());
 
-	const auto wg7 = metaf::WeatherGroup::parse("FG", metaf::ReportPart::METAR);
+	auto wg7 = metaf::WeatherGroup::parse(wgStr7, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg7.has_value());
 
-	const auto rmk = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	auto wg8 = metaf::WeatherGroup::parse(wgStr8, metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg8.has_value());
 
-	const auto text = metaf::PlainTextGroup::parse("TEST", metaf::ReportPart::METAR);
-	ASSERT_TRUE(text.has_value());
+	EXPECT_EQ(wg1->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg1->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg1->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg2->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg2->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg2->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg3->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg3->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg3->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg4->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg4->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg4->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg4->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg4->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg4->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg4->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg3->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg4->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg5->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg5->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg5->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg5->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg5->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg5->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg6->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg6->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg6->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg6->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg6->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg6->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg7->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg7->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wg7->combine(wg1.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg2.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg3.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg4.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg5.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg6.value()).has_value());
-	EXPECT_FALSE(wg7->combine(wg7.value()).has_value());
-	EXPECT_FALSE(wg7->combine(rmk.value()).has_value());
-	EXPECT_FALSE(wg7->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(wg8->append(wgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(wgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg8->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 }

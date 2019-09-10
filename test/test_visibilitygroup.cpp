@@ -243,77 +243,164 @@ TEST(VisibilityGroup, parseMilesIncompleteWrongFormat) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("/", metaf::ReportPart::METAR).has_value());
 }
 
-TEST(VisibilityGroup, combineIncompleteAndFraction) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
+TEST(VisibilityGroup, appendIncompleteAndFraction) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
 
-	const auto combined = vgIncomplete->combine(vgFraction.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(combined.value()));
+	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto vgCombined = std::get<metaf::VisibilityGroup>(combined.value());
-	EXPECT_EQ(vgCombined.type(), metaf::VisibilityGroup::Type::PREVAILING);
-	ASSERT_TRUE(vgCombined.visibility().integer().has_value());
-	EXPECT_EQ(vgCombined.visibility().integer().value(), 2u);
-	ASSERT_TRUE(vgCombined.visibility().numerator().has_value());
-	EXPECT_EQ(vgCombined.visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vgCombined.visibility().denominator().has_value());
-	EXPECT_EQ(vgCombined.visibility().denominator().value(), 4u);
-	EXPECT_EQ(vgCombined.visibility().modifier(), metaf::Distance::Modifier::NONE);
-	EXPECT_EQ(vgCombined.visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vgCombined.direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	ASSERT_TRUE(vg->visibility().integer().has_value());
+	EXPECT_EQ(vg->visibility().integer().value(), 2u);
+	ASSERT_TRUE(vg->visibility().numerator().has_value());
+	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
+	ASSERT_TRUE(vg->visibility().denominator().has_value());
+	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
 }
 
-TEST(VisibilityGroup, combineIncompleteAndOther) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgMeters = metaf::VisibilityGroup::parse("1200", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgMeters.has_value());
-	const auto vgMilesInteger = metaf::VisibilityGroup::parse("1SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgMilesInteger.has_value());
-	const auto vgFractionWithModifier = metaf::VisibilityGroup::parse("M1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFractionWithModifier.has_value());
+TEST(VisibilityGroup, appendIncompleteAndOther) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
 
-	EXPECT_FALSE(vgIncomplete->combine(vgIncomplete.value()).has_value());
-	EXPECT_FALSE(vgIncomplete->combine(vgMeters.value()).has_value());
-	EXPECT_FALSE(vgIncomplete->combine(vgMilesInteger.value()).has_value());
-	EXPECT_FALSE(vgIncomplete->combine(vgFractionWithModifier.value()).has_value());
+	EXPECT_EQ(vg->append("2", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+	EXPECT_EQ(vg->append("1200", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+	EXPECT_EQ(vg->append("1SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+	EXPECT_EQ(vg->append("M1/4SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	EXPECT_TRUE(vg->visibility().isInteger());
+	ASSERT_TRUE(vg->visibility().integer().has_value());
+	EXPECT_EQ(vg->visibility().integer().value(), 2u);
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
 }
 
-TEST(VisibilityGroup, combineFractionAndIncomplete) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
+TEST(VisibilityGroup, appendFractionAndIncomplete) {
+	const std::string incompleteStr ("2");
 
-	EXPECT_FALSE(vgFraction->combine(vgIncomplete.value()).has_value());
+	const auto vgIncomplete = metaf::VisibilityGroup::parse(incompleteStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgIncomplete.has_value());
+
+	auto vg = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append(incompleteStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	EXPECT_TRUE(vg->visibility().isFraction());
+	ASSERT_TRUE(vg->visibility().numerator().has_value());
+	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
+	ASSERT_TRUE(vg->visibility().denominator().has_value());
+	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
 }
 
-TEST(VisibilityGroup, combineOtherAndFraction) {
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
-	const auto vgMeters = metaf::VisibilityGroup::parse("1200", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgMeters.has_value());
-	const auto vgMilesInteger = metaf::VisibilityGroup::parse("1SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgMilesInteger.has_value());
-	const auto vgMilesIntegerWithModifier = metaf::VisibilityGroup::parse("P2SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgMilesIntegerWithModifier.has_value());
+TEST(VisibilityGroup, appendMetersAndFraction) {
+	const std::string fractionStr("1/4SM");
 
-	EXPECT_FALSE(vgMeters->combine(vgFraction.value()).has_value());
-	EXPECT_FALSE(vgFraction->combine(vgFraction.value()).has_value());
-	EXPECT_FALSE(vgMilesInteger->combine(vgFraction.value()).has_value());
-	EXPECT_FALSE(vgMilesIntegerWithModifier->combine(vgFraction.value()).has_value());
+	const auto vgFraction = metaf::VisibilityGroup::parse(fractionStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgFraction.has_value());
+
+	auto vg = metaf::VisibilityGroup::parse("1200", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append(fractionStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	EXPECT_TRUE(vg->visibility().isInteger());
+	ASSERT_TRUE(vg->visibility().integer().has_value());
+	EXPECT_EQ(vg->visibility().integer().value(), 1200u);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
 }
 
-TEST(VisibilityGroup, combineInvalidFraction) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/0SM", metaf::ReportPart::METAR);
+TEST(VisibilityGroup, appendMilesIntegerAndFraction) {
+	const std::string fractionStr("1/4SM");
+
+	const auto vgFraction = metaf::VisibilityGroup::parse(fractionStr, metaf::ReportPart::METAR);
 	ASSERT_TRUE(vgFraction.has_value());
-	
-	EXPECT_FALSE(vgIncomplete->combine(vgFraction.value()).has_value());
+
+	auto vg = metaf::VisibilityGroup::parse("1SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append(fractionStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	EXPECT_TRUE(vg->visibility().isInteger());
+	ASSERT_TRUE(vg->visibility().integer().has_value());
+	EXPECT_EQ(vg->visibility().integer().value(), 1u);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+}
+
+TEST(VisibilityGroup, appendIntegerMilesWithModifierAndFraction) {
+	const std::string fractionStr("1/4SM");
+
+	const auto vgFraction = metaf::VisibilityGroup::parse(fractionStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(vgFraction.has_value());
+
+	auto vg = metaf::VisibilityGroup::parse("P2SM", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append(fractionStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
+	EXPECT_TRUE(vg->visibility().isInteger());
+	ASSERT_TRUE(vg->visibility().integer().has_value());
+	EXPECT_EQ(vg->visibility().integer().value(), 2u);
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+}
+
+TEST(VisibilityGroup, appendInvalidFraction) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("1/0SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, appendToAppended) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->append("9999", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("9999NDV", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3000E", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1/2SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("P6SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("////", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("TEST", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RMK", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(VisibilityGroup, isValidTrueSingle) {
@@ -350,17 +437,13 @@ TEST(VisibilityGroup, isValidTrueSingle) {
 	EXPECT_TRUE(vg8->isValid());
 }
 
-TEST(VisibilityGroup, isValidTrueCombined) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
+TEST(VisibilityGroup, isValidTrueAppended) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
 
-	const auto combined = vgIncomplete->combine(vgFraction.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(combined.value()));
-
-	EXPECT_TRUE(std::get<metaf::VisibilityGroup>(combined.value()).isValid());
+	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(vg->isValid());
 }
 
 TEST(VisibilityGroup, isValidFalse) {
@@ -417,17 +500,13 @@ TEST(VisibilityGroup, isPrevailingFalse) {
 	EXPECT_FALSE(vg2->isPrevailing());
 }
 
-TEST(VisibilityGroup, isPrevailingCombined) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
-
-	const auto vg = vgIncomplete->combine(vgFraction.value());
+TEST(VisibilityGroup, isPrevailingAppended) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(vg.value()));
 
-	EXPECT_TRUE(std::get<metaf::VisibilityGroup>(vg.value()).isPrevailing());
+	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(vg->isPrevailing());
 }
 
 TEST(VisibilityGroup, isDirectionalTrue) {
@@ -470,15 +549,11 @@ TEST(VisibilityGroup, isDirectionalFalse) {
 	EXPECT_FALSE(vg7->isDirectional());
 }
 
-TEST(VisibilityGroup, isDirectionalCombined) {
-	const auto vgIncomplete = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgIncomplete.has_value());
-	const auto vgFraction = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vgFraction.has_value());
+TEST(VisibilityGroup, isDirectionalAppended) {
+	auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
 
-	const auto vg1 = vgIncomplete->combine(vgFraction.value());
-	ASSERT_TRUE(vg1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(vg1.value()));
-
-	EXPECT_FALSE(std::get<metaf::VisibilityGroup>(vg1.value()).isDirectional());
+	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(vg->isDirectional());
 }

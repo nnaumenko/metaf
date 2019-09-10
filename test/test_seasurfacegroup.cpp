@@ -157,25 +157,209 @@ TEST(SeaSurfaceGroup, parseWaveHeightWrongFormat) {
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/H////", metaf::ReportPart::METAR));
 }
 
-TEST(SeaSurfaceGroup, combine) {
-	const auto ssg1 = metaf::SeaSurfaceGroup::parse("W15/S4", metaf::ReportPart::METAR);
+TEST(SeaSurfaceGroup, append) {
+	const std::string ssgStr1("W15/S4");
+	const std::string ssgStr2("W15/S/");
+	const std::string ssgStr3("W///S4");
+	const std::string ssgStr4("W///S/");
+	const std::string ssgStr5("W20/H5");
+	const std::string ssgStr6("W20/H/");
+	const std::string ssgStr7("W///H5");
+	const std::string ssgStr8("W///H/");
+	const std::string tStr1("RMK");
+	const std::string tStr2("TEST");
+
+	auto ssg1 = metaf::SeaSurfaceGroup::parse(ssgStr1, metaf::ReportPart::METAR);
 	ASSERT_TRUE(ssg1.has_value());
 
-	const auto ssg2 = metaf::SeaSurfaceGroup::parse("W20/H5", metaf::ReportPart::METAR);
+	auto ssg2 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
 	ASSERT_TRUE(ssg2.has_value());
 
-	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	auto ssg3 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg3.has_value());
 
-	EXPECT_FALSE(ssg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(ssg1->combine(ssg1.value()).has_value());
-	EXPECT_FALSE(ssg1->combine(ssg2.value()).has_value());
-	EXPECT_FALSE(ssg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+	auto ssg4 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg4.has_value());
 
-	EXPECT_FALSE(ssg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(ssg2->combine(ssg1.value()).has_value());
-	EXPECT_FALSE(ssg2->combine(ssg2.value()).has_value());
-	EXPECT_FALSE(ssg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+	auto ssg5 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg5.has_value());
+
+	auto ssg6 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg6.has_value());
+
+	auto ssg7 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg7.has_value());
+
+	auto ssg8 = metaf::SeaSurfaceGroup::parse(ssgStr2, metaf::ReportPart::METAR);
+	ASSERT_TRUE(ssg8.has_value());
+
+	EXPECT_EQ(ssg1->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg1->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg2->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg2->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg3->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg3->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg4->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg4->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg5->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg5->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg6->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg6->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg7->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg7->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(ssg8->append(ssgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr5, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr6, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr7, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(ssgStr8, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(ssg8->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(SeaSurfaceGroup, isValid) {

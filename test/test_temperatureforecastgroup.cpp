@@ -195,34 +195,37 @@ TEST(TemperatureForecastGroup, isValidFalse) {
 	EXPECT_FALSE(tfg3->isValid());
 }
 
-TEST(TemperatureForecastGroup, combine) {
-	const auto tfg1 = metaf::TemperatureForecastGroup::parse("T24/1306Z", metaf::ReportPart::TAF);
+TEST(TemperatureForecastGroup, append) {
+	const std::string tfgStr1("T24/1306Z");
+	const std::string tfgStr2("TNM03/2204Z");
+	const std::string tfgStr3("TX03/0620Z");
+	const std::string tStr1("RMK");
+	const std::string tStr2("TEST");
+
+	auto tfg1 = metaf::TemperatureForecastGroup::parse(tfgStr1, metaf::ReportPart::TAF);
 	ASSERT_TRUE(tfg1.has_value());
 
-	const auto tfg2 = metaf::TemperatureForecastGroup::parse("TNM03/2204Z", metaf::ReportPart::TAF);
+	auto tfg2 = metaf::TemperatureForecastGroup::parse(tfgStr2, metaf::ReportPart::TAF);
 	ASSERT_TRUE(tfg2.has_value());
 
-	const auto tfg3 = metaf::TemperatureForecastGroup::parse("TX03/0620Z", metaf::ReportPart::TAF);
+	auto tfg3 = metaf::TemperatureForecastGroup::parse(tfgStr3, metaf::ReportPart::TAF);
 	ASSERT_TRUE(tfg3.has_value());
 
-	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	EXPECT_EQ(tfg1->append(tfgStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg1->append(tfgStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg1->append(tfgStr3, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg1->append(tStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg1->append(tStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(tfg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(tfg1->combine(tfg1.value()).has_value());
-	EXPECT_FALSE(tfg1->combine(tfg2.value()).has_value());
-	EXPECT_FALSE(tfg1->combine(tfg3.value()).has_value());
-	EXPECT_FALSE(tfg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(tfg2->append(tfgStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg2->append(tfgStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg2->append(tfgStr3, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg2->append(tStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg2->append(tStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(tfg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(tfg2->combine(tfg1.value()).has_value());
-	EXPECT_FALSE(tfg2->combine(tfg2.value()).has_value());
-	EXPECT_FALSE(tfg2->combine(tfg3.value()).has_value());
-	EXPECT_FALSE(tfg2->combine(metaf::PlainTextGroup("TEST")).has_value());
-
-	EXPECT_FALSE(tfg3->combine(rmk.value()).has_value());
-	EXPECT_FALSE(tfg3->combine(tfg1.value()).has_value());
-	EXPECT_FALSE(tfg3->combine(tfg2.value()).has_value());
-	EXPECT_FALSE(tfg3->combine(tfg3.value()).has_value());
-	EXPECT_FALSE(tfg3->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(tfg3->append(tfgStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg3->append(tfgStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg3->append(tfgStr3, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg3->append(tStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tfg3->append(tStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
 }

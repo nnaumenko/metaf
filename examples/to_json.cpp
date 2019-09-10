@@ -123,14 +123,10 @@ void MakeJson::valueNull() {
 	commaRequired = true;
 }
 
-
-
 class GroupVisitorJson : private metaf::GroupVisitor<void> {
 public:
 	GroupVisitorJson(std::ostream & output) : json(output) {}
-	void toJson(metaf::ReportType reportType, 
-		metaf::Parser::Error error, 
-		const std::vector<metaf::Group> & content);
+	void toJson(const metaf::Parser::Result & result);
 private:
 	virtual void visitPlainTextGroup(const metaf::PlainTextGroup & group);
 	virtual void visitFixedGroup(const metaf::FixedGroup & group);
@@ -248,10 +244,7 @@ private:
 	static std::string cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer);
 };
 
-void GroupVisitorJson::toJson(metaf::ReportType reportType, 
-	metaf::Parser::Error error, 
-	const std::vector<metaf::Group> & content)
-{
+void GroupVisitorJson::toJson(const metaf::Parser::Result & result) {
 	plainTextCounter = 0;
 	layerForecastCounter = 0;
 	notSpecifiedTemperatureForecastCounter = 0;
@@ -261,20 +254,20 @@ void GroupVisitorJson::toJson(metaf::ReportType reportType,
 
 	lastGroup = metaf::PlainTextGroup();
 	json.valueStr("kind", "metaf");
-	if (const auto errorStr = parserErrorToString(error); 
+	if (const auto errorStr = parserErrorToString(result.error); 
 		!errorStr.empty()) {
 			json.startObject("error");
 			json.valueStr("message", errorStr);
 			json.finish();
 	}
 	json.startObject("report");
-	json.valueStr("type", reportTypeToString(reportType));
-	json.valueBool("partial", (error != metaf::Parser::Error::NONE));
+	json.valueStr("type", reportTypeToString(result.reportType));
+	json.valueBool("partial", (result.error != metaf::Parser::Error::NONE));
 	json.valueStr("timeZone", "GMT");
-	for (const auto & group : content) {
-		similarGroupsToArrays(group);
-		visit(group);
-		lastGroup = group;
+	for (const auto & groupInfo : result.groups) {
+		similarGroupsToArrays(groupInfo.group);
+		visit(groupInfo.group);
+		lastGroup = groupInfo.group;
 	}
 	json.finishAll();
 }
@@ -288,7 +281,7 @@ void GroupVisitorJson::visitPlainTextGroup(const metaf::PlainTextGroup & group) 
 void GroupVisitorJson::visitFixedGroup(const metaf::FixedGroup & group) {
 	switch (group.type()) {
 		case metaf::FixedGroup::Type::INCOMPLETE:
-		json.valueStr("incompleteFixedGroupText", group.incompleteText());
+		break;
 
 		case metaf::FixedGroup::Type::METAR:
 		case metaf::FixedGroup::Type::SPECI:
@@ -495,7 +488,6 @@ void GroupVisitorJson::visitTrendGroup(const metaf::TrendGroup & group) {
 void GroupVisitorJson::visitWindGroup(const metaf::WindGroup & group) {
 	switch (group.type()) {
 		case metaf::WindGroup::Type::INCOMPLETE:
-		json.valueStr("incompleteWindGroupText", group.incompleteText());
 		break;
 
 		case metaf::WindGroup::Type::SURFACE_WIND:
@@ -812,8 +804,6 @@ void GroupVisitorJson::visitSecondaryLocationGroup(const metaf::SecondaryLocatio
 
 	switch (group.type()) {
 		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
-		json.valueBool("incomplete", true);
-		json.valueStr("incompleteText", group.incompleteText());
 		break;
 
 		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
@@ -2174,11 +2164,9 @@ std::string GroupVisitorJson::cloudHighLayerToString(metaf::CloudLayersGroup::Hi
 std::string result;
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE toJson(const char * input) {
-	const auto parseResult = metaf::Parser::parse(std::string(input));
-
 	std::ostringstream output;
 	GroupVisitorJson visitor(output);
-	visitor.toJson(parseResult.reportType, parseResult.error, parseResult.groups);
+	visitor.toJson(metaf::Parser::parse(std::string(input)));
 
 	result = output.str(); //involves copying operation but will do for this example
 	return(result.c_str());

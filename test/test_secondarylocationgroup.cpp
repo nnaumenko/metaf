@@ -9,190 +9,146 @@
 #include "metaf.h"
 
 TEST(SecondaryLocationGroup, parseWs) {
-	const auto slg= metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	const auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(slg.has_value());
 	EXPECT_EQ(slg->type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
-	EXPECT_EQ(slg->incompleteText(), "WS");
 	EXPECT_FALSE(slg->runway().has_value());
 	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsAll) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto all = metaf::PlainTextGroup::parse("ALL", metaf::ReportPart::METAR);
-	ASSERT_TRUE(all.has_value());
+	EXPECT_EQ(slg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto combined = ws->combine(all.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	EXPECT_EQ(wsAll.type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
-	EXPECT_EQ(wsAll.incompleteText(), "WS ALL");
-	EXPECT_FALSE(wsAll.runway().has_value());
-	EXPECT_FALSE(wsAll.direction().has_value());
+	EXPECT_FALSE(slg->runway().has_value());
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsAllRwy) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto all = metaf::PlainTextGroup::parse("ALL", metaf::ReportPart::METAR);
-	ASSERT_TRUE(all.has_value());
+	EXPECT_EQ(slg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg->append("RWY", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto rwy = metaf::PlainTextGroup::parse("RWY", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rwy.has_value());
-
-	const auto combined1 = ws->combine(all.value());
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined1.value()));
-	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined1.value());
-
-	const auto combined2 = wsAll.combine(rwy.value());
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined2.value()));
-	const auto wsAllRwy = std::get<metaf::SecondaryLocationGroup>(combined2.value());
-	EXPECT_EQ(wsAllRwy.type(), metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	ASSERT_TRUE(wsAllRwy.runway().has_value());
-	EXPECT_TRUE(wsAllRwy.runway()->isAllRunways());
-	EXPECT_TRUE(wsAllRwy.incompleteText().empty());
-	EXPECT_FALSE(wsAllRwy.direction().has_value());
+	ASSERT_TRUE(slg->runway().has_value());
+	EXPECT_TRUE(slg->runway()->isAllRunways());
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsR32) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto r32 = metaf::PlainTextGroup::parse("R32", metaf::ReportPart::METAR);
-	ASSERT_TRUE(r32.has_value());
+	EXPECT_EQ(slg->append("R32", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto combined = ws->combine(r32.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR32 = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	EXPECT_EQ(wsR32.type(), metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	ASSERT_TRUE(wsR32.runway().has_value());
-	EXPECT_EQ(wsR32.runway()->number(), 32u);
-	EXPECT_EQ(wsR32.runway()->designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(wsR32.incompleteText().empty());
-	EXPECT_FALSE(wsR32.direction().has_value());
+	EXPECT_EQ(slg->type(), metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
+	ASSERT_TRUE(slg->runway().has_value());
+	EXPECT_EQ(slg->runway()->number(), 32u);
+	EXPECT_EQ(slg->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsR27C) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto r27c = metaf::PlainTextGroup::parse("R27C", metaf::ReportPart::METAR);
-	ASSERT_TRUE(r27c.has_value());
+	EXPECT_EQ(slg->append("R27C", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto combined = ws->combine(r27c.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR27c = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	ASSERT_TRUE(wsR27c.runway().has_value());
-	EXPECT_EQ(wsR27c.runway()->number(), 27u);
-	EXPECT_EQ(wsR27c.runway()->designator(), metaf::Runway::Designator::CENTER);
-	EXPECT_TRUE(wsR27c.incompleteText().empty());
-	EXPECT_FALSE(wsR27c.direction().has_value());
+	ASSERT_TRUE(slg->runway().has_value());
+	EXPECT_EQ(slg->runway()->number(), 27u);
+	EXPECT_EQ(slg->runway()->designator(), metaf::Runway::Designator::CENTER);
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsRWY32) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto r32 = metaf::PlainTextGroup::parse("RWY32", metaf::ReportPart::METAR);
-	ASSERT_TRUE(r32.has_value());
+	EXPECT_EQ(slg->append("RWY32", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
-	const auto combined = ws->combine(r32.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR32 = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	ASSERT_TRUE(wsR32.runway().has_value());
-	EXPECT_EQ(wsR32.runway()->number(), 32u);
-	EXPECT_EQ(wsR32.runway()->designator(), metaf::Runway::Designator::NONE);
-	EXPECT_TRUE(wsR32.incompleteText().empty());
-	EXPECT_FALSE(wsR32.direction().has_value());
+	ASSERT_TRUE(slg->runway().has_value());
+	EXPECT_EQ(slg->runway()->number(), 32u);
+	EXPECT_EQ(slg->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWsRWY27C) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto r27c = metaf::PlainTextGroup::parse("RWY27C", metaf::ReportPart::METAR);
-	ASSERT_TRUE(r27c.has_value());
+	EXPECT_EQ(slg->append("RWY27C", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
 
-	const auto combined = ws->combine(r27c.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR27c = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	ASSERT_TRUE(wsR27c.runway().has_value());
-	EXPECT_EQ(wsR27c.runway()->number(), 27u);
-	EXPECT_EQ(wsR27c.runway()->designator(), metaf::Runway::Designator::CENTER);
-	EXPECT_TRUE(wsR27c.incompleteText().empty());
-	EXPECT_FALSE(wsR27c.direction().has_value());
+	ASSERT_TRUE(slg->runway().has_value());
+	EXPECT_EQ(slg->runway()->number(), 27u);
+	EXPECT_EQ(slg->runway()->designator(), metaf::Runway::Designator::CENTER);
+	EXPECT_FALSE(slg->direction().has_value());
 }
 
-TEST(SecondaryLocationGroup, windShearCombineWithWrongGroupWs) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+TEST(SecondaryLocationGroup, windShearAppendWrongGroupWs) {
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto combined1 = ws->combine(metaf::PlainTextGroup("X37"));
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined1.value()));
-	EXPECT_EQ(std::get<metaf::PlainTextGroup>(combined1.value()).toString(), "WS X37");
-
-	const auto combined2 = ws->combine(metaf::PlainTextGroup("TEST"));
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
-	EXPECT_EQ(std::get<metaf::PlainTextGroup>(combined2.value()).toString(), "WS TEST");
+	EXPECT_EQ(slg->append("X37", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+	EXPECT_EQ(slg->append("TEST", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
-TEST(SecondaryLocationGroup, windShearCombineWithWrongGroupWsAll) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+TEST(SecondaryLocationGroup, windShearAppendWrongGroupWsAll) {
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto all = metaf::PlainTextGroup::parse("ALL", metaf::ReportPart::METAR);
-	ASSERT_TRUE(all.has_value());
-
-	const auto combined1 = ws->combine(all.value());
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined1.value()));
-	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined1.value());
-
-	const auto combined2 = wsAll.combine(metaf::PlainTextGroup("R22"));
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::PlainTextGroup>(combined2.value()));
-	EXPECT_EQ(std::get<metaf::PlainTextGroup>(combined2.value()).toString(), "WS ALL R22");
-
+	EXPECT_EQ(slg->append("ALL", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg->append("R22", metaf::ReportPart::METAR), 
+		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
-TEST(SecondaryLocationGroup, windShearCombineCompleteGroups) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+TEST(SecondaryLocationGroup, windShearAppendToCompleteGroups) {
+	auto slg1 = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg1.has_value());
 
-	const auto combined1 = ws->combine(metaf::PlainTextGroup("ALL"));
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined1.value()));
-	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined1.value());
+	EXPECT_EQ(slg1->append("ALL", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg1->append("RWY", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
 
-	const auto combined2 = wsAll.combine(metaf::PlainTextGroup("RWY"));
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined2.value()));
-	const auto wsAllRwy = std::get<metaf::SecondaryLocationGroup>(combined2.value());
+	EXPECT_EQ(slg1->append("R32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->append("RWY32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->append("ALL", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->append("RWY", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(wsAllRwy.combine(metaf::PlainTextGroup("R32")));
-	EXPECT_FALSE(wsAllRwy.combine(metaf::PlainTextGroup("RWY32")));
-	EXPECT_FALSE(wsAllRwy.combine(metaf::PlainTextGroup("RWY")));
+	ASSERT_TRUE(slg1->runway().has_value());
+	EXPECT_TRUE(slg1->runway()->isAllRunways());
+	EXPECT_FALSE(slg1->direction().has_value());
 
-	const auto combined3 = ws->combine(metaf::PlainTextGroup("R32"));
-	ASSERT_TRUE(combined3.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined3.value()));
-	const auto wsR32 = std::get<metaf::SecondaryLocationGroup>(combined3.value());
+	auto slg2 = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg2.has_value());
 
-	EXPECT_FALSE(wsR32.combine(metaf::PlainTextGroup("R32")));
-	EXPECT_FALSE(wsR32.combine(metaf::PlainTextGroup("RWY32")));
-	EXPECT_FALSE(wsR32.combine(metaf::PlainTextGroup("RWY")));
+	EXPECT_EQ(slg2->append("R32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(slg2->append("R32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg2->append("RWY32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg2->append("ALL", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg2->append("RWY", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	ASSERT_TRUE(slg2->runway().has_value());
+	EXPECT_EQ(slg2->runway()->number(), 32u);
+	EXPECT_EQ(slg2->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_FALSE(slg2->direction().has_value());
 }
 
 TEST(SecondaryLocationGroup, parseWindShearWrongReportPart) {
@@ -211,60 +167,39 @@ TEST(SecondaryLocationGroup, parseWindShearWrongFormat) {
 }
 
 TEST(SecondaryLocationGroup, isValidValidRunway) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto combined = ws->combine(metaf::PlainTextGroup("RWY32"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR32 = std::get<metaf::SecondaryLocationGroup>(combined.value());
-
-	EXPECT_TRUE(wsR32.isValid());
+	EXPECT_EQ(slg->append("RWY32", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(slg->isValid());
 }
 
 TEST(SecondaryLocationGroup, isValidWindShearWrongRunway) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto combined = ws->combine(metaf::PlainTextGroup("R37"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto wsR37 = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	EXPECT_FALSE(wsR37.isValid());
-	EXPECT_FALSE(wsR37.runway()->isValid());
-	EXPECT_EQ(wsR37.runway()->number(), 37u);
-	EXPECT_EQ(wsR37.runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_EQ(slg->append("RWY37", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(slg->isValid());
 }
 
-
-
 TEST(SecondaryLocationGroup, isValidWindShearAllRunways) {
-	const auto ws = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(ws.has_value());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
 
-	const auto combined1 = ws->combine(metaf::PlainTextGroup("ALL"));
-	ASSERT_TRUE(combined1.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined1.value()));
-	const auto wsAll = std::get<metaf::SecondaryLocationGroup>(combined1.value());
-
-	const auto combined2 = wsAll.combine(metaf::PlainTextGroup("RWY"));
-	ASSERT_TRUE(combined2.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined2.value()));
-	const auto wsAllRwy = std::get<metaf::SecondaryLocationGroup>(combined2.value());
-
-	EXPECT_TRUE(wsAllRwy.isValid());
+	EXPECT_EQ(slg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg->append("RWY", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(slg->isValid());
 }
 
 TEST(SecondaryLocationGroup, isValidWindShearIncomplete) {
-	const auto slgWs= metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
-	ASSERT_TRUE(slgWs.has_value());
-	ASSERT_EQ(slgWs->type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
-	EXPECT_FALSE(slgWs->isValid());
+	auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	ASSERT_TRUE(slg.has_value());
+	ASSERT_EQ(slg->type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
+	EXPECT_FALSE(slg->isValid());
 
-	const auto combined = slgWs->combine(metaf::PlainTextGroup("ALL"));
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::SecondaryLocationGroup>(combined.value()));
-	const auto slgWsAll = std::get<metaf::SecondaryLocationGroup>(combined.value());
-	ASSERT_EQ(slgWsAll.type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
-	EXPECT_FALSE(slgWsAll.isValid());
+	EXPECT_EQ(slg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(slg->type(), metaf::SecondaryLocationGroup::Type::INCOMPLETE);
+	EXPECT_FALSE(slg->isValid());
 }

@@ -644,47 +644,77 @@ TEST(RunwayVisualRangeGroup, isValidFalse) {
 	EXPECT_FALSE(rvrg3->isValid());
 }
 
-TEST(RunwayVisualRangeGroup, combine) {
-	const auto rvrg1 = metaf::RunwayVisualRangeGroup::parse("R88/1100", metaf::ReportPart::METAR);
+TEST(RunwayVisualRangeGroup, append) {
+
+	const std::string rvrgStr1("R88/1100");
+	const std::string rvrgStr2("R99/2600V3200FT/D");
+	const std::string rvrgStr3("R36R/////FT/N");
+	const std::string rvrgStr4("R06L//////");
+
+	const std::string tStr1("RMK");
+	const std::string tStr2("TEST");
+
+	auto rvrg1 = metaf::RunwayVisualRangeGroup::parse(rvrgStr1, metaf::ReportPart::METAR);
 	ASSERT_TRUE(rvrg1.has_value());
 
-	const auto rvrg2 = metaf::RunwayVisualRangeGroup::parse("R99/2600V3200FT/D", metaf::ReportPart::METAR);
+	auto rvrg2 = metaf::RunwayVisualRangeGroup::parse(rvrgStr2, metaf::ReportPart::METAR);
 	ASSERT_TRUE(rvrg2.has_value());
 
-	const auto rvrg3 = metaf::RunwayVisualRangeGroup::parse("R36R/////FT/N", metaf::ReportPart::METAR);
+	auto rvrg3 = metaf::RunwayVisualRangeGroup::parse(rvrgStr3, metaf::ReportPart::METAR);
 	ASSERT_TRUE(rvrg3.has_value());
 
-	const auto rvrg4 = metaf::RunwayVisualRangeGroup::parse("R06L//////", metaf::ReportPart::METAR);
+	auto rvrg4 = metaf::RunwayVisualRangeGroup::parse(rvrgStr4, metaf::ReportPart::METAR);
 	ASSERT_TRUE(rvrg4.has_value());
 
-	const auto rmk = metaf::FixedGroup::parse("RMK", metaf::ReportPart::METAR);
-	ASSERT_TRUE(rmk.has_value());
+	EXPECT_EQ(rvrg1->append(rvrgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg1->append(rvrgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg1->append(rvrgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg1->append(rvrgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg1->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg1->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(rvrg1->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rvrg1->combine(rvrg1.value()).has_value());
-	EXPECT_FALSE(rvrg1->combine(rvrg2.value()).has_value());
-	EXPECT_FALSE(rvrg1->combine(rvrg3.value()).has_value());
-	EXPECT_FALSE(rvrg1->combine(rvrg4.value()).has_value());
-	EXPECT_FALSE(rvrg1->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(rvrg2->append(rvrgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg2->append(rvrgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg2->append(rvrgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg2->append(rvrgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg2->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg2->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(rvrg2->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rvrg2->combine(rvrg1.value()).has_value());
-	EXPECT_FALSE(rvrg2->combine(rvrg2.value()).has_value());
-	EXPECT_FALSE(rvrg2->combine(rvrg3.value()).has_value());
-	EXPECT_FALSE(rvrg2->combine(rvrg4.value()).has_value());
-	EXPECT_FALSE(rvrg2->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(rvrg3->append(rvrgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg3->append(rvrgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg3->append(rvrgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg3->append(rvrgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg3->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg3->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_FALSE(rvrg3->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rvrg3->combine(rvrg1.value()).has_value());
-	EXPECT_FALSE(rvrg3->combine(rvrg2.value()).has_value());
-	EXPECT_FALSE(rvrg3->combine(rvrg3.value()).has_value());
-	EXPECT_FALSE(rvrg3->combine(rvrg4.value()).has_value());
-	EXPECT_FALSE(rvrg3->combine(metaf::PlainTextGroup("TEST")).has_value());
-
-	EXPECT_FALSE(rvrg4->combine(rmk.value()).has_value());
-	EXPECT_FALSE(rvrg4->combine(rvrg1.value()).has_value());
-	EXPECT_FALSE(rvrg4->combine(rvrg2.value()).has_value());
-	EXPECT_FALSE(rvrg4->combine(rvrg3.value()).has_value());
-	EXPECT_FALSE(rvrg4->combine(rvrg4.value()).has_value());
-	EXPECT_FALSE(rvrg4->combine(metaf::PlainTextGroup("TEST")).has_value());
+	EXPECT_EQ(rvrg4->append(rvrgStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg4->append(rvrgStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg4->append(rvrgStr3, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg4->append(rvrgStr4, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg4->append(tStr1, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(rvrg4->append(tStr2, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 }

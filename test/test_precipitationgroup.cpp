@@ -171,42 +171,49 @@ TEST(PrecipitationGroup, parseSnincrGroup) {
 	EXPECT_FALSE(pg->tendency().isReported());	
 }
 
-TEST(PrecipitationGroup, combineSnincrFraction) {
-	const auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
+TEST(PrecipitationGroup, appendFractionToSnincr) {
+
+	const std::string snincrStr("SNINCR");
+	const std::string fractionStr("4/12");
+
+	auto pg = metaf::PrecipitationGroup::parse(snincrStr, metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg.has_value());
 
-	const auto fraction = metaf::PlainTextGroup::parse("4/12", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fraction.has_value());
+	EXPECT_EQ(pg->append(fractionStr, metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY);
 
-	const auto combined = pg->combine(fraction.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::PrecipitationGroup>(combined.value()));
+	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg->amount().precipitation().has_value());
+	EXPECT_NEAR(pg->amount().precipitation().value(), 12, margin);
 
-	const auto pgCombined = std::get<metaf::PrecipitationGroup>(combined.value());
-	EXPECT_EQ(pgCombined.type(), metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY);
-
-	EXPECT_EQ(pgCombined.amount().status(), metaf::Precipitation::Status::REPORTED);
-	EXPECT_EQ(pgCombined.amount().unit(), metaf::Precipitation::Unit::INCHES);
-	ASSERT_TRUE(pgCombined.amount().precipitation().has_value());
-	EXPECT_NEAR(pgCombined.amount().precipitation().value(), 12, margin);
-
-	EXPECT_EQ(pgCombined.tendency().status(), metaf::Precipitation::Status::REPORTED);
-	EXPECT_EQ(pgCombined.tendency().unit(), metaf::Precipitation::Unit::INCHES);
-	ASSERT_TRUE(pgCombined.tendency().precipitation().has_value());
-	EXPECT_NEAR(pgCombined.tendency().precipitation().value(), 4, margin);
-
+	EXPECT_EQ(pg->tendency().status(), metaf::Precipitation::Status::REPORTED);
+	EXPECT_EQ(pg->tendency().unit(), metaf::Precipitation::Unit::INCHES);
+	ASSERT_TRUE(pg->tendency().precipitation().has_value());
+	EXPECT_NEAR(pg->tendency().precipitation().value(), 4, margin);
 }
 
-TEST(PrecipitationGroup, combineSnincrOther) {
-	const auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
+TEST(PrecipitationGroup, appendOtherToSnincr) {
+	auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg.has_value());
 
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("SNINCR")).has_value());
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("A/3")).has_value());
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("1/A")).has_value());
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("1/2SM")).has_value());
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("4")).has_value());
-	EXPECT_FALSE(pg->combine(metaf::PlainTextGroup("ABCD")).has_value());
+	EXPECT_EQ(pg->append("SNINCR", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg->append("A/3", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg->append("1/A", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg->append("1/2SM", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg->append("4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg->append("ABCD", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY);
+	EXPECT_FALSE(pg->amount().isReported());
+	EXPECT_FALSE(pg->tendency().isReported());	
 }
 
 TEST(PrecipitationGroup, parseWrongReportPart) {
@@ -535,17 +542,11 @@ TEST(PrecipitationGroup, isValid3digit) {
 }
 
 TEST(PrecipitationGroup, isValidSnincr) {
-	const auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
+	auto pg = metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg.has_value());
 	EXPECT_TRUE(pg->isValid());
 
-	const auto fraction = metaf::PlainTextGroup::parse("4/12", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fraction.has_value());
-
-	const auto combined = pg->combine(fraction.value());
-	ASSERT_TRUE(combined.has_value());
-	ASSERT_TRUE(std::holds_alternative<metaf::PrecipitationGroup>(combined.value()));
-
-	const auto pgCombined = std::get<metaf::PrecipitationGroup>(combined.value());
-	EXPECT_TRUE(pgCombined.isValid());
+	ASSERT_EQ(pg->append("4/12", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(pg->isValid());
 }

@@ -134,7 +134,7 @@ struct CurrentWeather {
 	int updateMinute = valueNotSpecified;
 };
 
-using GroupVector = std::vector<metaf::Group>;
+using GroupVector = std::vector<metaf::Parser::Result::GroupInfo>;
 
 metaf::Temperature::Unit temperatureUnit(bool isImperialUnit) {
 	return (isImperialUnit ? metaf::Temperature::Unit::F : metaf::Temperature::Unit::C);
@@ -466,7 +466,8 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 	const auto tempUnit = temperatureUnit(isImperialUnit);
 	const auto spdUnit = speedUnit(isImperialUnit);
 	metaf::Speed windSpeed;
-	for (const auto & metarGroup : metarGroups) {
+	for (const auto & metarGroupInfo : metarGroups) {
+		const auto & metarGroup = metarGroupInfo.group;
 		if (const auto gr = std::get_if<metaf::FixedGroup>(&metarGroup); gr) {
 			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
@@ -569,7 +570,8 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 	const auto spdUnit = speedUnit(isImperialUnit);
 	metaf::Speed windSpeed;
 	int trendCounter = 0;
-	for (const auto & tafGroup : tafGroups) {
+	for (const auto & tafGroupInfo : tafGroups) {
+		const auto & tafGroup = tafGroupInfo.group;
 		if (const auto gr = std::get_if<metaf::FixedGroup>(&tafGroup); gr) {
 			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
@@ -628,7 +630,8 @@ void temperatureForecastFromTaf(
 {
 	const auto tempUnit = temperatureUnit(isImperialUnit);
 	metaf::Temperature minTemp, maxTemp;
-	for (const auto & tafGroup : tafGroups) {
+	for (const auto & tafGroupInfo : tafGroups) {
+		const auto & tafGroup = tafGroupInfo.group;
 		if (const auto gr = std::get_if<metaf::TemperatureForecastGroup>(&tafGroup); gr) {
 			switch(gr->point()) {
 				case metaf::TemperatureForecastGroup::Point::MINIMUM:
@@ -658,7 +661,8 @@ void reportReleaseTime(CurrentWeather & currentWeather,
 	int month, 
 	int day)
 {
-	for (const auto & group : groups) {
+	for (const auto & groupInfo : groups) {
+		const auto & group = groupInfo.group;
 		if (const auto gr = std::get_if<metaf::ReportTimeGroup>(&group); gr) {
 			const auto currDate = metaf::MetafTime::Date(year, month, day);
 			const auto reportTime = gr->time();

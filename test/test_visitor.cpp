@@ -137,10 +137,6 @@ protected:
 		(void)group;
 		count[variant_index<metaf::Group, metaf::MiscGroup>()]++;
 	}
-	virtual void visitOther(const metaf::Group & group) {
-		(void)group;
-		otherGroups++;
-	}
 };
 
 static const std::vector<std::string> testReports = {
@@ -180,14 +176,14 @@ TEST(Visitor, visitorVoid) {
 
 	visitorCounter v;
 
-	for (const auto report : testReports) {
+	for (const auto & report : testReports) {
 		const auto result = metaf::Parser::parse(report);
-			for (const auto group : result.groups) {
-				v.visit(group);
+			for (const auto & groupInfo : result.groups) {
+				v.visit(groupInfo.group);
 			}
 	}
 
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PlainTextGroup>()]), 6);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PlainTextGroup>()]), 5);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::FixedGroup>()]), 18);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 10);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 10);

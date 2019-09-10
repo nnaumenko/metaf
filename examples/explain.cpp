@@ -122,8 +122,7 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 	switch (group.type()) {
 		case metaf::FixedGroup::Type::INCOMPLETE:
 		result << "One or more groups were recognised by parser as ";
-		result << "a fixed group but some of the text appears missing: ";
-		result << group.incompleteText();
+		result << "a fixed group but some of the text appears missing.";
 		break;
 
 		case metaf::FixedGroup::Type::METAR:
@@ -348,8 +347,7 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 	switch (group.type()) {
 		case metaf::WindGroup::Type::INCOMPLETE:
 		result << "One or more groups were recognised by parser as ";
-		result << "a wind group but some of the text appears missing: ";
-		result << group.incompleteText();
+		result << "a wind group but some of the text appears missing.";
 		break;
 
 		case metaf::WindGroup::Type::SURFACE_WIND:
@@ -637,8 +635,7 @@ std::string GroupVisitorExplain::visitSecondaryLocationGroup(
 		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
 		result << "These groups were recognised by parser as ";
 		result << "an information about secondary location but ";
-		result << "some of the text appears missing: ";
-		result << group.incompleteText();
+		result << "some of the text appears missing.";
 		break;
 
 		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
@@ -2124,7 +2121,7 @@ void addResult(const std::string & group, const std::string & explanation) {
 }
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
-	const auto parseResult = metaf::Parser::extendedParse(std::string(input));
+	const auto parseResult = metaf::Parser::parse(std::string(input));
 	addResult("", "Detected report type: "s + 
 		std::string(GroupVisitorExplain::reportTypeToString(parseResult.reportType)));
 	if (parseResult.error != metaf::Parser::Error::NONE) {
@@ -2132,9 +2129,9 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 			std::string(GroupVisitorExplain::reportErrorToString(parseResult.error)));
 	}
 	GroupVisitorExplain visitor;
-	for (const auto extgr : parseResult.extgroups) {
-		addResult(std::get<std::string>(extgr), 
-			visitor.visit(std::get<metaf::Group>(extgr)));
+	for (const auto groupInfo : parseResult.groups) {
+		addResult(groupInfo.rawString, 
+			visitor.visit(groupInfo.group));
 	}
 	//remove last delimiter which is always added at the end 
 	//of the last explanation string

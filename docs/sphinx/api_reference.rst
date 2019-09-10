@@ -1052,11 +1052,11 @@ PlainTextGroup
 
 	The groups in METAR or TAF report that were not recognised by the parser, are stored as Plain text groups.
 
-	If several sequential plain text groups are found in the report, they are combined into a single PlainTextGroup. For example, raw text in the report ``TEST1 TEST2`` is combined into a single PlainTextGroup which contains data ``TEST1 TEST2``, rather than two groups which contain data ``TEST1`` and ``TEST2`` respectively.
+	If several sequential plain text groups are found in the report, they are appended to the first PlainTextGroup. For example, raw text in the report ``TEST1 TEST2`` is combined into a single PlainTextGroup which contains data ``TEST1 TEST2``, rather than two groups which contain data ``TEST1`` and ``TEST2`` respectively.
 
-	.. warning:: The length limit is 83 characters.Any group which contains text longer than 83 characters will be discarded (no error is generated when truncating the group). 
+	.. warning:: There is length limit (textMaxLength) on how many characters the PlainTextGroup may contain. Any group which contains text longer than maximum allowed characters will be truncated (no error is generated when truncating the group). 
 
-	.. note:: If sequential plain text groups along with spaces separating them is longer than 83 characters, more than one PlainTextGroup will be added to parsing result and no portion of text will be lost.
+	.. note:: If sequential plain text groups along with spaces separating them exceed character limit, more than one PlainTextGroup will be added to parsing result and no portion of text will be lost.
 
 	**Acquiring group data**
 
@@ -3751,7 +3751,7 @@ Parser
 
 		.. cpp:struct:: Result
 
-			Contains result of report parsing using :cpp:func:`parse()` method.
+			Contains result of report parsing returned by :cpp:func:`parse()` method.
 
 			.. cpp:var:: ReportType reportType
 
@@ -3761,7 +3761,23 @@ Parser
 
 				Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully.
 
-			.. cpp:var::std::vector<GroupType> groups
+			.. cpp:struct:: GroupInfo
+
+				Contains data on the single METAR or TAF group processed by parser.
+
+				.. cpp:var:: Group group
+
+					Contains all information included in the METAR or TAR group which is recognised by parser.
+
+				.. cpp:var:: ReportPart reportPart
+
+					To which part of the report this group belongs (e.g. header, METAR or TAF report body, remarks).
+
+				.. cpp:var:: std::string rawString
+
+					METAR or TAF group source string which was parsed to extract info.
+
+			.. cpp:var::std::vector<GroupInfo> groups
 
 				A vector of parsed individual groups from METAR or TAF report.
 
@@ -3769,37 +3785,7 @@ Parser
 
 			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately.
 
-			:returns: :cpp:struct:`metaf::Parser::Result` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of individual :cpp:type:`metaf::Group` corresponding to METAR or TAF groups. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
-
-			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
-
-			:param report: String which contains a METAR or TAF report.
-
-		.. cpp:struct:: ExtendedResult
-
-			Contains result of report parsing using :cpp:func:`extendedParse()` method.
-
-			.. cpp:var:: ReportType reportType
-
-				Contains report type (:cpp:enumerator:`metaf::ReportType::METAR` or :cpp:enumerator:`metaf::ReportType::TAF`) autodetected by parser during parse of the last report. :cpp:enumerator:`metaf::ReportType::UNKNOWN` is used if the report is malformed and it is not possible to autodetect its type.
-
-			.. cpp:var:: Error error
-
-				Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully.
-
-			.. cpp:var::std::vector< std::tuple<std::tuple<Group, ReportPart, std::string>> > extgroups
-
-				A vector of parsed individual groups from METAR or TAF report with additional information.
-
-				In each tuple :cpp:type:`Group` contains information of individual group from METAR or TAF report, :cpp:enum:`ReportPart` contains part of the report where this group was encountered, and ``std::string`` contains a source string which was parsed into :cpp:type:`Group`.
-
-				.. note:: If the groups were combined, then multiple group string separated by a single space are stored in ``std::string`` element of tuple. For example, groups ``1`` and ``1/2SM`` will be combined and group string ``1 1/2SM`` will be kept.
-
-		.. cpp:function:: ExtendedResult extendedParse(const std::string & report)
-
-			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately. The groups are stored along with their source string and report part where they have occurred.
-
-			:returns: :cpp:struct:`metaf::Parser::ExtendedResult` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of tuples which contains individual :cpp:type:`metaf::Group` corresponding to METAR or TAF groups, report parts where they occurred and their original source strings. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
+			:returns: :cpp:struct:`metaf::Parser::Result` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of individual :cpp:type:`metaf::GroupInfo` corresponding to METAR or TAF groups. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
 
 			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
