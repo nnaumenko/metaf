@@ -11,47 +11,110 @@
 
 #include "metaf.h"
 #include <vector>
+#include <string>
+#include <string_view>
 #include <sstream>
 #include <cmath>
-#include <tuple>
 #include <emscripten/emscripten.h>
 
 using namespace std::literals;
 
-class GroupVisitorExplain : public metaf::GroupVisitor<std::string> {
+class VisitorExplain : public metaf::Visitor<std::string> {
 public:
 	static std::string_view reportTypeToString(metaf::ReportType reportType);
-	static std::string_view reportErrorToString(metaf::Parser::Error error);
+	static std::string_view reportErrorToString(metaf::ReportError reportError);
+
 private:
-	virtual std::string visitPlainTextGroup(const metaf::PlainTextGroup & group);
-	virtual std::string visitFixedGroup(const metaf::FixedGroup & group);
-	virtual std::string visitLocationGroup(const metaf::LocationGroup & group);
-	virtual std::string visitReportTimeGroup(const metaf::ReportTimeGroup & group);
-	virtual std::string visitTrendGroup(const metaf::TrendGroup & group);
-	virtual std::string visitWindGroup(const metaf::WindGroup & group);
-	virtual std::string visitVisibilityGroup(const metaf::VisibilityGroup & group);
-	virtual std::string visitCloudGroup(const metaf::CloudGroup & group);
-	virtual std::string visitWeatherGroup(const metaf::WeatherGroup & group);
-	virtual std::string visitTemperatureGroup(const metaf::TemperatureGroup & group);
+	static const inline std::string lineBreak = "<br>"s;
+	static const inline std::string groupNotValidMessage = 
+		"Data in this group may be errorneous, incomplete or inconsistent"s;
+
+	virtual std::string visitFixedGroup(const metaf::FixedGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitLocationGroup(const metaf::LocationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitReportTimeGroup(const metaf::ReportTimeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitTrendGroup(const metaf::TrendGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitWindGroup(const metaf::WindGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitVisibilityGroup(const metaf::VisibilityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitCloudGroup(const metaf::CloudGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitWeatherGroup(const metaf::WeatherGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitTemperatureGroup(const metaf::TemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 	virtual std::string visitTemperatureForecastGroup(
-		const metaf::TemperatureForecastGroup & group);
-	virtual std::string visitPressureGroup(const metaf::PressureGroup & group);
-	virtual std::string visitRunwayVisualRangeGroup(const metaf::RunwayVisualRangeGroup & group);
-	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group);
-	virtual std::string visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group);
-	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group);
-	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group);
-	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group);
+		const metaf::TemperatureForecastGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitPressureGroup(const metaf::PressureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitRunwayVisualRangeGroup(
+		const metaf::RunwayVisualRangeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitSecondaryLocationGroup(
+		const metaf::SecondaryLocationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 	virtual std::string visitMinMaxTemperatureGroup(
-		const metaf::MinMaxTemperatureGroup & group);
-	virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group);
-	virtual std::string visitLayerForecastGroup(const metaf::LayerForecastGroup & group);
+		const metaf::MinMaxTemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitPrecipitationGroup(
+		const metaf::PrecipitationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitLayerForecastGroup(
+		const metaf::LayerForecastGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 	virtual std::string visitPressureTendencyGroup(
-		const metaf::PressureTendencyGroup & group);
-	virtual std::string visitCloudTypesGroup(const metaf::CloudTypesGroup & group);
-	virtual std::string visitCloudLayersGroup(const metaf::CloudLayersGroup & group);
-	virtual std::string visitMiscGroup(const metaf::MiscGroup & group);
-	virtual std::string visitOther(const metaf::Group & group);
+		const metaf::PressureTendencyGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitCloudTypesGroup(
+		const metaf::CloudTypesGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitCloudLayersGroup(
+		const metaf::CloudLayersGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitMiscGroup(
+		const metaf::MiscGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitUnknownGroup(
+		const metaf::UnknownGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 
 	static std::string explainRunway(const metaf::Runway & runway);
 	static std::string explainMetafTime(const metaf::MetafTime & metafTime);
@@ -103,20 +166,13 @@ private:
 		metaf::CloudLayersGroup::HighLayer highLayer);
 
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
-
-	static const inline std::string lineBreak = std::string("<br>");
-	static const inline std::string groupNotValidMessage = 
-		std::string("Data in this group may be errorneous, incomplete or inconsistent");
 };
 
-std::string GroupVisitorExplain::visitPlainTextGroup(const metaf::PlainTextGroup & group) {
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "These groups are not recognised by parser: " << group.toString();
-	return(result.str());
-}
-
-std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group) {
+std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
@@ -286,23 +342,34 @@ std::string GroupVisitorExplain::visitFixedGroup(const metaf::FixedGroup & group
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitLocationGroup(const metaf::LocationGroup & group) {
+std::string VisitorExplain::visitLocationGroup(const metaf::LocationGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "ICAO code for location: " << group.toString();
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitReportTimeGroup(
-	const metaf::ReportTimeGroup & group)
+std::string VisitorExplain::visitReportTimeGroup(
+	const metaf::ReportTimeGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Day and time of report issue: " << explainMetafTime(group.time());
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitTrendGroup(const metaf::TrendGroup & group) {
+std::string VisitorExplain::visitTrendGroup(const metaf::TrendGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << trendTypeToString(group.type()) << lineBreak;
@@ -341,7 +408,11 @@ std::string GroupVisitorExplain::visitTrendGroup(const metaf::TrendGroup & group
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) {
+std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
@@ -416,7 +487,11 @@ std::string GroupVisitorExplain::visitWindGroup(const metaf::WindGroup & group) 
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & group) {
+std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Visibility (";
@@ -443,7 +518,11 @@ std::string GroupVisitorExplain::visitVisibilityGroup(const metaf::VisibilityGro
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitCloudGroup(const metaf::CloudGroup & group) {
+std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << cloudAmountToString(group.amount());
@@ -460,7 +539,11 @@ std::string GroupVisitorExplain::visitCloudGroup(const metaf::CloudGroup & group
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group) {
+std::string VisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	if (group.qualifier() != metaf::WeatherGroup::Qualifier::RECENT) {
@@ -505,7 +588,11 @@ std::string GroupVisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & g
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup & group) {
+std::string VisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Air temperature: " << explainTemperature(group.airTemperature()) << lineBreak;
@@ -523,9 +610,12 @@ std::string GroupVisitorExplain::visitTemperatureGroup(const metaf::TemperatureG
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitTemperatureForecastGroup(
-	const metaf::TemperatureForecastGroup & group)
+std::string VisitorExplain::visitTemperatureForecastGroup(
+	const metaf::TemperatureForecastGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch(group.point()) {
@@ -550,7 +640,11 @@ std::string GroupVisitorExplain::visitTemperatureForecastGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitPressureGroup(const metaf::PressureGroup & group) {
+std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch(group.type()) {
@@ -574,9 +668,12 @@ std::string GroupVisitorExplain::visitPressureGroup(const metaf::PressureGroup &
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitRunwayVisualRangeGroup(
-	const metaf::RunwayVisualRangeGroup & group)
+std::string VisitorExplain::visitRunwayVisualRangeGroup(
+	const metaf::RunwayVisualRangeGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Visual range of " << explainRunway(group.runway()) << " is ";
@@ -592,7 +689,11 @@ std::string GroupVisitorExplain::visitRunwayVisualRangeGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
+std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "State of " << explainRunway(group.runway()) << ": ";
@@ -626,9 +727,12 @@ std::string GroupVisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateG
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitSecondaryLocationGroup(
-	const metaf::SecondaryLocationGroup & group)
+std::string VisitorExplain::visitSecondaryLocationGroup(
+	const metaf::SecondaryLocationGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
@@ -654,7 +758,11 @@ std::string GroupVisitorExplain::visitSecondaryLocationGroup(
 }
 
 
-std::string GroupVisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group) {
+std::string VisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Rainfall for last 10 minutes ";
@@ -668,7 +776,11 @@ std::string GroupVisitorExplain::visitRainfallGroup(const metaf::RainfallGroup &
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group) {
+std::string VisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Sea surface temperature " << explainTemperature(group.surfaceTemperature()) << ", ";
@@ -676,7 +788,11 @@ std::string GroupVisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGro
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGroup & group) {
+std::string VisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	if (group.isCodeBlack()) {
@@ -699,7 +815,11 @@ std::string GroupVisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGro
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
+std::string VisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	std::string periodStr;
@@ -734,9 +854,12 @@ std::string GroupVisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMax
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitPrecipitationGroup(
-	const metaf::PrecipitationGroup & group)
+std::string VisitorExplain::visitPrecipitationGroup(
+	const metaf::PrecipitationGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	if (group.type() == metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY) {
@@ -760,9 +883,12 @@ std::string GroupVisitorExplain::visitPrecipitationGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitLayerForecastGroup(
-	const metaf::LayerForecastGroup & group)
+std::string VisitorExplain::visitLayerForecastGroup(
+	const metaf::LayerForecastGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << layerForecastGroupTypeToString(group.type());
@@ -771,9 +897,12 @@ std::string GroupVisitorExplain::visitLayerForecastGroup(
 	return(result.str());	
 }
 
-std::string GroupVisitorExplain::visitPressureTendencyGroup(
-		const metaf::PressureTendencyGroup & group)
+std::string VisitorExplain::visitPressureTendencyGroup(
+	const metaf::PressureTendencyGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	if (group.type() == metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY) {
@@ -803,9 +932,12 @@ std::string GroupVisitorExplain::visitPressureTendencyGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitCloudTypesGroup(
-	const metaf::CloudTypesGroup & group)
+std::string VisitorExplain::visitCloudTypesGroup(
+	const metaf::CloudTypesGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	const auto clouds = group.toVector();
@@ -822,9 +954,12 @@ std::string GroupVisitorExplain::visitCloudTypesGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitCloudLayersGroup(
-	const metaf::CloudLayersGroup & group)
+std::string VisitorExplain::visitCloudLayersGroup(
+	const metaf::CloudLayersGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
 {
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Low cloud layer: " << lineBreak;
@@ -836,7 +971,11 @@ std::string GroupVisitorExplain::visitCloudLayersGroup(
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::visitMiscGroup(const metaf::MiscGroup & group) {
+std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
@@ -867,12 +1006,18 @@ std::string GroupVisitorExplain::visitMiscGroup(const metaf::MiscGroup & group) 
 }
 
 
-std::string GroupVisitorExplain::visitOther(const metaf::Group & group) {
-	(void)group;
-	return("This group is recognised by parser but not listed");
+std::string VisitorExplain::visitUnknownGroup(const metaf::UnknownGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	result << "Not recognised by parser: " << rawString;
+	return(result.str());
 }
 
-std::string_view GroupVisitorExplain::reportTypeToString(metaf::ReportType reportType) {
+std::string_view VisitorExplain::reportTypeToString(metaf::ReportType reportType) {
 	switch (reportType) {
 		case metaf::ReportType::UNKNOWN:	return("unable to detect");
 		case metaf::ReportType::METAR:		return("METAR (weather observation)");
@@ -881,48 +1026,48 @@ std::string_view GroupVisitorExplain::reportTypeToString(metaf::ReportType repor
 	}
 }
 
-std::string_view GroupVisitorExplain::reportErrorToString(metaf::Parser::Error error) {
-	switch (error) {
-		case metaf::Parser::Error::NONE:
+std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportError) {
+	switch (reportError) {
+		case metaf::ReportError::NONE:
 		return("no error");
 
-		case metaf::Parser::Error::EMPTY_REPORT:
+		case metaf::ReportError::EMPTY_REPORT:
 		return("report is empty");
 				
-		case metaf::Parser::Error::EXPECTED_REPORT_TYPE_OR_LOCATION:
+		case metaf::ReportError::EXPECTED_REPORT_TYPE_OR_LOCATION:
 		return("expected report type or ICAO location at report start");
 				
-		case metaf::Parser::Error::EXPECTED_LOCATION:
+		case metaf::ReportError::EXPECTED_LOCATION:
 		return("expected ICAO location");
 				
-		case metaf::Parser::Error::EXPECTED_REPORT_TIME:
+		case metaf::ReportError::EXPECTED_REPORT_TIME:
 		return("expected report time");
 				
-		case metaf::Parser::Error::EXPECTED_TIME_SPAN:
+		case metaf::ReportError::EXPECTED_TIME_SPAN:
 		return("expected time span");
 				
-		case metaf::Parser::Error::UNEXPECTED_REPORT_END:
+		case metaf::ReportError::UNEXPECTED_REPORT_END:
 		return("unexpected report end");
 				
-		case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_NIL:
+		case metaf::ReportError::UNEXPECTED_GROUP_AFTER_NIL:
 		return("unexpected group after NIL");
 				
-		case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_CNL:
+		case metaf::ReportError::UNEXPECTED_GROUP_AFTER_CNL:
 		return("unexpected group after CNL");
 				
-		case metaf::Parser::Error::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
+		case metaf::ReportError::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
 		return("unexpected group after maintenance indicator");
 				
-		case metaf::Parser::Error::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
+		case metaf::ReportError::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 		return("unexpected NIL or CNL in report body");
 				
-		case metaf::Parser::Error::AMD_ALLOWED_IN_TAF_ONLY:
+		case metaf::ReportError::AMD_ALLOWED_IN_TAF_ONLY:
 		return("AMD is allowed only in TAF reports");
 				
-		case metaf::Parser::Error::CNL_ALLOWED_IN_TAF_ONLY:
+		case metaf::ReportError::CNL_ALLOWED_IN_TAF_ONLY:
 		return("CNL is allowed only in TAF reports");
 				
-		case metaf::Parser::Error::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
+		case metaf::ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
 		return("Maintenance indicator is allowed only in METAR reports");
 				
 		default: 
@@ -930,7 +1075,7 @@ std::string_view GroupVisitorExplain::reportErrorToString(metaf::Parser::Error e
 	}
 }
 
-std::string GroupVisitorExplain::explainRunway(const metaf::Runway & runway) {
+std::string VisitorExplain::explainRunway(const metaf::Runway & runway) {
 	if (runway.isAllRunways()) return("all runways");
 	if (runway.isMessageRepetition()) return("same runway (repetition of last message)"); 
 	std::ostringstream result;
@@ -948,7 +1093,7 @@ std::string GroupVisitorExplain::explainRunway(const metaf::Runway & runway) {
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainMetafTime(const metaf::MetafTime & metafTime) {
+std::string VisitorExplain::explainMetafTime(const metaf::MetafTime & metafTime) {
 	static const std::string hourMinuteSeparator(":");
 	std::ostringstream result;
 	if (const auto day = metafTime.day(); day.has_value()) {
@@ -961,7 +1106,7 @@ std::string GroupVisitorExplain::explainMetafTime(const metaf::MetafTime & metaf
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainTemperature(const metaf::Temperature & temperature) {
+std::string VisitorExplain::explainTemperature(const metaf::Temperature & temperature) {
 	if (!temperature.temperature().has_value()) return("not reported");
 	std::ostringstream result;
 	if (!temperature.temperature().value() && !temperature.isPrecise()) {
@@ -982,7 +1127,7 @@ std::string GroupVisitorExplain::explainTemperature(const metaf::Temperature & t
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainSpeed(const metaf::Speed & speed) {
+std::string VisitorExplain::explainSpeed(const metaf::Speed & speed) {
 	std::ostringstream result;
 	if (const auto s = speed.speed(); s.has_value()) {
 		result << *speed.speed() << " " << speedUnitToString(speed.unit());
@@ -1029,7 +1174,7 @@ std::string GroupVisitorExplain::explainSpeed(const metaf::Speed & speed) {
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainDistance(const metaf::Distance & distance) {
+std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 	if (!distance.isReported()) return("not reported");
 	std::ostringstream result;
 	switch (distance.modifier()) {
@@ -1077,7 +1222,7 @@ std::string GroupVisitorExplain::explainDistance(const metaf::Distance & distanc
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainDirection(const metaf::Direction & direction,
+std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 	bool trueCardinalDirections)
 {
 	std::ostringstream result;
@@ -1116,7 +1261,7 @@ std::string GroupVisitorExplain::explainDirection(const metaf::Direction & direc
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainPressure(const metaf::Pressure & pressure) {
+std::string VisitorExplain::explainPressure(const metaf::Pressure & pressure) {
 	if (!pressure.pressure().has_value()) return("not reported");
 	std::ostringstream result;
 	if (const auto phpa = pressure.toUnit(metaf::Pressure::Unit::HECTOPASCAL); phpa.has_value()) {
@@ -1140,7 +1285,7 @@ std::string GroupVisitorExplain::explainPressure(const metaf::Pressure & pressur
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainPrecipitation(const metaf::Precipitation & precipitation) {
+std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & precipitation) {
 	std::ostringstream result;
 	switch (precipitation.status()) {
 		case metaf::Precipitation::Status::NOT_REPORTED:
@@ -1169,7 +1314,7 @@ std::string GroupVisitorExplain::explainPrecipitation(const metaf::Precipitation
 	return(result.str());
 }
 
-std::string GroupVisitorExplain::explainSurfaceFriction(
+std::string VisitorExplain::explainSurfaceFriction(
 	const metaf::SurfaceFriction & surfaceFriction)
 {
 	switch (surfaceFriction.status()) {
@@ -1194,7 +1339,7 @@ std::string GroupVisitorExplain::explainSurfaceFriction(
 	}
 }
 
-std::string GroupVisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeight) {
+std::string VisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeight) {
 	switch (waveHeight.type()) {
 		case metaf::WaveHeight::Type::STATE_OF_SURFACE:
 		return("state of sea surface: "s + 
@@ -1224,7 +1369,7 @@ std::string GroupVisitorExplain::explainWaveHeight(const metaf::WaveHeight & wav
 	}
 }
 
-std::string_view GroupVisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
+std::string_view VisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
 	switch (unit) {	
 		case metaf::Speed::Unit::KNOTS: 				return("knots");
 		case metaf::Speed::Unit::METERS_PER_SECOND:		return("m/s");
@@ -1234,7 +1379,7 @@ std::string_view GroupVisitorExplain::speedUnitToString(metaf::Speed::Unit unit)
 	}
 }
 
-std::string_view GroupVisitorExplain::distanceUnitToString(metaf::Distance::Unit unit) {
+std::string_view VisitorExplain::distanceUnitToString(metaf::Distance::Unit unit) {
 	switch (unit) {
 		case metaf::Distance::Unit::METERS:			return("meters");
 		case metaf::Distance::Unit::STATUTE_MILES:	return("statute miles");
@@ -1243,7 +1388,7 @@ std::string_view GroupVisitorExplain::distanceUnitToString(metaf::Distance::Unit
 	}
 }
 
-std::string_view GroupVisitorExplain::cardinalDirectionToString(metaf::Direction::Cardinal cardinal) {
+std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Cardinal cardinal) {
 	switch(cardinal) {
 		case metaf::Direction::Cardinal::NONE:		return(std::string());
 		case metaf::Direction::Cardinal::N:			return("north");
@@ -1262,7 +1407,7 @@ std::string_view GroupVisitorExplain::cardinalDirectionToString(metaf::Direction
 	}
 }
 
-std::string_view GroupVisitorExplain::brakingActionToString(
+std::string_view VisitorExplain::brakingActionToString(
 		metaf::SurfaceFriction::BrakingAction brakingAction)
 {
 	switch(brakingAction) {
@@ -1289,7 +1434,7 @@ std::string_view GroupVisitorExplain::brakingActionToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::stateOfSeaSurfaceToString(
+std::string_view VisitorExplain::stateOfSeaSurfaceToString(
 	metaf::WaveHeight::StateOfSurface stateOfSurface)
 {
 	switch(stateOfSurface) {
@@ -1331,7 +1476,7 @@ std::string_view GroupVisitorExplain::stateOfSeaSurfaceToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::trendTypeToString(metaf::TrendGroup::Type type) {
+std::string_view VisitorExplain::trendTypeToString(metaf::TrendGroup::Type type) {
 	switch (type) {
 		case metaf::TrendGroup::Type::NONE:
 		return("This group contains incomplete information");
@@ -1359,7 +1504,7 @@ std::string_view GroupVisitorExplain::trendTypeToString(metaf::TrendGroup::Type 
 	}
 }
 
-std::string_view GroupVisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount amount) {
+std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount amount) {
 	switch (amount) {
 		case metaf::CloudGroup::Amount::NOT_REPORTED:
 		return("Cloud amount not reported");
@@ -1404,7 +1549,7 @@ std::string_view GroupVisitorExplain::cloudAmountToString(metaf::CloudGroup::Amo
 	}
 }
 
-std::string_view GroupVisitorExplain::cloudTypeToString(metaf::CloudGroup::Type type) {
+std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::Type type) {
 	switch (type) {
 		case metaf::CloudGroup::Type::NONE:
 		return(std::string_view());
@@ -1423,7 +1568,7 @@ std::string_view GroupVisitorExplain::cloudTypeToString(metaf::CloudGroup::Type 
 	}
 }
 
-std::string_view GroupVisitorExplain::weatherQualifierToString(
+std::string_view VisitorExplain::weatherQualifierToString(
 	metaf::WeatherGroup::Qualifier qualifier)
 {
 	switch (qualifier) {
@@ -1437,7 +1582,7 @@ std::string_view GroupVisitorExplain::weatherQualifierToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::weatherDescriptorToString(
+std::string_view VisitorExplain::weatherDescriptorToString(
 	metaf::WeatherGroup::Descriptor descriptor)
 {
 	switch(descriptor) {
@@ -1454,7 +1599,7 @@ std::string_view GroupVisitorExplain::weatherDescriptorToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::weatherPhenomenaToString(
+std::string_view VisitorExplain::weatherPhenomenaToString(
 	metaf::WeatherGroup::Weather weather)
 {
 	switch (weather) {
@@ -1486,7 +1631,7 @@ std::string_view GroupVisitorExplain::weatherPhenomenaToString(
 
 }
 
-std::string_view GroupVisitorExplain::specialWeatherPhenomenaToString(
+std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 	const metaf::WeatherGroup & group)
 {
 	using WeatherVector = std::vector<metaf::WeatherGroup::Weather>;
@@ -1563,7 +1708,7 @@ std::string_view GroupVisitorExplain::specialWeatherPhenomenaToString(
 	return(std::string());
 }
 
-std::string_view GroupVisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend) {
+std::string_view VisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend) {
 	switch(trend) {
 		case metaf::RunwayVisualRangeGroup::Trend::NONE:		return(std::string_view());
 		case metaf::RunwayVisualRangeGroup::Trend::NOT_REPORTED:return("not reported");
@@ -1574,7 +1719,7 @@ std::string_view GroupVisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeG
 	}
 }
 
-std::string_view GroupVisitorExplain::runwayStateDepositsToString(
+std::string_view VisitorExplain::runwayStateDepositsToString(
 	metaf::RunwayStateGroup::Deposits deposits)
 {
 	switch(deposits) {
@@ -1616,7 +1761,7 @@ std::string_view GroupVisitorExplain::runwayStateDepositsToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::runwayStateExtentToString(
+std::string_view VisitorExplain::runwayStateExtentToString(
 	metaf::RunwayStateGroup::Extent extent)
 {
 	switch(extent) {
@@ -1658,7 +1803,7 @@ std::string_view GroupVisitorExplain::runwayStateExtentToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code code) {
+std::string_view VisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code code) {
 	switch(code) {
 		case metaf::ColourCodeGroup::Code::BLUE:		return("BLUE");
 		case metaf::ColourCodeGroup::Code::WHITE:		return("WHITE");
@@ -1671,7 +1816,7 @@ std::string_view GroupVisitorExplain::colourCodeToString(metaf::ColourCodeGroup:
 	}
 }
 
-unsigned int GroupVisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::Code code) {
+unsigned int VisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::Code code) {
 	switch(code) {
 		case metaf::ColourCodeGroup::Code::BLUE:	return(8000);
 		case metaf::ColourCodeGroup::Code::WHITE:	return(5000);
@@ -1684,7 +1829,7 @@ unsigned int GroupVisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::C
 	}
 }
 
-unsigned int GroupVisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code code) {
+unsigned int VisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code code) {
 	switch(code) {
 		case metaf::ColourCodeGroup::Code::BLUE:	return(2500);
 		case metaf::ColourCodeGroup::Code::WHITE:	return(1500);
@@ -1697,7 +1842,7 @@ unsigned int GroupVisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code
 	}
 }
 
-std::string_view GroupVisitorExplain::precipitationGroupTypeToString(
+std::string_view VisitorExplain::precipitationGroupTypeToString(
 	metaf::PrecipitationGroup::Type type)
 {
 	switch (type) {
@@ -1739,7 +1884,7 @@ std::string_view GroupVisitorExplain::precipitationGroupTypeToString(
 	}
 }
 
-std::string_view GroupVisitorExplain::layerForecastGroupTypeToString(
+std::string_view VisitorExplain::layerForecastGroupTypeToString(
 	metaf::LayerForecastGroup::Type type)
 {
 	switch(type) {
@@ -1812,7 +1957,7 @@ std::string_view GroupVisitorExplain::layerForecastGroupTypeToString(
 }
 
 
-std::string_view GroupVisitorExplain::pressureTendencyTypeToString(
+std::string_view VisitorExplain::pressureTendencyTypeToString(
 	metaf::PressureTendencyGroup::Type type)
 {
 	switch(type) {
@@ -1849,7 +1994,7 @@ std::string_view GroupVisitorExplain::pressureTendencyTypeToString(
 
 }
 
-std::string_view GroupVisitorExplain::pressureTendencyTrendToString(
+std::string_view VisitorExplain::pressureTendencyTrendToString(
 	metaf::PressureTendencyGroup::Trend trend)
 {
 	switch(trend) {
@@ -1873,7 +2018,7 @@ std::string_view GroupVisitorExplain::pressureTendencyTrendToString(
 	}	
 }
 
-std::string_view GroupVisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type type) {
+std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type type) {
 	switch(type) {
 		case metaf::CloudTypesGroup::Type::CUMULONIMBUS:
 		return("cumulonimbus");
@@ -1922,7 +2067,7 @@ std::string_view GroupVisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::
 	}
 }
 
-std::string_view GroupVisitorExplain::cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer) {
+std::string_view VisitorExplain::cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer) {
 	switch(lowLayer) {
 		case metaf::CloudLayersGroup::LowLayer::NONE:
 		return("No low layer clouds");
@@ -1976,7 +2121,7 @@ std::string_view GroupVisitorExplain::cloudLowLayerToString(metaf::CloudLayersGr
 	}
 }
 
-std::string_view GroupVisitorExplain::cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer) {
+std::string_view VisitorExplain::cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer) {
 	switch(midLayer) {
 		case metaf::CloudLayersGroup::MidLayer::NONE:
 		return("No mid-layer clouds");
@@ -2034,7 +2179,7 @@ std::string_view GroupVisitorExplain::cloudMidLayerToString(metaf::CloudLayersGr
 	}
 }
 
-std::string_view GroupVisitorExplain::cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer) {
+std::string_view VisitorExplain::cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer) {
 	switch(highLayer) {
 		case metaf::CloudLayersGroup::HighLayer::NONE:
 		return("No high-layer clouds");
@@ -2064,12 +2209,12 @@ std::string_view GroupVisitorExplain::cloudHighLayerToString(metaf::CloudLayersG
 		case metaf::CloudLayersGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
 		return("Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
 			"progressively invading the sky; they generally thicken as a whole, "
-			"but the continuous veil does not reach 45° above the horizon");
+			"but the continuous veil does not reach 45&deg; above the horizon");
 
 		case metaf::CloudLayersGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
 		return("Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
 			"progressively invading the sky; they generally thicken as a whole; "
-			"the continuous veil extends more than 45° above the horizon, without "
+			"the continuous veil extends more than 45&deg; above the horizon, without "
 			"the sky being totally covered");
 
 		case metaf::CloudLayersGroup::HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
@@ -2096,7 +2241,7 @@ std::string_view GroupVisitorExplain::cloudHighLayerToString(metaf::CloudLayersG
 	}
 }
 
-std::string GroupVisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint) {
+std::string VisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint) {
 	static const char decimalPoint = '.';
 	std::string numStr = std::to_string(number);
 	const auto decimalPointPos = numStr.find(decimalPoint);
@@ -2112,35 +2257,39 @@ std::string GroupVisitorExplain::roundTo(float number, size_t digitsAfterDecimal
 
 static std::string result;
 
-void addResult(const std::string & group, const std::string & explanation) {
-	static const char delimiter = '|';
-	result += group;
-	result.push_back(delimiter);
-	result += explanation;
-	result.push_back(delimiter);
+extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
+	std::string().swap(result);
 }
 
 extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
+	freeMemory();
 	const auto parseResult = metaf::Parser::parse(std::string(input));
-	addResult("", "Detected report type: "s + 
-		std::string(GroupVisitorExplain::reportTypeToString(parseResult.reportType)));
-	if (parseResult.error != metaf::Parser::Error::NONE) {
-		addResult("", "Parsing error: "s + 
-			std::string(GroupVisitorExplain::reportErrorToString(parseResult.error)));
+	VisitorExplain visitor;
+	//Table header
+	result += "<thead><tr><th>Group</th><th>Explanation</th></tr></thead><tbody>";
+	//Detected report type
+	result += "<tr><td>&nbsp;</td><td>";
+	result += "Detected report type: ";
+	result += VisitorExplain::reportTypeToString(parseResult.reportMetadata.type);
+	result += "</td></tr>";
+	//Error (if present)
+	if (parseResult.reportMetadata.error != metaf::ReportError::NONE) {
+		result += "<tr><td>&nbsp;</td><td>";
+		result += "Parsing error: ";
+		result += VisitorExplain::reportErrorToString(parseResult.reportMetadata.error);
+		result += "</td></tr>";
 	}
-	GroupVisitorExplain visitor;
+	//Report groups
 	for (const auto groupInfo : parseResult.groups) {
-		addResult(groupInfo.rawString, 
-			visitor.visit(groupInfo.group));
+		result += "<tr><td>";
+		result += groupInfo.rawString;
+		result += "</td><td>";
+		result += visitor.visit(groupInfo.group, groupInfo.reportPart, groupInfo.rawString);
+		result += "</td></tr>";
 	}
-	//remove last delimiter which is always added at the end 
-	//of the last explanation string
-	result.pop_back(); 
+	//Terminate table
+	result += "</tbody>";
 	return(result.c_str());
-}
-
-extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
-	std::string().swap(result);
 }
 
 int main(int argc, char ** argv) {

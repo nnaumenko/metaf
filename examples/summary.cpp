@@ -134,7 +134,7 @@ struct CurrentWeather {
 	int updateMinute = valueNotSpecified;
 };
 
-using GroupVector = std::vector<metaf::Parser::Result::GroupInfo>;
+using GroupVector = std::vector<metaf::GroupInfo>;
 
 metaf::Temperature::Unit temperatureUnit(bool isImperialUnit) {
 	return (isImperialUnit ? metaf::Temperature::Unit::F : metaf::Temperature::Unit::C);
@@ -453,9 +453,8 @@ std::vector<int> weatherFromWeatherGroup(
 
 GroupVector parseReport(const std::string & report, metaf::ReportType type) {
 	auto parsed = metaf::Parser::parse(report);
-	if (parsed.reportType != type || parsed.error != metaf::Parser::Error::NONE) {	
-		return (GroupVector());
-	}
+	if (parsed.reportMetadata.type != type || 
+		parsed.reportMetadata.error != metaf::ReportError::NONE) return (GroupVector());
 	return(std::move(parsed.groups));
 }
 

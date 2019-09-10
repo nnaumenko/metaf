@@ -33,18 +33,6 @@ else()
 endif()
 
 
-
-# Example: Convert METAR/TAF to JSON
-
-add_executable(example_json examples/to_json.cpp)
-
-set_target_properties(example_json PROPERTIES 
-	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
-	OUTPUT_NAME "to_json.html"
-	LINK_FLAGS "--shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/to_json_shell.html -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\""
-)
-
-
 # Example: Explain METAR/TAF in English language
 
 add_executable(example_explain examples/explain.cpp)
@@ -70,7 +58,7 @@ set_target_properties(example_summary PROPERTIES
 
 # All examples
 
-add_custom_target(examples ALL DEPENDS example_json example_explain example_summary)
+add_custom_target(examples ALL DEPENDS example_explain example_summary)
 
 
 

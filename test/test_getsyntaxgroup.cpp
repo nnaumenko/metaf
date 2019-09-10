@@ -301,8 +301,8 @@ TEST(getSyntaxGroup, OTHER_Probability) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_PlainTextGroup) {
-	const auto g = metaf::PlainTextGroup::parse("A1B2C3D4", metaf::ReportPart::METAR);
+TEST(getSyntaxGroup, OTHER_UnknownGroup) {
+	const auto g = metaf::UnknownGroup::parse("A1B2C3D4", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

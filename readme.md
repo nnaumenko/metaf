@@ -10,9 +10,7 @@ Metaf is a header-only, dependency-free modern C++ library for parsing [METAR we
 
 [Live demo: Short weather summary for aerodromes near your location based on METAR/TAF weather data](https://nnaumenko.gitlab.io/metaf/examples/summary.html).
 
-[Live demo: Convert METAR/TAF report to JSON](https://nnaumenko.gitlab.io/metaf/examples/to_json.html).
-
-[Live demo: Decode METAR/TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
+[Live demo: Decode METAR or TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
 
 This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
@@ -72,7 +70,7 @@ Example of a TAF report is as follows:
 * ICAO location
 * Report issue time
 * Wind direction, speed and gust speed
-* Wind shear information
+* Wind shear, peak wind and wind shift information
 * Prevailing or directional visibility in meters or statute miles
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
 * Indicator of no significant cloud and good visibility CAVOK

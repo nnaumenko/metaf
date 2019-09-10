@@ -46,9 +46,6 @@ constexpr size_t variant_index() {
 /// @return Name of the group in human-readable form.
 string_view groupName (size_t index) {
 	switch (index) {
-		case variant_index<metaf::Group, metaf::PlainTextGroup>():
-		return("PlainTextGroup");
-
 		case variant_index<metaf::Group, metaf::FixedGroup>():
 		return("FixedGroup");
 
@@ -120,6 +117,9 @@ string_view groupName (size_t index) {
 
 		case variant_index<metaf::Group, metaf::MiscGroup>():
 		return("MiscGroup");
+
+		case variant_index<metaf::Group, metaf::UnknownGroup>():
+		return("UnknownGroup");
 
 		default: return("UNDEFINED");
 	}
@@ -220,7 +220,7 @@ int GroupPerformanceChecker::process() {
 			const auto parseResult = 
 				metaf::GroupParser::parse(get<string>(src), 
 					get<metaf::ReportPart>(src),
-					metaf::noReportData);
+					metaf::missingMetadata);
 			(void)parseResult;
 			(void)index;
 			//if (parseResult.index() != index) return(0);
@@ -317,16 +317,13 @@ void addGroup(const string & group, vector< pair<int, string> > & dst) {
 int addPlainTextGroups(const metaf::Parser::Result & src, vector< pair<int, string> > & dst){
 	auto count = 0;	
 	for (const auto & gr : src.groups) {
-		if (holds_alternative<metaf::PlainTextGroup>(gr.group)) {
-			auto plainTextGroup = get_if<metaf::PlainTextGroup>(&gr.group);
-			if (plainTextGroup) {
-				std::istringstream iss(plainTextGroup->toString());
-				std::istream_iterator<std::string> iter(iss);
-				while (iter != std::istream_iterator<std::string>()) {
-					addGroup(*iter, dst);
-					iter++;	
-				    count++;
-				}
+		if (holds_alternative<metaf::UnknownGroup>(gr.group)) {
+			std::istringstream iss(gr.rawString);
+			std::istream_iterator<std::string> iter(iss);
+			while (iter != std::istream_iterator<std::string>()) {
+				addGroup(*iter, dst);
+				iter++;	
+			    count++;
 			}
 		}
 	}

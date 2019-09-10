@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="description" content="Metaf library usage example: decode METAR/TAF report and explain the meaning of its groups in English language.">
+    <meta name="description" content="Metaf library usage example: decode METAR/TAF reports and explain their meaning in English language.">
     <title>Metaf example: METAR & TAF reports explained in English</title>
     <link rel="stylesheet" type="text/css" href="../style.css">
     <style type="text/css">
@@ -50,15 +50,7 @@
         }
       };
 
-      function addRow(cell0, cell1) {
-        var rowNum = document.getElementById("explanation").tBodies[0].rows.length;
-        var row = document.getElementById("explanation").tBodies[0].insertRow(rowNum);
-        row.insertCell(0).innerHTML = cell0;
-        row.insertCell(1).innerHTML = cell1;
-      };
-
     	function explain() {
-        const delimiter = "|";
         clearTable();
         var inputStr = document.getElementById("input").value;
         console.log(inputStr);
@@ -68,14 +60,7 @@
                                   [inputStr]);  // arguments
         Module.ccall('freeMemory', null, null, null);
         console.log(result);
-        var result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
-        console.log(result);
-        var resultArray = result.split(delimiter);
-        console.log(resultArray);
-        var i;
-        for (i=0; i<(resultArray.length/2); i++){
-          addRow(resultArray[i*2], resultArray[i*2+1]);
-        }
+        document.getElementById("explanation").innerHTML = result;
     	};
 
       function setSampleInput(){
@@ -96,7 +81,7 @@
     <li class="navitem"><a href="../docs/index.html" target="_blank">Documentation</a></li>
   </ul>
   <div class="content">
-      <h1>METAR &amp; TAF reports explained</h1>
+      <h1>Decode METAR &amp; TAF reports and explain their meaning in English language</h1>
   	  Enter or paste METAR or TAF here:<br>
       <textarea id="input" rows="8" cols="80" onInput="explain()"></textarea><br>
       <br><br>

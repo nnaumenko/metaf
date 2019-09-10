@@ -579,13 +579,13 @@ TEST(WindGroup, appendWshftAndTimeMin) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("210530");
 	ASSERT_TRUE(reportTime.has_value());
 
-	metaf::ReportGlobalData reportData;
-	reportData.reportTime = reportTime.value();
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
 
-	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportData);
+	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg.has_value());
 
-	EXPECT_EQ(wg->append("18", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("18", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT);
@@ -603,12 +603,12 @@ TEST(WindGroup, appendWshftAndTimeMin) {
 }
 
 TEST(WindGroup, appendWshftAndTimeMinNoReportTime) {
-	const metaf::ReportGlobalData reportData;
+	const metaf::ReportMetadata reportMetadata;
 
-	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportData);
+	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg.has_value());
 
-	EXPECT_EQ(wg->append("18", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("18", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
 }
 
@@ -676,38 +676,38 @@ TEST(WindGroup, appendWshftAndOther) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("210530");
 	ASSERT_TRUE(reportTime.has_value());
 
-	metaf::ReportGlobalData reportData;
-	reportData.reportTime = reportTime.value();
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
 
-	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportData);
+	auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->append("WSHFT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("WSHFT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("030", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("030", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("3", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("3", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("01035", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("01035", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("135", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("135", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("18005KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("18005KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("18005G10KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("18005G10KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("320V340", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("320V340", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("PK", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("PK", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("31027/2119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("31027/2119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("31027/19", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("31027/19", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("WS020/18025KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("WS020/18025KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(wg->append("/////KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("/////KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::NOT_APPENDED);
 }
 
@@ -752,71 +752,71 @@ TEST(WindGroup, appendPkAndOther) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("210530");
 	ASSERT_TRUE(reportTime.has_value());
 
-	metaf::ReportGlobalData reportData;
-	reportData.reportTime = reportTime.value();
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
 
-	auto wg1 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
-	EXPECT_EQ(wg1->append("WSHFT", metaf::ReportPart::RMK, reportData), 
+	auto wg1 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
+	EXPECT_EQ(wg1->append("WSHFT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg2 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg2 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg2.has_value());
-	EXPECT_EQ(wg2->append("30", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg2->append("30", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg3 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg3 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg3.has_value());
-	EXPECT_EQ(wg3->append("2345", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg3->append("2345", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg4 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg4 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg4.has_value());
-	EXPECT_EQ(wg4->append("18005KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg4->append("18005KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg5 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg5 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg5.has_value());
-	EXPECT_EQ(wg5->append("18005G10KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg5->append("18005G10KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg6 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg6 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg6.has_value());
-	EXPECT_EQ(wg6->append("320V340", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg6->append("320V340", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg7 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg7 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg7.has_value());
-	EXPECT_EQ(wg7->append("PK", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg7->append("PK", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg8 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg8 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg8.has_value());
-	EXPECT_EQ(wg8->append("WSHFT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg8->append("WSHFT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg9 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg9 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg9.has_value());
-	EXPECT_EQ(wg9->append("FROPA", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg9->append("FROPA", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg10 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg10 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg10.has_value());
-	EXPECT_EQ(wg10->append("31027/2119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg10->append("31027/2119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg11 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg11 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg11.has_value());
-	EXPECT_EQ(wg11->append("31027/19", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg11->append("31027/19", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg12 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg12 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg12.has_value());
-	EXPECT_EQ(wg12->append("WS020/18025KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg12->append("WS020/18025KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg13 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg13 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg13.has_value());
-	EXPECT_EQ(wg13->append("/////KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg13->append("/////KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
@@ -824,140 +824,140 @@ TEST(WindGroup, appendPkWndAndOther) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("210530");
 	ASSERT_TRUE(reportTime.has_value());
 
-	metaf::ReportGlobalData reportData;
-	reportData.reportTime = reportTime.value();
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
 
-	auto wg1 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg1 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg1.has_value());
-	EXPECT_EQ(wg1->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg1->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg1->append("WSHFT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg1->append("WSHFT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg2 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg2 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg2.has_value());
-	EXPECT_EQ(wg2->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg2->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg2->append("30", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg2->append("30", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg3 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg3 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg3.has_value());
-	EXPECT_EQ(wg3->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg3->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg3->append("2345", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg3->append("2345", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg4 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg4 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg4.has_value());
-	EXPECT_EQ(wg4->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg4->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg4->append("18005KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg4->append("18005KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg5 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg5 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg5.has_value());
-	EXPECT_EQ(wg5->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg5->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg5->append("18005G10KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg5->append("18005G10KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg6 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg6 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg6.has_value());
-	EXPECT_EQ(wg6->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg6->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg6->append("320V340", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg6->append("320V340", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg7 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg7 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg7.has_value());
-	EXPECT_EQ(wg7->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg7->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg7->append("PK", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg7->append("PK", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg8 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg8 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg8.has_value());
-	EXPECT_EQ(wg8->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg8->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg8->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg8->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg9 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg9 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg9.has_value());
-	EXPECT_EQ(wg9->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg9->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg9->append("WSHFT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg9->append("WSHFT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg10 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg10 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg10.has_value());
-	EXPECT_EQ(wg10->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg10->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg10->append("FROPA", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg10->append("FROPA", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg11 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg11 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg11.has_value());
-	EXPECT_EQ(wg11->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg11->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg11->append("3127/2119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg11->append("3127/2119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg12 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg12 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg12.has_value());
-	EXPECT_EQ(wg12->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg12->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg12->append("031027/2119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg12->append("031027/2119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg13 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg13 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg13.has_value());
-	EXPECT_EQ(wg13->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg13->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg13->append("31027/02119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg13->append("31027/02119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg14 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg14 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg14.has_value());
-	EXPECT_EQ(wg14->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg14->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg14->append("31027/219", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg14->append("31027/219", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg15 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg15 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg15.has_value());
-	EXPECT_EQ(wg15->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg15->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg15->append("31027/2", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg15->append("31027/2", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg16 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg16 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg16.has_value());
-	EXPECT_EQ(wg16->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg16->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg16->append("A1027/2119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg16->append("A1027/2119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg17 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg17 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg17.has_value());
-	EXPECT_EQ(wg17->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg17->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg17->append("31027/A119", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg17->append("31027/A119", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg18 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg18 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg18.has_value());
-	EXPECT_EQ(wg18->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg18->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg18->append("WS020/18025KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg18->append("WS020/18025KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto wg19 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg19 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg19.has_value());
-	EXPECT_EQ(wg19->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg19->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg19->append("/////KT", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg19->append("/////KT", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
@@ -987,15 +987,15 @@ TEST(WindGroup, appendPkWndDirSpeedHourMinute) {
 TEST(WindGroup, appendPkWndDirSpeedMinute) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("211156");
 	ASSERT_TRUE(reportTime.has_value());
-	metaf::ReportGlobalData reportData;
-	reportData.reportTime = reportTime.value();
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
 
-	auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg.has_value());
 
-	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg->append("24029/06", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("24029/06", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::PEAK_WIND);
@@ -1018,14 +1018,14 @@ TEST(WindGroup, appendPkWndDirSpeedMinute) {
 }
 
 TEST(WindGroup, appendPkWndDirSpeedMinuteNoReportData) {
-	const metaf::ReportGlobalData reportData;
+	const metaf::ReportMetadata reportMetadata;
 
-	auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportData);
+	auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK, reportMetadata);
 	ASSERT_TRUE(wg.has_value());
 
-	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(wg->append("24029/06", metaf::ReportPart::RMK, reportData), 
+	EXPECT_EQ(wg->append("24029/06", metaf::ReportPart::RMK, reportMetadata), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 

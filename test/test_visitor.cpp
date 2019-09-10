@@ -28,114 +28,187 @@ constexpr size_t variant_index() {
 }
 
 // Visitor which does not return a value
-class visitorCounter : public metaf::GroupVisitor<void> {
+class visitorCounter : public metaf::Visitor<void> {
 public:
 	std::array<int, std::variant_size_v<metaf::Group>> count = {0};
 	int otherGroups = 0; 
 protected:
-	virtual void visitPlainTextGroup(const metaf::PlainTextGroup & group) {
-		(void)group;
-		count[variant_index<metaf::Group, metaf::PlainTextGroup>()]++;
-	}
-	virtual void visitFixedGroup(const metaf::FixedGroup & group) {
-		(void)group;
+	virtual void visitFixedGroup(const metaf::FixedGroup & group, 
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::FixedGroup>()]++;
 	}
-	virtual void visitLocationGroup(const metaf::LocationGroup & group) {
-		(void)group;
+	virtual void visitLocationGroup(const metaf::LocationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::LocationGroup>()]++;
 	}
-	virtual void visitReportTimeGroup(const metaf::ReportTimeGroup & group) {
-		(void)group;
+	virtual void visitReportTimeGroup(const metaf::ReportTimeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]++;
 	}
-	virtual void visitTrendGroup(const metaf::TrendGroup & group) {
+	virtual void visitTrendGroup(const metaf::TrendGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::TrendGroup>()]++;
-		(void)group;
 	}
-	virtual void visitWindGroup(const metaf::WindGroup & group) {
-		(void)group;
+	virtual void visitWindGroup(const metaf::WindGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::WindGroup>()]++;
 	}
-	virtual void visitVisibilityGroup(const metaf::VisibilityGroup & group) {
-		(void)group;
+	virtual void visitVisibilityGroup(const metaf::VisibilityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::VisibilityGroup>()]++;
 	}
-	virtual void visitCloudGroup(const metaf::CloudGroup & group) {
-		(void)group;
+	virtual void visitCloudGroup(const metaf::CloudGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::CloudGroup>()]++;
 	}
-	virtual void visitWeatherGroup(const metaf::WeatherGroup & group) {
-		(void)group;
+	virtual void visitWeatherGroup(const metaf::WeatherGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::WeatherGroup>()]++;
 	}
-	virtual void visitTemperatureGroup(const metaf::TemperatureGroup & group) {
-		(void)group;
+	virtual void visitTemperatureGroup(const metaf::TemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::TemperatureGroup>()]++;
 	}
 	virtual void visitTemperatureForecastGroup(
-		const metaf::TemperatureForecastGroup & group)
+		const metaf::TemperatureForecastGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
 	{
-		(void)group;
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::TemperatureForecastGroup>()]++;
 	}
-	virtual void visitPressureGroup(const metaf::PressureGroup & group) {
-		(void)group;
+	virtual void visitPressureGroup(const metaf::PressureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::PressureGroup>()]++;
 	}
 	virtual void visitRunwayVisualRangeGroup(
-		const metaf::RunwayVisualRangeGroup & group)
+		const metaf::RunwayVisualRangeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
 	{
-		(void)group;
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>()]++;
 	}
-	virtual void visitRunwayStateGroup(const metaf::RunwayStateGroup & group) {
-		(void)group;
+	virtual void visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::RunwayStateGroup>()]++;
 	}
-	virtual void visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group) {
-		(void)group;
+	virtual void visitSecondaryLocationGroup(const metaf::SecondaryLocationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]++;
 	}
-	virtual void visitRainfallGroup(const metaf::RainfallGroup & group) {
-		(void)group;
+	virtual void visitRainfallGroup(const metaf::RainfallGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::RainfallGroup>()]++;
 	}
-	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group) {
-		(void)group;
+	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]++;
 	}
-	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group) {
-		(void)group;
+	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::ColourCodeGroup>()]++;
 	}
-	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group) {
-		(void)group;
+	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>()]++;
 	}
-	virtual void visitPrecipitationGroup(const metaf::PrecipitationGroup & group) {
-		(void)group;
+	virtual void visitPrecipitationGroup(const metaf::PrecipitationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]++;
 	}
-	virtual void visitLayerForecastGroup(const metaf::LayerForecastGroup & group) {
-		(void)group;
+	virtual void visitLayerForecastGroup(const metaf::LayerForecastGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]++;
 	}
-	virtual void visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group) {
-		(void)group;
+	virtual void visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]++;
 	}
-	virtual void visitCloudTypesGroup(const metaf::CloudTypesGroup & group) {
-		(void)group;
+	virtual void visitCloudTypesGroup(const metaf::CloudTypesGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]++;
 	}
-	virtual void visitCloudLayersGroup(const metaf::CloudLayersGroup & group) {
-		(void)group;
+	virtual void visitCloudLayersGroup(const metaf::CloudLayersGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]++;
 	}
-	virtual void visitMiscGroup(const metaf::MiscGroup & group) {
-		(void)group;
+	virtual void visitMiscGroup(const metaf::MiscGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::MiscGroup>()]++;
+	}
+	virtual void visitUnknownGroup(const metaf::UnknownGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
+		count[variant_index<metaf::Group, metaf::UnknownGroup>()]++;
 	}
 };
 
@@ -183,7 +256,6 @@ TEST(Visitor, visitorVoid) {
 			}
 	}
 
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PlainTextGroup>()]), 5);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::FixedGroup>()]), 18);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 10);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 10);
@@ -208,5 +280,6 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 5);
 }
 
