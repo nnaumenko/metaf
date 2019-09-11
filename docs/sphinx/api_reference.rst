@@ -523,7 +523,7 @@ Direction
 
 			Phenomena occurrs directly over the location rather than in a distance.
 
-		.. cpp:enumerator:: VALUE_CARDINAL
+		.. cpp:enumerator:: ALQDS
 
 			Direction is reported as all quadrants (i.e. in all directions).
 

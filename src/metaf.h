@@ -23,7 +23,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "RC1";
+		inline static const char tag [] = "RC2";
 	};
 
 	class FixedGroup;
@@ -553,6 +553,9 @@ namespace metaf {
 		FREEZING
 	};
 
+	inline std::optional<WeatherDescriptor> weatherDescriptorFromString(
+		const std::string & s);
+
 	enum class Weather {
 		OMMITTED,
 		NOT_REPORTED,
@@ -580,6 +583,7 @@ namespace metaf {
 		DUSTSTORM
 	};
 
+	inline std::optional<Weather> weatherFromString(const std::string & s);
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -1035,8 +1039,6 @@ namespace metaf {
 		inline bool isModerateQualifier() const;
 
 		static inline Qualifier qualifierFromString(const std::string & s);
-		static inline WeatherDescriptor descriptorFromString(const std::string & s);
-		static inline std::optional<Weather> weatherFromString(const std::string & s);
 
 		static inline WeatherGroup notReported();
 		static inline WeatherGroup notReportedRecent();
@@ -3078,6 +3080,50 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
+	std::optional<WeatherDescriptor> weatherDescriptorFromString(
+		const std::string & s)
+	{
+		if (s.empty()) return(WeatherDescriptor::NONE);
+		if (s == "MI") return(WeatherDescriptor::SHALLOW);
+		if (s == "PR") return(WeatherDescriptor::PARTIAL);
+		if (s == "BC") return(WeatherDescriptor::PATCHES);
+		if (s == "DR") return(WeatherDescriptor::LOW_DRIFTING);
+		if (s == "BL") return(WeatherDescriptor::BLOWING);
+		if (s == "SH") return(WeatherDescriptor::SHOWERS);
+		if (s == "TS") return(WeatherDescriptor::THUNDERSTORM);
+		if (s == "FZ") return(WeatherDescriptor::FREEZING);
+		return(std::optional<WeatherDescriptor>());
+	}
+
+	std::optional<Weather> weatherFromString(const std::string & s)
+	{
+		if (s == "DZ") return(Weather::DRIZZLE);
+		if (s == "RA") return(Weather::RAIN);
+		if (s == "SN") return(Weather::SNOW);
+		if (s == "SG") return(Weather::SNOW_GRAINS);
+		if (s == "IC") return(Weather::ICE_CRYSTALS);
+		if (s == "PL") return(Weather::ICE_PELLETS);
+		if (s == "GR") return(Weather::HAIL);
+		if (s == "GS") return(Weather::SMALL_HAIL);
+		if (s == "UP") return(Weather::UNDETERMINED);
+		if (s == "BR") return(Weather::MIST);
+		if (s == "FG") return(Weather::FOG);
+		if (s == "FU") return(Weather::SMOKE);
+		if (s == "VA") return(Weather::VOLCANIC_ASH);
+		if (s == "DU") return(Weather::DUST);
+		if (s == "SA") return(Weather::SAND);
+		if (s == "HZ") return(Weather::HAZE);
+		if (s == "PY") return(Weather::SPRAY);
+		if (s == "PO") return(Weather::DUST_WHIRLS);
+		if (s == "SQ") return(Weather::SQUALLS);
+		if (s == "FC") return(Weather::FUNNEL_CLOUD);
+		if (s == "SS") return(Weather::SANDSTORM);
+		if (s == "DS") return(Weather::DUSTSTORM);
+		return(std::optional<Weather>());
+	}
+
+	///////////////////////////////////////////////////////////////////////////////
+
 	std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
@@ -3832,18 +3878,22 @@ namespace metaf {
 		}
 
 		if (group.empty()) return(notRecognised);
-		static const std::regex rgx("(RE|[\\+-]|VC)?(MI|PR|BC|DR|BL|SH|TS|FZ)?((?:[A-Z][A-Z])*)");
-		static const auto matchQualifier = 1, matchDescriptor = 2, matchWeather = 3;
+
+		static const std::regex rgx("([\\+-]|RE|VC)?((?:[A-Z][A-Z])+)");
+		static const auto matchQualifier = 1, matchWeather = 2;
 		std::smatch match;
 		if (!regex_match(group, match, rgx)) return(notRecognised);
-
 		const auto qualifier = qualifierFromString(match.str(matchQualifier));
-		const auto descriptor = descriptorFromString(match.str(matchDescriptor));
+		const auto descriptorStr = match.str(matchWeather).substr(0, 2);
+		const auto descriptorOptional = weatherDescriptorFromString(descriptorStr);
+		const auto descriptor = descriptorOptional.has_value() ? 
+			descriptorOptional.value() : WeatherDescriptor::NONE;
 
 		WeatherGroup result;
+		const auto weatherStr = descriptorOptional.has_value() ? 
+			match.str(matchWeather).substr(2) : match.str(matchWeather);
 		static const auto wthrTokenSize = 2;
-		const auto weatherStr = match.str(matchWeather);
-		for (auto i = 0; i < match.length(matchWeather); i += wthrTokenSize) {
+		for (auto i = 0u; i < weatherStr.length(); i += wthrTokenSize) {
 			auto weather = weatherFromString(weatherStr.substr(i, wthrTokenSize));
 			if (!weather.has_value()) return(notRecognised);
 			if (result.wSize >= maxwSize) return(notRecognised);
@@ -3891,45 +3941,6 @@ namespace metaf {
 		if (s == "+") return(Qualifier::HEAVY);
 		if (s == "VC") return(Qualifier::VICINITY);
 		return(Qualifier::NONE);
-	}
-
-	WeatherDescriptor WeatherGroup::descriptorFromString(const std::string & s) {
-		if (s == "MI") return(WeatherDescriptor::SHALLOW);
-		if (s == "PR") return(WeatherDescriptor::PARTIAL);
-		if (s == "BC") return(WeatherDescriptor::PATCHES);
-		if (s == "DR") return(WeatherDescriptor::LOW_DRIFTING);
-		if (s == "BL") return(WeatherDescriptor::BLOWING);
-		if (s == "SH") return(WeatherDescriptor::SHOWERS);
-		if (s == "TS") return(WeatherDescriptor::THUNDERSTORM);
-		if (s == "FZ") return(WeatherDescriptor::FREEZING);
-		return(WeatherDescriptor::NONE);
-	}
-
-	std::optional<Weather> WeatherGroup::weatherFromString(const std::string & s)
-	{
-		if (s == "DZ") return(Weather::DRIZZLE);
-		if (s == "RA") return(Weather::RAIN);
-		if (s == "SN") return(Weather::SNOW);
-		if (s == "SG") return(Weather::SNOW_GRAINS);
-		if (s == "IC") return(Weather::ICE_CRYSTALS);
-		if (s == "PL") return(Weather::ICE_PELLETS);
-		if (s == "GR") return(Weather::HAIL);
-		if (s == "GS") return(Weather::SMALL_HAIL);
-		if (s == "UP") return(Weather::UNDETERMINED);
-		if (s == "BR") return(Weather::MIST);
-		if (s == "FG") return(Weather::FOG);
-		if (s == "FU") return(Weather::SMOKE);
-		if (s == "VA") return(Weather::VOLCANIC_ASH);
-		if (s == "DU") return(Weather::DUST);
-		if (s == "SA") return(Weather::SAND);
-		if (s == "HZ") return(Weather::HAZE);
-		if (s == "PY") return(Weather::SPRAY);
-		if (s == "PO") return(Weather::DUST_WHIRLS);
-		if (s == "SQ") return(Weather::SQUALLS);
-		if (s == "FC") return(Weather::FUNNEL_CLOUD);
-		if (s == "SS") return(Weather::SANDSTORM);
-		if (s == "DS") return(Weather::DUSTSTORM);
-		return(std::optional<Weather>());
 	}
 
 	WeatherGroup WeatherGroup::notReported() {

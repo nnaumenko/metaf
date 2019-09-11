@@ -5,9 +5,6 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-/// @file 
-/// @brief Performance check and stats for metaf library.
-
 #include "metaf.h"
 #include "testdata_real.h"
 #include <iostream>

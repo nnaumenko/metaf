@@ -5,10 +5,6 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-/// @file 
-/// @brief This example parses METAR or TAF reports and displays them in 
-/// human-readable format.
-
 #include "metaf.h"
 #include <vector>
 #include <string>

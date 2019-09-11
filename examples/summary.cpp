@@ -5,10 +5,6 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-/// @file 
-/// @brief This example parses pair of METAR and TAF report and produces a 
-/// summary of current weather
-
 #include <emscripten/bind.h>
 
 using namespace emscripten;

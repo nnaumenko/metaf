@@ -7,6 +7,7 @@
 
 #include "gtest/gtest.h"
 #include "testdata_real.h"
+#include "metaf.h"
 
 TEST(Parser, RealDataParsingMETAR) {
 	for (const auto & data : testdata::realDataSet) {

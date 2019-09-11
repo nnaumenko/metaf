@@ -18,16 +18,18 @@ Metaf can do the following:
 
  * Parse METAR or TAF report and autodetect its type.
  * Check the validity of the report syntax, detect malformed reports and report errors.
- * Convert METAR or TAF report into the vector of classes which represent individual bits of info encoded in the weather report or forecast.
+ * Convert METAR or TAF report into the vector of classes which represent individual chunks of info encoded in the weather report or forecast.
 
 
 ## Documentation
 
 Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
 
+[Tutorial on basic usage of Metaf library](https://nnaumenko.gitlab.io/metaf/docs/getting_started.html).
+
 ## Limitations
 
-Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
+Old TAF format, used before November 2008 employs different format for time spans and trends (time without date); the current version does not decode this old format.
 
 ## Prerequisites and dependencies
 
