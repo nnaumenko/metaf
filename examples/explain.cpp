@@ -139,8 +139,8 @@ private:
 	static std::string_view cloudAmountToString(metaf::CloudGroup::Amount amount);
 	static std::string_view cloudTypeToString(metaf::CloudGroup::Type type);
 	static std::string_view weatherQualifierToString(metaf::WeatherGroup::Qualifier qualifier);
-	static std::string_view weatherDescriptorToString(metaf::WeatherGroup::Descriptor descriptor);
-	static std::string_view weatherPhenomenaToString(metaf::WeatherGroup::Weather weather);
+	static std::string_view weatherDescriptorToString(metaf::WeatherDescriptor descriptor);
+	static std::string_view weatherPhenomenaToString(metaf::Weather weather);
 	static std::string_view specialWeatherPhenomenaToString(const metaf::WeatherGroup & group);
 	static std::string_view rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
 	static std::string_view runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
@@ -558,22 +558,22 @@ std::string VisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group,
 	}
 
 	const bool vicinity = (group.qualifier() == metaf::WeatherGroup::Qualifier::VICINITY);
-	const bool showers = (group.descriptor() == metaf::WeatherGroup::Descriptor::SHOWERS);
-	const bool thunderstorm = (group.descriptor() == metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	const bool showers = (group.descriptor() == metaf::WeatherDescriptor::SHOWERS);
+	const bool thunderstorm = (group.descriptor() == metaf::WeatherDescriptor::THUNDERSTORM);
 	
 	if (const auto q = weatherQualifierToString(group.qualifier()); !q.empty()) result << q << " ";
 	if (const auto d = weatherDescriptorToString(group.descriptor()); !d.empty()) result << d << " ";
 
-	metaf::WeatherGroup::Weather previous = metaf::WeatherGroup::Weather::NOT_REPORTED;
+	metaf::Weather previous = metaf::Weather::NOT_REPORTED;
 	const auto weatherPhenomena = group.weather();
 	for (const auto w : weatherPhenomena) {
 		std::string weatherStr(weatherPhenomenaToString(w));
-		if (previous == metaf::WeatherGroup::Weather::RAIN && 
-			w == metaf::WeatherGroup::Weather::SNOW) {
+		if (previous == metaf::Weather::RAIN && 
+			w == metaf::Weather::SNOW) {
 				weatherStr = "and snow mix";
 		}
-		if (previous == metaf::WeatherGroup::Weather::SNOW && 
-			w == metaf::WeatherGroup::Weather::RAIN) {
+		if (previous == metaf::Weather::SNOW && 
+			w == metaf::Weather::RAIN) {
 				weatherStr = "and rain mix";
 		}
 		result << weatherStr << " ";
@@ -1255,6 +1255,12 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 		}
 		break;
 
+		case metaf::Direction::Status::OVERHEAD:
+		return("overhead");
+
+		case metaf::Direction::Status::ALQDS:
+		return("all quadrants (all directions)");
+
 		default:
 		return("unknown direction status");
 	}
@@ -1583,49 +1589,50 @@ std::string_view VisitorExplain::weatherQualifierToString(
 }
 
 std::string_view VisitorExplain::weatherDescriptorToString(
-	metaf::WeatherGroup::Descriptor descriptor)
+	metaf::WeatherDescriptor descriptor)
 {
 	switch(descriptor) {
-		case metaf::WeatherGroup::Descriptor::NONE:			return(std::string());
-		case metaf::WeatherGroup::Descriptor::SHALLOW:		return("shallow");
-		case metaf::WeatherGroup::Descriptor::PARTIAL:		return("partial");
-		case metaf::WeatherGroup::Descriptor::PATCHES:		return("patches of ");
-		case metaf::WeatherGroup::Descriptor::LOW_DRIFTING: return("low drifting");
-		case metaf::WeatherGroup::Descriptor::BLOWING:		return("blowing");
-		case metaf::WeatherGroup::Descriptor::SHOWERS:		return(std::string());
-		case metaf::WeatherGroup::Descriptor::THUNDERSTORM:	return(std::string());
-		case metaf::WeatherGroup::Descriptor::FREEZING:		return("freezing");
+		case metaf::WeatherDescriptor::NONE:		return(std::string());
+		case metaf::WeatherDescriptor::SHALLOW:		return("shallow");
+		case metaf::WeatherDescriptor::PARTIAL:		return("partial");
+		case metaf::WeatherDescriptor::PATCHES:		return("patches of ");
+		case metaf::WeatherDescriptor::LOW_DRIFTING:return("low drifting");
+		case metaf::WeatherDescriptor::BLOWING:		return("blowing");
+		case metaf::WeatherDescriptor::SHOWERS:		return(std::string());
+		case metaf::WeatherDescriptor::THUNDERSTORM:return(std::string());
+		case metaf::WeatherDescriptor::FREEZING:	return("freezing");
 		default: return("[uknown weather descriptor];");
 	}
 }
 
 std::string_view VisitorExplain::weatherPhenomenaToString(
-	metaf::WeatherGroup::Weather weather)
+	metaf::Weather weather)
 {
 	switch (weather) {
-			case metaf::WeatherGroup::Weather::NOT_REPORTED:	return("not reported");
-			case metaf::WeatherGroup::Weather::DRIZZLE:			return("drizzle");
-			case metaf::WeatherGroup::Weather::RAIN:			return("rain");
-			case metaf::WeatherGroup::Weather::SNOW:			return("snow");
-			case metaf::WeatherGroup::Weather::SNOW_GRAINS:		return("snow grains");
-			case metaf::WeatherGroup::Weather::ICE_CRYSTALS:	return("ice crystals");
-			case metaf::WeatherGroup::Weather::ICE_PELLETS:		return("ice pellets");
-			case metaf::WeatherGroup::Weather::HAIL:			return("hail");
-			case metaf::WeatherGroup::Weather::SMALL_HAIL:		return("small hail (graupel)");
-			case metaf::WeatherGroup::Weather::UNDETERMINED:	return("undetermined precipitation");
-			case metaf::WeatherGroup::Weather::MIST:			return("mist");
-			case metaf::WeatherGroup::Weather::FOG:				return("fog");
-			case metaf::WeatherGroup::Weather::SMOKE:			return("smoke");
-			case metaf::WeatherGroup::Weather::VOLCANIC_ASH:	return("volcanic ash");
-			case metaf::WeatherGroup::Weather::DUST:			return("dust");
-			case metaf::WeatherGroup::Weather::SAND:			return("sand");
-			case metaf::WeatherGroup::Weather::HAZE:			return("haze");
-			case metaf::WeatherGroup::Weather::SPRAY:			return("spray");
-			case metaf::WeatherGroup::Weather::DUST_WHIRLS:		return("dust or sand whirls");
-			case metaf::WeatherGroup::Weather::SQUALLS:			return("squalls");
-			case metaf::WeatherGroup::Weather::FUNNEL_CLOUD:	return("funnel cloud");
-			case metaf::WeatherGroup::Weather::SANDSTORM:		return("sand storm");
-			case metaf::WeatherGroup::Weather::DUSTSTORM:		return("dust storm");
+			case metaf::Weather::OMMITTED:		return("not specified");
+			case metaf::Weather::NOT_REPORTED:	return("not reported");
+			case metaf::Weather::DRIZZLE:		return("drizzle");
+			case metaf::Weather::RAIN:			return("rain");
+			case metaf::Weather::SNOW:			return("snow");
+			case metaf::Weather::SNOW_GRAINS:	return("snow grains");
+			case metaf::Weather::ICE_CRYSTALS:	return("ice crystals");
+			case metaf::Weather::ICE_PELLETS:	return("ice pellets");
+			case metaf::Weather::HAIL:			return("hail");
+			case metaf::Weather::SMALL_HAIL:	return("small hail (graupel)");
+			case metaf::Weather::UNDETERMINED:	return("undetermined precipitation");
+			case metaf::Weather::MIST:			return("mist");
+			case metaf::Weather::FOG:			return("fog");
+			case metaf::Weather::SMOKE:			return("smoke");
+			case metaf::Weather::VOLCANIC_ASH:	return("volcanic ash");
+			case metaf::Weather::DUST:			return("dust");
+			case metaf::Weather::SAND:			return("sand");
+			case metaf::Weather::HAZE:			return("haze");
+			case metaf::Weather::SPRAY:			return("spray");
+			case metaf::Weather::DUST_WHIRLS:	return("dust or sand whirls");
+			case metaf::Weather::SQUALLS:		return("squalls");
+			case metaf::Weather::FUNNEL_CLOUD:	return("funnel cloud");
+			case metaf::Weather::SANDSTORM:		return("sand storm");
+			case metaf::Weather::DUSTSTORM:		return("dust storm");
 			default: return("[unknown weather phenomena]");
 	}
 
@@ -1634,10 +1641,10 @@ std::string_view VisitorExplain::weatherPhenomenaToString(
 std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 	const metaf::WeatherGroup & group)
 {
-	using WeatherVector = std::vector<metaf::WeatherGroup::Weather>;
+	using WeatherVector = std::vector<metaf::Weather>;
 	using SpecialWeatherPhenomena = std::tuple<	
 		metaf::WeatherGroup::Qualifier, 
-		metaf::WeatherGroup::Descriptor, 
+		metaf::WeatherDescriptor, 
 		WeatherVector,
 		std::string_view
 		>;
@@ -1646,60 +1653,60 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 		specialWeatherPhenomena = {
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::VICINITY,
-				metaf::WeatherGroup::Descriptor::SHOWERS,
+				metaf::WeatherDescriptor::SHOWERS,
 				{},
 				"precipitation in vicinity (up to 10 miles away)"),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::NONE,
-				{ metaf::WeatherGroup::Weather::ICE_CRYSTALS },
+				metaf::WeatherDescriptor::NONE,
+				{ metaf::Weather::ICE_CRYSTALS },
 				"ice crystals (diamond dust)"),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::NONE,
-				{ metaf::WeatherGroup::Weather::DUST },
+				metaf::WeatherDescriptor::NONE,
+				{ metaf::Weather::DUST },
 				"widespread dust"),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::NONE,
-				{ metaf::WeatherGroup::Weather::UNDETERMINED },
+				metaf::WeatherDescriptor::NONE,
+				{ metaf::Weather::UNDETERMINED },
 				"undetermined precipitation (automated system cannot identify precipitation)"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::SHALLOW,
-				{ metaf::WeatherGroup::Weather::FOG },
+				metaf::WeatherDescriptor::SHALLOW,
+				{ metaf::Weather::FOG },
 				"shallow fog (ground fog)"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::PARTIAL,
-				{ metaf::WeatherGroup::Weather::FOG },
+				metaf::WeatherDescriptor::PARTIAL,
+				{ metaf::Weather::FOG },
 				"fog covering part of the location"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::PATCHES,
-				{ metaf::WeatherGroup::Weather::FOG },
+				metaf::WeatherDescriptor::PATCHES,
+				{ metaf::Weather::FOG },
 				"patches of fog randomly covering the location"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::NONE,
-				metaf::WeatherGroup::Descriptor::FREEZING,
-				{ metaf::WeatherGroup::Weather::FOG },
+				metaf::WeatherDescriptor::FREEZING,
+				{ metaf::Weather::FOG },
 				"fog at freezing temperture (may or may not deposit rime)"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherGroup::Qualifier::HEAVY,
-				metaf::WeatherGroup::Descriptor::NONE,
-				{ metaf::WeatherGroup::Weather::FUNNEL_CLOUD },
+				metaf::WeatherDescriptor::NONE,
+				{ metaf::Weather::FUNNEL_CLOUD },
 				"tornado or waterspout"
 			)
 	};
 
 	for (const auto w : specialWeatherPhenomena) {
 		if (group.qualifier() == std::get<metaf::WeatherGroup::Qualifier>(w) &&
-			group.descriptor() == std::get<metaf::WeatherGroup::Descriptor>(w) &&
+			group.descriptor() == std::get<metaf::WeatherDescriptor>(w) &&
 			group.weather() == std::get<WeatherVector>(w))
 		{
 				return(std::get<std::string_view>(w));

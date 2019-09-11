@@ -12,384 +12,384 @@ TEST(WeatherGroup, parseWeatherDz) {
 	const auto wg = metaf::WeatherGroup::parse("DZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
+	EXPECT_EQ(weather.at(0), metaf::Weather::DRIZZLE);
 }
 
 TEST(WeatherGroup, parseWeatherRa) {
 	const auto wg = metaf::WeatherGroup::parse("RA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseWeatherSn) {
 	const auto wg = metaf::WeatherGroup::parse("SN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SNOW);
 }
 
 TEST(WeatherGroup, parseWeatherSg) {
 	const auto wg = metaf::WeatherGroup::parse("SG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SNOW_GRAINS);
 }
 
 TEST(WeatherGroup, parseWeatherIc) {
 	const auto wg = metaf::WeatherGroup::parse("IC", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::ICE_CRYSTALS);
+	EXPECT_EQ(weather.at(0), metaf::Weather::ICE_CRYSTALS);
 }
 
 TEST(WeatherGroup, parseWeatherPl) {
 	const auto wg = metaf::WeatherGroup::parse("PL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::ICE_PELLETS);
+	EXPECT_EQ(weather.at(0), metaf::Weather::ICE_PELLETS);
 }
 
 TEST(WeatherGroup, parseWeatherGr) {
 	const auto wg = metaf::WeatherGroup::parse("GR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::HAIL);
+	EXPECT_EQ(weather.at(0), metaf::Weather::HAIL);
 }
 
 TEST(WeatherGroup, parseWeatherGs) {
 	const auto wg = metaf::WeatherGroup::parse("GS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SMALL_HAIL);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SMALL_HAIL);
 }
 
 TEST(WeatherGroup, parseWeatherUp) {
 	const auto wg = metaf::WeatherGroup::parse("UP", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::UNDETERMINED);
+	EXPECT_EQ(weather.at(0), metaf::Weather::UNDETERMINED);
 }
 
 TEST(WeatherGroup, parseWeatherBr) {
 	const auto wg = metaf::WeatherGroup::parse("BR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::MIST);
+	EXPECT_EQ(weather.at(0), metaf::Weather::MIST);
 }
 
 TEST(WeatherGroup, parseWeatherFg) {
 	const auto wg = metaf::WeatherGroup::parse("FG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
 }
 
 TEST(WeatherGroup, parseWeatherFu) {
 	const auto wg = metaf::WeatherGroup::parse("FU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SMOKE);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SMOKE);
 }
 
 TEST(WeatherGroup, parseWeatherVa) {
 	const auto wg = metaf::WeatherGroup::parse("VA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::VOLCANIC_ASH);
+	EXPECT_EQ(weather.at(0), metaf::Weather::VOLCANIC_ASH);
 }
 
 TEST(WeatherGroup, parseWeatherDu) {
 	const auto wg = metaf::WeatherGroup::parse("DU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::DUST);
+	EXPECT_EQ(weather.at(0), metaf::Weather::DUST);
 }
 
 TEST(WeatherGroup, parseWeatherSa) {
 	const auto wg = metaf::WeatherGroup::parse("SA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SAND);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SAND);
 }
 
 TEST(WeatherGroup, parseWeatherHz) {
 	const auto wg = metaf::WeatherGroup::parse("HZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::HAZE);
+	EXPECT_EQ(weather.at(0), metaf::Weather::HAZE);
 }
 
 TEST(WeatherGroup, parseWeatherPy) {
 	const auto wg = metaf::WeatherGroup::parse("BLPY", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::BLOWING);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::BLOWING);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SPRAY);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SPRAY);
 }
 
 TEST(WeatherGroup, parseWeatherPo) {
 	const auto wg = metaf::WeatherGroup::parse("PO", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::DUST_WHIRLS);
+	EXPECT_EQ(weather.at(0), metaf::Weather::DUST_WHIRLS);
 }
 
 TEST(WeatherGroup, parseWeatherSq) {
 	const auto wg = metaf::WeatherGroup::parse("SQ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SQUALLS);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SQUALLS);
 }
 
 TEST(WeatherGroup, parseWeatherFc) {
 	const auto wg = metaf::WeatherGroup::parse("FC", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::FUNNEL_CLOUD);
+	EXPECT_EQ(weather.at(0), metaf::Weather::FUNNEL_CLOUD);
 }
 
 TEST(WeatherGroup, parseWeatherSs) {
 	const auto wg = metaf::WeatherGroup::parse("SS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::SANDSTORM);
+	EXPECT_EQ(weather.at(0), metaf::Weather::SANDSTORM);
 }
 
 TEST(WeatherGroup, parseWeatherDs) {
 	const auto wg = metaf::WeatherGroup::parse("DS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::DUSTSTORM);
+	EXPECT_EQ(weather.at(0), metaf::Weather::DUSTSTORM);
 }
 
 TEST(WeatherGroup, parseWeatherNotReported) {
 	const auto wg = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::NOT_REPORTED);
+	EXPECT_EQ(weather.at(0), metaf::Weather::NOT_REPORTED);
 }
 
 TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
 	const auto wg1 = metaf::WeatherGroup::parse("RASN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 2u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather1.at(1), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("RAGR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 2u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather2.at(1), metaf::WeatherGroup::Weather::HAIL);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather2.at(1), metaf::Weather::HAIL);
 
 	const auto wg3 = metaf::WeatherGroup::parse("DZSG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 2u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
-	EXPECT_EQ(weather3.at(1), metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_EQ(weather3.at(1), metaf::Weather::SNOW_GRAINS);
 
 	const auto wg4 = metaf::WeatherGroup::parse("DSSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
 	EXPECT_EQ(wg4->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg4->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg4->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 2u);
-	EXPECT_EQ(weather4.at(0), metaf::WeatherGroup::Weather::DUSTSTORM);
-	EXPECT_EQ(weather4.at(1), metaf::WeatherGroup::Weather::SANDSTORM);
+	EXPECT_EQ(weather4.at(0), metaf::Weather::DUSTSTORM);
+	EXPECT_EQ(weather4.at(1), metaf::Weather::SANDSTORM);
 }
 
 TEST(WeatherGroup, parseDescriptorMi) {
 	const auto wg = metaf::WeatherGroup::parse("MIFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::SHALLOW);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::SHALLOW);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
 }
 
 TEST(WeatherGroup, parseDescriptorPr) {
 	const auto wg = metaf::WeatherGroup::parse("PRFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::PARTIAL);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::PARTIAL);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
 }
 
 TEST(WeatherGroup, parseDescriptorBc) {
 	const auto wg = metaf::WeatherGroup::parse("BCFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::PATCHES);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::PATCHES);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
 }
 
 TEST(WeatherGroup, parseDescriptorDr) {
 	const auto wg1 = metaf::WeatherGroup::parse("DRSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::LOW_DRIFTING);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::LOW_DRIFTING);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("DRSA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::LOW_DRIFTING);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::LOW_DRIFTING);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::SAND);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::SAND);
 
 	const auto wg3 = metaf::WeatherGroup::parse("DRDU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::LOW_DRIFTING);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::LOW_DRIFTING);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DUST);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DUST);
 }
 
 TEST(WeatherGroup, parseDescriptorBl) {
 	const auto wg1 = metaf::WeatherGroup::parse("BLSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::BLOWING);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::BLOWING);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("BLSA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::BLOWING);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::BLOWING);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::SAND);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::SAND);
 
 	const auto wg3 = metaf::WeatherGroup::parse("BLDU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::BLOWING);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::BLOWING);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DUST);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DUST);
 }
 
 TEST(WeatherGroup, parseDescriptorSh) {
 	const auto wg1 = metaf::WeatherGroup::parse("SHRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 
 	const auto wg2 = metaf::WeatherGroup::parse("SHSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::SNOW);
 
 	const auto wg3 = metaf::WeatherGroup::parse("SHSG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::SNOW_GRAINS);
 
 	const auto wg4 = metaf::WeatherGroup::parse("SHPL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
 	EXPECT_EQ(wg4->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg4->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg4->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
-	EXPECT_EQ(weather4.at(0), metaf::WeatherGroup::Weather::ICE_PELLETS);
+	EXPECT_EQ(weather4.at(0), metaf::Weather::ICE_PELLETS);
 
 }
 
@@ -397,37 +397,37 @@ TEST(WeatherGroup, parseDescriptorShMultiplePhenomena) {
 	const auto wg1 = metaf::WeatherGroup::parse("SHRASN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 2u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather1.at(1), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("SHRAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 2u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather2.at(1), metaf::WeatherGroup::Weather::SMALL_HAIL);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather2.at(1), metaf::Weather::SMALL_HAIL);
 }
 
 TEST(WeatherGroup, parseDescriptorTs) {
 	const auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseDescriptorTsStandalone) {
 	const auto wg = metaf::WeatherGroup::parse("TS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg->weather().size(), 0u);
 }
 
@@ -435,177 +435,177 @@ TEST(WeatherGroup, parseDescriptorFz) {
 	const auto wg1 = metaf::WeatherGroup::parse("FZDZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
 
 	const auto wg2 = metaf::WeatherGroup::parse("FZRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 
 	const auto wg3 = metaf::WeatherGroup::parse("FZFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::FOG);
 }
 
 TEST(WeatherGroup, parseDescriptorFzMultiplePhenomena) {
 	const auto wg = metaf::WeatherGroup::parse("FZRASN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 2u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather.at(1), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather.at(1), metaf::Weather::SNOW);
 }
 
 TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto wg = metaf::WeatherGroup::parse("-RA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierLightWithDescriptor) {
 	const auto wg1 = metaf::WeatherGroup::parse("-TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 
 	const auto wg2 = metaf::WeatherGroup::parse("-SHSG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::SNOW_GRAINS);
 
 	const auto wg3 = metaf::WeatherGroup::parse("-FZDZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
 }
 
 TEST(WeatherGroup, parseQualifierLightMultiplePhenomena) {
 	const auto wg = metaf::WeatherGroup::parse("-DZRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 2u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
-	EXPECT_EQ(weather.at(1), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_EQ(weather.at(1), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierLightMultiplePhenomenaWithDescriptor) {
 	const auto wg = metaf::WeatherGroup::parse("-TSRAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::LIGHT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 2u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather.at(1), metaf::WeatherGroup::Weather::SMALL_HAIL);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather.at(1), metaf::Weather::SMALL_HAIL);
 }
 
 TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto wg = metaf::WeatherGroup::parse("+RA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierHeavyWithDescriptor) {
 	const auto wg1 = metaf::WeatherGroup::parse("+TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 
 	const auto wg2 = metaf::WeatherGroup::parse("+SHSG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::SNOW_GRAINS);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::SNOW_GRAINS);
 
 	const auto wg3 = metaf::WeatherGroup::parse("+FZDZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::FREEZING);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::FREEZING);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
 }
 
 TEST(WeatherGroup, parseQualifierHeavyOtherPhenomena) {
 	const auto wg1 = metaf::WeatherGroup::parse("+FC", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::FUNNEL_CLOUD);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::FUNNEL_CLOUD);
 
 	const auto wg2 = metaf::WeatherGroup::parse("+DS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::DUSTSTORM);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::DUSTSTORM);
 
 	const auto wg3 = metaf::WeatherGroup::parse("+SS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::SANDSTORM);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::SANDSTORM);
 }
 
 TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomena) {
 	const auto wg1 = metaf::WeatherGroup::parse("+DZRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 2u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::DRIZZLE);
-	EXPECT_EQ(weather1.at(1), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_EQ(weather1.at(1), metaf::Weather::RAIN);
 
 	const auto wg2 = metaf::WeatherGroup::parse("+DSSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 2u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::DUSTSTORM);
-	EXPECT_EQ(weather2.at(1), metaf::WeatherGroup::Weather::SANDSTORM);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::DUSTSTORM);
+	EXPECT_EQ(weather2.at(1), metaf::Weather::SANDSTORM);
 
 }
 
@@ -613,11 +613,11 @@ TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomenaWithDescriptor) {
 	const auto wg = metaf::WeatherGroup::parse("+TSRAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::HEAVY);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 2u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
-	EXPECT_EQ(weather.at(1), metaf::WeatherGroup::Weather::SMALL_HAIL);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_EQ(weather.at(1), metaf::Weather::SMALL_HAIL);
 }
 
 
@@ -626,55 +626,55 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto wg1 = metaf::WeatherGroup::parse("VCFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::FOG);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::FOG);
 
 	const auto wg2 = metaf::WeatherGroup::parse("VCVA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::VOLCANIC_ASH);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::VOLCANIC_ASH);
 
 	const auto wg3 = metaf::WeatherGroup::parse("VCDS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
 	EXPECT_EQ(wg3->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg3->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg3->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
-	EXPECT_EQ(weather3.at(0), metaf::WeatherGroup::Weather::DUSTSTORM);
+	EXPECT_EQ(weather3.at(0), metaf::Weather::DUSTSTORM);
 
 	const auto wg4 = metaf::WeatherGroup::parse("VCSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
 	EXPECT_EQ(wg4->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg4->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg4->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
-	EXPECT_EQ(weather4.at(0), metaf::WeatherGroup::Weather::SANDSTORM);
+	EXPECT_EQ(weather4.at(0), metaf::Weather::SANDSTORM);
 
 	const auto wg5 = metaf::WeatherGroup::parse("VCPO", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
 	EXPECT_EQ(wg5->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg5->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg5->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
-	EXPECT_EQ(weather5.at(0), metaf::WeatherGroup::Weather::DUST_WHIRLS);
+	EXPECT_EQ(weather5.at(0), metaf::Weather::DUST_WHIRLS);
 }
 
 TEST(WeatherGroup, parseQualifierVicinityDescriptorOnly) {
 	const auto wg1 = metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	EXPECT_EQ(wg1->weather().size(), 0u);
 
 	const auto wg2 = metaf::WeatherGroup::parse("VCTS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg2->weather().size(), 0u);
 }
 
@@ -682,53 +682,53 @@ TEST(WeatherGroup, parseQualifierVicinityDescriptorAndWeather) {
 	const auto wg1 = metaf::WeatherGroup::parse("VCBLSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::BLOWING);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::BLOWING);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("VCTSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeather) {
 	const auto wg = metaf::WeatherGroup::parse("RERA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeatherWithDescriptor) {
 	const auto wg1 = metaf::WeatherGroup::parse("RESHSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
-	EXPECT_EQ(wg1->descriptor(), metaf::WeatherGroup::Descriptor::SHOWERS);
+	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
-	EXPECT_EQ(weather1.at(0), metaf::WeatherGroup::Weather::SNOW);
+	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
 
 	const auto wg2 = metaf::WeatherGroup::parse("RETSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
-	EXPECT_EQ(wg2->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
-	EXPECT_EQ(weather2.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeatherDescriptorOnly) {
 	const auto wg = metaf::WeatherGroup::parse("RETS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg->weather().size(), 0u);
 }
 
@@ -736,10 +736,10 @@ TEST(WeatherGroup, parseRecentWeatherNotReported) {
 	const auto wg = metaf::WeatherGroup::parse("RE//", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::NOT_REPORTED);
+	EXPECT_EQ(weather.at(0), metaf::Weather::NOT_REPORTED);
 }
 
 TEST(WeatherGroup, parseQualifierModerateRainAndHail) {
@@ -753,10 +753,10 @@ TEST(WeatherGroup, parseWeatherTaf) {
 	const auto wg = metaf::WeatherGroup::parse("RA", metaf::ReportPart::TAF);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherGroup::Descriptor::NONE);
+	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::WeatherGroup::Weather::RAIN);
+	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 }
 
 TEST(WeatherGroup, parseWrongReportPart) {
@@ -789,15 +789,15 @@ TEST(WeatherGroup, parseWrongFormat) {
 TEST(WeatherGroup, contains) {
 	const auto wgPlusTsRaGr = metaf::WeatherGroup::parse("+TSRAGR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wgPlusTsRaGr.has_value());
-	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::RAIN));
-	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::HAIL));
-	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::SNOW));
-	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::WeatherGroup::Weather::NOT_REPORTED));
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::RAIN));
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::HAIL));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::SNOW));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::NOT_REPORTED));
 
 	const auto wgNr = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wgNr.has_value());
-	EXPECT_FALSE(wgNr->contains(metaf::WeatherGroup::Weather::RAIN));
-	EXPECT_TRUE(wgNr->contains(metaf::WeatherGroup::Weather::NOT_REPORTED));
+	EXPECT_FALSE(wgNr->contains(metaf::Weather::RAIN));
+	EXPECT_TRUE(wgNr->contains(metaf::Weather::NOT_REPORTED));
 }
 
 TEST(WeatherGroup, combine) {

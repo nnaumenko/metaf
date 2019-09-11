@@ -519,6 +519,15 @@ Direction
 
 			Direction is reported as cardinal value.
 
+		.. cpp:enumerator:: OVERHEAD
+
+			Phenomena occurrs directly over the location rather than in a distance.
+
+		.. cpp:enumerator:: VALUE_CARDINAL
+
+			Direction is reported as all quadrants (i.e. in all directions).
+
+
 	**Acquiring the data**
 
 		.. cpp:function:: Status status() const
@@ -901,6 +910,171 @@ WaveHeight
 
 			:param unit: Measurement unit to convert the value to.
 			:returns: Stored wave height value (or highest wave height value for specified :cpp:enum:`StateOfSurface`) converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
+
+Weather
+^^^^^^^
+
+.. cpp:enum-class:: Weather
+
+	Describes precipitation, obscuration and other weather phenomena.
+
+	.. cpp:enumerator:: OMMITTED
+
+		The weather information is omitted (i.e. not specified at all)..
+
+	.. cpp:enumerator:: NOT_REPORTED
+
+		An automatic observing system is used and the present weather cannot be
+		observed.
+
+	.. cpp:enumerator:: DRIZZLE
+
+		Fairly uniform precipitation composed exclusively of fine drops with diameters of less than 0.02 inch (0.5 mm) very close together. Drizzle appears to float while following air currents, although unlike fog droplets, it falls to the ground.
+
+	.. cpp:enumerator:: RAIN
+
+		Precipitation, either in the form of drops larger than 0.02 inch (0.5 mm), or smaller drops which, in contrast to drizzle, are widely separated.
+
+	.. cpp:enumerator:: SNOW
+
+		Precipitation of snow crystals, mostly branched in the form of six-pointed stars.
+
+	.. cpp:enumerator:: SNOW_GRAINS
+
+		Precipitation of very small, white, and opaque grains of ice.
+
+	.. cpp:enumerator:: ICE_CRYSTALS
+
+		A fall of unbranched (snow crystals are branched) ice crystals in the form of needles, columns, or plates.
+
+	.. cpp:enumerator:: ICE_PELLETS
+
+		Precipitation of transparent or translucent pellets of ice, which are round or irregular, rarely conical, and which have a diameter of 0.2 inch (5 mm), or less. There are two main types:
+
+			#. Hard grains of ice consisting of frozen raindrops, or largely melted and refrozen snowflakes.
+			
+			#. Pellets of snow encased in a thin layer of ice which have formed from the freezing, either of droplets intercepted by the pellets, or of water resulting from the partial melting of the pellets.
+
+	.. cpp:enumerator:: HAIL
+
+		Precipitation in the form of small balls or other pieces of ice falling separately or frozen together in irregular lumps.
+
+	.. cpp:enumerator:: SMALL_HAIL
+
+		Precipitation of white, opaque grains of ice. The grains are round or sometimes conical. Diameters range from about 0.08 to 0.2 inch (2 to 5 mm).
+
+		Small hail is also called 'snow pellets' or 'graupel'.
+
+	.. cpp:enumerator:: UNDETERMINED
+
+		Precipitation type that is reported if the automated station detects the occurrence of precipitation but the precipitation discriminator cannot recognize the type.
+
+	.. cpp:enumerator:: MIST
+
+		A visible aggregate of minute water particles suspended in the atmosphere that reduces visibility to less than 7 statute miles but greater than or equal to 5/8 statute miles. Essentially the same as fog but less dense.
+
+	.. cpp:enumerator:: FOG
+
+		A visible aggregate of minute water particles (droplets) which are based at the Earth's surface and reduces horizontal visibility to less than 5/8 statute mile and, unlike drizzle, it does not fall to the ground.
+
+	.. cpp:enumerator:: SMOKE
+
+		A suspension in the air of small particles produced by combustion. A transition to haze may occur when smoke particles have traveled great distances (25 to 100 miles or more) and when the larger particles have settled out and the remaining particles have become widely scattered through the atmosphere.
+
+	.. cpp:enumerator:: VOLCANIC_ASH
+
+		Fine particles of rock powder that originate from a volcano and that may remain suspended in the atmosphere for long periods.
+
+	.. cpp:enumerator:: DUST
+
+		Widespread dust. Fine particles of earth or other matter raised or suspended in the air by the wind that may have occurred at or far away from the station which may restrict horizontal visibility.
+
+	.. cpp:enumerator:: SAND
+
+		Sand particles raised by the wind to a height sufficient to reduce horizontal visibility.
+
+	.. cpp:enumerator:: HAZE
+
+		A suspension in the air of extremely small, dry particles invisible to the naked eye and sufficiently numerous to give the air an opalescent appearance.
+
+	.. cpp:enumerator:: SPRAY
+
+		An ensemble of water droplets torn by the wind from the surface of an extensive body of water, generally from the crests of waves, and carried up a short distance into the air.
+
+	.. cpp:enumerator:: DUST_WHIRLS
+
+		Well-developed Dust/Sand Whirl. An ensemble of particles of dust or sand, sometimes accompanied by small litter, raised from the ground in the form of a whirling column of varying height with a small diameter and an approximately vertical axis.
+
+	.. cpp:enumerator:: SQUALLS
+
+		A strong wind characterized by a sudden onset in which the wind speed increases at least 16 knots and is sustained at 22 knots or more for at least one minute (see paragraph 12.6.8.e.(1)).
+
+	.. cpp:enumerator:: FUNNEL_CLOUD
+
+		Funnel cloud / tornadic activity.
+
+			#. Tornado. A violent, rotating column of air touching the ground.
+
+			#. Funnel Cloud. A violent, rotating column of air which does not touch the surface.
+
+			#. Waterspout. A violent, rotating column of air that forms over a body of water, and touches the water surface.
+
+	.. cpp:enumerator:: SANDSTORM
+
+		Sandstorm. Particles of sand carried aloft by a strong wind. The sand particles are mostly confined to the lowest ten feet, and rarely rise more than fifty feet above the ground.
+
+	.. cpp:enumerator:: DUSTSTORM
+
+		Duststorm. A severe weather condition characterized by strong winds and dust-filled air over an extensive area.
+
+
+WeatherDescriptor
+^^^^^^^^^^^^^^^^^
+
+.. cpp:enum-class:: WeatherDescriptor
+
+	Further describes weather phenomena.
+
+	.. cpp:enumerator:: NONE
+
+		No additional descriptor for weather phenomena specified.
+
+	.. cpp:enumerator:: SHALLOW
+
+		This descriptor is only be used to further describe fog that has little vertical extent (less than 6 feet), i.e. ground fog.
+
+	.. cpp:enumerator:: PARTIAL
+
+		This descriptors is only be used to further describe fog that has little vertical extent (normally greater than or equal to 6 feet but less than 20 feet), and reduces horizontal visibility, but to a lesser extent vertically. The stars may often be seen by night and the sun by day. The fog is covering only the part of the aerodrome.
+
+	.. cpp:enumerator:: PATCHES
+
+		This descriptors is only be used to further describe fog that has little vertical extent (normally greater than or equal to 6 feet but less than 20 feet), and reduces horizontal visibility, but to a lesser extent vertically. The stars may often be seen by night and the sun by day. The fog consists of patches randomly covering the aerodrome.
+
+	.. cpp:enumerator:: LOW_DRIFTING
+
+		When dust, sand, or snow is raised by the wind to less than 6 feet, "low drifting" shall be used to further describe the weather phenomenon.
+
+	.. cpp:enumerator:: BLOWING
+
+		When dust, sand, snow, and/or spray is raised by the wind to a height of 6 feet or more, "blowing" shall be used to further describe the weather phenomenon.
+
+	.. cpp:enumerator:: SHOWERS
+
+		Precipitation characterized by the suddenness with which they start and stop, by the rapid changes of intensity, and usually by rapid changes in the appearance of the sky.
+
+	.. cpp:enumerator:: THUNDERSTORM
+
+		A local storm produced by a cumulonimbus cloud that is accompanied by lightning and/or thunder. Thunderstorm may be reported without any accompanying precipitation.
+
+	.. cpp:enumerator:: FREEZING
+
+		When fog is occurring and the temperature is below 0°C, this descriptor is used to further describe the phenomena.
+
+		..note:: The fog is described as 'freezing' at freezing temperatures, regardless of whether is deposits the rime.
+
+		When drizzle and/or rain freezes upon impact and forms a glaze on the ground or other exposed objects, this descriptor is used to further describe the precipitation.
+
 
 
 Group
@@ -1451,7 +1625,16 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:function:: Direction direction() const
 
-			Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+			:returns:  Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+
+		.. cpp:function:: Direction sectorBegin() const
+
+			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
+
+		.. cpp:function:: Direction sectorEnd() const
+
+			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
+
 
 	**Miscellaneous**
 
@@ -1485,7 +1668,7 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 .. cpp:class:: CloudGroup
 
-	Stores information about a single cloud layer, lack of cloud cover or vertical visibility.
+	Stores information about a single cloud layer, cloud-like obscuration, lack of cloud cover or vertical visibility.
 
 	.. cpp:enum-class:: Amount
 
@@ -1562,7 +1745,7 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 	**Acquiring group data**
 
-		Amount amount() const
+		.. cpp:function:: Amount amount() const
 
 			:returns: Amount (cover) of clouds in layer or clear sky conditions.
 
@@ -1570,27 +1753,43 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: Significant convectional type of cloud layer.
 
-		Distance height() const
+		Weather obscuration() const
+
+			:returns: :cpp:enumerator:`Weather::OMMITTED` if this groups stores information on the cloud layer, vertical visibility or clear sky condition; obscuration type from :cpp:enum:`Weather` if this group reports a cloud-like obscuration (mist, fog, smoke, etc.).
+
+		.. cpp:function:: Distance height() const
 
 			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
 
-		Distance verticalVisibility() const
+		.. cpp:function:: Distance minHeight() const
+
+			:returns: Minimum cloud base height if cloud base height is variable. Currently always returns a non-reported value.
+
+		.. cpp:function:: Distance maxHeight() const
+
+			:returns: Maximum cloud base height if cloud base height is variable. Currently always returns a non-reported value.
+
+		.. cpp:function:: Distance verticalVisibility() const
 
 			:returns: When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.
 
 	**Miscellaneous**
 
-		bool isVerticalVisibility() const
+		.. cpp:function:: bool isVerticalVisibility() const
 
 			:returns: ``true`` if this group contains a vertical visibility information (including non-reported vertical visibility value) rather than cloud layer information or 'no clouds' condition, and ``false`` otherwise.
 
-		bool isNoClouds() const
+		.. cpp:function:: bool isNoClouds() const
 
 			:returns: ``true`` if this group contains an information related to 'no clouds' conditions, i.e. amount value is :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, :cpp:enumerator:`Amount::NSC`. For any other amount value returns ``false``.
 
-		bool isCloudLayer() const
+		.. cpp:function:: bool isCloudLayer() const
 
 			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
+
+		.. cpp:function:: bool isObscuration() const
+
+			:returns: ``true`` if this group contains an information on cloud-like obscuration, and ``false`` otherwise.
 
 	**Validating**
 
@@ -1638,162 +1837,13 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 			Heavy intensity.
 
-	.. cpp:enum-class:: Descriptor
-
-		.. cpp:enumerator:: NONE
-
-		.. cpp:enumerator:: SHALLOW
-
-			This descriptor is only be used to further describe fog that has little vertical extent (less than 6 feet), i.e. ground fog.
-
-		.. cpp:enumerator:: PARTIAL
-
-			This descriptors is only be used to further describe fog that has little vertical extent (normally greater than or equal to 6 feet but less than 20 feet), and reduces horizontal visibility, but to a lesser extent vertically. The stars may often be seen by night and the sun by day. The fog is covering only the part of the aerodrome.
-
-		.. cpp:enumerator:: PATCHES
-
-			This descriptors is only be used to further describe fog that has little vertical extent (normally greater than or equal to 6 feet but less than 20 feet), and reduces horizontal visibility, but to a lesser extent vertically. The stars may often be seen by night and the sun by day. The fog consists of patches randomly covering the aerodrome.
-
-		.. cpp:enumerator:: LOW_DRIFTING
-
-			When dust, sand, or snow is raised by the wind to less than 6 feet, "low drifting" shall be used to further describe the weather phenomenon.
-
-		.. cpp:enumerator:: BLOWING
-
-			When dust, sand, snow, and/or spray is raised by the wind to a height of 6 feet or more, "blowing" shall be used to further describe the weather phenomenon.
-
-		.. cpp:enumerator:: SHOWERS
-
-			Precipitation characterized by the suddenness with which they start and stop, by the rapid changes of intensity, and usually by rapid changes in the appearance of the sky.
-
-		.. cpp:enumerator:: THUNDERSTORM
-
-			A local storm produced by a cumulonimbus cloud that is accompanied by lightning and/or thunder. Thunderstorm may be reported without any accompanying precipitation.
-
-		.. cpp:enumerator:: FREEZING
-
-			When fog is occurring and the temperature is below 0°C, this descriptor is used to further describe the phenomena.
-
-			..note:: The fog is described as 'freezing' at freezing temperatures, regardless of whether is deposits the rime.
-
-			When drizzle and/or rain freezes upon impact and forms a glaze on the ground or other exposed objects, this descriptor is used to further describe the precipitation.
-
-	.. cpp:enum-class:: Weather
-
-		Precipitation, obscuration and other weather phenomena.
-
-		.. cpp:enumerator:: NOT_REPORTED
-
-			An automatic observing system is used and the present weather cannot be
-			observed.
-
-		.. cpp:enumerator:: DRIZZLE
-
-			Fairly uniform precipitation composed exclusively of fine drops with diameters of less than 0.02 inch (0.5 mm) very close together. Drizzle appears to float while following air currents, although unlike fog droplets, it falls to the ground.
-
-		.. cpp:enumerator:: RAIN
-
-			Precipitation, either in the form of drops larger than 0.02 inch (0.5 mm), or smaller drops which, in contrast to drizzle, are widely separated.
-
-		.. cpp:enumerator:: SNOW
-
-			Precipitation of snow crystals, mostly branched in the form of six-pointed stars.
-
-		.. cpp:enumerator:: SNOW_GRAINS
-
-			Precipitation of very small, white, and opaque grains of ice.
-
-		.. cpp:enumerator:: ICE_CRYSTALS
-
-			A fall of unbranched (snow crystals are branched) ice crystals in the form of needles, columns, or plates.
-
-		.. cpp:enumerator:: ICE_PELLETS
-
-			Precipitation of transparent or translucent pellets of ice, which are round or irregular, rarely conical, and which have a diameter of 0.2 inch (5 mm), or less. There are two main types:
-
-				#. Hard grains of ice consisting of frozen raindrops, or largely melted and refrozen snowflakes.
-				
-				#. Pellets of snow encased in a thin layer of ice which have formed from the freezing, either of droplets intercepted by the pellets, or of water resulting from the partial melting of the pellets.
-
-		.. cpp:enumerator:: HAIL
-
-			Precipitation in the form of small balls or other pieces of ice falling separately or frozen together in irregular lumps.
-
-		.. cpp:enumerator:: SMALL_HAIL
-
-			Precipitation of white, opaque grains of ice. The grains are round or sometimes conical. Diameters range from about 0.08 to 0.2 inch (2 to 5 mm).
-
-			Small hail is also called 'snow pellets' or 'graupel'.
-
-		.. cpp:enumerator:: UNDETERMINED
-
-			Precipitation type that is reported if the automated station detects the occurrence of precipitation but the precipitation discriminator cannot recognize the type.
-
-		.. cpp:enumerator:: MIST
-
-			A visible aggregate of minute water particles suspended in the atmosphere that reduces visibility to less than 7 statute miles but greater than or equal to 5/8 statute miles. Essentially the same as fog but less dense.
-
-		.. cpp:enumerator:: FOG
-
-			A visible aggregate of minute water particles (droplets) which are based at the Earth's surface and reduces horizontal visibility to less than 5/8 statute mile and, unlike drizzle, it does not fall to the ground.
-
-		.. cpp:enumerator:: SMOKE
-
-			A suspension in the air of small particles produced by combustion. A transition to haze may occur when smoke particles have traveled great distances (25 to 100 miles or more) and when the larger particles have settled out and the remaining particles have become widely scattered through the atmosphere.
-
-		.. cpp:enumerator:: VOLCANIC_ASH
-
-			Fine particles of rock powder that originate from a volcano and that may remain suspended in the atmosphere for long periods.
-
-		.. cpp:enumerator:: DUST
-
-			Widespread dust. Fine particles of earth or other matter raised or suspended in the air by the wind that may have occurred at or far away from the station which may restrict horizontal visibility.
-
-		.. cpp:enumerator:: SAND
-
-			Sand particles raised by the wind to a height sufficient to reduce horizontal visibility.
-
-		.. cpp:enumerator:: HAZE
-
-			A suspension in the air of extremely small, dry particles invisible to the naked eye and sufficiently numerous to give the air an opalescent appearance.
-
-		.. cpp:enumerator:: SPRAY
-
-			An ensemble of water droplets torn by the wind from the surface of an extensive body of water, generally from the crests of waves, and carried up a short distance into the air.
-
-		.. cpp:enumerator:: DUST_WHIRLS
-
-			Well-developed Dust/Sand Whirl. An ensemble of particles of dust or sand, sometimes accompanied by small litter, raised from the ground in the form of a whirling column of varying height with a small diameter and an approximately vertical axis.
-
-		.. cpp:enumerator:: SQUALLS
-
-			A strong wind characterized by a sudden onset in which the wind speed increases at least 16 knots and is sustained at 22 knots or more for at least one minute (see paragraph 12.6.8.e.(1)).
-
-		.. cpp:enumerator:: FUNNEL_CLOUD
-
-			Funnel cloud / tornadic activity.
-
-				#. Tornado. A violent, rotating column of air touching the ground.
-
-				#. Funnel Cloud. A violent, rotating column of air which does not touch the surface.
-
-				#. Waterspout. A violent, rotating column of air that forms over a body of water, and touches the water surface.
-
-		.. cpp:enumerator:: SANDSTORM
-
-			Sandstorm. Particles of sand carried aloft by a strong wind. The sand particles are mostly confined to the lowest ten feet, and rarely rise more than fifty feet above the ground.
-
-		.. cpp:enumerator:: DUSTSTORM
-
-			Duststorm. A severe weather condition characterized by strong winds and dust-filled air over an extensive area.
-
 	**Acquiring group data**
 
 		.. cpp:function:: Qualifier qualifier() const
 
 			:returns: Weather qualifier which indicates time or intensity or proximity of the weather phenomena.
 		
-		.. cpp:function:: Descriptor descriptor() const
+		.. cpp:function:: WeatherDescriptor descriptor() const
 
 			:returns: Weather descriptor which indicates additional properties of weather phenomena.
 

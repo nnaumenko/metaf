@@ -5,10 +5,6 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-/// @file 
-/// @brief METAR / TAF report parser, helpers and structs representing 
-/// parsed METAR or TAF groups.
-
 #ifndef METAF_H
 #define METAF_H
 
@@ -27,7 +23,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "phase3";
+		inline static const char tag [] = "RC1";
 	};
 
 	class FixedGroup;
@@ -97,8 +93,8 @@ namespace metaf {
 		unsigned int number() const { return(rNumber); }
 		Designator designator() const { return(rDesignator); }
 		bool isValid() const {
-			return (rNumber <= maxRunwayNumber || 
-				(rNumber == allRunwaysNumber && rDesignator == Designator::NONE) || 
+			return (rNumber <= maxRunwayNumber ||
+				(rNumber == allRunwaysNumber && rDesignator == Designator::NONE) ||
 				(rNumber == messageRepetitionNumber && rDesignator == Designator::NONE));
 		}
 		bool isAllRunways() const {
@@ -122,7 +118,7 @@ namespace metaf {
 		unsigned int rNumber = 0;
 		Designator rDesignator = Designator::NONE;
 		static const unsigned int allRunwaysNumber = 88;
-		static const unsigned int messageRepetitionNumber = 99;	
+		static const unsigned int messageRepetitionNumber = 99;
 		static const auto maxRunwayNumber = 360 / 10;
 	};
 
@@ -169,7 +165,7 @@ namespace metaf {
 			F,
 		};
 		std::optional<float> temperature() const {
-			if (!tempValue.has_value()) return(tempValue); 
+			if (!tempValue.has_value()) return(tempValue);
 			return(precise ? (tempValue.value() * preciseValuePrecision) : tempValue.value());
 		}
 		Unit unit() const { return(tempUnit); }
@@ -184,7 +180,7 @@ namespace metaf {
 			float relativeHumidity);
 		inline static Temperature heatIndex(const Temperature & airTemperature,
 			const Temperature & dewPoint);
-		inline static Temperature windChill(const Temperature & airTemperature, 
+		inline static Temperature windChill(const Temperature & airTemperature,
 			const Speed & windSpeed);
 
 		Temperature () = default;
@@ -245,15 +241,15 @@ namespace metaf {
 		Modifier modifier() const { return(distModifier); }
 		Unit unit() const { return(distUnit); }
 		bool isInteger() const {
-			return(integer().has_value() && 
+			return(integer().has_value() &&
 				!numerator().has_value() && !denominator().has_value());
 		}
 		bool isFraction() const {
-			return(!integer().has_value() && 
+			return(!integer().has_value() &&
 				numerator().has_value() && denominator().has_value());
 		}
 		bool isReported() const {
-			return(integer().has_value() || 
+			return(integer().has_value() ||
 					(numerator().has_value() && denominator().has_value()));
 		}
 		bool hasInteger() const { return(integer().has_value()); }
@@ -317,12 +313,14 @@ namespace metaf {
 			TRUE_E,
 		};
 		enum class Status {
-			OMMITTED, 		  // Direction is ommitted (not specified at all)
-			NOT_REPORTED,	  // Direction is specified as not reported
-			VARIABLE,		  // Direction is reported as variable
-			NDV,			  // Direction is reported as No Directional Variation
-			VALUE_DEGREES, 	  // Direction is reported as value in degrees
-			VALUE_CARDINAL,	  // Direction is reported as cardinal value
+			OMMITTED, 		// Direction is ommitted (not specified at all)
+			NOT_REPORTED,	// Direction is specified as not reported
+			VARIABLE,		// Direction is reported as variable
+			NDV,			// Direction is reported as No Directional Variation
+			VALUE_DEGREES, 	// Direction is reported as value in degrees
+			VALUE_CARDINAL,	// Direction is reported as cardinal value
+			OVERHEAD,		// Phenomena occurring directly over the location
+			ALQDS			// Direction is reported as all quadrants (in all directions)  
 		};
 		Status status() const { return (dirStatus); }
 		inline Cardinal cardinal(bool trueDirections = false) const;
@@ -331,7 +329,7 @@ namespace metaf {
 			return(dirDegrees);
 		}
 		bool isValue() const {
-			return(dirStatus == Status::VALUE_DEGREES || dirStatus == Status::VALUE_CARDINAL); 
+			return(dirStatus == Status::VALUE_DEGREES || dirStatus == Status::VALUE_CARDINAL);
 		}
 		bool isValid() const {
 			if (isValue() && dirDegrees > maxDegrees) return(false);
@@ -395,7 +393,7 @@ namespace metaf {
 			MM,
 			INCHES,
 		};
-		std::optional<float> precipitation() const { 
+		std::optional<float> precipitation() const {
 			if (precipStatus != Status::REPORTED) return(std::optional<float>());
 			return(precipValue);
 		}
@@ -407,10 +405,10 @@ namespace metaf {
 		Precipitation() = default;
 		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
 		static inline std::optional<Precipitation> fromRunwayDeposits(const std::string & s);
-		static inline std::optional<Precipitation> fromRemarkString(const std::string & s, 
+		static inline std::optional<Precipitation> fromRemarkString(const std::string & s,
 			float factorInches,
 			bool allowNotReported = false);
-		static inline std::optional<std::pair<Precipitation, Precipitation> > 
+		static inline std::optional<std::pair<Precipitation, Precipitation> >
 			fromSnincrString(const std::string & s);
 
 	private:
@@ -441,7 +439,7 @@ namespace metaf {
 			UNRELIABLE 		// Value unreliable or unmeasurable.
 		};
 		enum class BrakingAction {
-			NONE,			// Not reported or unreliable			
+			NONE,			// Not reported or unreliable
 			POOR,	 		// Friction coef <0.26
 			MEDIUM_POOR,	// Friction coef 0.26 to 0.29
 			MEDIUM,			// Friction coef 0.30 to 0.35
@@ -450,7 +448,7 @@ namespace metaf {
 		};
 		Status status() const { return (sfStatus); }
 		std::optional<float> coefficient() const {
-			if (sfStatus == Status::NOT_REPORTED || 
+			if (sfStatus == Status::NOT_REPORTED ||
 				sfStatus == Status::UNRELIABLE) return(std::optional<float>());
 			return(sfCoefficient * coefficientDecimalPointShift);
 		}
@@ -462,7 +460,7 @@ namespace metaf {
 		static inline std::optional<SurfaceFriction> fromString(const std::string & s);
 
 	private:
-		Status sfStatus = Status::NOT_REPORTED;	
+		Status sfStatus = Status::NOT_REPORTED;
 		unsigned int sfCoefficient = 0; //0 to 100, multiply by 0.01 to get actual value
 		static const inline auto coefficientDecimalPointShift = 0.01;
 	private:
@@ -543,6 +541,46 @@ namespace metaf {
 		static const inline auto minWaveHeightPhenomenal = 141;
 	};
 
+	enum class WeatherDescriptor {
+		NONE,
+		SHALLOW,
+		PARTIAL,
+		PATCHES,
+		LOW_DRIFTING,
+		BLOWING,
+		SHOWERS,
+		THUNDERSTORM,
+		FREEZING
+	};
+
+	enum class Weather {
+		OMMITTED,
+		NOT_REPORTED,
+		DRIZZLE,
+		RAIN,
+		SNOW,
+		SNOW_GRAINS,
+		ICE_CRYSTALS,
+		ICE_PELLETS,
+		HAIL,
+		SMALL_HAIL,
+		UNDETERMINED,
+		MIST,
+		FOG,
+		SMOKE,
+		VOLCANIC_ASH,
+		DUST,
+		SAND,
+		HAZE,
+		SPRAY,
+		DUST_WHIRLS,
+		SQUALLS,
+		FUNNEL_CLOUD,
+		SANDSTORM,
+		DUSTSTORM
+	};
+
+
 	///////////////////////////////////////////////////////////////////////////
 
 	enum class ReportType {
@@ -581,7 +619,7 @@ namespace metaf {
 		ReportError error = ReportError::NONE;
 		std::optional<MetafTime> reportTime;
 	};
-	
+
 	static const inline ReportMetadata missingMetadata;
 
 	///////////////////////////////////////////////////////////////////////////
@@ -589,24 +627,24 @@ namespace metaf {
 	// Result of appending string to an existing group
 	enum class AppendResult {
 		// String was appended to the group (i.e. the string is a continuation of
-		// the previous group); all info from the string is already absorbed into 
+		// the previous group); all info from the string is already absorbed into
 		// the group; no need to parse the string.
 		// E.g. visibility group "1" will append string "1/2SM" since together
-		// they form visibility group "1 1/2SM". 
+		// they form visibility group "1 1/2SM".
 		APPENDED,
-		// String could not be appended to this group (i.e. the string is a 
+		// String could not be appended to this group (i.e. the string is a
 		// separate group independent from last group); the parser must attempt
 		// to parse the string as a group
-		// E.g. group "BKN040" will not append string "22/20" since these two 
+		// E.g. group "BKN040" will not append string "22/20" since these two
 		// groups represent unrelated data (clouds and temperature).
 		NOT_APPENDED,
-		// The group expected particular string to follow and this expectation 
+		// The group expected particular string to follow and this expectation
 		// was not met; the group is not valid without the expected string and
 		// must be converted to raw string; the following string must still be
 		// attempted to be parsed.
-		// E.g. group "PK" expects next group string "WND", and if instead 
-		// string "AO2" follows, it means that the original group "PK" is not 
-		// valid and must be converted to raw string, whereas "AO2" may still 
+		// E.g. group "PK" expects next group string "WND", and if instead
+		// string "AO2" follows, it means that the original group "PK" is not
+		// valid and must be converted to raw string, whereas "AO2" may still
 		// represent a valid group and must be parsed separately.
 		GROUP_INVALIDATED,
 	};
@@ -618,7 +656,7 @@ namespace metaf {
 	static const inline char groupDelimiterChar = ' ';
 
 	// This is the regex is used by parser to split report into separate
-	// group strings 
+	// group strings
 	static const inline std::regex groupDelimiterRegex("\\s+");
 
 	// Everything after this char is ignored by parser
@@ -626,7 +664,7 @@ namespace metaf {
 
 	// Fallback group is the group which stores raw string in
 	// case when no other group is able to recognise the content
-	// (i.e. if anything else fails) 
+	// (i.e. if anything else fails)
 	using FallbackGroup = UnknownGroup;
 
 	///////////////////////////////////////////////////////////////////////////
@@ -675,15 +713,15 @@ namespace metaf {
 		bool isValid() const { return(type() != Type::INCOMPLETE); }
 
 		FixedGroup() = default;
-		static inline std::optional<FixedGroup> parse(const std::string & group, 
+		static inline std::optional<FixedGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
 	private:
-		Type t; 
+		Type t;
 
 		enum class IncompleteText {
 			CLD,
@@ -711,16 +749,16 @@ namespace metaf {
 		inline bool isValid() const { return(true); }
 
 		LocationGroup() = default;
-		static inline std::optional<LocationGroup> parse(const std::string & group, 
+		static inline std::optional<LocationGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
 	private:
-		static const inline auto locationLength = 4; 
-		char location [locationLength + 1] = "\0"; 
+		static const inline auto locationLength = 4;
+		char location [locationLength + 1] = "\0";
 	};
 
 	class ReportTimeGroup {
@@ -730,15 +768,15 @@ namespace metaf {
 
 		ReportTimeGroup() = default;
 		static inline std::optional<ReportTimeGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
 	private:
-		MetafTime t;	
+		MetafTime t;
 	};
 
 	class TrendGroup {
@@ -772,10 +810,10 @@ namespace metaf {
 
 		TrendGroup() = default;
 		static inline std::optional<TrendGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -831,10 +869,10 @@ namespace metaf {
 
 		WindGroup() = default;
 		static inline std::optional<WindGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -842,7 +880,7 @@ namespace metaf {
 			PK,
 			PK_WND
 		};
-		inline AppendResult parsePeakWind(const std::string & group, 
+		inline AppendResult parsePeakWind(const std::string & group,
 			const ReportMetadata & reportMetadata);
 
 		Type windType;
@@ -866,29 +904,31 @@ namespace metaf {
 		Type type() const { return(visType); }
 		Distance visibility() const { return(vis); }
 		Distance minVisibility() const { return(Distance()); }
-		Distance maxVisibility() const { return(Distance()); }	
+		Distance maxVisibility() const { return(Distance()); }
 		Direction direction() const { return(dir); }
-		bool isPrevailing() const { 
+		Direction sectorBegin() const { return(Direction()); }
+		Direction sectorEnd() const { return(Direction()); }
+		bool isPrevailing() const {
 			return(type() == Type::PREVAILING || type() == Type::PREVAILING_NDV);
 		}
 		bool isDirectional() const { return(type() == Type::DIRECTIONAL); }
-		bool isValid() const { 
+		bool isValid() const {
 			return(!incompleteInteger && vis.isValid() && dir.isValid());
 		}
 
 		VisibilityGroup() = default;
 		inline static std::optional<VisibilityGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
 		Type visType = Type::PREVAILING;
 		Distance vis;
 		Direction dir;
-		bool incompleteInteger = false; 
+		bool incompleteInteger = false;
 	};
 
 	class CloudGroup {
@@ -913,7 +953,10 @@ namespace metaf {
 		};
 		Amount amount() const { return(amnt); }
 		Type type() const { return(tp); }
+		Weather obscuration() const { return(Weather::OMMITTED); }
 		inline Distance height() const;
+		inline Distance minHeight() const { return(Distance()); }
+		inline Distance maxHeight() const { return(Distance()); }
 		Distance verticalVisibility() const {
 			if (amount() != Amount::OBSCURED) return(heightNotReported);
 			return(heightOrVertVis);
@@ -925,16 +968,17 @@ namespace metaf {
 		}
 		bool isCloudLayer() const {
 			return(amount() == Amount::FEW || amount() == Amount::SCATTERED ||
-				amount() == Amount::BROKEN || amount() == Amount::OVERCAST);		
+				amount() == Amount::BROKEN || amount() == Amount::OVERCAST);
 		}
+		bool isObscuration() const { return(false); }
 		bool isValid() const { return(heightOrVertVis.isValid()); }
 
 		CloudGroup () = default;
 		static inline std::optional<CloudGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -951,52 +995,16 @@ namespace metaf {
 	class WeatherGroup {
 	public:
 		enum class Qualifier {
-			NONE,	
-			RECENT,
-			VICINITY,	
-			LIGHT,		
-			MODERATE,	
-			HEAVY		
-		};
-		enum class Descriptor {
 			NONE,
-			SHALLOW,
-			PARTIAL,
-			PATCHES,
-			LOW_DRIFTING,
-			BLOWING,
-			SHOWERS,
-			THUNDERSTORM,
-			FREEZING
-		};
-		enum class Weather {
-			NOT_REPORTED,
-			DRIZZLE,
-			RAIN,
-			SNOW,
-			SNOW_GRAINS,
-			ICE_CRYSTALS,
-			ICE_PELLETS,
-			HAIL,
-			SMALL_HAIL,
-			UNDETERMINED,
-			MIST,
-			FOG,
-			SMOKE,
-			VOLCANIC_ASH,
-			DUST,
-			SAND,
-			HAZE,
-			SPRAY,
-			DUST_WHIRLS,
-			SQUALLS,
-			FUNNEL_CLOUD,
-			SANDSTORM,
-			DUSTSTORM
+			RECENT,
+			VICINITY,
+			LIGHT,
+			MODERATE,
+			HEAVY
 		};
 
 		Qualifier qualifier() const { return(q); }
-		Descriptor descriptor() const { return(d); }
+		WeatherDescriptor descriptor() const { return(d); }
 		std::vector<Weather> weather() const {
 			std::vector<Weather> result;
 			for (auto i = 0u; i < wSize; i++) result.push_back(w[i]);
@@ -1010,24 +1018,24 @@ namespace metaf {
 
 		WeatherGroup() = default;
 		static inline std::optional<WeatherGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
 	private:
 		Qualifier q = Qualifier::NONE;
-		Descriptor d = Descriptor::NONE;
+		WeatherDescriptor d = WeatherDescriptor::NONE;
 		inline static const size_t maxwSize = 8;
 		Weather w[maxwSize];
 		size_t wSize = 0;
 
 		inline bool isModerateQualifier() const;
 
-		static inline std::optional<Qualifier> qualifierFromString(const std::string & s);
-		static inline std::optional<Descriptor> descriptorFromString(const std::string & s);
+		static inline Qualifier qualifierFromString(const std::string & s);
+		static inline WeatherDescriptor descriptorFromString(const std::string & s);
 		static inline std::optional<Weather> weatherFromString(const std::string & s);
 
 		static inline WeatherGroup notReported();
@@ -1045,10 +1053,10 @@ namespace metaf {
 
 		TemperatureGroup() = default;
 		static inline std::optional<TemperatureGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1071,10 +1079,10 @@ namespace metaf {
 
 		TemperatureForecastGroup() = default;
 		static inline std::optional<TemperatureForecastGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1104,10 +1112,10 @@ namespace metaf {
 
 		PressureGroup() = default;
 		static inline std::optional<PressureGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1126,8 +1134,8 @@ namespace metaf {
 			DOWNWARD
 		};
 		Runway runway() const { return(rw); }
-		Distance visualRange() const { 
-			if (!isVariableVisualRange()) return(visRange); 
+		Distance visualRange() const {
+			if (!isVariableVisualRange()) return(visRange);
 			return(Distance());
 		}
 		Distance minVisualRange() const {
@@ -1137,16 +1145,16 @@ namespace metaf {
 		Distance maxVisualRange() const { return(varVisRange); }
 		Trend trend() const { return(trnd); }
 		bool isVariableVisualRange() const { return(varVisRange.isReported()); }
-		bool isValid() const { 
+		bool isValid() const {
 			return(rw.isValid() && visRange.isValid() && varVisRange.isValid());
 		}
 
 		RunwayVisualRangeGroup() = default;
 		static inline std::optional<RunwayVisualRangeGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1165,7 +1173,7 @@ namespace metaf {
 			NORMAL,
 			CLRD,
 			SNOCLO
-		};	
+		};
 		enum class Deposits {// Deposits type, see Table 0919 in Manual on Codes (WMO No. 306).
 			CLEAR_AND_DRY,
 			DAMP,
@@ -1179,7 +1187,7 @@ namespace metaf {
 			FROZEN_RUTS_OR_RIDGES,
 			NOT_REPORTED
 		};
-		
+
 		enum class Extent {// Extent of runway contamination, see Table 0519 in Manual on Codes (WMO No. 306).
 			NONE,
 			LESS_THAN_10_PERCENT,
@@ -1199,18 +1207,18 @@ namespace metaf {
 		Extent contaminationExtent() const { return(ext); }
 		Precipitation depositDepth() const { return(dDepth); }
 		SurfaceFriction surfaceFriction() const { return(sf); }
-		bool isValid() const { 
-			return(rw.isValid() && 
-				ext != Extent::RESERVED_3 && ext != Extent::RESERVED_4 && 
+		bool isValid() const {
+			return(rw.isValid() &&
+				ext != Extent::RESERVED_3 && ext != Extent::RESERVED_4 &&
 				ext != Extent::RESERVED_6 && ext != Extent::RESERVED_7 && ext != Extent::RESERVED_8);
 		}
 
 		RunwayStateGroup() = default;
 		static inline std::optional<RunwayStateGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1223,7 +1231,7 @@ namespace metaf {
 		SurfaceFriction sf;
 
 		static inline RunwayStateGroup runwaySnoclo(Runway runway);
-		static inline RunwayStateGroup runwayClrd(Runway runway, 
+		static inline RunwayStateGroup runwayClrd(Runway runway,
 			SurfaceFriction surfaceFriction);
 
 		static inline std::optional<Deposits> depositsFromString(const std::string & s);
@@ -1241,12 +1249,12 @@ namespace metaf {
 		std::optional<Direction> direction() const { return(dir); }
 		inline bool isValid() const;
 
-		SecondaryLocationGroup() = default; 
+		SecondaryLocationGroup() = default;
 		static inline std::optional<SecondaryLocationGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -1271,10 +1279,10 @@ namespace metaf {
 
 		RainfallGroup() = default;
 		static inline std::optional<RainfallGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1292,10 +1300,10 @@ namespace metaf {
 
 		SeaSurfaceGroup() = default;
 		static inline std::optional<SeaSurfaceGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1307,8 +1315,8 @@ namespace metaf {
 	class ColourCodeGroup {
 	public:
 		enum class Code {
-			BLUE ,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.	 
-			WHITE ,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.			
+			BLUE ,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
+			WHITE ,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
 			GREEN,	// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
 			YELLOW1,// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
 			YELLOW2,// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
@@ -1321,10 +1329,10 @@ namespace metaf {
 
 		ColourCodeGroup() = default;
 		static inline std::optional<ColourCodeGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -1345,10 +1353,10 @@ namespace metaf {
 
 		MinMaxTemperatureGroup() = default;
 		static inline std::optional<MinMaxTemperatureGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -1360,7 +1368,7 @@ namespace metaf {
 	class PrecipitationGroup {
 	public:
 		enum class Type {
-			TOTAL_PRECIPITATION_HOURLY,	
+			TOTAL_PRECIPITATION_HOURLY,
 			SNOW_DEPTH_ON_GROUND,
 			FROZEN_PRECIP_3_OR_6_HOURLY,
 			FROZEN_PRECIP_3_HOURLY,
@@ -1379,10 +1387,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		PrecipitationGroup() = default;
-		static inline std::optional<PrecipitationGroup> parse(const std::string & group, 
+		static inline std::optional<PrecipitationGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 	private:
@@ -1427,10 +1435,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		LayerForecastGroup() = default;
-		static inline std::optional<LayerForecastGroup> parse(const std::string & group, 
+		static inline std::optional<LayerForecastGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1473,10 +1481,10 @@ namespace metaf {
 
 		PressureTendencyGroup() = default;
 		static inline std::optional<PressureTendencyGroup> parse(
-			const std::string & group, 
+			const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1512,10 +1520,10 @@ namespace metaf {
 		bool isValid() const { return(true); }
 
 		CloudTypesGroup() = default;
-		static inline std::optional<CloudTypesGroup> parse(const std::string & group, 
+		static inline std::optional<CloudTypesGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1574,10 +1582,10 @@ namespace metaf {
 		inline bool isValid() const;
 
 		CloudLayersGroup() = default;
-		static inline std::optional<CloudLayersGroup> parse(const std::string & group, 
+		static inline std::optional<CloudLayersGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
 
@@ -1602,13 +1610,13 @@ namespace metaf {
 		inline bool isValid() const;
 
 		MiscGroup() = default;
-		static inline std::optional<MiscGroup> parse(const std::string & group, 
+		static inline std::optional<MiscGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata);
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata);
-	
+
 	private:
 		Type groupType;
 		std::optional<float> groupValue;
@@ -1617,14 +1625,14 @@ namespace metaf {
 	class UnknownGroup {
 	public:
 		UnknownGroup() = default;
-		static std::optional<UnknownGroup> parse(const std::string & group, 
+		static std::optional<UnknownGroup> parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata = missingMetadata)
 		{
-			(void)group; (void)reportPart; (void)reportMetadata; 
+			(void)group; (void)reportPart; (void)reportMetadata;
 			return(UnknownGroup());
 		}
-		AppendResult inline append(const std::string & group, 
+		AppendResult inline append(const std::string & group,
 			ReportPart reportPart = ReportPart::UNKNOWN,
 			const ReportMetadata & reportMetadata = missingMetadata)
 		{
@@ -1646,7 +1654,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	// Syntax Group is a delimiter of structural part of METAR/TAF report	
+	// Syntax Group is a delimiter of structural part of METAR/TAF report
 	enum class SyntaxGroup {
 		OTHER,			// Group is not important for report syntax
 		METAR,			// Keyword METAR (beginning of METAR report)
@@ -1663,14 +1671,14 @@ namespace metaf {
 		MAINTENANCE_INDICATOR //Keyword $ added at the end of automated METARs
 	};
 
-	// Determines groups important for report syntax 
+	// Determines groups important for report syntax
 	inline SyntaxGroup getSyntaxGroup(const Group & group);
 
 	///////////////////////////////////////////////////////////////////////////////
 
 	class GroupParser {
 	public:
-		static Group parse(const std::string & group, 
+		static Group parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata)
 		{
@@ -1678,7 +1686,7 @@ namespace metaf {
 		}
 	private:
 		template <size_t I>
-		static Group parseAlternative(const std::string & group, 
+		static Group parseAlternative(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata)
 		{
@@ -1689,9 +1697,9 @@ namespace metaf {
 			}
 			if constexpr (I < std::variant_size_v<Group> - 1) {
 				return(parseAlternative<I+1>(group, reportPart, reportMetadata));
-			} 
+			}
 			return(FallbackGroup());
-		} 
+		}
 	};
 
 	class Parser {
@@ -1705,21 +1713,21 @@ namespace metaf {
 		static inline Result parse (const std::string & report);
 
 	private:
-		static inline bool appendToLastResultGroup(Result & result, 
+		static inline bool appendToLastResultGroup(Result & result,
 			const std::string & groupStr,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata);
-		static inline void addGroupToResult(Result & result, 
-			Group group, 
-			ReportPart reportPart, 
+		static inline void addGroupToResult(Result & result,
+			Group group,
+			ReportPart reportPart,
 			std::string groupString);
-		static inline void updateMetadata(const Group & group, 
+		static inline void updateMetadata(const Group & group,
 			ReportMetadata & reportMetadata);
 
 		class Status {
 		public:
-			Status() : 
-				state(State::REPORT_TYPE_OR_LOCATION), 
+			Status() :
+				state(State::REPORT_TYPE_OR_LOCATION),
 				reportType(ReportType::UNKNOWN),
 				reportError(ReportError::NONE) {}
 			ReportType getReportType() { return(reportType); }
@@ -1728,7 +1736,7 @@ namespace metaf {
 			inline ReportPart getReportPart();
 			inline void transition(SyntaxGroup group);
 			inline void finalTransition();
-			bool isReparseRequired() { 
+			bool isReparseRequired() {
 				return(state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
 			}
 		private:
@@ -1775,8 +1783,8 @@ namespace metaf {
 	template <typename T>
 	class Visitor {
 	public:
-		inline T visit(const Group & group, 
-			ReportPart reportPart = ReportPart::UNKNOWN, 
+		inline T visit(const Group & group,
+			ReportPart reportPart = ReportPart::UNKNOWN,
 			const std::string & rawString = std::string());
 		inline T visit(const GroupInfo & groupInfo) {
 			return(visit(groupInfo.group, groupInfo.reportPart, groupInfo.rawString));
@@ -1784,102 +1792,102 @@ namespace metaf {
 	protected:
 		virtual T visitFixedGroup(
 			const FixedGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitLocationGroup(const LocationGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitReportTimeGroup(const ReportTimeGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitTrendGroup(const TrendGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitWindGroup(const WindGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitVisibilityGroup(const VisibilityGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitCloudGroup(const CloudGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitWeatherGroup(const WeatherGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitTemperatureGroup(const TemperatureGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitTemperatureForecastGroup(const TemperatureForecastGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitPressureGroup(const PressureGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitRunwayStateGroup(const RunwayStateGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitRainfallGroup(const RainfallGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitColourCodeGroup(const ColourCodeGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitPrecipitationGroup(const PrecipitationGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitLayerForecastGroup(const LayerForecastGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitPressureTendencyGroup(const PressureTendencyGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitCloudTypesGroup(const CloudTypesGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitCloudLayersGroup(const CloudLayersGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitMiscGroup(const MiscGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 		virtual T visitUnknownGroup(const UnknownGroup & group,
-			ReportPart reportPart, 
+			ReportPart reportPart,
 			const std::string & rawString) = 0;
 	};
 
 	template <typename T>
-	inline T Visitor<T>::visit(const Group & group, 
-		ReportPart reportPart, 
+	inline T Visitor<T>::visit(const Group & group,
+		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
 			return(this->visitFixedGroup(*gr, reportPart, rawString));
-		} 
+		}
 		if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
 			return(this->visitLocationGroup(*gr, reportPart, rawString));
-		} 
+		}
 		if (const auto gr = std::get_if<ReportTimeGroup>(&group); gr) {
 			return(this->visitReportTimeGroup(*gr, reportPart, rawString));
-		} 
+		}
 		if (const auto gr = std::get_if<TrendGroup>(&group); gr) {
 			return(this->visitTrendGroup(*gr, reportPart, rawString));
-		} 
+		}
 		if (const auto gr = std::get_if<WindGroup>(&group); gr) {
 			return(this->visitWindGroup(*gr, reportPart, rawString));
-		} 
+		}
 		if (const auto gr = std::get_if<VisibilityGroup>(&group); gr) {
 			return(this->visitVisibilityGroup(*gr, reportPart, rawString));
 		}
@@ -1944,110 +1952,110 @@ namespace metaf {
 	}
 
 	template<>
-	inline void Visitor<void>::visit(const Group & group, 
-		ReportPart reportPart, 
+	inline void Visitor<void>::visit(const Group & group,
+		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
 			this->visitFixedGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
 			this->visitLocationGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<ReportTimeGroup>(&group); gr) {
 			this->visitReportTimeGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<TrendGroup>(&group); gr) {
 			this->visitTrendGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<WindGroup>(&group); gr) {
 			this->visitWindGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<VisibilityGroup>(&group); gr) {
 			this->visitVisibilityGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<CloudGroup>(&group); gr) {
 			this->visitCloudGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<WeatherGroup>(&group); gr) {
 			this->visitWeatherGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<TemperatureGroup>(&group); gr) {
 			this->visitTemperatureGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<TemperatureForecastGroup>(&group); gr) {
 			this->visitTemperatureForecastGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<PressureGroup>(&group); gr) {
 			this->visitPressureGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<RunwayVisualRangeGroup>(&group); gr) {
 			this->visitRunwayVisualRangeGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<RunwayStateGroup>(&group); gr) {
 			this->visitRunwayStateGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<SecondaryLocationGroup>(&group); gr) {
 			this->visitSecondaryLocationGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<RainfallGroup>(&group); gr) {
 			this->visitRainfallGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<SeaSurfaceGroup>(&group); gr) {
 			this->visitSeaSurfaceGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<ColourCodeGroup>(&group); gr) {
 			this->visitColourCodeGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<MinMaxTemperatureGroup>(&group); gr) {
 			this->visitMinMaxTemperatureGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<PrecipitationGroup>(&group); gr) {
 			this->visitPrecipitationGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<LayerForecastGroup>(&group); gr) {
 			this->visitLayerForecastGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<PressureTendencyGroup>(&group); gr) {
 			this->visitPressureTendencyGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<CloudTypesGroup>(&group); gr) {
 			this->visitCloudTypesGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
 			this->visitCloudLayersGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
 			this->visitMiscGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 		if (const auto gr = std::get_if<UnknownGroup>(&group); gr) {
 			this->visitUnknownGroup(*gr, reportPart, rawString);
 			return;
-		} 
+		}
 	}
 
 	template<>
@@ -2057,12 +2065,12 @@ namespace metaf {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-inline std::optional<unsigned int> strToUint(const std::string & str, 
+inline std::optional<unsigned int> strToUint(const std::string & str,
 	std::size_t startPos,
 	std::size_t digits);
 
-inline std::optional<std::pair<unsigned int, unsigned int> > 
-	fractionStrToUint(const std::string & str, 
+inline std::optional<std::pair<unsigned int, unsigned int> >
+	fractionStrToUint(const std::string & str,
 		std::size_t startPos,
 		std::size_t length);
 
@@ -2073,7 +2081,7 @@ inline std::optional<std::pair<unsigned int, unsigned int> >
 
 namespace metaf {
 
-	std::optional<unsigned int> strToUint(const std::string & str, 
+	std::optional<unsigned int> strToUint(const std::string & str,
 		std::size_t startPos,
 		std::size_t digits)
 	{
@@ -2088,9 +2096,9 @@ namespace metaf {
 		return(value);
 	}
 
-	std::optional<std::pair<unsigned int, unsigned int> > 
-		fractionStrToUint(const std::string & str, 
-			std::size_t startPos, 
+	std::optional<std::pair<unsigned int, unsigned int> >
+		fractionStrToUint(const std::string & str,
+			std::size_t startPos,
 			std::size_t length)
 	{
 		//Equivalent regex "(\\d\\d?)/(\\d\\d?)"
@@ -2133,7 +2141,7 @@ namespace metaf {
 			const auto designator = designatorFromChar(s[dsgPos]);
 			if (!designator.has_value()) return(error);
 			runway.rDesignator = designator.value();
-		} 
+		}
 		return(runway);
 	}
 
@@ -2240,9 +2248,9 @@ namespace metaf {
 			return(std::optional<float>());
 		}
 		if (*temperatureC < *dewPointC) return(100.0);
-		const auto saturationVapourPressure = 
+		const auto saturationVapourPressure =
 			6.11 * powf(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
-		const auto actualVapourPressure = 
+		const auto actualVapourPressure =
 			6.11 * powf(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
 		return (100.0 * actualVapourPressure / saturationVapourPressure);
 	}
@@ -2270,8 +2278,8 @@ namespace metaf {
 	    const auto c9 = -0.000003582;
 	    const auto t = temperatureC.value(), r = relativeHumidity;
 
-	    const auto heatIndexC = 
-	    	c1 + c2 * t + c3 * r + c4 * t * r + 
+	    const auto heatIndexC =
+	    	c1 + c2 * t + c3 * r + c4 * t * r +
 	    	c5 * t * t + c6 * r * r +
 	    	c7 * t * t * r + c8 * t * r * r + c9 * t * t * r * r;
 
@@ -2280,7 +2288,7 @@ namespace metaf {
 
 	Temperature Temperature::heatIndex(
 		const Temperature & airTemperature,
-		const Temperature & dewPoint) 
+		const Temperature & dewPoint)
 	{
 		const auto rh = relativeHumidity(airTemperature, dewPoint);
 		if (!rh.has_value()) return(Temperature());
@@ -2288,8 +2296,8 @@ namespace metaf {
 	}
 
 	Temperature Temperature::windChill(
-		const Temperature & airTemperature, 
-		const Speed & windSpeed) 
+		const Temperature & airTemperature,
+		const Speed & windSpeed)
 	{
 		const auto temperatureC = airTemperature.toUnit(Temperature::Unit::C);
 		if (!temperatureC.has_value() || temperatureC.value() > 10.0) return(Temperature());
@@ -2297,10 +2305,10 @@ namespace metaf {
 		const auto windKmh = windSpeed.toUnit(Speed::Unit::KILOMETERS_PER_HOUR);
 		if (!windKmh.has_value() || windKmh.value() < 4.8) return(Temperature());
 
-		const auto windChillC = 
-			13.12 + 
-			0.6215 * temperatureC.value() - 
-			11.37 * std::powf(windKmh.value(), 0.16) + 
+		const auto windChillC =
+			13.12 +
+			0.6215 * temperatureC.value() -
+			11.37 * std::powf(windKmh.value(), 0.16) +
 			0.3965 * temperatureC.value() * std::powf(windKmh.value(), 0.16);
 
 		return(Temperature(windChillC));
@@ -2359,7 +2367,7 @@ namespace metaf {
 		if (s.length() != 2 && s.length() != 3) return(error);
 		if (s.length() == 3 && s[0] == '0') return(error);
 		const auto spd = strToUint(s, 0, s.length());
-		if (!spd.has_value()) return(error);	
+		if (!spd.has_value()) return(error);
 		Speed speed;
 		speed.speedUnit = unit;
 		speed.speedValue = spd.value();
@@ -2439,7 +2447,7 @@ namespace metaf {
 		distance.distValueInt = dist.value();
 
 		if (const auto valueMoreThan10km = 9999u; distance.distValueInt == valueMoreThan10km) {
-			static const auto value10km = 10000u; 
+			static const auto value10km = 10000u;
 			distance.distValueInt = value10km;
 			distance.distModifier = Modifier::MORE_THAN;
 		}
@@ -2449,7 +2457,7 @@ namespace metaf {
 	std::optional<Distance> Distance::fromMileString(const std::string & s) {
 		//static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?SM|////SM");
 		static const std::optional<Distance> error;
-		static const auto unitStr = std::string ("SM"); 
+		static const auto unitStr = std::string ("SM");
 		static const auto unitLength = unitStr.length();
 		if (s.length() < unitLength + 1) return(error); //1 digit minimum
 
@@ -2465,7 +2473,7 @@ namespace metaf {
 		if (s.find('/') == std::string::npos) {
 			//The value is integer, e.g. 3SM or 15SM
 			const int intPos = static_cast<int>(modifier.has_value());
-			const int intLength = 
+			const int intLength =
 				s.length() - unitLength - static_cast<int>(modifier.has_value());
 			static const int minDigits = 1, maxDigits = 2;
 			if (intLength < minDigits || intLength > maxDigits) return (error);
@@ -2474,13 +2482,13 @@ namespace metaf {
 			distance.distValueInt = dist.value();
 		} else {
 			//Fraction value, e.g. 1/2SM, 11/2SM, 5/16SM, 11/16SM
-			const auto fraction = fractionStrToUint(s, 
-				static_cast<int>(modifier.has_value()), 
+			const auto fraction = fractionStrToUint(s,
+				static_cast<int>(modifier.has_value()),
 				s.length() - unitLength - static_cast<int>(modifier.has_value()));
 			if (!fraction.has_value()) return(error);
 			const auto numerator = std::get<0>(fraction.value());
 			const auto denominator = std::get<1>(fraction.value());
-			distance.distValueNum = numerator; 
+			distance.distValueNum = numerator;
 			distance.distValueDen = denominator;
 			if (numerator >= denominator) { //e.g. 11/2SM = 1 1/2SM
 				static const auto decimalRadix = 10u;
@@ -2499,7 +2507,7 @@ namespace metaf {
 		distance.distUnit = Unit::FEET;
 		if (s == "///") return(distance);
 		const auto h = strToUint(s, 0, 3);
-		if (!h.has_value())	return(error);	
+		if (!h.has_value())	return(error);
 		distance.distValueInt = h.value() * heightFactor;
 		return(distance);
 	}
@@ -2535,22 +2543,22 @@ namespace metaf {
 		static const std::optional<std::pair<Distance, Distance>> error;
 		if (s.length() != 4) return(error);
 		const auto h = strToUint(s, 0, 3);
-		if (!h.has_value())	return(error);	
+		if (!h.has_value())	return(error);
 		const auto d = strToUint(s, 3, 1);
-		if (!d.has_value())	return(error);	
+		if (!d.has_value())	return(error);
 		Distance baseHeight, topHeight;
 		baseHeight.distUnit = Unit::FEET;
 		topHeight.distUnit = Unit::FEET;
 		baseHeight.distValueInt = h.value() * heightFactor;
-		topHeight.distValueInt = 
+		topHeight.distValueInt =
 			h.value() * heightFactor + d.value() * layerDepthFactor;
 		return(std::pair(baseHeight, topHeight));
 	}
 
-	std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer, 
+	std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer,
 		const Distance & fraction)
 	{
-		if (!integer.isValid() || 
+		if (!integer.isValid() ||
 			!fraction.isValid() ||
 			integer.modifier() != Modifier::NONE ||
 			fraction.modifier() != Modifier::NONE ||
@@ -2567,7 +2575,7 @@ namespace metaf {
 		static const std::optional<float> error;
 		if (!isReported()) return(error);
 		if (!distValueDen.value_or(1)) return(error);
-		const auto value = distValueInt.value_or(0) + 
+		const auto value = distValueInt.value_or(0) +
 			static_cast<float>(distValueNum.value_or(0)) / distValueDen.value_or(1);
 		if (distUnit == unit) return(value);
 		switch (distUnit) {
@@ -2679,7 +2687,7 @@ namespace metaf {
 	}
 
 	Direction::Cardinal Direction::cardinal(bool trueDirections) const {
-		if (status() == Status::OMMITTED || 
+		if (status() == Status::OMMITTED ||
 			status() == Status::NOT_REPORTED ||
 			status() == Status::VARIABLE) return(metaf::Direction::Cardinal::NONE);
 		if (status() == Status::NDV) return(metaf::Direction::Cardinal::NDV);
@@ -2721,7 +2729,7 @@ namespace metaf {
 		const auto pr = strToUint(s, 1, 4);
 		if (!pr.has_value()) return(error);
 		switch (s[0]) {
-			case 'A': 
+			case 'A':
 				pressure.pressureUnit = Unit::INCHES_HG;
 				pressure.pressureValue = pr.value() * inHgDecimalPointShift;
 				break;
@@ -2773,9 +2781,9 @@ namespace metaf {
 		if (!mmHg.has_value()) return(error);
 		if (s.length() == 11) {
 			const auto hPa = strToUint(s, 7, 4);
-			if (!hPa.has_value() || s[6] != '/') return(error);	
+			if (!hPa.has_value() || s[6] != '/') return(error);
 			//Value in hPa is ignored (parsed only for group syntax check)
-		} 
+		}
 		Pressure pressure;
 		pressure.pressureUnit = Unit::MM_HG;
 		pressure.pressureValue = mmHg.value();
@@ -2863,7 +2871,7 @@ namespace metaf {
 			case Reserved::DEPTH_35CM: value = 350; break;
 			case Reserved::DEPTH_40CM: value = 400; break;
 
-			case Reserved::RUNWAY_NOT_OPERATIONAL: 
+			case Reserved::RUNWAY_NOT_OPERATIONAL:
 			value = 0;
 			precipitation.precipStatus = Status::RUNWAY_NOT_OPERATIONAL;
 			break;
@@ -2874,7 +2882,7 @@ namespace metaf {
 		return(precipitation);
 	}
 
-	std::optional<Precipitation> Precipitation::fromRemarkString(const std::string & s, 
+	std::optional<Precipitation> Precipitation::fromRemarkString(const std::string & s,
 			float factorInches,
 			bool allowNotReported)
 	{
@@ -2894,7 +2902,7 @@ namespace metaf {
 		return(precipitation);
 	}
 
-	std::optional<std::pair<Precipitation, Precipitation>> 
+	std::optional<std::pair<Precipitation, Precipitation>>
 		Precipitation::fromSnincrString(const std::string & s)
 	{
 		//static const std::regex rgx("\\d?\\d)/(\\d?\\d");
@@ -2981,7 +2989,7 @@ namespace metaf {
 	}
 
 	SurfaceFriction::BrakingAction SurfaceFriction::brakingAction() const {
-		if (sfStatus == Status::NOT_REPORTED || 
+		if (sfStatus == Status::NOT_REPORTED ||
 			sfStatus == Status::UNRELIABLE) return(BrakingAction::NONE);
 		if (sfCoefficient < baMediumPoorLowLimit) 	return(BrakingAction::POOR);
 		if (sfCoefficient < baMediumLowLimit) 		return(BrakingAction::MEDIUM_POOR);
@@ -3014,7 +3022,7 @@ namespace metaf {
 			return(wh);
 		}
 		if (s[0] == 'H') {
-			auto h = strToUint(s, 1, s.length() - 1);			
+			auto h = strToUint(s, 1, s.length() - 1);
 			if (!h.has_value()) return(error);
 			wh.whType = Type::WAVE_HEIGHT;
 			wh.whValue = h.value();
@@ -3031,7 +3039,7 @@ namespace metaf {
 			this->unit() == Unit::METERS && unit == Unit::FEET)
 		{
 			return(wh.value() / metersPerFoot);
-		} 
+		}
 		return(std::optional<float>());
 
 	}
@@ -3070,11 +3078,11 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<FixedGroup> FixedGroup::parse(const std::string & group, 
+	std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
-		(void)reportMetadata; 
+		(void)reportMetadata;
 		if (reportPart == ReportPart::HEADER) {
 			if (group == "METAR") return(FixedGroup(Type::METAR));
 			if (group == "SPECI") return(FixedGroup(Type::SPECI));
@@ -3084,8 +3092,8 @@ namespace metaf {
 		if (reportPart == ReportPart::HEADER || reportPart == ReportPart::METAR) {
 			if (group == "COR") return(FixedGroup(Type::COR));
 		}
-		if (reportPart == ReportPart::HEADER || 
-			reportPart == ReportPart::METAR || 
+		if (reportPart == ReportPart::HEADER ||
+			reportPart == ReportPart::METAR ||
 			reportPart == ReportPart::TAF) {
 				if (group == "NIL") return(FixedGroup(Type::NIL));
 				if (group == "CNL") return(FixedGroup(Type::CNL));
@@ -3133,7 +3141,7 @@ namespace metaf {
 	AppendResult FixedGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)reportPart;
 
 		if (type() != Type::INCOMPLETE) return(AppendResult::NOT_APPENDED);
@@ -3143,7 +3151,7 @@ namespace metaf {
 			if (group == "MISG") {t = Type::CLD_MISG; return(AppendResult::APPENDED); }
 			break;
 
-			case IncompleteText::ICG:	
+			case IncompleteText::ICG:
 			if (group == "MISG") {t = Type::ICG_MISG; return(AppendResult::APPENDED); }
 			break;
 
@@ -3180,8 +3188,8 @@ namespace metaf {
 			break;
 
 			case IncompleteText::TS_LTNG:
-			// Here assuming that trend group parsing ignores comments, 
-			// since group TEMPO may be part of trend group, see also 
+			// Here assuming that trend group parsing ignores comments,
+			// since group TEMPO may be part of trend group, see also
 			// TrendGroup::parse() and TrendGroup::apppend().
 			if (group == "TEMPO") {
 				incompleteText = IncompleteText::TS_LTNG_TEMPO;
@@ -3201,14 +3209,14 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<LocationGroup> LocationGroup::parse(const std::string & group, 
+	std::optional<LocationGroup> LocationGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
-		(void)reportMetadata; 
+		(void)reportMetadata;
 		static const std::optional<LocationGroup> notRecognised;
 		if (reportPart != ReportPart::HEADER) return(notRecognised);
-		static const std::regex rgx = std::regex("[A-Z][A-Z0-9]{3}");		
+		static const std::regex rgx = std::regex("[A-Z][A-Z0-9]{3}");
 		if (!regex_match(group, rgx)) return(notRecognised);
 		LocationGroup result;
 		strncpy(result.location, group.c_str(), locationLength);
@@ -3219,16 +3227,16 @@ namespace metaf {
 	AppendResult LocationGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
-		(void)reportMetadata; (void)group; (void)reportPart; 
+	{
+		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<ReportTimeGroup> ReportTimeGroup::parse(const std::string & group, 
+	std::optional<ReportTimeGroup> ReportTimeGroup::parse(const std::string & group,
 		ReportPart reportPart,
-		const ReportMetadata & reportMetadata) 
+		const ReportMetadata & reportMetadata)
 	{
 		(void)reportMetadata;
 		static const std::optional<ReportTimeGroup> notRecognised;
@@ -3239,7 +3247,7 @@ namespace metaf {
 		const auto tm = MetafTime::fromStringDDHHMM(group.substr(posTime, lenTime));
 		if (!tm.has_value()) return(notRecognised);
 		if (!tm->day().has_value()) return(notRecognised);
-		ReportTimeGroup g; 
+		ReportTimeGroup g;
 		g.t = tm.value();
 		return(g);
 	}
@@ -3247,19 +3255,19 @@ namespace metaf {
 	AppendResult ReportTimeGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<TrendGroup> TrendGroup::parse(const std::string & group, 
+	std::optional<TrendGroup> TrendGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
 		(void)reportMetadata;
-		// Warning: if TrendGroup is ever changed to parse remarks, note 
+		// Warning: if TrendGroup is ever changed to parse remarks, note
 		// that TEMPO can be part of group TS/LTNG TEMPO UNAVBL
 		// FixedGroup::append relies on TrendGroup::parse skipping remarks
 		if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
@@ -3364,17 +3372,17 @@ namespace metaf {
 	bool TrendGroup::combineProbAndTrendTypeGroups(const TrendGroup & nextTrendGroup) {
 		if (!isProbabilityGroup()) return(false);
 		if (!nextTrendGroup.isTrendTypeGroup()) return(false);
-		if (nextTrendGroup.type() != Type::TEMPO && 
+		if (nextTrendGroup.type() != Type::TEMPO &&
 			nextTrendGroup.type() != Type::INTER) return(false);
 		t = nextTrendGroup.type();
 		return(true);
 	}
 
 	bool TrendGroup::combineTrendTypeAndTimeGroup(const TrendGroup & nextTrendGroup) {
-		if (type() != Type::BECMG && 
-			type() != Type::TEMPO && 
+		if (type() != Type::BECMG &&
+			type() != Type::TEMPO &&
 			type() != Type::INTER) return(false);
-		if (!nextTrendGroup.isTimeSpanGroup() && 
+		if (!nextTrendGroup.isTimeSpanGroup() &&
 			!nextTrendGroup.isTrendTimeGroup()) return(false);
 		if (!canCombineTime(*this, nextTrendGroup)) return(false);
 		combineTime(nextTrendGroup);
@@ -3411,8 +3419,8 @@ namespace metaf {
 	bool TrendGroup::isTrendTypeGroup() const {
 		// Trend type group is a fixed group BECMG / TEMPO / INTER
 		// No probability or time allowed
-		if (type() != Type::BECMG && 
-			type() != Type::TEMPO && 
+		if (type() != Type::BECMG &&
+			type() != Type::TEMPO &&
 			type() != Type::INTER) return(false);
 		if (probability() != Probability::NONE) return(false);
 		if (timeFrom().has_value() || timeTill().has_value()) return(false);
@@ -3433,7 +3441,7 @@ namespace metaf {
 	}
 
 	bool TrendGroup::isTimeSpanGroup() const {
-		// Time span group has format xxxx/xxxx, 
+		// Time span group has format xxxx/xxxx,
 		// only time 'from' and 'till' must be reported
 		if (type() != Type::TIME_SPAN) return(false);
 		if (probability() != Probability::NONE) return(false);
@@ -3463,7 +3471,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<WindGroup> WindGroup::parse(const std::string & group, 
+	std::optional<WindGroup> WindGroup::parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata)
 	{
@@ -3492,9 +3500,9 @@ namespace metaf {
 				result.incompleteText = IncompleteText::PK;
 				return(result);
 			}
-		} 
+		}
 
-		if (reportPart != ReportPart::METAR && 
+		if (reportPart != ReportPart::METAR &&
 			reportPart != ReportPart::TAF) return(notRecognised);
 
 		// Surface wind or wind shear, e.g. dd0ssKT or dd0ssGggMPS or WShhhdd0ssGggKT
@@ -3538,9 +3546,9 @@ namespace metaf {
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
-		//Append variable wind sector group to surface wind group 
+		//Append variable wind sector group to surface wind group
 		if (const auto nextGroup = parse(group, reportPart, reportMetadata);
-			nextGroup.has_value() && 
+			nextGroup.has_value() &&
 			type() == Type::SURFACE_WIND &&
 			nextGroup->type() == Type::VARIABLE_WIND_SECTOR)
 		{
@@ -3590,7 +3598,7 @@ namespace metaf {
 			{
 				const auto hourMinuteVal = strToUint(group, 0, 4);
 				if (!hourMinuteVal.has_value()) return(AppendResult::NOT_APPENDED);
-				// hourMinuteVal.value() has 4 digits, format hhmm 
+				// hourMinuteVal.value() has 4 digits, format hhmm
 				const auto hour = hourMinuteVal.value() / 100;
 				const auto minute = hourMinuteVal.value() % 100;
 				evTime = MetafTime (hour, minute);
@@ -3602,11 +3610,11 @@ namespace metaf {
 		return(AppendResult::NOT_APPENDED);
 	}
 
-	AppendResult WindGroup::parsePeakWind(const std::string & group, 
+	AppendResult WindGroup::parsePeakWind(const std::string & group,
 		const ReportMetadata & reportMetadata)
 	{
 		static const std::regex pkWndRgx("(\\d\\d0)([1-9]?\\d\\d)/(\\d\\d)?(\\d\\d)");
-		static const auto matchDir = 1, matchSpeed = 2; 
+		static const auto matchDir = 1, matchSpeed = 2;
 		static const auto matchHour = 3, matchMinute = 4;
 
 		std::smatch match;
@@ -3617,7 +3625,7 @@ namespace metaf {
 		if (!dir.has_value()) return(AppendResult::GROUP_INVALIDATED);
 		windDir = dir.value();
 
-		const auto speed = 
+		const auto speed =
 			Speed::fromString(match.str(matchSpeed), Speed::Unit::KNOTS);
 		if (!speed.has_value()) return(AppendResult::GROUP_INVALIDATED);
 		wSpeed = speed.value();
@@ -3625,7 +3633,7 @@ namespace metaf {
 		if (!reportMetadata.reportTime.has_value() && match.str(matchHour).empty()) {
 			return(AppendResult::GROUP_INVALIDATED);
 		}
-		const auto hour = match.str(matchHour).empty() ? 
+		const auto hour = match.str(matchHour).empty() ?
 			reportMetadata.reportTime->hour() : stoi(match.str(matchHour));
 		const auto minute = stoi(match.str(matchMinute));
 		evTime = MetafTime(hour, minute);
@@ -3634,17 +3642,17 @@ namespace metaf {
 	}
 
 	bool WindGroup::isCalm() const {
-		return (type() == Type::SURFACE_WIND && 
+		return (type() == Type::SURFACE_WIND &&
 			direction().status() == Direction::Status::VALUE_DEGREES &&
-			!direction().degrees().value_or(1) && 
-			!windSpeed().speed().value_or(1) && 
+			!direction().degrees().value_or(1) &&
+			!windSpeed().speed().value_or(1) &&
 			!gustSpeed().speed().has_value());
 	}
 
 	bool WindGroup::isValid() const {
 		// Incomplete group is treated as non-valid
 		if (type() == Type::INCOMPLETE) return(false);
-		// If both wind and gust speed reported, wind speed cannot be greater 
+		// If both wind and gust speed reported, wind speed cannot be greater
 		// than gust speed
 		if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) {
 			return(false);
@@ -3662,7 +3670,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group, 
+	std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -3670,7 +3678,7 @@ namespace metaf {
 		static const std::optional<VisibilityGroup> notRecognised;
 		if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return(notRecognised);
 		// Attempt to parse string as incomplete integer value
-		if (auto incompleteLength = 1u; group.length() == incompleteLength && 
+		if (auto incompleteLength = 1u; group.length() == incompleteLength &&
 			std::isdigit(group.front()))
 		{
 			VisibilityGroup result;
@@ -3691,7 +3699,7 @@ namespace metaf {
 			VisibilityGroup result;
 			result.vis = v.value();
 			result.dir = d.value();
-			if (result.dir.isValue()) result.visType = Type::DIRECTIONAL; 
+			if (result.dir.isValue()) result.visType = Type::DIRECTIONAL;
 			if (result.dir.status() == Direction::Status::NDV) {
 				result.visType = Type::PREVAILING_NDV;
 			}
@@ -3718,7 +3726,7 @@ namespace metaf {
 		const auto nextGroup = parse(group, reportPart, reportMetadata);
 		if (!nextGroup) return(AppendResult::GROUP_INVALIDATED);
 		if (nextGroup->visibility().unit() != Distance::Unit::STATUTE_MILES &&
-			nextGroup->visibility().isFraction()) return(AppendResult::GROUP_INVALIDATED); 
+			nextGroup->visibility().isFraction()) return(AppendResult::GROUP_INVALIDATED);
 
 		auto v = Distance::fromIntegerAndFraction(visibility(), nextGroup->visibility());
 		if (!v.has_value()) return(AppendResult::GROUP_INVALIDATED);
@@ -3730,7 +3738,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<CloudGroup> CloudGroup::parse(const std::string & group, 
+	std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -3745,7 +3753,7 @@ namespace metaf {
 		if (group == "NCD") return(CloudGroup(Amount::NCD));
 		// Attempt to parse vertical visibility (format VVxxx)
 		std::smatch match;
-		// Attempt to parse 
+		// Attempt to parse
 		static const std::regex rgx(
 			"([BFOSV][CEKV][CNTW]?|///)(\\d\\d\\d|///)([CT][BC][U]?|///)?");
 		static const auto matchAmount = 1, matchHeight = 2, matchType = 3;
@@ -3771,7 +3779,7 @@ namespace metaf {
 	AppendResult CloudGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -3795,7 +3803,7 @@ namespace metaf {
 			case Amount::OVERCAST:
 			return(heightOrVertVis);
 
-			default: 
+			default:
 			return(heightNotReported);
 		}
 	}
@@ -3810,7 +3818,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group, 
+	std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -3828,12 +3836,10 @@ namespace metaf {
 		static const auto matchQualifier = 1, matchDescriptor = 2, matchWeather = 3;
 		std::smatch match;
 		if (!regex_match(group, match, rgx)) return(notRecognised);
-		
+
 		const auto qualifier = qualifierFromString(match.str(matchQualifier));
-		if (!qualifier.has_value()) return(notRecognised);
 		const auto descriptor = descriptorFromString(match.str(matchDescriptor));
-		if (!descriptor.has_value()) return(notRecognised);
-		
+
 		WeatherGroup result;
 		static const auto wthrTokenSize = 2;
 		const auto weatherStr = match.str(matchWeather);
@@ -3843,8 +3849,8 @@ namespace metaf {
 			if (result.wSize >= maxwSize) return(notRecognised);
 			result.w[result.wSize++] = weather.value();
 		}
-		result.d = descriptor.value();
-		result.q = qualifier.value();
+		result.d = descriptor;
+		result.q = qualifier;
 		if (result.q == Qualifier::NONE && result.isModerateQualifier()) result.q = Qualifier::MODERATE;
 		return(result);
 	}
@@ -3852,7 +3858,7 @@ namespace metaf {
 	AppendResult WeatherGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -3868,8 +3874,8 @@ namespace metaf {
 				return(true);
 
 				case Weather::SNOW:
-				if (descriptor() != Descriptor::LOW_DRIFTING && 
-					descriptor() != Descriptor::BLOWING) return(true);
+				if (descriptor() != WeatherDescriptor::LOW_DRIFTING &&
+					descriptor() != WeatherDescriptor::BLOWING) return(true);
 				break;
 
 				default:
@@ -3879,34 +3885,27 @@ namespace metaf {
 		return(false);
 	}
 
-	std::optional<WeatherGroup::Qualifier> WeatherGroup::qualifierFromString(
-		const std::string & s)
-	{
-		if (s.empty()) return(Qualifier::NONE);
+	WeatherGroup::Qualifier WeatherGroup::qualifierFromString(const std::string & s) {
 		if (s == "RE") return(Qualifier::RECENT);
 		if (s == "-") return(Qualifier::LIGHT);
 		if (s == "+") return(Qualifier::HEAVY);
 		if (s == "VC") return(Qualifier::VICINITY);
-		return(std::optional<Qualifier>());
+		return(Qualifier::NONE);
 	}
 
-	std::optional<WeatherGroup::Descriptor> WeatherGroup::descriptorFromString(
-		const std::string & s)
-	{
-		if (s.empty()) return(Descriptor::NONE);
-		if (s == "MI") return(Descriptor::SHALLOW);
-		if (s == "PR") return(Descriptor::PARTIAL);
-		if (s == "BC") return(Descriptor::PATCHES);
-		if (s == "DR") return(Descriptor::LOW_DRIFTING);
-		if (s == "BL") return(Descriptor::BLOWING);
-		if (s == "SH") return(Descriptor::SHOWERS);
-		if (s == "TS") return(Descriptor::THUNDERSTORM);
-		if (s == "FZ") return(Descriptor::FREEZING);
-		return(std::optional<Descriptor>());
+	WeatherDescriptor WeatherGroup::descriptorFromString(const std::string & s) {
+		if (s == "MI") return(WeatherDescriptor::SHALLOW);
+		if (s == "PR") return(WeatherDescriptor::PARTIAL);
+		if (s == "BC") return(WeatherDescriptor::PATCHES);
+		if (s == "DR") return(WeatherDescriptor::LOW_DRIFTING);
+		if (s == "BL") return(WeatherDescriptor::BLOWING);
+		if (s == "SH") return(WeatherDescriptor::SHOWERS);
+		if (s == "TS") return(WeatherDescriptor::THUNDERSTORM);
+		if (s == "FZ") return(WeatherDescriptor::FREEZING);
+		return(WeatherDescriptor::NONE);
 	}
 
-	std::optional<WeatherGroup::Weather> WeatherGroup::weatherFromString(
-		const std::string & s)
+	std::optional<Weather> WeatherGroup::weatherFromString(const std::string & s)
 	{
 		if (s == "DZ") return(Weather::DRIZZLE);
 		if (s == "RA") return(Weather::RAIN);
@@ -3938,7 +3937,7 @@ namespace metaf {
 		result.w[0] = Weather::NOT_REPORTED; result.wSize = 1;
 		return(result);
 	}
-	
+
 	WeatherGroup WeatherGroup::notReportedRecent() {
 		WeatherGroup result = notReported();
 		result.q = Qualifier::RECENT;
@@ -3947,17 +3946,17 @@ namespace metaf {
 
 	bool WeatherGroup::isValid() const {
 		//TODO
-		return(true);		
+		return(true);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
 	bool TemperatureGroup::isValid() const {
 		// Either temperature or dew point not reported: always valid
-		if (!airTemperature().temperature().has_value() || 
+		if (!airTemperature().temperature().has_value() ||
 			!dewPoint().temperature().has_value()) return(true);
 		// If temperature reported M00 then dew point cannot be 00
-		if (!airTemperature().temperature().value() &&	
+		if (!airTemperature().temperature().value() &&
 			!dewPoint().temperature().value() &&
 			airTemperature().isFreezing() &&
 			!dewPoint().isFreezing()) return (false);
@@ -3965,7 +3964,7 @@ namespace metaf {
 		return (airTemperature().temperature().value() >= dewPoint().temperature().value());
 	}
 
-	std::optional<TemperatureGroup> TemperatureGroup::parse(const std::string & group, 
+	std::optional<TemperatureGroup> TemperatureGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -3987,7 +3986,7 @@ namespace metaf {
 				result.dp = dp.value();
 			}
 			return(result);
-		} 
+		}
 		if (reportPart == ReportPart::RMK && regex_match(group, match, rmkRgx)) {
 			const auto t = Temperature::fromRemarkString(match.str(rmkMatchTemperature));
 			if (!t.has_value()) return(notRecognised);
@@ -4006,7 +4005,7 @@ namespace metaf {
 	AppendResult TemperatureGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4014,7 +4013,7 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<TemperatureForecastGroup> TemperatureForecastGroup::parse(
-		const std::string & group, 
+		const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4041,14 +4040,14 @@ namespace metaf {
 	AppendResult TemperatureForecastGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
-		(void)reportMetadata; (void)group; (void)reportPart; 
+	{
+		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<PressureGroup> PressureGroup::parse(const std::string & group, 
+	std::optional<PressureGroup> PressureGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4061,7 +4060,7 @@ namespace metaf {
 			result.p = pressure.value();
 			result.t = Type::OBSERVED_QNH;
 			return(result);
-		} 
+		}
 		if (reportPart == metaf::ReportPart::TAF) {
 			const auto pressure = metaf::Pressure::fromForecastString(group);
 			if (!pressure.has_value()) return(notRecognised);
@@ -4091,7 +4090,7 @@ namespace metaf {
 	AppendResult PressureGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4099,7 +4098,7 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////
 
 	std::optional<RunwayVisualRangeGroup> RunwayVisualRangeGroup::parse(
-		const std::string & group, 
+		const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4134,7 +4133,7 @@ namespace metaf {
 	AppendResult RunwayVisualRangeGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4152,7 +4151,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & group, 
+	std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata)
 	{
@@ -4190,21 +4189,21 @@ namespace metaf {
 	AppendResult RunwayStateGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	RunwayStateGroup RunwayStateGroup::runwaySnoclo(Runway runway) {
-		RunwayStateGroup result; 
+		RunwayStateGroup result;
 		result.rw = std::move(runway); result.st = Status::SNOCLO;
 		return(result);
 	}
 
-	RunwayStateGroup RunwayStateGroup::runwayClrd(Runway runway, 
+	RunwayStateGroup RunwayStateGroup::runwayClrd(Runway runway,
 		SurfaceFriction surfaceFriction)
 	{
-		RunwayStateGroup result; 
+		RunwayStateGroup result;
 		result.rw = std::move(runway); result.st = Status::CLRD;
 		result.sf = std::move(surfaceFriction);
 		return(result);
@@ -4279,7 +4278,7 @@ namespace metaf {
 		(void)reportMetadata; (void)reportPart;
 
 		if (type() != Type::INCOMPLETE) return(AppendResult::NOT_APPENDED);
-	
+
 		switch (incompleteText) {
 			case IncompleteText::WS:
 			if (group == "ALL") {
@@ -4312,7 +4311,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	std::optional<RainfallGroup> RainfallGroup::parse(const std::string & group, 
+	std::optional<RainfallGroup> RainfallGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4340,14 +4339,14 @@ namespace metaf {
 	AppendResult RainfallGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group, 
+	std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata)
 	{
@@ -4371,14 +4370,14 @@ namespace metaf {
 	AppendResult SeaSurfaceGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<ColourCodeGroup> ColourCodeGroup::parse(const std::string & group, 
+	std::optional<ColourCodeGroup> ColourCodeGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4404,7 +4403,7 @@ namespace metaf {
 	AppendResult ColourCodeGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4412,7 +4411,7 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::parse(
-		const std::string & group, 
+		const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4420,15 +4419,15 @@ namespace metaf {
 		std::optional<MinMaxTemperatureGroup> notRecognised;
 		static const std::regex rgx6hourly("([12])([01]\\d\\d\\d|////)");
 		static const auto matchType6hourly = 1, matchValue6hourly = 2;
-		static const std::regex rgx24hourly("4([01]\\d\\d\\d)([01]\\d\\d\\d)"); 
+		static const std::regex rgx24hourly("4([01]\\d\\d\\d)([01]\\d\\d\\d)");
 		static const auto matchMaxTemp24hourly = 1, matchMinTemp24hourly = 2;
 		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
 		if (std::regex_match(group, match, rgx24hourly)) {
-			const auto max = 
+			const auto max =
 				Temperature::fromRemarkString(match.str(matchMaxTemp24hourly));
 			if (!max.has_value()) return(notRecognised);
-			const auto min = 
+			const auto min =
 				Temperature::fromRemarkString(match.str(matchMinTemp24hourly));
 			if (!min.has_value()) return(notRecognised);
 			MinMaxTemperatureGroup result;
@@ -4441,9 +4440,9 @@ namespace metaf {
 			if (match.str(matchValue6hourly) == "////") {
 				MinMaxTemperatureGroup result;
 				result.obsPeriod = ObservationPeriod::HOURS6;
-				return(result);		
+				return(result);
 			}
-			const auto t = 
+			const auto t =
 				Temperature::fromRemarkString(match.str(matchValue6hourly));
 			if (!t.has_value()) return(notRecognised);
 			MinMaxTemperatureGroup result;
@@ -4461,14 +4460,14 @@ namespace metaf {
 	AppendResult MinMaxTemperatureGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata;
-		if (observationPeriod() != ObservationPeriod::HOURS6) 
+		if (observationPeriod() != ObservationPeriod::HOURS6)
 			return(AppendResult::NOT_APPENDED);
 		const auto nextGroup = parse(group, reportPart, reportMetadata);
 		if (!nextGroup.has_value()) return(AppendResult::NOT_APPENDED);
 
-		if (nextGroup->observationPeriod() != observationPeriod()) 
+		if (nextGroup->observationPeriod() != observationPeriod())
 			return(AppendResult::NOT_APPENDED);
 		if (minimum().temperature().has_value() &&
 			nextGroup->minimum().temperature().has_value()) return(AppendResult::NOT_APPENDED);
@@ -4484,7 +4483,7 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & group, 
+	std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4497,7 +4496,7 @@ namespace metaf {
 		if (reportPart != ReportPart::RMK) return(notRecognised);
 		if (group == "SNINCR") {
 			PrecipitationGroup result;
-			result.precType = Type::SNOW_INCREASING_RAPIDLY; 
+			result.precType = Type::SNOW_INCREASING_RAPIDLY;
 			return(result);
 		}
 
@@ -4508,29 +4507,29 @@ namespace metaf {
 		std::string typeStr = match.str(matchType1) + match.str(matchType2);
 		std::string valueStr = match.str(matchValue1) + match.str(matchValue2);
 
-		const bool is3hourlyReport = 
-			reportMetadata.reportTime.has_value() ? 
+		const bool is3hourlyReport =
+			reportMetadata.reportTime.has_value() ?
 			reportMetadata.reportTime->is3hourlyReportTime() :
 			false;
 
-		const bool is6hourlyReport = 
-			reportMetadata.reportTime.has_value() ? 
+		const bool is6hourlyReport =
+			reportMetadata.reportTime.has_value() ?
 			reportMetadata.reportTime->is6hourlyReportTime() :
 			false;
 
 		const auto t = typeFromString(typeStr, is3hourlyReport, is6hourlyReport);
 		if (!t.has_value()) return(notRecognised);
 		const auto type = t.value();
-		
-		// assuming that non-reported value will not pass the regex if not 
+
+		// assuming that non-reported value will not pass the regex if not
 		// allowed for this type
-		const auto amount = Precipitation::fromRemarkString(valueStr, 
-				factorFromType(type), 
-				true); 
+		const auto amount = Precipitation::fromRemarkString(valueStr,
+				factorFromType(type),
+				true);
 		if (!amount.has_value()) return(notRecognised);
 
 		PrecipitationGroup result;
-		result.precType = type; 
+		result.precType = type;
 		result.precAmount = amount.value();
 		return(result);
 	}
@@ -4539,10 +4538,10 @@ namespace metaf {
 	AppendResult PrecipitationGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)reportPart;
 		if (type() != Type::SNOW_INCREASING_RAPIDLY) return(AppendResult::NOT_APPENDED);
-		if (amount().isReported() || tendency().isReported()) 
+		if (amount().isReported() || tendency().isReported())
 			return(AppendResult::NOT_APPENDED);
 		const auto precip = Precipitation::fromSnincrString(group);
 		if (!precip.has_value()) return(AppendResult::NOT_APPENDED);
@@ -4624,7 +4623,7 @@ namespace metaf {
 	}
 
 	std::optional<LayerForecastGroup> LayerForecastGroup::parse(
-		const std::string & group, 
+		const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4640,7 +4639,7 @@ namespace metaf {
 		if (!type.has_value()) return(notRecognised);
 		const auto heights = Distance::fromLayerString(match.str(matchHeight));
 		if (!heights.has_value()) return(notRecognised);
-		
+
 		LayerForecastGroup result;
 		result.layerType = type.value();
 		result.layerBaseHeight = std::get<0>(heights.value());
@@ -4651,7 +4650,7 @@ namespace metaf {
 	AppendResult LayerForecastGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4665,7 +4664,7 @@ namespace metaf {
 			case Type::INCREASING_MORE_RAPIDLY:
 			return(Trend::HIGHER);
 
-			case Type::INCREASING_THEN_DECREASING:	
+			case Type::INCREASING_THEN_DECREASING:
 			return(Trend::HIGHER_OR_SAME);
 
 			case Type::STEADY:
@@ -4705,7 +4704,7 @@ namespace metaf {
 	}
 
 	std::optional<PressureTendencyGroup> PressureTendencyGroup::parse(
-		const std::string & group, 
+		const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4744,14 +4743,14 @@ namespace metaf {
 	AppendResult PressureTendencyGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::vector<std::pair<CloudTypesGroup::Type, unsigned int>> 
+	std::vector<std::pair<CloudTypesGroup::Type, unsigned int>>
 	CloudTypesGroup::toVector() const
 	{
 		std::vector<std::pair<CloudTypesGroup::Type, unsigned int>> result;
@@ -4762,7 +4761,7 @@ namespace metaf {
 	}
 
 
-	std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group, 
+	std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4776,7 +4775,7 @@ namespace metaf {
 		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
 		if (!std::regex_match(group, match, matchRgx)) return(notRecognised);
-		
+
 		CloudTypesGroup result;
 		auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
 		while (iter != std::sregex_iterator()) {
@@ -4794,7 +4793,7 @@ namespace metaf {
 	AppendResult CloudTypesGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4814,21 +4813,21 @@ namespace metaf {
 		if (s == "CI")  return(Type::CIRRUS);
 		if (s == "CS")  return(Type::CIRROSTRATUS);
 		if (s == "CC")  return(Type::CIRROCUMULUS);
-		return(std::optional<CloudTypesGroup::Type>());	
+		return(std::optional<CloudTypesGroup::Type>());
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
 	bool CloudLayersGroup::isValid() const {
-		if (lowLayer() == LowLayer::NOT_OBSERVABLE && 
+		if (lowLayer() == LowLayer::NOT_OBSERVABLE &&
 			midLayer() != MidLayer::NOT_OBSERVABLE) return(false);
-		if (midLayer() == MidLayer::NOT_OBSERVABLE && 
+		if (midLayer() == MidLayer::NOT_OBSERVABLE &&
 			highLayer() != HighLayer::NOT_OBSERVABLE) return(false);
 		return(true);
 	}
 
 
-	std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & group, 
+	std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4837,10 +4836,10 @@ namespace metaf {
 		static const std::regex rgx("8/([\\d/])([\\d/])([\\d/])");
 		static const auto matchLowLayer = 1, matchMidLayer = 2, matchHighLayer = 3;
 
-		if (reportPart != ReportPart::RMK) return(notRecognised);	
+		if (reportPart != ReportPart::RMK) return(notRecognised);
 		std::smatch match;
 		if (!std::regex_match(group, match, rgx)) return(notRecognised);
-		
+
 		const auto lowLayer = lowLayerFromChar(match.str(matchLowLayer)[0]);
 		const auto midLayer = midLayerFromChar(match.str(matchMidLayer)[0]);
 		const auto highLayer = highLayerFromChar(match.str(matchHighLayer)[0]);
@@ -4858,7 +4857,7 @@ namespace metaf {
 	AppendResult CloudLayersGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4875,7 +4874,7 @@ namespace metaf {
 			case '7': return(LowLayer::ST_FR_CU_FR_PANNUS);
 			case '8': return(LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS);
 			case '9': return(LowLayer::CB_CAP);
-			case '/': return(LowLayer::NOT_OBSERVABLE); 
+			case '/': return(LowLayer::NOT_OBSERVABLE);
 			default:  return(std::optional<LowLayer>());
 		}
 	}
@@ -4892,9 +4891,9 @@ namespace metaf {
 			case '7': return(MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS);
 			case '8': return(MidLayer::AC_CAS_AC_FLO);
 			case '9': return(MidLayer::AC_OF_CHAOTIC_SKY);
-			case '/': return(MidLayer::NOT_OBSERVABLE); 
+			case '/': return(MidLayer::NOT_OBSERVABLE);
 			default:  return(std::optional<MidLayer>());
-		} 
+		}
 	}
 
 	std::optional<CloudLayersGroup::HighLayer> CloudLayersGroup::highLayerFromChar(char c) {
@@ -4910,13 +4909,13 @@ namespace metaf {
 			case '8': return(HighLayer::CS);
 			case '9': return(HighLayer::CC);
 			case '/': return(HighLayer::NOT_OBSERVABLE);
-			default:  return(std::optional<HighLayer>()); 
+			default:  return(std::optional<HighLayer>());
 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	std::optional<MiscGroup> MiscGroup::parse(const std::string & group, 
+	std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
 	{
@@ -4952,7 +4951,7 @@ namespace metaf {
 	AppendResult MiscGroup::append(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
-	{ 
+	{
 		(void)reportMetadata; (void)group; (void)reportPart;
 		return(AppendResult::NOT_APPENDED);
 	}
@@ -4968,7 +4967,7 @@ namespace metaf {
 			default:
 			return(false);
 		}
-	} 
+	}
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -4983,10 +4982,10 @@ namespace metaf {
 				case FixedGroup::Type::NIL:		return(SyntaxGroup::NIL);
 				case FixedGroup::Type::CNL:		return(SyntaxGroup::CNL);
 				case FixedGroup::Type::RMK:		return(SyntaxGroup::RMK);
-				
+
 				case FixedGroup::Type::MAINTENANCE_INDICATOR:
 				return(SyntaxGroup::MAINTENANCE_INDICATOR);
-				
+
 				default:						return(SyntaxGroup::OTHER);
 			}
 		}
@@ -5002,8 +5001,8 @@ namespace metaf {
 	///////////////////////////////////////////////////////////////////////////////
 
 	Parser::Result Parser::parse(const std::string & report) {
-		std::sregex_token_iterator iter(report.begin(), report.end(), 
-			groupDelimiterRegex, 
+		std::sregex_token_iterator iter(report.begin(), report.end(),
+			groupDelimiterRegex,
 			-1);
 		bool reportEnd = false;
 		Status status;
@@ -5028,9 +5027,9 @@ namespace metaf {
 						status.transition(getSyntaxGroup(group));
 					} while(status.isReparseRequired());
 					updateMetadata(group, reportMetadata);
-					addGroupToResult(result, 
-						std::move(group), 
-						reportPart, 
+					addGroupToResult(result,
+						std::move(group),
+						reportPart,
 						std::move(groupStr));
 				}
 			}
@@ -5059,17 +5058,17 @@ namespace metaf {
 		Group lastGroup = lastGroupInfo.group;
 
 		const auto appendResult = std::visit(
-			[&](auto && gr) -> AppendResult { 
-				return (gr.append(groupStr, reportPart, reportMetadata)); 
+			[&](auto && gr) -> AppendResult {
+				return (gr.append(groupStr, reportPart, reportMetadata));
 			}, lastGroup);
 
 		switch (appendResult) {
 			case AppendResult::APPENDED:
-			lastGroupInfo.group = std::move(lastGroup);			
+			lastGroupInfo.group = std::move(lastGroup);
 			lastGroupInfo.rawString += groupDelimiterChar;
 			lastGroupInfo.rawString += groupStr;
 			return(true);
-			
+
 			case AppendResult::NOT_APPENDED:
 			return(false);
 
@@ -5083,26 +5082,26 @@ namespace metaf {
 		}
 	}
 
-	void Parser::addGroupToResult(Result & result, 
-		Group group, 
-		ReportPart reportPart, 
+	void Parser::addGroupToResult(Result & result,
+		Group group,
+		ReportPart reportPart,
 		std::string groupString)
 	{
 		if (!result.groups.empty() && std::holds_alternative<FallbackGroup>(group)) {
 			// Check if both last group in result and curent group are
-			// fallback group (unknown), if yes try to append current group 
+			// fallback group (unknown), if yes try to append current group
 			GroupInfo & lastGroupInfo = result.groups.back();
 			auto lastFallbackGroup = std::get_if<FallbackGroup>(&lastGroupInfo.group);
 			if (lastFallbackGroup)
 			{
-				// Both last group and group being saved are fallback groups and 
+				// Both last group and group being saved are fallback groups and
 				// should be appended if possible
-				const auto appendResult = 
-					lastFallbackGroup->append(groupString, reportPart, missingMetadata);			
+				const auto appendResult =
+					lastFallbackGroup->append(groupString, reportPart, missingMetadata);
 
 				if (appendResult == AppendResult::APPENDED) {
 					// Appended successfully, just append raw group string as well
-					// Append may fail if max length of text that may be stored in 
+					// Append may fail if max length of text that may be stored in
 					// the fallback (unknown) group is exceeded
 					lastGroupInfo.rawString += groupDelimiterChar;
 					lastGroupInfo.rawString += groupString;
@@ -5156,7 +5155,7 @@ namespace metaf {
 			break;
 
 			case State::LOCATION:
-			if (group == SyntaxGroup::LOCATION) {setState(State::REPORT_TIME); break;} 
+			if (group == SyntaxGroup::LOCATION) {setState(State::REPORT_TIME); break;}
 			setError(ReportError::EXPECTED_LOCATION);
 			break;
 
@@ -5241,7 +5240,7 @@ namespace metaf {
 		switch (group) {
 			case SyntaxGroup::AMD:
 			setState(State::LOCATION);
-			if (getReportType() != ReportType::TAF) 
+			if (getReportType() != ReportType::TAF)
 				setError(ReportError::AMD_ALLOWED_IN_TAF_ONLY);
 			break;
 
@@ -5272,7 +5271,7 @@ namespace metaf {
 			case SyntaxGroup::TIME_SPAN:
 			if (getReportType() == ReportType::TAF) {
 				setState(State::REPORT_BODY_BEGIN_TAF);
-				break;	
+				break;
 			}
 			setError(ReportError::EXPECTED_REPORT_TIME);
 			break;
@@ -5311,7 +5310,7 @@ namespace metaf {
 
 	void Parser::Status::transitionFromReportBodyBeginMetar(SyntaxGroup group) {
 		switch(group) {
-			case SyntaxGroup::NIL: 
+			case SyntaxGroup::NIL:
 			setState(State::NIL);
 			break;
 
@@ -5355,15 +5354,15 @@ namespace metaf {
 
 	void Parser::Status::transitionFromReportBodyBeginTaf(SyntaxGroup group) {
 		switch(group) {
-			case SyntaxGroup::NIL: 
+			case SyntaxGroup::NIL:
 			setState(State::NIL);
 			break;
 
-			case SyntaxGroup::CNL: 
+			case SyntaxGroup::CNL:
 			setState(State::CNL);
 			break;
 
-			case SyntaxGroup::RMK: 
+			case SyntaxGroup::RMK:
 			setState(State::REMARK_TAF);
 			break;
 
@@ -5412,7 +5411,7 @@ namespace metaf {
 			case State::REPORT_TYPE_OR_LOCATION:
 			setError(ReportError::EMPTY_REPORT);
 			break;
-			
+
 			case State::CORRECTION:
 			case State::LOCATION:
 			case State::REPORT_TIME:

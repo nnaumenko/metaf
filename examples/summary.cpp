@@ -195,22 +195,22 @@ Weather phenomena(metaf::WeatherGroup::Qualifier qualifier,
 }
 
 Weather weatherRain(metaf::WeatherGroup::Qualifier qualifier,
-	metaf::WeatherGroup::Descriptor descriptor)
+	metaf::WeatherDescriptor descriptor)
 {
 	switch (descriptor) {
-		case metaf::WeatherGroup::Descriptor::FREEZING:
+		case metaf::WeatherDescriptor::FREEZING:
 		return(phenomena(qualifier,
 			Weather::RAIN_FREEZING_LIGHT, 
 			Weather::RAIN_FREEZING_MODERATE, 
 			Weather::RAIN_FREEZING_HEAVY));
 
-		case metaf::WeatherGroup::Descriptor::SHOWERS:
+		case metaf::WeatherDescriptor::SHOWERS:
 		return(phenomena(qualifier,
 			Weather::RAIN_SHOWERS_LIGHT, 
 			Weather::RAIN_SHOWERS_MODERATE, 
 			Weather::RAIN_SHOWERS_HEAVY));
 
-		case metaf::WeatherGroup::Descriptor::NONE:
+		case metaf::WeatherDescriptor::NONE:
 		return(phenomena(qualifier, 
 			Weather::RAIN_LIGHT, 
 			Weather::RAIN_MODERATE, 
@@ -225,25 +225,25 @@ Weather weatherRain(metaf::WeatherGroup::Qualifier qualifier,
 }
 
 Weather weatherSnow(metaf::WeatherGroup::Qualifier qualifier,
-	metaf::WeatherGroup::Descriptor descriptor)
+	metaf::WeatherDescriptor descriptor)
 {
 	switch (descriptor) {
-		case metaf::WeatherGroup::Descriptor::SHOWERS:
+		case metaf::WeatherDescriptor::SHOWERS:
 		return(phenomena(qualifier,
 			Weather::SNOW_SHOWERS_LIGHT, 
 			Weather::SNOW_SHOWERS_MODERATE, 
 			Weather::SNOW_SHOWERS_HEAVY));
 
-		case metaf::WeatherGroup::Descriptor::NONE:
+		case metaf::WeatherDescriptor::NONE:
 		return(phenomena(qualifier, 
 			Weather::SNOW_LIGHT, 
 			Weather::SNOW_MODERATE, 
 			Weather::SNOW_HEAVY));
 
-		case metaf::WeatherGroup::Descriptor::LOW_DRIFTING:
+		case metaf::WeatherDescriptor::LOW_DRIFTING:
 		return(Weather::DRIFTING_SNOW);
 
-		case metaf::WeatherGroup::Descriptor::BLOWING:
+		case metaf::WeatherDescriptor::BLOWING:
 		return(Weather::BLOWING_SNOW);
 
 		default:
@@ -254,27 +254,28 @@ Weather weatherSnow(metaf::WeatherGroup::Qualifier qualifier,
 	}
 }
 
-Weather weatherFog(metaf::WeatherGroup::Descriptor descriptor) {
+Weather weatherFog(metaf::WeatherDescriptor descriptor) {
 	switch (descriptor) {
-		case metaf::WeatherGroup::Descriptor::SHALLOW: return(Weather::FOG_SHALLOW);
-		case metaf::WeatherGroup::Descriptor::PARTIAL: return(Weather::FOG_PARTIAL);
-		case metaf::WeatherGroup::Descriptor::PATCHES: return(Weather::FOG_PATCHES);
-		case metaf::WeatherGroup::Descriptor::FREEZING: return(Weather::FOG_FREEZING);
+		case metaf::WeatherDescriptor::SHALLOW: return(Weather::FOG_SHALLOW);
+		case metaf::WeatherDescriptor::PARTIAL: return(Weather::FOG_PARTIAL);
+		case metaf::WeatherDescriptor::PATCHES: return(Weather::FOG_PATCHES);
+		case metaf::WeatherDescriptor::FREEZING: return(Weather::FOG_FREEZING);
 		default: return(Weather::FOG);
 	}
 }
 
 Weather phenomenaFromWeatherGroup(
 	metaf::WeatherGroup::Qualifier qualifier,
-	metaf::WeatherGroup::Descriptor descriptor,
-	metaf::WeatherGroup::Weather weather) 
+	metaf::WeatherDescriptor descriptor,
+	metaf::Weather weather) 
 {
 	switch (weather) {
-		case metaf::WeatherGroup::Weather::NOT_REPORTED:
+		case metaf::Weather::OMMITTED:
+		case metaf::Weather::NOT_REPORTED:
 		return(Weather::NOT_SPECIFIED);
 
-		case metaf::WeatherGroup::Weather::DRIZZLE:
-		if (descriptor == metaf::WeatherGroup::Descriptor::FREEZING) return(phenomena(qualifier, 
+		case metaf::Weather::DRIZZLE:
+		if (descriptor == metaf::WeatherDescriptor::FREEZING) return(phenomena(qualifier, 
 			Weather::DRIZZLE_FREEZING_LIGHT, 
 			Weather::DRIZZLE_FREEZING_MODERATE, 
 			Weather::DRIZZLE_FREEZING_HEAVY));
@@ -283,23 +284,23 @@ Weather phenomenaFromWeatherGroup(
 			Weather::DRIZZLE_MODERATE, 
 			Weather::DRIZZLE_HEAVY));
 
-		case metaf::WeatherGroup::Weather::RAIN:
+		case metaf::Weather::RAIN:
 		return(weatherRain(qualifier, descriptor));
 
-		case metaf::WeatherGroup::Weather::SNOW:
+		case metaf::Weather::SNOW:
 		return(weatherSnow(qualifier, descriptor));
 
-		case metaf::WeatherGroup::Weather::SNOW_GRAINS:
+		case metaf::Weather::SNOW_GRAINS:
 		return(phenomena(qualifier, 
 			Weather::SNOW_GRAINS_LIGHT, 
 			Weather::SNOW_GRAINS_MODERATE, 
 			Weather::SNOW_GRAINS_HEAVY));
 
-		case metaf::WeatherGroup::Weather::ICE_CRYSTALS:
+		case metaf::Weather::ICE_CRYSTALS:
 		return(Weather::ICE_CRYSTALS);
 
-		case metaf::WeatherGroup::Weather::ICE_PELLETS:
-		if (descriptor == metaf::WeatherGroup::Descriptor::SHOWERS) return(phenomena(qualifier, 
+		case metaf::Weather::ICE_PELLETS:
+		if (descriptor == metaf::WeatherDescriptor::SHOWERS) return(phenomena(qualifier, 
 			Weather::ICE_PELLETS_SHOWERS_LIGHT,
 			Weather::ICE_PELLETS_SHOWERS_MODERATE, 
 			Weather::ICE_PELLETS_SHOWERS_HEAVY));
@@ -308,89 +309,89 @@ Weather phenomenaFromWeatherGroup(
 			Weather::ICE_PELLETS_SHOWERS_MODERATE,
 			Weather::ICE_PELLETS_SHOWERS_HEAVY));
 
-		case metaf::WeatherGroup::Weather::HAIL:
+		case metaf::Weather::HAIL:
 		return(Weather::HAIL);
 
-		case metaf::WeatherGroup::Weather::SMALL_HAIL:
+		case metaf::Weather::SMALL_HAIL:
 		return(Weather::GRAUPEL);
 
-		case metaf::WeatherGroup::Weather::UNDETERMINED:
+		case metaf::Weather::UNDETERMINED:
 		return(phenomena(qualifier, 
 			Weather::UNDETERMINED_LIGHT, 
 			Weather::UNDETERMINED_MODERATE, 
 			Weather::UNDETERMINED_HEAVY));
 
-		case metaf::WeatherGroup::Weather::MIST:
+		case metaf::Weather::MIST:
 		return(Weather::MIST);
 
-		case metaf::WeatherGroup::Weather::FOG:
+		case metaf::Weather::FOG:
 		return(weatherFog(descriptor));
 
-		case metaf::WeatherGroup::Weather::SMOKE:
+		case metaf::Weather::SMOKE:
 		return(Weather::SMOKE);
 
-		case metaf::WeatherGroup::Weather::VOLCANIC_ASH:
+		case metaf::Weather::VOLCANIC_ASH:
 		return(Weather::VOLCANIC_ASH);
 
-		case metaf::WeatherGroup::Weather::DUST:
-		if (descriptor == metaf::WeatherGroup::Descriptor::LOW_DRIFTING) 
+		case metaf::Weather::DUST:
+		if (descriptor == metaf::WeatherDescriptor::LOW_DRIFTING) 
 			return(Weather::DRIFTING_DUST);
-		if (descriptor == metaf::WeatherGroup::Descriptor::BLOWING)
+		if (descriptor == metaf::WeatherDescriptor::BLOWING)
 			return(Weather::BLOWING_DUST);
 		return(Weather::WIDESPREAD_DUST);
 
-		case metaf::WeatherGroup::Weather::SAND:
-		if (descriptor == metaf::WeatherGroup::Descriptor::LOW_DRIFTING) 
+		case metaf::Weather::SAND:
+		if (descriptor == metaf::WeatherDescriptor::LOW_DRIFTING) 
 			return(Weather::DRIFTING_SAND);
-		if (descriptor == metaf::WeatherGroup::Descriptor::BLOWING)
+		if (descriptor == metaf::WeatherDescriptor::BLOWING)
 			return(Weather::BLOWING_SAND);
 		return(Weather::SAND);
 
-		case metaf::WeatherGroup::Weather::HAZE:
+		case metaf::Weather::HAZE:
 		return(Weather::HAZE);
 
-		case metaf::WeatherGroup::Weather::SPRAY:
+		case metaf::Weather::SPRAY:
 		return(Weather::BLOWING_SPRAY);
 
-		case metaf::WeatherGroup::Weather::DUST_WHIRLS:
+		case metaf::Weather::DUST_WHIRLS:
 		return(Weather::DUST_WHIRLS);
 
-		case metaf::WeatherGroup::Weather::SQUALLS:
+		case metaf::Weather::SQUALLS:
 		return(Weather::SQUALLS);
 
-		case metaf::WeatherGroup::Weather::FUNNEL_CLOUD:
+		case metaf::Weather::FUNNEL_CLOUD:
 		if (qualifier == metaf::WeatherGroup::Qualifier::HEAVY) return(Weather::TORNADO);
 		return(Weather::FUNNEL_CLOUD);
 
-		case metaf::WeatherGroup::Weather::SANDSTORM:
+		case metaf::Weather::SANDSTORM:
 		if (qualifier == metaf::WeatherGroup::Qualifier::HEAVY) return(Weather::SANDSTORM_HEAVY);
 		return(Weather::SANDSTORM);
 
-		case metaf::WeatherGroup::Weather::DUSTSTORM:
+		case metaf::Weather::DUSTSTORM:
 		if (qualifier == metaf::WeatherGroup::Qualifier::HEAVY) return(Weather::DUSTSTORM_HEAVY);
 		return(Weather::DUSTSTORM);
 	}
 }
 
-Weather phenomenaInVicinity(metaf::WeatherGroup::Descriptor descriptor,
-	metaf::WeatherGroup::Weather weather)
+Weather phenomenaInVicinity(metaf::WeatherDescriptor descriptor,
+	metaf::Weather weather)
 {
 	switch (descriptor) {
-		case metaf::WeatherGroup::Descriptor::SHOWERS:
+		case metaf::WeatherDescriptor::SHOWERS:
 		return(Weather::PRECIPITATION_IN_VICINITY);
 
-		case metaf::WeatherGroup::Descriptor::THUNDERSTORM:
+		case metaf::WeatherDescriptor::THUNDERSTORM:
 		return(Weather::THUNDERSTORM_IN_VICINITY);
 		
-		case metaf::WeatherGroup::Descriptor::BLOWING:
+		case metaf::WeatherDescriptor::BLOWING:
 		switch (weather) {
-			case metaf::WeatherGroup::Weather::DUST: 
+			case metaf::Weather::DUST: 
 			return(Weather::BLOWING_DUST_IN_VICINITY);
 
-			case metaf::WeatherGroup::Weather::SAND:
+			case metaf::Weather::SAND:
 			return(Weather::BLOWING_SAND_IN_VICINITY);
 
-			case metaf::WeatherGroup::Weather::SNOW:
+			case metaf::Weather::SNOW:
 			return(Weather::BLOWING_SNOW_IN_VICINITY);
 
 			default: break;
@@ -402,19 +403,19 @@ Weather phenomenaInVicinity(metaf::WeatherGroup::Descriptor descriptor,
 	}
 
 	switch (weather) {
-		case metaf::WeatherGroup::Weather::FOG: 
+		case metaf::Weather::FOG: 
 		return(Weather::FOG_IN_VICINITY);
 
-		case metaf::WeatherGroup::Weather::VOLCANIC_ASH:
+		case metaf::Weather::VOLCANIC_ASH:
 		return(Weather::VOLCANIC_ASH_IN_VICINITY);
 
-		case metaf::WeatherGroup::Weather::DUST_WHIRLS:
+		case metaf::Weather::DUST_WHIRLS:
 		return(Weather::DUST_WHIRLS_IN_VICINITY);
 
-		case metaf::WeatherGroup::Weather::DUSTSTORM:
+		case metaf::Weather::DUSTSTORM:
 		return(Weather::DUSTSTORM_IN_VICINITY);
 
-		case metaf::WeatherGroup::Weather::SANDSTORM:
+		case metaf::Weather::SANDSTORM:
 		return(Weather::SANDSTORM_IN_VICINITY);
 
 		default:
@@ -424,8 +425,8 @@ Weather phenomenaInVicinity(metaf::WeatherGroup::Descriptor descriptor,
 
 std::vector<int> weatherFromWeatherGroup(
 	metaf::WeatherGroup::Qualifier qualifier,
-	metaf::WeatherGroup::Descriptor descriptor,
-	std::vector<metaf::WeatherGroup::Weather> weather)
+	metaf::WeatherDescriptor descriptor,
+	std::vector<metaf::Weather> weather)
 {
 	std::vector<int> result;
 
@@ -433,14 +434,14 @@ std::vector<int> weatherFromWeatherGroup(
 
 	if (qualifier == metaf::WeatherGroup::Qualifier::VICINITY) {
 		const auto w = 
-			weather.empty() ? metaf::WeatherGroup::Weather::NOT_REPORTED : weather[0];
+			weather.empty() ? metaf::Weather::NOT_REPORTED : weather[0];
 		result.push_back(static_cast<int>(phenomenaInVicinity(descriptor, w)));
 		return(result);
 	}
 
-	if (descriptor == metaf::WeatherGroup::Descriptor::THUNDERSTORM) {
+	if (descriptor == metaf::WeatherDescriptor::THUNDERSTORM) {
 		result.push_back(static_cast<int>(Weather::THUNDERSTORM));
-		descriptor = metaf::WeatherGroup::Descriptor::NONE;
+		descriptor = metaf::WeatherDescriptor::NONE;
 	}
 
 	for (const auto w : weather) {
