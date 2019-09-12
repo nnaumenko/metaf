@@ -23,7 +23,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "RC4";
+		inline static const char tag [] = "";
 	};
 
 	class FixedGroup;

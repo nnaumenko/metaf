@@ -3036,6 +3036,36 @@ Example of the raw report data is ``8/578``, and ``8/903``.
 			:returns: ``true`` if all cloud layers above 'not observable' cloud layer are also 'not observable'; ``false`` otherwise.
 
 
+LightningGroup
+^^^^^^^^^^^^^^
+
+.. cpp:class:: LightningGroup
+
+This group is added to maintain compatibility. It is not used in this version.
+
+The planned use is to store lightning information included in METAR remarks.
+
+
+WeatherBeginEndGroup
+^^^^^^^^^^^^^^^^^^^^
+
+.. cpp:class:: WeatherBeginEndGroup
+
+This group is added to maintain compatibility. It is not used in this version.
+
+The planned use is to store time of the beginning and ending of weather phenomena included in METAR remarks.
+
+
+VicinityGroup
+^^^^^^^^^^^^^
+
+.. cpp:class:: LightningGroup
+
+This group is added to maintain compatibility. It is not used in this version.
+
+The planned use is to phenomena observed in vicinity of the station and included in METAR remarks.
+
+
 MiscGroup
 ^^^^^^^^^
 
