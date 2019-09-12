@@ -1492,6 +1492,10 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, and :cpp:func:`gustSpeed()`.
 
+		.. cpp:enumerator:: SURFACE_WIND_CALM
+
+			Surface wind calm (i.e. no wind) information is stored. :cpp:func:`speed()` is always zero.
+
 		.. cpp:enumerator:: VARIABLE_WIND_SECTOR
 
 			Only variable wind sector information is stored. Use :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
@@ -1552,12 +1556,6 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 		.. cpp:function:: std::optional<MetafTime> eventTime() const
 
 			:returns: Time when a certain weather event related to wind has happened (e.g. time when wind shift began, etc).
-
-	**Miscellaneous**
-
-		.. cpp:function:: bool isCalm() const
-
-			:returns: ``true`` if calm wind (i.e. no wind) is reported. Calm wind is coded as ``00000KT`` or ``00000MPS`` or ``00000KMH``.
 
 	**Validating**
 

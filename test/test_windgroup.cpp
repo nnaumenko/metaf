@@ -277,52 +277,49 @@ TEST(WindGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::WindGroup::parse("///V///", metaf::ReportPart::METAR).has_value());
 }
 
-TEST(WindGroup, isCalmTrueKnots) {
+TEST(WindGroup, calmWindKnots) {
 	const auto wg = metaf::WindGroup::parse("00000KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_TRUE(wg->isCalm());
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
 }
 
-TEST(WindGroup, isCalmTrueMps) {
+TEST(WindGroup, calmWindMps) {
 	const auto wg = metaf::WindGroup::parse("00000MPS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_TRUE(wg->isCalm());
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::METERS_PER_SECOND);
+	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
 }
 
-TEST(WindGroup, isCalmTrueKmh) {
+TEST(WindGroup, calmWindKmh) {
 	const auto wg = metaf::WindGroup::parse("00000KMH", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_TRUE(wg->isCalm());
-}
-
-TEST(WindGroup, isCalmFalse) {
-	const auto wg1 = metaf::WindGroup::parse("36000KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg1.has_value());
-	EXPECT_FALSE(wg1->isCalm());
-
-	const auto wg2 = metaf::WindGroup::parse("01000KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg2.has_value());
-	EXPECT_FALSE(wg2->isCalm());
-
-	const auto wg3 = metaf::WindGroup::parse("00001KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg3.has_value());
-	EXPECT_FALSE(wg3->isCalm());
-
-	const auto wg4 = metaf::WindGroup::parse("00000G00KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg4.has_value());
-	EXPECT_FALSE(wg4->isCalm());
-
-	const auto wg5 = metaf::WindGroup::parse("000V000", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg5.has_value());
-	EXPECT_FALSE(wg5->isCalm());
-
-	const auto wg6 = metaf::WindGroup::parse("WS000/00000KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg6.has_value());
-	EXPECT_FALSE(wg6->isCalm());
-
-	const auto wg7 = metaf::WindGroup::parse("WS001/00000KT", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wg7.has_value());
-	EXPECT_FALSE(wg7->isCalm());
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
 }
 
 TEST(WindGroup, isValidTrueSurfaceWind) {

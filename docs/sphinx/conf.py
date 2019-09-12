@@ -26,7 +26,7 @@ author = 'Nick Naumenko'
 # The short X.Y version
 version = '3.0.0'
 # The full version, including alpha/beta/rc tags
-release = '3.0.0 RC2'
+release = '3.0.0 RC3'
 
 
 # -- General configuration ---------------------------------------------------

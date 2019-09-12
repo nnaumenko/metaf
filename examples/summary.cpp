@@ -478,6 +478,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 
 		if (const auto gr = std::get_if<metaf::WindGroup>(&metarGroup); gr) {
 			if (gr->type() == metaf::WindGroup::Type::SURFACE_WIND ||
+				gr->type() == metaf::WindGroup::Type::SURFACE_WIND_CALM ||
 				gr->type() == metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR)
 			{
 				if (const auto dir = gr->direction().degrees(); dir.has_value()) {

@@ -23,7 +23,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "RC2";
+		inline static const char tag [] = "RC3";
 	};
 
 	class FixedGroup;
@@ -853,6 +853,7 @@ namespace metaf {
 		enum class Type {
 			INCOMPLETE,
 			SURFACE_WIND,
+			SURFACE_WIND_CALM,
 			VARIABLE_WIND_SECTOR,
 			SURFACE_WIND_WITH_VARIABLE_SECTOR,
 			WIND_SHEAR,
@@ -868,7 +869,6 @@ namespace metaf {
 		Direction varSectorBegin() const { return(vsecBegin); }
 		Direction varSectorEnd() const { return(vsecEnd); }
 		std::optional<MetafTime> eventTime() const { return(evTime); }
-		inline bool isCalm() const;
 		inline bool isValid() const;
 
 		WindGroup() = default;
@@ -3555,12 +3555,25 @@ namespace metaf {
 		if (std::smatch match; std::regex_match(group, match, windRgx)) {
 			const auto speedUnit = Speed::unitFromString(match.str(matchWindUnit));
 			if (!speedUnit.has_value()) return(notRecognised);
+			const auto speed = Speed::fromString(match.str(matchWindSpeed), speedUnit.value());
+			if (!speed.has_value()) return(notRecognised);
+
 			WindGroup result;
+
+			if (!match.length(matchWindShearHeight) && 
+				!match.length(matchWindGust) &&
+				match.str(matchWindDir) == "000" &&
+				match.str(matchWindSpeed) == "00")
+			{
+				//00000KT or 00000MPS or 00000KMH: calm wind
+				result.windType = Type::SURFACE_WIND_CALM;
+				result.wSpeed = speed.value();
+				return(result);
+			}
+
 			const auto dir = Direction::fromDegreesString(match.str(matchWindDir));
 			if (!dir.has_value()) return(notRecognised);
 			result.windDir = dir.value();
-			const auto speed = Speed::fromString(match.str(matchWindSpeed), speedUnit.value());
-			if (!speed.has_value()) return(notRecognised);
 			result.wSpeed = speed.value();
 			const auto gust = Speed::fromString(match.str(matchWindGust), speedUnit.value());
 			if (gust.has_value()) result.gSpeed = gust.value();
@@ -3685,14 +3698,6 @@ namespace metaf {
 		evTime = MetafTime(hour, minute);
 
 		return(AppendResult::APPENDED);
-	}
-
-	bool WindGroup::isCalm() const {
-		return (type() == Type::SURFACE_WIND &&
-			direction().status() == Direction::Status::VALUE_DEGREES &&
-			!direction().degrees().value_or(1) &&
-			!windSpeed().speed().value_or(1) &&
-			!gustSpeed().speed().has_value());
 	}
 
 	bool WindGroup::isValid() const {

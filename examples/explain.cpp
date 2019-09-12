@@ -417,6 +417,10 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		result << "a wind group but some of the text appears missing.";
 		break;
 
+		case metaf::WindGroup::Type::SURFACE_WIND_CALM:
+		result << "No wind";
+		return(result.str());
+
 		case metaf::WindGroup::Type::SURFACE_WIND:
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
@@ -450,12 +454,6 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		break;
 	}
 	result << lineBreak;
-
-	if (group.isCalm()) {
-		// Calm wind
-		result << "No wind / Calm";
-		return(result.str());
-	}
 
 	if (group.direction().status() != metaf::Direction::Status::OMMITTED || 
 		group.windSpeed().speed().has_value())
