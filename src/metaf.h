@@ -23,7 +23,7 @@ namespace metaf {
 		inline static const int major = 3;
 		inline static const int minor = 0;
 		inline static const int patch = 0;
-		inline static const char tag [] = "RC3";
+		inline static const char tag [] = "RC4";
 	};
 
 	class FixedGroup;
@@ -49,6 +49,9 @@ namespace metaf {
 	class PressureTendencyGroup;
 	class CloudTypesGroup;
 	class CloudLayersGroup;
+	class LightningGroup;
+	class WeatherBeginEndGroup;
+	class VicinityGroup;
 	class MiscGroup;
 	class UnknownGroup;
 
@@ -76,6 +79,9 @@ namespace metaf {
 		PressureTendencyGroup,
 		CloudTypesGroup,
 		CloudLayersGroup,
+		LightningGroup,
+		WeatherBeginEndGroup,
+		VicinityGroup,
 		MiscGroup,
 		UnknownGroup
 	>;
@@ -1601,6 +1607,69 @@ namespace metaf {
 		static inline std::optional<HighLayer> highLayerFromChar(char c);
 	};
 
+	class LightningGroup {
+	public:
+		inline bool isValid() const { return(true); }
+
+		LightningGroup() = default;
+		static std::optional<LightningGroup> parse(const std::string & group,
+			ReportPart reportPart,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{ 
+			(void)group; (void)reportPart; (void)reportMetadata;
+			return (std::optional<LightningGroup>()); 
+		}
+		AppendResult append(const std::string & group,
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{
+			(void)group; (void)reportPart; (void)reportMetadata; 
+			return(AppendResult::NOT_APPENDED);
+		}
+	};
+	
+	class WeatherBeginEndGroup {
+	public:
+		inline bool isValid() const { return(true); }
+
+		WeatherBeginEndGroup() = default;
+		static std::optional<WeatherBeginEndGroup> parse(const std::string & group,
+			ReportPart reportPart,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{ 
+			(void)group; (void)reportPart; (void)reportMetadata;
+			return (std::optional<WeatherBeginEndGroup>()); 
+		}
+		AppendResult append(const std::string & group,
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{
+			(void)group; (void)reportPart; (void)reportMetadata; 
+			return(AppendResult::NOT_APPENDED);
+		}
+	};
+
+	class VicinityGroup {
+	public:
+		inline bool isValid() const { return(true); }
+
+		VicinityGroup() = default;
+		static std::optional<VicinityGroup> parse(const std::string & group,
+			ReportPart reportPart,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{ 
+			(void)group; (void)reportPart; (void)reportMetadata;
+			return (std::optional<VicinityGroup>());
+		}
+		AppendResult append(const std::string & group,
+			ReportPart reportPart = ReportPart::UNKNOWN,
+			const ReportMetadata & reportMetadata = missingMetadata)
+		{
+			(void)group; (void)reportPart; (void)reportMetadata; 
+			return(AppendResult::NOT_APPENDED);
+		}
+	};
+
 	class MiscGroup {
 	public:
 		enum class Type {
@@ -1862,6 +1931,15 @@ namespace metaf {
 		virtual T visitCloudLayersGroup(const CloudLayersGroup & group,
 			ReportPart reportPart,
 			const std::string & rawString) = 0;
+		virtual T visitLightningGroup(const LightningGroup & group,
+			ReportPart reportPart,
+			const std::string & rawString) = 0;
+		virtual T visitWeatherBeginEndGroup(const WeatherBeginEndGroup & group,
+			ReportPart reportPart,
+			const std::string & rawString) = 0;
+		virtual T visitVicinityGroup(const VicinityGroup & group,
+			ReportPart reportPart,
+			const std::string & rawString) = 0;
 		virtual T visitMiscGroup(const MiscGroup & group,
 			ReportPart reportPart,
 			const std::string & rawString) = 0;
@@ -1943,6 +2021,15 @@ namespace metaf {
 		}
 		if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
 			return(this->visitCloudLayersGroup(*gr, reportPart, rawString));
+		}
+		if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
+			return(this->visitLightningGroup(*gr, reportPart, rawString));
+		}
+		if (const auto gr = std::get_if<WeatherBeginEndGroup>(&group); gr) {
+			return(this->visitWeatherBeginEndGroup(*gr, reportPart, rawString));
+		}
+		if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
+			return(this->visitVicinityGroup(*gr, reportPart, rawString));
 		}
 		if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
 			return(this->visitMiscGroup(*gr, reportPart, rawString));
@@ -2048,6 +2135,18 @@ namespace metaf {
 		}
 		if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
 			this->visitCloudLayersGroup(*gr, reportPart, rawString);
+			return;
+		}
+		if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
+			this->visitLightningGroup(*gr, reportPart, rawString);
+			return;
+		}
+		if (const auto gr = std::get_if<WeatherBeginEndGroup>(&group); gr) {
+			this->visitWeatherBeginEndGroup(*gr, reportPart, rawString);
+			return;
+		}
+		if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
+			this->visitVicinityGroup(*gr, reportPart, rawString);
 			return;
 		}
 		if (const auto gr = std::get_if<MiscGroup>(&group); gr) {

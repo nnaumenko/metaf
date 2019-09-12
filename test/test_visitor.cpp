@@ -196,6 +196,31 @@ protected:
 		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]++;
 	}
+
+	virtual void visitLightningGroup(const metaf::LightningGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
+		count[variant_index<metaf::Group, metaf::LightningGroup>()]++;
+	}
+
+	virtual void visitWeatherBeginEndGroup(const metaf::WeatherBeginEndGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
+		count[variant_index<metaf::Group, metaf::WeatherBeginEndGroup>()]++;
+	}
+
+	virtual void visitVicinityGroup(const metaf::VicinityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
+		count[variant_index<metaf::Group, metaf::VicinityGroup>()]++;
+	}
+
 	virtual void visitMiscGroup(const metaf::MiscGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -203,6 +228,7 @@ protected:
 		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::MiscGroup>()]++;
 	}
+
 	virtual void visitUnknownGroup(const metaf::UnknownGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -279,6 +305,9 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherBeginEndGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 0);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 5);
 }

@@ -83,6 +83,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;  
 		return("Fixed Text: " + rawString);
 	}
+
 	virtual std::string visitLocationGroup(
 		const LocationGroup & group,
 		ReportPart reportPart,
@@ -91,6 +92,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("ICAO location: " + rawString);
 	}
+
 	virtual std::string visitReportTimeGroup(
 		const ReportTimeGroup & group,
 		ReportPart reportPart,
@@ -99,6 +101,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Report Release Time: " + rawString);
 	}
+
 	virtual std::string visitTrendGroup(
 		const TrendGroup & group,
 		ReportPart reportPart,
@@ -107,6 +110,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Trend Header: " + rawString);
 	}
+
 	virtual std::string visitWindGroup(
 		const WindGroup & group,
 		ReportPart reportPart,
@@ -115,6 +119,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Wind: " + rawString);
 	}
+
 	virtual std::string visitVisibilityGroup(
 		const VisibilityGroup & group,
 		ReportPart reportPart,
@@ -123,6 +128,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Visibility: " + rawString);
 	}
+
 	virtual std::string visitCloudGroup(
 		const CloudGroup & group,
 		ReportPart reportPart,
@@ -131,6 +137,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Cloud Data: " + rawString);
 	}
+
 	virtual std::string visitWeatherGroup(
 		const WeatherGroup & group,
 		ReportPart reportPart,
@@ -139,6 +146,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Weather Phenomena: " + rawString);
 	}
+
 	virtual std::string visitTemperatureGroup(
 		const TemperatureGroup & group,
 		ReportPart reportPart,
@@ -147,6 +155,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Temperature and Dew Point: " + rawString);
 	}
+
 	virtual std::string visitTemperatureForecastGroup(
 		const TemperatureForecastGroup & group,
 		ReportPart reportPart,
@@ -155,6 +164,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Tempreature Forecast: " + rawString);
 	}
+
 	virtual std::string visitPressureGroup(
 		const PressureGroup & group,
 		ReportPart reportPart,
@@ -163,6 +173,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Pressure: " + rawString);
 	}
+
 	virtual std::string visitRunwayVisualRangeGroup(
 		const RunwayVisualRangeGroup & group,
 		ReportPart reportPart,
@@ -171,6 +182,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Runway Visual Range: " + rawString);
 	}
+
 	virtual std::string visitRunwayStateGroup(
 		const RunwayStateGroup & group,
 		ReportPart reportPart,
@@ -179,6 +191,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("State of Runway:" + rawString);
 	}
+
 	virtual std::string visitSecondaryLocationGroup(
 		const SecondaryLocationGroup & group,
 		ReportPart reportPart,
@@ -187,6 +200,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Information on Secondary Location: " + rawString);
 	}
+
 	virtual std::string visitRainfallGroup(
 		const RainfallGroup & group,
 		ReportPart reportPart,
@@ -195,6 +209,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Rainfall: " + rawString);
 	}
+
 	virtual std::string visitSeaSurfaceGroup(
 		const SeaSurfaceGroup & group,
 		ReportPart reportPart,
@@ -203,6 +218,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Sea Surface: " + rawString);
 	}
+
 	virtual std::string visitColourCodeGroup(
 		const ColourCodeGroup & group,
 		ReportPart reportPart,
@@ -211,6 +227,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Colour Code: " + rawString);
 	}
+
 	virtual std::string visitMinMaxTemperatureGroup(
 		const MinMaxTemperatureGroup & group,
 		ReportPart reportPart,
@@ -219,6 +236,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Minimum/Maximum Temperature: " + rawString);
 	}
+
 	virtual std::string visitPrecipitationGroup(
 		const PrecipitationGroup & group,
 		ReportPart reportPart,
@@ -227,6 +245,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Precipitation: " + rawString);
 	}
+
 	virtual std::string visitLayerForecastGroup(
 		const LayerForecastGroup & group,
 		ReportPart reportPart,
@@ -235,6 +254,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Atmospheric Layer Forecast: " + rawString);
 	}
+
 	virtual std::string visitPressureTendencyGroup(
 		const PressureTendencyGroup & group,
 		ReportPart reportPart,
@@ -243,6 +263,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Pressure Tendency: " + rawString);
 	}
+
 	virtual std::string visitCloudTypesGroup(
 		const CloudTypesGroup & group,
 		ReportPart reportPart,
@@ -251,6 +272,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Cloud Types: " + rawString);
 	}
+
 	virtual std::string visitCloudLayersGroup(
 		const CloudLayersGroup & group,
 		ReportPart reportPart,
@@ -259,6 +281,34 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Cloud Layers: " + rawString);
 	}
+
+	virtual std::string visitLightningGroup(
+		const LightningGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return("Lightning data: " + rawString);
+	}
+
+	virtual std::string visitWeatherBeginEndGroup(
+		const WeatherBeginEndGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return("Weather phenomena beginning and ending: " + rawString);
+	}
+
+	virtual std::string visitVicinityGroup(
+		const VicinityGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return("Events in vicinity: " + rawString);
+	}
+
 	virtual std::string visitMiscGroup(
 		const MiscGroup & group,
 		ReportPart reportPart,
@@ -267,6 +317,7 @@ class MyVisitor : public Visitor<std::string> {
 		(void)group; (void)reportPart;
 		return("Miscellaneous Data: " + rawString);
 	}
+
 	virtual std::string visitUnknownGroup(
 		const UnknownGroup & group,
 		ReportPart reportPart,

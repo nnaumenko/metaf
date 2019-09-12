@@ -103,6 +103,18 @@ private:
 		const metaf::CloudLayersGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
+	virtual std::string visitLightningGroup(
+		const metaf::LightningGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitWeatherBeginEndGroup(
+		const metaf::WeatherBeginEndGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
+	virtual std::string visitVicinityGroup(
+		const metaf::VicinityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 	virtual std::string visitMiscGroup(
 		const metaf::MiscGroup & group,
 		metaf::ReportPart reportPart,
@@ -963,6 +975,31 @@ std::string VisitorExplain::visitCloudLayersGroup(
 	result << "High cloud layer: " << lineBreak;
 	result << cloudHighLayerToString(group.highLayer()) << lineBreak;
 	return(result.str());
+}
+
+std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)group; (void)reportPart; (void)rawString;
+	return("This is a placeholder group which is not used yet.");
+}
+
+std::string VisitorExplain::visitWeatherBeginEndGroup(
+	const metaf::WeatherBeginEndGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)group; (void)reportPart; (void)rawString;
+	return("This is a placeholder group which is not used yet.");
+}
+
+std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)group; (void)reportPart; (void)rawString;
+	return("This is a placeholder group which is not used yet.");
 }
 
 std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
