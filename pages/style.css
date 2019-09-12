@@ -2,6 +2,7 @@
 			background-color:#7395ae;
 			color:#ffffff;
 			text-align:justify;
+			font-size:1em;
 		}
 
 		a:link {
@@ -20,12 +21,17 @@
 			color: #d4dce3;
 		}
 
+		h1 {
+			font-size:1.5em;
+		}
+
 		.navbar {
 			list-style-type: none;
 			margin: 0;
 			padding: 0;
 			overflow: hidden;
 			background-color: #557a95;
+			font-size: 1em;
 		}
 
 		.navitem {
@@ -36,7 +42,7 @@
 			display: block;
 			color: #ffffff;
 			text-align: center;
-			padding: 14px 16px;
+			padding: 0.8em 0.95em;
 			text-decoration: none;
 		}
 
