@@ -561,15 +561,15 @@
 			//Temperature data
 			result += `Temperature `;
 			if (weather.airTemperature !== null) {
-				result += `${weather.airTemperature}${tempUnit}`
+				result += `${weather.airTemperature}${tempUnit}`;
 			} else {
 				result += `not specified`;
 			}
 			if (weather.airTemperatureHigh !== null) {
-				result += `, high ${weather.airTemperatureHigh}${tempUnit}`
+				result += `, high ${weather.airTemperatureHigh}${tempUnit}`;
 			}
 			if (weather.airTemperatureLow !== null) {
-				result += `, low ${weather.airTemperatureLow}${tempUnit}`
+				result += `, low ${weather.airTemperatureLow}${tempUnit}`;
 			}
 			result += `${eol}`;
 			if (weather.perceivedTemperature !== null) {
@@ -834,7 +834,6 @@
 				`` : ` style="transform: rotate(${currentWeather.windDirection}deg) scaleY(-1);"`;
 			const windIconClass = 
 				currentWeather.isWindVariable ? "ww_wind_vrb_icon" : "ww_wind_dir_icon";
-			const decimalRadix = 10;
 
 			var gustStyle = imperialUnits ? "ww_gust_mph" : "ww_gust_kmh";
 			if (currentWeather.gustSpeed === null) gustStyle = "ww_no_gust";
@@ -918,7 +917,7 @@
 			}
 			result += "</div>";//div class=weatherstation
 	
-			result += '<div class="widget">'
+			result += '<div class="widget">';
 			result += makeWeatherWidget(currWeather, imperialUnits);
 			result += "</div>";//div class=widget
 
@@ -995,7 +994,7 @@
 			const eol = "<br>";
 			var result = "";
 			var displayResult = false;
-			for (i = 0; i<errors.length; i++) {
+			for (var i = 0; i<errors.length; i++) {
 				errors[i].childNodes.forEach(value => {
 					const errorMessage = value.innerHTML;
 					if (errorMessage !== null && typeof errorMessage !== 'undefined') {
@@ -1017,7 +1016,7 @@
 		function AWCdataToMap(metarData, tafData, latitude, longitude) {
 			var weatherData = new Map();
 			//Add METARs to weather data
-			for (i = 0; i<metarData.length; i++) {
+			for (var i = 0; i<metarData.length; i++) {
 				const metar = getReportFromNodeList(metarData[i].childNodes);
 				const dist = distanceKm(metar.lat, metar.lon, latitude, longitude);
 				weatherData.set(metar.id, 
@@ -1030,7 +1029,7 @@
 					});
 			}
 			//Add TAFs to weather data
-			for (i = 0; i<tafData.length; i++) {
+			for (var i = 0; i<tafData.length; i++) {
 				const taf = getReportFromNodeList(tafData[i].childNodes);
 				if (weatherData.has(taf.id)) {
 					var weatherDataElement = weatherData.get(taf.id);
