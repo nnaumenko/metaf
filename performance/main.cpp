@@ -181,13 +181,11 @@ protected:
 int ParserPerformanceChecker::process() {
 	auto reportCount = 0;
 	for (const auto & data : testdata::realDataSet) {
-		//Not using strlen to determine empty reports in order exclude strlen 
-		//from performance check
- 		if (data.metar[0]) {
+ 		if (!data.metar.empty()) {
 			metaf::Parser::parse(data.metar);
 			reportCount++;
 		}
-		if (data.taf[0]) {
+		if (!data.taf.empty()) {
 			metaf::Parser::parse(data.taf);
 			reportCount++;
 		}
@@ -255,8 +253,8 @@ private:
 GroupsTestSet::GroupsTestSet() {
 	testSet.resize(variant_size_v<metaf::Group>);
 	for (const auto & data : testdata::realDataSet) {
- 		if (strlen(data.metar)) getGroupsFromReport(data.metar);
-		if (strlen(data.taf)) getGroupsFromReport(data.taf);
+ 		if (!data.metar.empty()) getGroupsFromReport(data.metar);
+		if (!data.taf.empty()) getGroupsFromReport(data.taf);
 	}
 }
 
@@ -377,14 +375,14 @@ void checkRecognisedGroups() {
 	auto metarUnrecognisedGroupCount = 0;
 	auto tafUnrecognisedGroupCount = 0;
 	for (const auto & data : testdata::realDataSet) {
- 		if (strlen(data.metar)) {
+ 		if (!data.metar.empty()) {
 			const auto parseResult = metaf::Parser::parse(data.metar);
 			auto count = addPlainTextGroups(parseResult, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.metar));
 			metarTotalGroupCount += parseResult.groups.size();
 			metarUnrecognisedGroupCount += count;
 		}
-		if (strlen(data.taf)) {
+		if (!data.taf.empty()) {
 			const auto parseResult = metaf::Parser::parse(data.taf);
 			auto count = addPlainTextGroups(parseResult, flaggedGroups);
 			if (count) flaggedReports.push_back(make_pair(count, data.taf));

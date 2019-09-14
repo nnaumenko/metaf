@@ -205,7 +205,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"ENLA", "Ula Platform(OIL)", {2018, 9, 6},
 		"METAR ENLA 061120Z AUTO 14008KT 9999NDV FEW018/// BKN044/// 15/11 Q1013 W///S2"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -234,7 +235,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"CWFD", "Cape Dyer Arpt", {2018, 9, 9}, 
 		"METAR CWFD 092000Z AUTO 22006KT ////SM //// NCD ///// A////"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -330,7 +332,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PABA", "Barter Island Arpt", {2018, 9, 9}, 
 		"METAR PABA 091952Z AUTO 28011KT 10SM BKN050 OVC060 06/03 A3003"
 		" RMK AO2 SLP156 T00560028 TSNO"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -417,7 +420,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"CWEU", "Eureka", {2018, 9, 9}, 
 		"METAR CWEU 092000Z VRB02KT 15SM FEW025 FEW060 FEW110 FEW250 01/M07 A2964"
 		" RMK SC1SC1AC1CI1 SC TR SC TR AC TR CI TR SLP039"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -493,7 +497,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMFV", "Melfa/Accomack Cnty", {2018, 9, 9}, 
 		"METAR KMFV 092035Z AUTO 09015G23KT 5SM -VCTSRA SCT009 OVC013 23/23 A2991"
 		" RMK AO2 LTG DSNT W P0009 T02320225"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -631,13 +636,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EGPU", "Tiree Island Arpt", {2018, 9, 9}, 
 		"METAR EGPU 092050Z AUTO 24025G35KT 210V270 9999 SCT021/// SCT033/// 12/11 Q1005 RERA"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"EGPL", "Benbecula Isl Arpt", {2018, 9, 9}, 
 		"METAR EGPL 092050Z AUTO 25027G37KT 9999 SCT012/// BKN017/// 13/11 Q1000 RERA"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -693,13 +700,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EGQK", "Kinloss(RAF)", {2018, 9, 9}, 
 		"METAR EGQK 092050Z AUTO 21011KT 9999 FEW048/// 12/06 Q1004"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"ENHM", "Heimdal(OIL)", {2018, 9, 9}, 
 		"METAR ENHM 092050Z AUTO 23019KT 9999NDV FEW017/// SCT026/// BKN087/// 14/12 Q1004 W15/S4"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -924,7 +933,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"FALW", "Langebaanweg (S", {2018, 9, 9}, 
 		"METAR FALW 092100Z AUTO 20004KT //// // ////// 08/05 Q1022"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1001,7 +1011,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"BGTL", "Thule(AB)", {2018, 9, 9}, 
 		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
 		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1021,7 +1032,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KIOB", "Mount Sterling/Montg", {2018, 9, 9}, 
 		"METAR KIOB 092115Z AUTO 00000KT 7SM RA BKN004 BKN013 OVC033 21/21 A2981"
 		" RMK AO2 P0002"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1102,13 +1114,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KIDI", "Indiana/Stewart Arpt", {2018, 9, 9}, 
 		"METAR KIDI 092135Z AUTO 09010G16KT 060V120 3SM BR SCT009 BKN014 OVC055 13/13 A3008"
 		" RMK A01"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"EGPI", "Islay Arpt", {2018, 9, 9}, 
 		"METAR EGPI 092120Z AUTO 24026G36KT 9999 FEW028/// 13/10 Q1010"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1123,7 +1137,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"ENOV", "Orsta-Volda Arpt", {2018, 9, 9}, 
 		"METAR ENOV 092050Z 06008KT 330V120 9999 -SHRA FEW030 BKN059 16/07 Q1004"
 		" RMK WIND 2175FT 13026KT"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1141,7 +1156,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"NZSP", "Amundsen-South Pole", {2018, 9, 9}, 
 		"METAR NZSP 091750Z 11009KT 9999 IC FEW015 M70/ A2823"
 		" RMK CLN AIR 10009KT ALL WNDS GRID"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1226,7 +1242,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"NZSP", "Amundsen-South Pole", {2018, 9, 11}, 
 		"METAR NZSP 111750Z 10008KT 4000 IC BR FEW000 M62/ A2823"
 		" RMK BR FEW000 CLN AIR 10007KT ALL WNDS GRID"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1465,7 +1482,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"MHPL", "Puerto Lempira Arpt", {2018, 9, 11},
 		"METAR MHPL 111900Z 00000KT 9999 BKN030TCU 33/26 Q1012 TCU ALL HZ"
-		"="
+		"=",
+		""
 	},
 
 
@@ -1569,14 +1587,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KAIK", "Aiken Muni", {2018, 9, 11},
 		"METAR KAIK 111935Z AUTO 16012G18KT 4SM +TSRA SCT015 BKN038 OVC070 25/22 A3006"
 		" RMK AO2 LTG DSNT E THRU SW"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"K2J3", "Louisville Muni", {2018, 9, 11},
 		"METAR K2J3 111930Z AUTO 34012G17KT 7SM VCTSRA SCT029 OVC048 27/24 A3003"
 		" RMK AO2 LTG DSNT ALQDS P0003 T02730236"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1741,7 +1761,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EGUW", "Wattisham(RAF)", {2018, 9, 11},
 		"METAR EGUW 112250Z 25007KT 2500 RADZ FEW002 SCT003 BKN010 16/16 Q1019 YLO2"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1857,7 +1878,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"EGVA", "Fairford(RAF)", {2018, 9, 13}, 
 		"SPECI EGVA 130810Z AUTO 00000KT 0400 R09/0500V0800 FG VV000 08/08 A3023"
 		" RMK AO2 SLP242 $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1931,7 +1953,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"LIMH", "Pian Rosa(MTN)", {2018, 9, 13}, 
 		"LIMH 131555Z /////KT 0200 FG VV/// 06/04 Q1031"
 		" RMK MON INVIS VAL INVIS VIS MIN 0200"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -1979,7 +2002,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"DRRT", "Tahoua Arpt", {2018, 9, 13}, 
 		"METAR DRRT 131600Z 12018KT 3000 SA FEW040 FEW050 CB 36/18 Q1009"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2061,14 +2085,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PAGH", "Shungnak Arpt", {2018, 9, 13}, 
 		"METAR PAGH 131656Z AUTO 00000KT 1/4SM FG OVC002 04/04 A3033"
 		" RMK AO2 SLP276 T00440044"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"PATC", "Tin City Arpt", {2018, 9, 13}, 
 		"METAR PATC 131655Z AUTO 26003KT 1/4SM FG VV003 07/07 A3025"
 		" RMK AO2 SLP245 T00690068"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2194,13 +2220,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"K2DP", "Stumpy Point Gunnery", {2018, 9, 13},
 		"SPECI K2DP 131533Z AUTO 06013G19KT 10SM SCT013 24/23 A2992"
 		" RMK AO2 SHRAB1456E33 SLPNO $"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
 		"METAR KHSE 131451Z AUTO 06016G29KT 7SM -RA FEW035 SCT065 BKN085 27/24 A2983"
-		" RMK AO2 PK WND 08039/1356 RAB1352 SLP102 P0005 60006 T02670244 56019",
+		" RMK AO2 PK WND 08039/1356 RAB1352 SLP102 P0005 60006 T02670244 56019"
+		"=",
+		""
 	},
 
 	{
@@ -2217,7 +2246,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
 		"SPECI KMRH 131549Z AUTO 03027G44KT 2SM -RA BR SCT025 BKN036 OVC048 26/24 A2972"
 		" RMK AO2 PK WND 04044/1546 P0011 T02610244 $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2240,7 +2270,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"TDCF", "Canefield Arpt", {2018, 9, 13},
 		"METAR TDCF 131500Z 08002KT 9999 -TSRA BKN008 FEW///CB 26/25 Q1007"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2268,7 +2299,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"TNCE", "St Eustatius/Rooseve", {2018, 9, 13},
 		"METAR TNCE 131455Z AUTO 05021KT 030V090 //// // ///////// 30/24 Q1012 RE//"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2311,21 +2343,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMFV", "Melfa/Accomack Cnty", {2018, 9, 13},
 		"METAR KMFV 131555Z AUTO 06013G20KT 10SM OVC006 26/25 A3013"
 		" RMK AO2 T02620245"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KOXB", "Ocean City Muni", {2018, 9, 13},
 		"METAR KOXB 131553Z AUTO 06011G19KT 10SM OVC004 24/23 A3018"
 		" RMK AO2 SLP220 T02440228 $"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
 		"METAR KHSE 131551Z AUTO 06016G36KT 5SM -RA BR FEW050 BKN110 27/24 A2981"
 		" RMK AO2 PK WND 06036/1545 SLP093 P0004 T02670244"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2356,14 +2391,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KNCA 131556Z AUTO 03020G38KT 10SM SCT026 BKN036 BKN050 29/24 A2983"
 		" RMK AO2 PK WND 02038/1554 SLP105 T02890239"
 		"=",
-
+		""
 	},
 
 	{
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
 		"METAR KMRH 131558Z AUTO 03025G41KT 6SM -RA SCT029 BKN043 OVC070 27/24 A2971"
 		" RMK AO2 PK WND 04044/1546 SLP062 P0011 T02670239 $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2382,14 +2418,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
 		"SPECI KMRH 131705Z AUTO 03027G48KT 3SM RA BR SCT026 BKN034 OVC060 26/24 A2966"
 		" RMK AO2 PK WND 03047/1700 P0003 T02610244"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
 		"SPECI KHSE 131719Z AUTO 07026G42KT 2 1/2SM +RA BR FEW060 SCT080 BKN110 26/24 A2978"
 		" RMK AO2 PK WND 08043/1706 P0005 T02610239"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2406,7 +2444,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"K7W6", "Engelhard/Hyde Cnty", {2018, 9, 13},
 		"METAR K7W6 131825Z AUTO 04025G38KT 4SM -RA SCT018 BKN025 OVC080 26/25 A2983"
 		" RMK AO2 P0001 T02550245"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2426,7 +2465,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2466,14 +2506,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
 		"METAR KHSE 131851Z AUTO 08022G43KT 2SM RA BR FEW034 BKN050 OVC070 26/24 A2975"
 		" RMK AO2 PK WND 08047/1826 SLP073 P0011 T02560239"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2491,7 +2533,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KNCA", "New River (MCAS)", {2018, 9, 13},
 		"METAR KNCA 131856Z AUTO 01024G40KT 6SM -RA BR FEW028 SCT060 OVC100 26/24 A2970"
 		" RMK AO2 PK WND 02045/1827 RAB06 SLP058 P0006 T02610239"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2582,7 +2625,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 14},
 		"METAR KHSE 140451Z AUTO 12034G48KT 5SM -RA BR FEW120 27/25 A2976"
 		" RMK AO2 PK WND 12051/0440 SLP076 P0006 T02670250 402890239"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2601,14 +2645,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"K2DP", "Stumpy Point Gunnery", {2018, 9, 14},
 		"SPECI K2DP 140516Z AUTO 10024G32KT 6SM -RA BKN014 OVC070 25/25 A2980"
 		" RMK AO2 CIG 014V070 SLPNO $"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KNCA", "New River (MCAS)", {2018, 9, 14},
 		"SPECI KNCA 140514Z AUTO 03039G64KT RA FEW013 BKN024 OVC033 25/23 A2921"
 		" RMK AO2 PK WND 04064/0509 PRESFR P0007 T02500233 $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2638,7 +2684,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 14},
 		"METAR KMRH 140958Z AUTO"
 		" RMK AO2 SLPNO PWINO $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2694,7 +2741,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 14},
 		"SPECI KMRH 142126Z AUTO VCTS"
 		" RMK AO2 PWINO $"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -2744,42 +2792,48 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KEDE", "Edenton/Northeast Rg", {2018, 9, 14},
 		"METAR KEDE 142225Z AUTO 10012G19KT 7SM DZ OVC021 28/26 A2992"
 		" RMK AO2 P0001 T02750257"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 14},
 		"SPECI KHSE 142223Z AUTO 13020G29KT 4SM -RA BR SCT024 BKN050 OVC120 28/26 A2990"
 		" RMK AO2 PK WND 13031/2157 P0004 T02780256"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KASJ", "Ahoskie/Tri Cnty", {2018, 9, 14},
 		"METAR KASJ 142230Z AUTO 05007KT 10SM RA SCT015 SCT060 BKN110 25/25 A2991"
 		" RMK AO2 P0002 T02450245"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KHYW", "Conway/Horry Cnty", {2018, 9, 14},
 		"METAR KHYW 142215Z AUTO 29013G31KT 230V330 2SM +RA OVC011 23/23 A2914"
 		" RMK AO2 P0003"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KJZI", "Charleston/Executive", {2018, 9, 14},
 		"METAR KJZI 142235Z AUTO 26017G28KT 8SM +RA SCT047 SCT055 BKN100 29/22 A2963"
 		" RMK AO2"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KLRO", "Mt Pleasant Rgnl", {2018, 9, 14},
 		"METAR KLRO 142215Z AUTO 28018G29KT 10SM OVC038 29/22 A2958"
 		" RMK AO2"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3118,7 +3172,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"GOOG", "Linguere Arpt", {2018, 9, 15},
 		"METAR GOOG 152200Z 00000KT DU NSC 30/24 Q////"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3126,6 +3181,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR UKKK 152200Z 33004MPS 310V010 9999 SCT013 19/17 Q1015 R26/CLRD70"
 		" TEMPO 31010G17MPS 2100 -TSRA SQ BKN007 BKN015CB"
 		"=",
+		""
 	},
 
 	{
@@ -3286,7 +3342,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"CYUS", "Shepherd Bay Arpt", {2018, 9, 16},
 		"SPECI CYUS 162147Z AUTO VRB13G28KT ////SM //// FEW009 BKN015 OVC065 M01/M02 A2987"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3316,27 +3373,31 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EHDV", "D15-FA-1 Sea(OIL)", {2018, 9, 16},
 		"METAR EHDV 162155Z AUTO 26011KT 160V330 9999 DZ FEW023/// BKN027/// BKN033/// 17/15 Q1015 W///H///"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"CYSY", "Sachs Harbour Arpt", {2018, 9, 17},
 		"METAR CYSY NIL"
 		"=",
+		""
 	},
 
 	{
 		"KMNI", "Manning/Cooper Rgnl", {2018, 9, 17},
 		"METAR KMNI 171315Z AUTO 18005KT 3/4SM BR OVC008 23/22 A2997"
 		" RMK AO2 VIS 1/2V1 3/4"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"KMWN", "Mount Washington(OBS", {2018, 9, 17},
 		"METAR KMWN 171249Z 28023KT 1/16SM FG VV001 12/12"
 		" RMK"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3465,7 +3526,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PABA", "Barter Island Arpt", {2018, 9, 17},
 		"METAR PABA 171852Z AUTO 09019KT 6SM BR OVC007 M02/M03 A3027"
 		" RMK AO2 PK WND 09028/1827 SNB26E37 SLP236 P0000 T10171028 FZRANO TSNO"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3519,7 +3581,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PAEC", "Chulitna", {2018, 9, 17},
 		"METAR PAEC 171856Z 00000KT 1/2SM -DZ FG VV002 09/08 A3003"
 		" RMK NOSPECI"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3554,7 +3617,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"EGDR", "Culdrose (NAVY)", {2018, 9, 17},
 		"METAR EGDR 171850Z 17015G29KT 8000 HZ FEW005 SCT007 BKN014 17/16 Q1005 GRN"
 		" TEMPO 5000 -RA SCT005 YLO1"
-		"="		
+		"=",
+		""	
 	},
 
 	{
@@ -3596,20 +3660,23 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
 		"METAR ENSE 201620Z AUTO 24040KT 9999NDV FEW010/// SCT020/// BKN027/// 12/10 Q0988 W///S7"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"UKLL", "LViv/Halyfskyi Intl", {2018, 9, 20},
 		"SPECI UKLL 202304Z 00000MPS 4800 1100SE R31/1900 BR NSC 11/10 Q1020 R31/CLRD//"
 		" TEMPO 0400 FG VV002"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
 		"METAR ENSE 202320Z AUTO 24014KT 9999NDV SCT044/// BKN051/// 11/07 Q0995 W///S6"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3678,7 +3745,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 21},
 		"METAR ENSE 211150Z AUTO 36028KT 9999NDV FEW030/// BKN130/// 09/04 Q0984 W///S4"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3686,7 +3754,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KRSP 211554Z AUTO 19010G14KT M1/4SM FG VV001 17/17 A3020"
 		" RMK AO2 SLP225 T01720172 $"
 		"=",
-
+		""
 	}, 
 
 	{
@@ -3703,7 +3771,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KADM", "Ardmore Muni", {2018, 9, 21},
 		"METAR KADM 212155Z 31008KT 1 1/4SM +VCTSRA BKN007 OVC017 22/22 A2996"
 		" RMK LTG DSNT SE AND S"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3711,7 +3780,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR UUYY 212200Z 21002MPS 2900 0600SW FG SCT002 09/09 Q1012 R18/CLRD61"
 		" TEMPO 0300 FG"
 		" RMK QBB060 QFE751/1001"
-		"="
+		"=",
+		""
 	}, 
 
 	{
@@ -3769,26 +3839,30 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR CWGZ 222000Z 00000KT 10SM -SG VCFG FEW013 SCT023 OVC055 M03/M06 A2991"
 		" RMK SF1SC3SC4 FREEZING FOG IN VICINITY"
 		" -3.1/-5.5/TR/TRACE SNW CVR/ LAST STFD OB/NEXT 251200Z SLP135"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"ENQC", "Troll-C(OIL)", {2018, 9, 22},
 		"METAR ENQC 220150Z AUTO 26036KT 9999NDV BKN023/// BKN099/// 10/05 Q0990 W///S/"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 22},
 		"METAR ENSE 221020Z AUTO 28030KT 9999NDV FEW017/// SCT021/// BKN034/// 10/07 Q0993 W///S5"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"K5H4", "Harvey Muni", {2018, 9, 22},
 		"METAR K5H4 221055Z AUTO 23005KT 10SM CLR 06/05 A3006"
 		" RMK AO2"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3803,13 +3877,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EHJR", "K13-a Sea(OIL)", {2018, 9, 24},
 		"METAR EHJR 241925Z AUTO 33015KT //// // ///////// 13/06 Q1036 RE// W17/H23"
-		"="
+		"=",
+		""
 	},
 
 	{
 		"EHJA", "J6-A Sea(OIL)", {2018, 9, 24},
 		"METAR EHJA 241955Z AUTO 31017KT 270V340 9999 FEW029/// 12/05 Q1036 W///H///"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3828,7 +3904,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EHSA", "Euro Platform(OIL)", {2018, 9, 25},
 		"METAR EHSA 252355Z AUTO 19012KT 9999 ///////// 15/07 Q1034 W16/H7"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -3997,7 +4074,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"CWSA", "Sable Island", {2019, 1, 11},
 		"METAR CWSA 111000Z AUTO 25020KT 8SM BKN080 02/M02 A2953"
 		" RMK TS/LTNG TEMPO UNAVBL SLP003"
-		"="
+		"=",
 		"TAF CWSA 110838Z 1109/1121 26015G25KT P6SM BKN030"
 		" TEMPO 1109/1114 11/2SM -SHRASN BR OVC020"
 		" FM111400 25020G30KT P6SM -SHRASN BKN030"
@@ -4056,7 +4133,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"CWLY", "Lytton (READAC)", {2019, 1, 18},
 		"METAR CWLY 182200Z AUTO /////KT 07/03 A2998"
 		" RMK WND MISG CLD MISG WX MISG VIS MISG PCPN MISG ICG MISG SLP160"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -4075,7 +4153,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PAAK", "Atka Arpt", {2019, 1, 23},
 		"METAR PAAK 231156Z AUTO 28007KT 10SM FEW027 SCT032 SCT045 00/M02 A2886"
 		" RMK AO2 SLP773 6//// 7//// T00001017 10017 21006 53015"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -4281,7 +4360,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	{
 		"EHSA", "(Euro Platform(OIL)", {2019, 1, 27},
 		"METAR EHSA 272355Z AUTO 29044KT 5000 -RADZ ///////// 05/03 Q0988 W05/H59"
-		"="
+		"=",
+		""
 	},
 
 	{
@@ -4309,6 +4389,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR K1GM 101558Z AUTO 36012KT 1 5/8SM -SN OVC003 M01/M01 A2997"
 		" RMK AO2 OVC V BKN SLP184 P0006 T10081008 $"
 		"=",
+		""
 	},
 
 	{

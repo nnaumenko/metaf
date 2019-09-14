@@ -16,10 +16,9 @@ This project focuses on using METAR and TAF parsing with Webassembly, however th
 
 Metaf can do the following:
 
- * Parse METAR or TAF report and autodetect its type.
- * Check the validity of the report syntax, detect malformed reports and report errors.
- * Convert METAR or TAF report into the vector of classes which represent individual chunks of info encoded in the weather report or forecast.
-
+* Parse METAR or TAF report and autodetect its type.
+* Check the validity of the report syntax, detect malformed reports and report errors.
+* Convert METAR or TAF report into the vector of classes which represent individual chunks of info encoded in the weather report or forecast.
 
 ## Documentation
 

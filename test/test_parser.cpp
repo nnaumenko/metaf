@@ -11,7 +11,7 @@
 
 TEST(Parser, RealDataParsingMETAR) {
 	for (const auto & data : testdata::realDataSet) {
-		if (strlen(data.metar)) {
+		if (!data.metar.empty()) {
 			const std::string report = data.metar;
 			metaf::Parser::Result parseResult;
 			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });
@@ -25,7 +25,7 @@ TEST(Parser, RealDataParsingMETAR) {
 
 TEST(Parser, RealDataParsingTAF) {
 	for (const auto & data : testdata::realDataSet) {
-		if (strlen(data.taf)) {
+		if (!data.taf.empty()) {
 			const std::string report = data.taf;
 			metaf::Parser::Result parseResult;
 			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });

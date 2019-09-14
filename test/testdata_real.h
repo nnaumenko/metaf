@@ -9,19 +9,20 @@
 #define TESTDATA_REAL_H
 
 #include <vector>
+#include <string>
 
 namespace testdata {
 
 	struct MetarTafRealData {
-		const char * airportICAO = "";
-		const char * airportName = "";
+		std::string airportICAO;
+		std::string airportName;
 		struct {
 			int year = 0;
 			int month = 0;
 			int day = 0;
 		} date;
-		const char * metar = "";
-		const char * taf = "";
+		std::string metar;
+		std::string taf;
 	};
 
 	/// Data from real METAR/TAF reports
