@@ -41,11 +41,8 @@
 
 .ww_temp_icon {
 	grid-area: temp_icon;
-	font-size: 2.2em; 
-	margin-left: -0.1em;
-	margin-right: -0.1em;
-	margin-top: -0.1em;
-	margin-bottom: -0.1em;
+	font-size: 2.2em;
+	margin: -0.1em; 
 }
 
 .ww_wind_dir_icon, .ww_wind_vrb_icon {
