@@ -47,7 +47,7 @@
 		}
 
 		.navitem a:focus {
-		    outline: none !important;
+		    outline: none;
 		}
 
 		.navitem:hover:not(.navactive) {

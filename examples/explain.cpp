@@ -773,12 +773,12 @@ std::string VisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & grou
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Rainfall for last 10 minutes ";
 	result << explainPrecipitation(group.rainfallLast10Minutes()) << ", ";
-	if (group.rainfallLast60Minutes().status() == metaf::Precipitation::Status::REPORTED) {
+	if (group.rainfallLast60Minutes().isReported()) {
 		result << "for last 60 minutes ";
 		result << explainPrecipitation(group.rainfallLast60Minutes()) << ", ";
 	}
 	result << "total rainfall since 9:00 AM ";
-	result << explainPrecipitation(group.rainfallLast60Minutes());
+	result << explainPrecipitation(group.rainfallSince9AM());
 	return(result.str());
 }
 
@@ -876,7 +876,7 @@ std::string VisitorExplain::visitPrecipitationGroup(
 		result << explainPrecipitation(group.amount());
 		return(result.str());
 	};
-	if (group.amount().status() == metaf::Precipitation::Status::REPORTED &&
+	if (group.amount().precipitation().has_value() && 
 		!group.amount().precipitation().value())
 	{
 		result << "Trace amount of ";
@@ -1324,29 +1324,17 @@ std::string VisitorExplain::explainPressure(const metaf::Pressure & pressure) {
 
 std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & precipitation) {
 	std::ostringstream result;
-	switch (precipitation.status()) {
-		case metaf::Precipitation::Status::NOT_REPORTED:
-		return("not reported");
-
-		case metaf::Precipitation::Status::RUNWAY_NOT_OPERATIONAL:
-		return("not measured because runway is not operational");
-
-		case metaf::Precipitation::Status::REPORTED:
-		if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM); p.has_value()) {
-			result << roundTo(*p, 1) << " mm";
-		} else {
-			result << "[unable to convert precipitation to mm]";
-		}
-		result << " / ";
-		if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::INCHES); p.has_value()) {
-			result << roundTo(*p, 2) << " inches";
-		} else {
-			result << "[unable to convert precipitation to inches]";
-		}
-		break;
-
-		default:
-		return("unknown precipitation status");
+	if (!precipitation.isReported()) return("not reported");
+	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM); p.has_value()) {
+		result << roundTo(*p, 1) << " mm";
+	} else {
+		result << "[unable to convert precipitation to mm]";
+	}
+	result << " / ";
+	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::INCHES); p.has_value()) {
+		result << roundTo(*p, 2) << " inches";
+	} else {
+		result << "[unable to convert precipitation to inches]";
 	}
 	return(result.str());
 }

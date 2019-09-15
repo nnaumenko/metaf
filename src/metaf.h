@@ -21,7 +21,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 3;
-		inline static const int minor = 0;
+		inline static const int minor = 1;
 		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -390,23 +390,14 @@ namespace metaf {
 
 	class Precipitation {
 	public:
-		enum class Status {
-			NOT_REPORTED,
-			REPORTED,
-			RUNWAY_NOT_OPERATIONAL,
-		};
 		enum class Unit {
 			MM,
 			INCHES,
 		};
-		std::optional<float> precipitation() const {
-			if (precipStatus != Status::REPORTED) return(std::optional<float>());
-			return(precipValue);
-		}
+		std::optional<float> precipitation() const { return(precipValue); }
 		Unit unit() const { return(precipUnit); }
 		inline std::optional<float> toUnit(Unit unit) const;
-		Status status() const { return (precipStatus); }
-		bool isReported() const { return(status() == Status::REPORTED); }
+		bool isReported() const { return(precipValue.has_value()); }
 
 		Precipitation() = default;
 		static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
@@ -418,8 +409,7 @@ namespace metaf {
 			fromSnincrString(const std::string & s);
 
 	private:
-		Status precipStatus = Status::NOT_REPORTED;
-		float precipValue = 0.0;
+		std::optional<float> precipValue;
 		Unit precipUnit = Unit::MM;
 	private:
 		// Special value for runway deposits depth, see Table 1079 in Manual on Codes (WMO No. 306).
@@ -1180,7 +1170,8 @@ namespace metaf {
 		enum class Status {
 			NORMAL,
 			CLRD,
-			SNOCLO
+			SNOCLO,
+			RUNWAY_NOT_OPERATIONAL
 		};
 		enum class Deposits {// Deposits type, see Table 0919 in Manual on Codes (WMO No. 306).
 			CLEAR_AND_DRY,
@@ -2945,7 +2936,6 @@ namespace metaf {
 		const auto intPart = strToUint(s, 0, s.length() - 2);
 		if (!intPart.has_value()) return(error);
 		Precipitation precipitation;
-		precipitation.precipStatus = Precipitation::Status::REPORTED;
 		precipitation.precipValue = intPart.value() + 0.1 *fractPart.value();
 		return(precipitation);
 	}
@@ -2955,31 +2945,29 @@ namespace metaf {
 		std::optional<Precipitation> error;
 		if (s.length() != 2) return(error);
 		if (s == "//") return(Precipitation());
-		const auto dep = strToUint(s, 0, 2);
-		if (!dep.has_value()) return(error);
+		const auto depth = strToUint(s, 0, 2);
+		if (!depth.has_value()) return(error);
 
-		auto value = dep.value();
 		Precipitation precipitation;
-		precipitation.precipStatus = Status::REPORTED;
-		switch (value) {
+		switch (depth.value()) {
 			case Reserved::RESERVED: return(error);
 
-			case Reserved::DEPTH_10CM: value = 100; break;
-			case Reserved::DEPTH_15CM: value = 150; break;
-			case Reserved::DEPTH_20CM: value = 200; break;
-			case Reserved::DEPTH_25CM: value = 250; break;
-			case Reserved::DEPTH_30CM: value = 300; break;
-			case Reserved::DEPTH_35CM: value = 350; break;
-			case Reserved::DEPTH_40CM: value = 400; break;
+			case Reserved::DEPTH_10CM: precipitation.precipValue = 100; break;
+			case Reserved::DEPTH_15CM: precipitation.precipValue = 150; break;
+			case Reserved::DEPTH_20CM: precipitation.precipValue = 200; break;
+			case Reserved::DEPTH_25CM: precipitation.precipValue = 250; break;
+			case Reserved::DEPTH_30CM: precipitation.precipValue = 300; break;
+			case Reserved::DEPTH_35CM: precipitation.precipValue = 350; break;
+			case Reserved::DEPTH_40CM: precipitation.precipValue = 400; break;
 
-			case Reserved::RUNWAY_NOT_OPERATIONAL:
-			value = 0;
-			precipitation.precipStatus = Status::RUNWAY_NOT_OPERATIONAL;
+			case Reserved::RUNWAY_NOT_OPERATIONAL: 
+			precipitation.precipValue = std::optional<float>();
 			break;
 
-			default: break;
+			default: 
+			precipitation.precipValue = depth.value();
+			break;
 		}
-		precipitation.precipValue = value;
 		return(precipitation);
 	}
 
@@ -2996,7 +2984,6 @@ namespace metaf {
 			if (!allowNotReported) return(error);
 			return(precipitation);
 		}
-		precipitation.precipStatus = Status::REPORTED;
 		const auto pr = strToUint(s, 0, s.length());
 		if (!pr.has_value()) return(error);
 		precipitation.precipValue = pr.value() * factorInches;
@@ -3012,25 +2999,27 @@ namespace metaf {
 		if (!fraction.has_value()) return(error);
 
 		Precipitation total;
-		total.precipStatus = Precipitation::Status::REPORTED;
 		total.precipUnit = Precipitation::Unit::INCHES;
 		total.precipValue = std::get<0>(fraction.value());
 
 		Precipitation change;
-		change.precipStatus = Precipitation::Status::REPORTED;
 		change.precipUnit = Precipitation::Unit::INCHES;
 		change.precipValue = std::get<1>(fraction.value());
 
 		return(std::pair(total, change));
 	}
 
-
 	std::optional<float> Precipitation::toUnit(Unit unit) const {
-		if (precipStatus != Status::REPORTED) return(std::optional<float>());
-		if (precipUnit == unit) return(precipValue);
-		static const auto mmPerInch = 25.4;
-		if (precipUnit == Unit::MM && unit == Unit::INCHES) return(precipValue / mmPerInch);
-		if (precipUnit == Unit::INCHES && unit == Unit::MM) return(precipValue * mmPerInch);
+		if (precipValue.has_value()) {
+			if (precipUnit == unit) return(precipValue);
+			static const auto mmPerInch = 25.4;
+			if (precipUnit == Unit::MM && unit == Unit::INCHES) {
+				return(precipValue.value() / mmPerInch);
+			}
+			if (precipUnit == Unit::INCHES && unit == Unit::MM) {
+				return(precipValue.value() * mmPerInch);
+			}
+		}
 		return(std::optional<float>());
 	}
 
@@ -4274,9 +4263,10 @@ namespace metaf {
 		static const std::optional<RunwayStateGroup> notRecognised;
 		if (reportPart != ReportPart::METAR) return(notRecognised);
 		static const std::regex rgx("(R\\d\\d[RCL]?)/"
-			"(?:(SNOCLO)|(?:(\\d|/)(\\d|/)(\\d\\d|//)|(CLRD))(\\d\\d|//))");
+			"(?:(SNOCLO)|(?:([0-9/])([0-9/])(\\d\\d|//)|(CLRD))(\\d\\d|//))");
 		static const auto matchRunway = 1, matchSnoclo = 2, matchDeposits = 3;
 		static const auto matchExtent = 4, matchDepth = 5, matchClrd = 6, matchFriction = 7;
+		static const std::string depthRunwayNotOperational = "99";
 		std::smatch match;
 		if (!regex_match(group, match, rgx)) return(notRecognised);
 		const auto runway = Runway::fromString(match.str(matchRunway));
@@ -4293,6 +4283,9 @@ namespace metaf {
 		if (!depth.has_value()) return(notRecognised);
 		RunwayStateGroup result;
 		result.st = Status::NORMAL;
+		if (match.str(matchDepth) == depthRunwayNotOperational) {
+			result.st = Status::RUNWAY_NOT_OPERATIONAL;
+		}
 		result.rw = runway.value();
 		result.dp = deposits.value();
 		result.ext = extent.value();

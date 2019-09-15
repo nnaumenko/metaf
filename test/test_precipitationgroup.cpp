@@ -14,7 +14,6 @@ TEST(PrecipitationGroup, parse4digitGroup) {
 	const auto pg1 = metaf::PrecipitationGroup::parse("P2168", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg1.has_value());
 	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY);
-	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg1->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg1->amount().precipitation().has_value());
 	EXPECT_NEAR(pg1->amount().precipitation().value(), 21.68, margin);
@@ -23,7 +22,6 @@ TEST(PrecipitationGroup, parse4digitGroup) {
 	const auto pg2 = metaf::PrecipitationGroup::parse("60217", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg2.has_value());
 	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY);
-	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg2->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg2->amount().precipitation().has_value());
 	EXPECT_NEAR(pg2->amount().precipitation().value(), 2.17, margin);
@@ -32,7 +30,6 @@ TEST(PrecipitationGroup, parse4digitGroup) {
 	const auto pg3 = metaf::PrecipitationGroup::parse("70125", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg3.has_value());
 	EXPECT_EQ(pg3->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY);
-	EXPECT_EQ(pg3->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg3->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg3->amount().precipitation().has_value());
 	EXPECT_NEAR(pg3->amount().precipitation().value(), 1.25, margin);
@@ -43,22 +40,19 @@ TEST(PrecipitationGroup, parse4digitGroupNotReported) {
 	const auto pg1 = metaf::PrecipitationGroup::parse("P////", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg1.has_value());
 	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY);
-	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg1->amount().precipitation().has_value());
+	EXPECT_FALSE(pg1->amount().isReported());
 	EXPECT_FALSE(pg1->tendency().isReported());	
 
 	const auto pg2 = metaf::PrecipitationGroup::parse("6////", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg2.has_value());
 	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY);
-	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg2->amount().precipitation().has_value());
+	EXPECT_FALSE(pg2->amount().isReported());
 	EXPECT_FALSE(pg2->tendency().isReported());	
 
 	const auto pg3 = metaf::PrecipitationGroup::parse("7////", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg3.has_value());
 	EXPECT_EQ(pg3->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY);
-	EXPECT_EQ(pg3->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg3->amount().precipitation().has_value());
+	EXPECT_FALSE(pg3->amount().isReported());
 	EXPECT_FALSE(pg3->tendency().isReported());	
 }
 
@@ -66,7 +60,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg1 = metaf::PrecipitationGroup::parse("4/021", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg1.has_value());
 	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND);
-	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg1->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg1->amount().precipitation().has_value());
 	EXPECT_NEAR(pg1->amount().precipitation().value(), 21, margin);
@@ -75,7 +68,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg2 = metaf::PrecipitationGroup::parse("931011", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg2.has_value());
 	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::SNOW_6_HOURLY);
-	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg2->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg2->amount().precipitation().has_value());
 	EXPECT_NEAR(pg2->amount().precipitation().value(), 1.1, margin);
@@ -84,7 +76,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg3 = metaf::PrecipitationGroup::parse("933125", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg3.has_value());
 	EXPECT_EQ(pg3->type(), metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
-	EXPECT_EQ(pg3->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg3->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg3->amount().precipitation().has_value());
 	EXPECT_NEAR(pg3->amount().precipitation().value(), 12.5, margin);	
@@ -93,7 +84,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg4 = metaf::PrecipitationGroup::parse("I1010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg4.has_value());
 	EXPECT_EQ(pg4->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR);
-	EXPECT_EQ(pg4->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg4->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg4->amount().precipitation().has_value());
 	EXPECT_NEAR(pg4->amount().precipitation().value(), 0.10, margin);	
@@ -102,7 +92,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg5 = metaf::PrecipitationGroup::parse("I3015", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg5.has_value());
 	EXPECT_EQ(pg5->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS);
-	EXPECT_EQ(pg5->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg5->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg5->amount().precipitation().has_value());
 	EXPECT_NEAR(pg5->amount().precipitation().value(), 0.15, margin);	
@@ -111,7 +100,6 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	const auto pg6 = metaf::PrecipitationGroup::parse("I6022", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg6.has_value());
 	EXPECT_EQ(pg6->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS);
-	EXPECT_EQ(pg6->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg6->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg6->amount().precipitation().has_value());
 	EXPECT_NEAR(pg6->amount().precipitation().value(), 0.22, margin);
@@ -122,43 +110,37 @@ TEST(PrecipitationGroup, parse3digitGroupNotReported) {
 	const auto pg1 = metaf::PrecipitationGroup::parse("4////", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg1.has_value());
 	EXPECT_EQ(pg1->type(), metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND);
-	EXPECT_EQ(pg1->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg1->amount().precipitation().has_value());
+	EXPECT_FALSE(pg1->amount().isReported());
 	EXPECT_FALSE(pg1->tendency().isReported());	
 
 	const auto pg2 = metaf::PrecipitationGroup::parse("931///", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg2.has_value());
 	EXPECT_EQ(pg2->type(), metaf::PrecipitationGroup::Type::SNOW_6_HOURLY);
-	EXPECT_EQ(pg2->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg2->amount().precipitation().has_value());
+	EXPECT_FALSE(pg2->amount().isReported());
 	EXPECT_FALSE(pg2->tendency().isReported());	
 
 	const auto pg3 = metaf::PrecipitationGroup::parse("933///", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg3.has_value());
 	EXPECT_EQ(pg3->type(), metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND);
-	EXPECT_EQ(pg3->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg3->amount().precipitation().has_value());	
+	EXPECT_FALSE(pg3->amount().isReported());
 	EXPECT_FALSE(pg3->tendency().isReported());	
 
 	const auto pg4 = metaf::PrecipitationGroup::parse("I1///", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg4.has_value());
 	EXPECT_EQ(pg4->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR);
-	EXPECT_EQ(pg4->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg4->amount().precipitation().has_value());	
+	EXPECT_FALSE(pg4->amount().isReported());
 	EXPECT_FALSE(pg4->tendency().isReported());	
 
 	const auto pg5 = metaf::PrecipitationGroup::parse("I3///", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg5.has_value());
 	EXPECT_EQ(pg5->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS);
-	EXPECT_EQ(pg5->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg5->amount().precipitation().has_value());	
+	EXPECT_FALSE(pg5->amount().isReported());
 	EXPECT_FALSE(pg5->tendency().isReported());	
 
 	const auto pg6 = metaf::PrecipitationGroup::parse("I6///", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg6.has_value());
 	EXPECT_EQ(pg6->type(), metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS);
-	EXPECT_EQ(pg6->amount().status(), metaf::Precipitation::Status::NOT_REPORTED);
-	EXPECT_FALSE(pg6->amount().precipitation().has_value());	
+	EXPECT_FALSE(pg6->amount().isReported());
 	EXPECT_FALSE(pg6->tendency().isReported());	
 
 }
@@ -183,12 +165,10 @@ TEST(PrecipitationGroup, appendFractionToSnincr) {
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY);
 
-	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg->amount().precipitation().has_value());
 	EXPECT_NEAR(pg->amount().precipitation().value(), 12, margin);
 
-	EXPECT_EQ(pg->tendency().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg->tendency().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg->tendency().precipitation().has_value());
 	EXPECT_NEAR(pg->tendency().precipitation().value(), 4, margin);
@@ -439,7 +419,6 @@ TEST(PrecipitationGroup, parse3hourly) {
 		reportMetadata);
 	ASSERT_TRUE(pg.has_value());
 	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY);
-	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg->amount().precipitation().has_value());
 	EXPECT_NEAR(pg->amount().precipitation().value(), 2.17, margin);
@@ -458,7 +437,6 @@ TEST(PrecipitationGroup, parse6hourly) {
 		reportMetadata);
 	ASSERT_TRUE(pg.has_value());
 	EXPECT_EQ(pg->type(), metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY);
-	EXPECT_EQ(pg->amount().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(pg->amount().unit(), metaf::Precipitation::Unit::INCHES);
 	ASSERT_TRUE(pg->amount().precipitation().has_value());
 	EXPECT_NEAR(pg->amount().precipitation().value(), 2.17, margin);
