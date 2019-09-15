@@ -15,13 +15,11 @@ TEST(RainfallGroup, parseTwoValues) {
 	ASSERT_TRUE(rg.has_value());
 
 	const auto rf10m = rg->rainfallLast10Minutes();
-	EXPECT_EQ(rf10m.status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rf10m.unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(rf10m.precipitation().has_value());
 	EXPECT_NEAR(rf10m.precipitation().value(), 2.7, margin);
 
 	const auto rf9am = rg->rainfallSince9AM();
-	EXPECT_EQ(rf9am.status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rf9am.unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(rf9am.precipitation().has_value());
 	EXPECT_NEAR(rf9am.precipitation().value(), 10.5, margin);
@@ -112,19 +110,16 @@ TEST(RainfallGroup, parseThreeValues) {
 	ASSERT_TRUE(rg.has_value());
 
 	const auto rf10m = rg->rainfallLast10Minutes();
-	EXPECT_EQ(rf10m.status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rf10m.unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(rf10m.precipitation().has_value());
 	EXPECT_NEAR(rf10m.precipitation().value(), 21.5, margin);
 
 	const auto rf9am = rg->rainfallSince9AM();
-	EXPECT_EQ(rf9am.status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rf9am.unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(rf9am.precipitation().has_value());
 	EXPECT_NEAR(rf9am.precipitation().value(), 112.4, margin);
 
 	const auto rf60m = rg->rainfallLast60Minutes();
-	EXPECT_EQ(rf60m.status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rf60m.unit(), metaf::Precipitation::Unit::MM);
 	ASSERT_TRUE(rf60m.precipitation().has_value());
 	EXPECT_NEAR(rf60m.precipitation().value(), 031.8, margin);

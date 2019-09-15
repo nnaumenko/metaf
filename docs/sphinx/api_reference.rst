@@ -642,25 +642,7 @@ Precipitation
 
 .. cpp:class:: Precipitation
 
-	The amount or accumulation of precipitation. 
-
-	The amount/accumulation may be not reported (i.e. no value) or alternatively it may specify that the runway is not operational due to deposits accumulation (which means that exact accumulation value is not important and is not reported).
-
-	.. cpp:enum-class:: Status
-
-		Status of precipitation value.
-
-		.. cpp:enumerator:: NOT_REPORTED
-
-			The amount or accumulation of precipitation is not reported (i.e. no value).
-
-		.. cpp:enumerator:: REPORTED
-
-			The amount or accumulation of precipitation value is reported.
-
-		.. cpp:enumerator:: RUNWAY_NOT_OPERATIONAL
-
-			The runway is not operational due to deposits accumulation; the exact accumulation value is not important since runway cannot be used.
+	The amount or accumulation of precipitation. The amount/accumulation may be not reported (i.e. no value).
 
 	.. cpp:enum-class:: Unit
 
@@ -677,13 +659,9 @@ Precipitation
 
 	**Acquiring the data**
 
-		.. cpp:function:: Status status() const
-
-			:returns: Status of precipitation amount or accumulation value.
-
 		.. cpp:function:: std::optional<float> precipitation() const
 
-			:returns: Stored amount/accumulation value or empty ``std::optional`` if the value is not reported (:cpp:enumerator:`Status::NOT_REPORTED`) or runway is not operational (:cpp:enumerator:`Status::RUNWAY_NOT_OPERATIONAL`).
+			:returns: Stored amount/accumulation value or empty ``std::optional`` if the value is not reported.
 
 		.. cpp:function:: Unit unit() const
 
@@ -695,7 +673,7 @@ Precipitation
 		.. cpp:function:: std::optional<float> toUnit(Unit unit) const
 
 			:param unit: Measurement unit to convert the value to.
-			:returns: Stored precipitation amount/accumulation value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported or if the runway is not operational.
+			:returns: Stored precipitation amount/accumulation value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
 
 
 	**Miscellaneous**
@@ -2085,6 +2063,10 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 		.. cpp:enumerator:: NORMAL
 
 			Normal type of runway state group. Runway deposits, runway contamination extent, deposit depth, and surface friction are specified in this group (any value or values may be non-reported).
+
+		.. cpp:enumerator:: RUNWAY_NOT_OPERATIONAL
+
+			Runway state group indicating that the runway is not operational. Runway deposits, runway contamination extent, and surface friction may be specified in this group (any value or values may be non-reported).
 
 		.. cpp:enumerator:: CLRD
 

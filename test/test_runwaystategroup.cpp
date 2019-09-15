@@ -18,7 +18,7 @@ TEST(RunwayStateGroup, parseSnoclo) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::SNOCLO);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
 	EXPECT_EQ(rsg->surfaceFriction().status(), metaf::SurfaceFriction::Status::NOT_REPORTED);
 }
 
@@ -67,7 +67,7 @@ TEST(RunwayStateGroup, parseClrdSurfaceFrictionReported) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::CLRD);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
 	EXPECT_EQ(rsg->surfaceFriction().status(), 
 		metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(rsg->surfaceFriction().coefficient().has_value());
@@ -82,7 +82,7 @@ TEST(RunwayStateGroup, parseClrdSurfaceFrictionNotReported) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::CLRD);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
 	EXPECT_EQ(rsg->surfaceFriction().status(), metaf::SurfaceFriction::Status::NOT_REPORTED);
 }
 
@@ -142,7 +142,6 @@ TEST(RunwayStateGroup, parseNormal) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::NORMAL);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rsg->depositDepth().precipitation(), 01u);
 	EXPECT_EQ(rsg->surfaceFriction().status(), 
 		metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
@@ -158,11 +157,24 @@ TEST(RunwayStateGroup, parseNormalDepositDepthNotReported) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::NORMAL);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
 	EXPECT_EQ(rsg->surfaceFriction().status(), 
 		metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(rsg->surfaceFriction().coefficient().has_value());
 	EXPECT_NEAR(rsg->surfaceFriction().coefficient().value(), 0.55, sfMargin);
+}
+
+TEST(RunwayStateGroup, parseNormalRunwayNotOperational) {
+	const auto rsg = metaf::RunwayStateGroup::parse("R16/8999//", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg.has_value());
+	EXPECT_EQ(rsg->runway().number(), 16u);
+	EXPECT_EQ(rsg->runway().designator(), metaf::Runway::Designator::NONE);
+	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::RUNWAY_NOT_OPERATIONAL);
+	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::COMPACTED_OR_ROLLED_SNOW);
+	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
+	EXPECT_EQ(rsg->surfaceFriction().status(), 
+		metaf::SurfaceFriction::Status::NOT_REPORTED);
 }
 
 TEST(RunwayStateGroup, parseNormalSurfaceFrictionNotReported) {
@@ -173,7 +185,6 @@ TEST(RunwayStateGroup, parseNormalSurfaceFrictionNotReported) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::NORMAL);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::WET_AND_WATER_PATCHES);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::MORE_THAN_51_PERCENT);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::REPORTED);
 	EXPECT_EQ(rsg->depositDepth().precipitation(), 01u);
 	EXPECT_EQ(rsg->surfaceFriction().status(), metaf::SurfaceFriction::Status::NOT_REPORTED);
 }
@@ -282,7 +293,7 @@ TEST(RunwayStateGroup, parseNormalAllNotReported) {
 	EXPECT_EQ(rsg->status(), metaf::RunwayStateGroup::Status::NORMAL);
 	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
 	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
-	EXPECT_EQ(rsg->depositDepth().status(), metaf::Precipitation::Status::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
 	EXPECT_EQ(rsg->surfaceFriction().status(), metaf::SurfaceFriction::Status::NOT_REPORTED);
 }
 
