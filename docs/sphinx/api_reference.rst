@@ -1,5 +1,5 @@
-Reference
-=========
+API Reference
+=============
 
 .. cpp:namespace-push:: metaf
 
@@ -767,12 +767,12 @@ SurfaceFriction
 
 		.. cpp:function:: bool isReported() const
 
-			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:: `Status::NOT_REPORTED`.
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:`Status::NOT_REPORTED`.
 
 
 		.. cpp:function:: bool isUnreliable() const
 
-			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:: `Status::UNRELIABLE`.
+			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:`Status::UNRELIABLE`.
 
 
 WaveHeight
@@ -1468,11 +1468,11 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:enumerator:: SURFACE_WIND
 
-			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, and :cpp:func:`gustSpeed()`.
+			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`gustSpeed()`.
 
 		.. cpp:enumerator:: SURFACE_WIND_CALM
 
-			Surface wind calm (i.e. no wind) information is stored. :cpp:func:`speed()` is always zero.
+			Surface wind calm (i.e. no wind) information is stored. :cpp:func:`windSpeed()` is always zero.
 
 		.. cpp:enumerator:: VARIABLE_WIND_SECTOR
 
@@ -1480,11 +1480,11 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:enumerator:: SURFACE_WIND_WITH_VARIABLE_SECTOR
 
-			Surface wind information with variable wind sector information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, :cpp:func:`gustSpeed()`, :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+			Surface wind information with variable wind sector information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
 
 		.. cpp:enumerator:: WIND_SHEAR
 
-			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`speed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
+			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
 
 		.. cpp:enumerator:: WIND_SHIFT
 
@@ -1496,7 +1496,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:enumerator:: PEAK_WIND
 
-			Information on peak wind since last METAR is stored in this group. Use :cpp:func:`direction()`, :cpp:func:`speed()`, and :cpp:func:`eventTime()`.
+			Information on peak wind since last METAR is stored in this group. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`eventTime()`.
 
 
 	**Acquiring group data**
@@ -1662,8 +1662,9 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 		.. cpp:enumerator:: NSC
 
-			Nil significant clouds: no cloud below 5000 feet (1500 meters), no cumulonimbus or towering
-			cumulus, and no vertical visibility restriction.
+			Nil significant clouds: no cloud below 5000 feet (1500 meters), no cumulonimbus or towering cumulus, and no vertical visibility restriction.
+
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator:: NONE_CLR
 
@@ -1671,13 +1672,9 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			Indicates that station is at least partly automated.
 
-			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate clear sky.
-
 		.. cpp:enumerator:: NONE_SKC
 
 			No clouds / clear sky. In North America indicates report producted by human rather than automatic weather station.
-
-			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate clear sky.
 
 		.. cpp:enumerator:: FEW
 
@@ -1701,15 +1698,15 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 	.. cpp:enum-class:: Type
 
-		Significant convectional type of the cloud.
+		Significant convective type of the cloud.
 
 		.. cpp:enumerator::NOT_REPORTED
 
-			Convectional cloud type is not reported.
+			Convective cloud type is not reported.
 
 		.. cpp:enumerator::NONE
 
-			No significant convectional clouds.
+			No significant convective cloud type.
 
 		.. cpp:enumerator::TOWERING_CUMULUS
 
@@ -1727,7 +1724,7 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 		Type type() const
 
-			:returns: Significant convectional type of cloud layer.
+			:returns: Significant convective type of cloud layer.
 
 		Weather obscuration() const
 
@@ -2184,6 +2181,8 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 			If the status is :cpp:enumerator:`Status::NORMAL` then group reports runway state and Deposits, Contamination Extent, Deposit Depth and Surface Friction may be reported or non-reported.
 
+			If the status is :cpp:enumerator:`Status::RUNWAY_NOT_OPERATIONAL` then group reports runway state and Deposits, Contamination Extent, and Surface Friction may be reported or non-reported; Deposit Depth is always not reported.
+
 			If the status is :cpp:enumerator:`Status::CLRD` then group indicates that deposits on the runway were cleared or ceased to exist; only Surface Friction may be reported; Deposits, Contamination Extent and Deposit Depth are never reported.
 
 			If the status is :cpp:enumerator:`Status::SNOCLO` then group indicates that runway is closed due to snow accumulation. All parameters (Deposits, Contamination Extent, Deposit Depth and Surface Friction) are never reported.
@@ -2249,7 +2248,7 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
 	.. cpp:function:: std::string incompleteText() const
 
-		:returns: Raw string of groups partially recognised by parser as a secondary location group, or empty string if the group is not an incomplete one (i.e. return value of :cpp:func:`type()` is other than `Type::INCOMPLETE`).
+		:returns: Raw string of groups partially recognised by parser as a secondary location group, or empty string if the group is not an incomplete one (i.e. return value of :cpp:func:`type()` is other than :cpp:enumerator:`Type::INCOMPLETE`).
 
 	**Validating**
 
@@ -2491,7 +2490,7 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 		.. cpp:enumerator:: SNOW_INCREASING_RAPIDLY
 
-			Indicates that snow is increasing rapidly and total snowfall; use also ..cpp-func:`tendency()` for snow increase during last hour.
+			Indicates that snow is increasing rapidly; use :cpp:func:`amount()` for total snowfall, and :cpp:func:`tendency()` for snow increase during last hour.
 
 	**Acquiring group data**
 
@@ -3023,7 +3022,7 @@ LightningGroup
 
 .. cpp:class:: LightningGroup
 
-This group is added to maintain compatibility. It is not used in this version.
+This group is added to maintain compatibility. It is not yet used in this version.
 
 The planned use is to store lightning information included in METAR remarks.
 
@@ -3033,7 +3032,7 @@ WeatherBeginEndGroup
 
 .. cpp:class:: WeatherBeginEndGroup
 
-This group is added to maintain compatibility. It is not used in this version.
+This group is added to maintain compatibility. It is not yet used in this version.
 
 The planned use is to store time of the beginning and ending of weather phenomena included in METAR remarks.
 
@@ -3041,9 +3040,9 @@ The planned use is to store time of the beginning and ending of weather phenomen
 VicinityGroup
 ^^^^^^^^^^^^^
 
-.. cpp:class:: LightningGroup
+.. cpp:class:: VicinityGroup
 
-This group is added to maintain compatibility. It is not used in this version.
+This group is added to maintain compatibility. It is not yet used in this version.
 
 The planned use is to phenomena observed in vicinity of the station and included in METAR remarks.
 
@@ -3105,7 +3104,7 @@ UnknownGroup
 
 	Uninterrupted sequence of two or more groups which were not recognised by parser is represented by a single UnknownGroup rather than sequence of several UnknownGroup. E.g. entire text "LAST NO AMDS" will be represented by a single UnknownGroup.
 
-	.. note:: UnknownGroup does not store any information but the text not recognised by parser may be acquired via `GroupInfo::rawString`.
+	.. note:: UnknownGroup does not store any information but the text not recognised by parser may be acquired via :cpp:var:`GroupInfo::rawString`.
 
 	**Acquiring group data**
 
@@ -3157,7 +3156,7 @@ ReportError
 
 		No error, report parsed successfully.
 
-		.. note: `No error` only means that the report overall syntax is correct and the report is not malformed. `No error` does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
+		.. note: This enumerator only means that the report overall syntax is correct and the report is not malformed. It does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
 
 	.. cpp:enumerator:: EMPTY_REPORT
