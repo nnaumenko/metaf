@@ -20,6 +20,7 @@ docs:
   - apk add cmake
   # python3 -m pip install --upgrade pip
   - pip3 install -U sphinx
+  - pip3 install -U sphinx-rtd-theme
   - mkdir doctemp
   - mkdir ci-build
   - sphinx-build -d ./doctemp ./docs/sphinx ./ci-build/docs
