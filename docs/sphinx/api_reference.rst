@@ -1060,7 +1060,7 @@ Group
 
 .. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, MiscGroup, UnknownGroup>
 
-	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::Parser::Result`).
+	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
 
 
@@ -3294,7 +3294,7 @@ ReportMetadata
 
 	.. cpp:var:: Error error
 	
-		Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Parser::Error::NONE` if the report was parsed successfully.
+		Contains syntax error encountered by parser during parsing or :cpp:enumerator:`metaf::Error::NONE` if the report was parsed successfully.
 
 	.. cpp:var:: std::optional<MetafTime> reportTime
 
@@ -3339,6 +3339,22 @@ GroupParser
 		:returns: :cpp:type:`metaf::Group` holding a particular group type or :cpp:class:`metaf::PlainTextGroup` if the format was not recognised.
 
 
+ParseResult
+^^^^^^^^^^^
+
+.. cpp:struct:: ParseResult
+
+	Contains result of report parsing returned by :cpp:func:`metaf::Parser::parse()` method.
+
+	.. cpp:var:: ReportMetadata reportMetadata
+
+		Contains information on entire report rather than any individual group.
+
+	.. cpp:var:: std::vector<GroupInfo> groups
+
+		A vector of parsed individual groups from METAR or TAF report.
+
+
 Parser
 ^^^^^^
 
@@ -3346,23 +3362,11 @@ Parser
 
 	Parser class is used to parse strings which contain raw METAR or TAF reports, check for syntax errors, autodetect report type and produce a vector of individual groups.
 
-		.. cpp:struct:: Result
-
-			Contains result of report parsing returned by :cpp:func:`parse()` method.
-
-			.. cpp:var:: ReportMetadata reportMetadata
-
-				Contains information on entire report rather than any individual group.
-
-			.. cpp:var:: std::vector<GroupInfo> groups
-
-				A vector of parsed individual groups from METAR or TAF report.
-
-		.. cpp:function:: Result parse (const std::string & report)
+		.. cpp:function:: ParseResult parse (const std::string & report)
 
 			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately.
 
-			:returns: :cpp:class:`metaf::Parser::Result` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of individual :cpp:type:`metaf::GroupInfo` corresponding to METAR or TAF groups. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
+			:returns: :cpp:class:`metaf::ParseResult` which contains autodetected type or METAR or TAF report, syntax error type (if occurred) and vector of individual :cpp:type:`metaf::GroupInfo` corresponding to METAR or TAF groups. If syntax error is encountered, this means that only the part of the METAR or TAF report before syntax error was parsed.
 
 			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 

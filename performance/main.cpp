@@ -309,7 +309,7 @@ void addGroup(const string & group, vector< pair<int, string> > & dst) {
 	dst.push_back(make_pair(1, group));
 }
 
-int addPlainTextGroups(const metaf::Parser::Result & src, vector< pair<int, string> > & dst){
+int addPlainTextGroups(const metaf::ParseResult & src, vector< pair<int, string> > & dst){
 	auto count = 0;	
 	for (const auto & gr : src.groups) {
 		if (holds_alternative<metaf::UnknownGroup>(gr.group)) {

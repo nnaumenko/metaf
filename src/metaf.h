@@ -21,7 +21,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 3;
-		inline static const int minor = 1;
+		inline static const int minor = 2;
 		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -1764,22 +1764,21 @@ namespace metaf {
 		}
 	};
 
+	struct ParseResult {
+		ReportMetadata reportMetadata;
+		std::vector<GroupInfo> groups;
+	};
+
 	class Parser {
 	public:
-
-		struct Result {
-			ReportMetadata reportMetadata;
-			std::vector<GroupInfo> groups;
-		};
-
-		static inline Result parse (const std::string & report);
+		static inline ParseResult parse (const std::string & report);
 
 	private:
-		static inline bool appendToLastResultGroup(Result & result,
+		static inline bool appendToLastResultGroup(ParseResult & result,
 			const std::string & groupStr,
 			ReportPart reportPart,
 			const ReportMetadata & reportMetadata);
-		static inline void addGroupToResult(Result & result,
+		static inline void addGroupToResult(ParseResult & result,
 			Group group,
 			ReportPart reportPart,
 			std::string groupString);
@@ -5108,14 +5107,14 @@ namespace metaf {
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	Parser::Result Parser::parse(const std::string & report) {
+	ParseResult Parser::parse(const std::string & report) {
 		std::sregex_token_iterator iter(report.begin(), report.end(),
 			groupDelimiterRegex,
 			-1);
 		bool reportEnd = false;
 		Status status;
 		ReportMetadata reportMetadata;
-		Result result;
+		ParseResult result;
 
 		while (iter != std::sregex_token_iterator() && !reportEnd && !status.isError()) {
 			std::string groupStr = *iter;
@@ -5150,7 +5149,7 @@ namespace metaf {
 		return(result);
 	}
 
-	bool Parser::appendToLastResultGroup(Result & result,
+	bool Parser::appendToLastResultGroup(ParseResult & result,
 		const std::string & groupStr,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata)
@@ -5190,7 +5189,7 @@ namespace metaf {
 		}
 	}
 
-	void Parser::addGroupToResult(Result & result,
+	void Parser::addGroupToResult(ParseResult & result,
 		Group group,
 		ReportPart reportPart,
 		std::string groupString)

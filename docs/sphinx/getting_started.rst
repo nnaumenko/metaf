@@ -77,7 +77,7 @@ Edit function ``main()`` as follows: ::
 		const auto result = Parser::parse(report);
 	}
 
-Here we use static method :cpp:func:`metaf::Parser::parse()` which parses a METAR or TAF report and returns the result of the parsing (:cpp:class:`metaf::Parser::Result`).
+Here we use static method :cpp:func:`metaf::Parser::parse()` which parses a METAR or TAF report and returns the result of the parsing (:cpp:class:`metaf::ParseResult`).
 
 If the report is malformed and an error occurrs during parsing the parser stops; in such case the report is parsed partially and the result of the parsing contains only the groups parsed before error was encountered.
 
@@ -116,7 +116,7 @@ Metadata are related to entire report, rather than individual groups. They conta
 
 :cpp:var:`metaf::ReportMetadata::type` contains an autodetected type of the report.
 
-:cpp:var:`metaf::Parser::Result::groups` is ``vector`` of struct named :cpp:class:`metaf::GroupInfo`. This struct contains three fields.
+:cpp:var:`metaf::ParseResult::groups` is ``vector`` of struct named :cpp:class:`metaf::GroupInfo`. This struct contains three fields.
 
 1. :cpp:var:`metaf::GroupInfo::group` of type :cpp:type:`metaf::Group`. It contains the information extracted from the METAR or TAF group during parsing. :cpp:type:`metaf::Group` is ``std::variant`` which holds all concrete group classes as variant alternatives. For simplicity we will not use :cpp:type:`metaf::Group` in this tutorial.
 
@@ -183,7 +183,7 @@ Then add the following line to the function ``main()`` before ``return(0);``::
 			errorMessage(result.reportMetadata.error) << "\n";
 	}
 
-:cpp:var:`metaf::Parser::Result::reportMetadata::error` contains an error that occurred during parsing of the report. If there was no error during parsing it is equal to :cpp:enumerator:`metaf::ReportError::NONE`.
+:cpp:var:`metaf::ParseResult::reportMetadata::error` contains an error that occurred during parsing of the report. If there was no error during parsing it is equal to :cpp:enumerator:`metaf::ReportError::NONE`.
 
 
 Handling the results of parsing
