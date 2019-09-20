@@ -1,13 +1,70 @@
-build:
+build-emscripten:
   stage: build
   image: trzeci/emscripten
   variables:
     GIT_SUBMODULE_STRATEGY: normal
   script:
+  - export CXX="emcc"
   - cmake .
-  - emmake make
+  - make
   - mkdir ci-build
   - cp -r bin/* ci-build
+  artifacts:
+    paths:
+      - ci-build
+
+build-clang:
+  stage: build
+  image: ubuntu:18.04
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+  - apt-get update
+  - apt-get -y --no-install-recommends install wget gnupg2 ca-certificates
+  - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|apt-key add - 
+  - apt-get update
+  # apt-get -y --no-install-recommends install cmake 
+  - apt-get -y --no-install-recommends install clang-8 lld-8 llvm make
+  - clang++-8 --version
+  - mkdir /opt/cmake
+  - pushd /opt/cmake
+  - wget https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.tar.gz
+  - tar -xvzf cmake-3.15.3-Linux-x86_64.tar.gz
+  - popd
+  - ln -s /opt/cmake/cmake-3.15.3-Linux-x86_64/bin/cmake /usr/local/bin/cmake
+  - whereis clang-8
+  - export CC="clang-8"
+  - whereis clang++-8
+  - export CXX="clang++-8"
+  - cmake .
+  - make
+  - mkdir -p ci-build/test
+  - mv bin/test/tests ci-build/test/tests-clang
+  artifacts:
+    paths:
+      - ci-build
+
+build-gcc:
+  stage: build
+  image: ubuntu:18.04
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+  script:
+  - apt-get update
+  - apt-get -y --no-install-recommends install build-essential wget make ca-certificates
+  - gcc --version
+  - wget https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.sh
+  - mkdir /opt/cmake
+  - pushd /opt/cmake
+  - wget https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3-Linux-x86_64.tar.gz
+  - tar -xvzf cmake-3.15.3-Linux-x86_64.tar.gz
+  - popd
+  - ln -s /opt/cmake/cmake-3.15.3-Linux-x86_64/bin/cmake /usr/local/bin/cmake
+  - export CXX="g++"
+  - cmake .
+  - make
+  - mkdir -p ci-build/test
+  - mv bin/test/tests ci-build/test/tests-gcc
   artifacts:
     paths:
       - ci-build
@@ -28,7 +85,7 @@ docs:
     paths:
       - ci-build
 
-tests:
+tests-emscripten:
   stage: test
   image: nnaumenko/emscripten-firefox
   script:
@@ -41,12 +98,30 @@ tests:
   # possible to additionally check for failure reports in ci-build/test/test.xml
   # test -f ci-build/test/test.xml
   # if [ "$(grep 'failures="[1-9]' ci-build/test/test.xml)" != "" ]; then exit 1; fi
+  dependencies:
+    - build-emscripten
   artifacts:
     paths:
       - ci-build
     reports:
       junit: ci-build/test/test.xml
- 
+
+tests-clang:
+  stage: test
+  image: ubuntu:18.04
+  script:
+    - ci-build/test/tests-clang
+  dependencies:
+    - build-clang
+
+tests-gcc:
+  stage: test
+  image: ubuntu:18.04
+  script:
+    - ci-build/test/tests-gcc
+  dependencies:
+    - build-gcc
+
 pages:
   stage: deploy
   script:
@@ -54,8 +129,9 @@ pages:
     - cp -r ci-build/* public
     - cp -R pages/* public
   dependencies:
-    - build
-    - tests
+    - build-emscripten
+    - tests-emscripten
+    - docs
   artifacts:
     paths:
       - public

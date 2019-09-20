@@ -27,9 +27,15 @@ Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.htm
 
 [Tutorial on basic usage of Metaf library](https://nnaumenko.gitlab.io/metaf/docs/getting_started.html).
 
-## Limitations
+## Compatible compilers
 
-Old TAF format, used before November 2008 employs different format for time spans and trends (time without date); the current version does not decode this old format.
+The following compiler are compatible (with C++17 standard enabled):
+
+* emscripten emcc 1.38.28 (based on clang)
+* gcc 7.4.0
+* clang 8.0.0
+
+The compatibility with the compilers above is routinely tested using Gitlab CI after each commit.
 
 ## Prerequisites and dependencies
 
@@ -40,6 +46,10 @@ No external dependencies for parser itself, only standard C++ libraries used.
 Unit tests included with the project use [Google Test](https://github.com/abseil/googletest) framework.
 
 Since this project focuses on metaf library usage with Webassembly, [Emscripten](emscripten.org) is required to build tests and examples. Running the tests and examples requires a www browser with Webassembly support.
+
+## Limitations
+
+Old TAF format, used before November 2008 employs different format for time spans and trends (time without date); the current version does not decode this old format.
 
 ## METAR and TAF
 
@@ -65,37 +75,37 @@ Example of a TAF report is as follows:
 
 ### Which groups Metaf is able to recognize?
 
-  * Report type METAR, SPECI, and TAF
-  * Various amended or correctional report indicators
-  * Indicators for missing report, cancelled TAF report, and various indicator for missing data given in remarks section
-  * Automated report indicator, automated station type remark, and maintenance indicator
-  * ICAO location
-  * Report issue time
-  * Wind direction, speed and gust speed
-  * Wind shear, peak wind and wind shift information
-  * Prevailing or directional visibility in meters or statute miles
-  * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
-  * Indicator of no significant cloud and good visibility CAVOK
-  * Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach)
-  * Current and recent weather information, and indicator or weather phenomena end NSW
-  * Temperature and dew point, including more precise values given in remarks
-  * Temperature forecast from TAF reports
-  * 6-hourly and 24-hourly minimum and maximum temperature
-  * Current atmospheric pressure, including QNH, QFE, SLP remarks, atmospheric pressure tendency remark, and groups indicating rapid pressure rise or fall
-  * Forecast lowest atmospheric pressure
-  * Runway visual range with trend
-  * State of runway, type and amount of deposits, extent of runway contamination, surface friction and braking action
-  * Groups indicating that runway or airport is closed due to snow accumulation
-  * Groups indicating that deposits on runway were cleared or ceased to exist
-  * Rainfall groups used in Australia
-  * Various precipitation, snowfall, and ice buildup groups reported in remarks section in North America
-  * Temperature and state of sea surface or wave height
-  * Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
-  * Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
-  * Indicator of no unscheduled reports being issued by station
-  * Groups indicating non-operational sensors
-  * Icing and turbulence forecast used by NATO militaries
-  * Miscellaneous rare groups (e.g. sunshine duration)
+* Report type METAR, SPECI, and TAF
+* Various amended or correctional report indicators
+* Indicators for missing report, cancelled TAF report, and various indicator for missing data given in remarks section
+* Automated report indicator, automated station type remark, and maintenance indicator
+* ICAO location
+* Report issue time
+* Wind direction, speed and gust speed
+* Wind shear, peak wind and wind shift information
+* Prevailing or directional visibility in meters or statute miles
+* Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
+* Indicator of no significant cloud and good visibility CAVOK
+* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach)
+* Current and recent weather information, and indicator or weather phenomena end NSW
+* Temperature and dew point, including more precise values given in remarks
+* Temperature forecast from TAF reports
+* 6-hourly and 24-hourly minimum and maximum temperature
+* Current atmospheric pressure, including QNH, QFE, SLP remarks, atmospheric pressure tendency remark, and groups indicating rapid pressure rise or fall
+* Forecast lowest atmospheric pressure
+* Runway visual range with trend
+* State of runway, type and amount of deposits, extent of runway contamination, surface friction and braking action
+* Groups indicating that runway or airport is closed due to snow accumulation
+* Groups indicating that deposits on runway were cleared or ceased to exist
+* Rainfall groups used in Australia
+* Various precipitation, snowfall, and ice buildup groups reported in remarks section in North America
+* Temperature and state of sea surface or wave height
+* Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
+* Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
+* Indicator of no unscheduled reports being issued by station
+* Groups indicating non-operational sensors
+* Icing and turbulence forecast used by NATO militaries
+* Miscellaneous rare groups (e.g. sunshine duration)
 
 ## License
 

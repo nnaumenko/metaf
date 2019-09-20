@@ -30,7 +30,7 @@ Get the Metaf repository ::
 Setting up
 ----------
 
-The tutorial uses a single file ``tutorial.cpp``. 
+The tutorial uses a single file ``tutorial.cpp``.
 
 We start with the following simple template: ::
 
@@ -47,13 +47,13 @@ We need iostream to print to ``std::cout``. Since we are not going to use ``argc
 Integrating Metaf
 -----------------
 
-To integrate Metaf library into your project, just copy the file ``src/metaf.h`` to the project's source or include path and add the following line to the beginning of the ``tutorial.cpp`` ::
+To integrate Metaf library into your project, just add the include path to directory ``include``. Then add the following line to the beginning of the ``tutorial.cpp`` ::
 
 	#include "metaf.h"
 
 	using namespace metaf;
 
-All classes and functions in Metaf library are located in namespace metaf, so we add ``using namespace metaf`` part for simplicity, so that we do not have to write ``metaf::`` before every single name from the library.
+All classes and functions in Metaf library are located in namespace metaf, so we add ``using namespace metaf`` part for simplicity, so that we do not have to write ``metaf::`` before every single type from the library.
 
 
 Adding report to parse

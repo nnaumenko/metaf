@@ -8,6 +8,16 @@
 #ifndef METAF_H
 #define METAF_H
 
+#if defined(__clang__)
+	// No issues with clang
+	// But clang defines both __clang__ and __GNUC__
+#elif defined(__GNUC__)
+	// GCC gives false positives in GroupParser::parse
+	#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
+	// GCC gives numerous false positives in switch/return methods
+	#pragma GCC diagnostic ignored "-Wreturn-type"
+#endif
+
 #include <string>
 #include <vector>
 #include <variant>
@@ -21,7 +31,7 @@ namespace metaf {
 	// Metaf library version
 	struct Version {
 		inline static const int major = 3;
-		inline static const int minor = 2;
+		inline static const int minor = 3;
 		inline static const int patch = 0;
 		inline static const char tag [] = "";
 	};
@@ -2340,9 +2350,9 @@ namespace metaf {
 		}
 		if (*temperatureC < *dewPointC) return(100.0);
 		const auto saturationVapourPressure =
-			6.11 * powf(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
+			6.11 * pow(10, 7.5 * *temperatureC / (237.7 + *temperatureC));
 		const auto actualVapourPressure =
-			6.11 * powf(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
+			6.11 * pow(10, 7.5 * *dewPointC / (237.7 + *dewPointC));
 		return (100.0 * actualVapourPressure / saturationVapourPressure);
 	}
 
@@ -2399,8 +2409,8 @@ namespace metaf {
 		const auto windChillC =
 			13.12 +
 			0.6215 * temperatureC.value() -
-			11.37 * std::powf(windKmh.value(), 0.16) +
-			0.3965 * temperatureC.value() * std::powf(windKmh.value(), 0.16);
+			11.37 * pow(windKmh.value(), 0.16) +
+			0.3965 * temperatureC.value() * pow(windKmh.value(), 0.16);
 
 		return(Temperature(windChillC));
 	}
