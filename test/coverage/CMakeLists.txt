@@ -7,7 +7,7 @@ enable_language(CXX)
 set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -std=c++17 -stdlib=libc++ -O0 -g -fprofile-instr-generate -fcoverage-mapping")
 set(CMAKE_CXX_COMPILER clang++)
 
-include_directories(${PROJECT_SOURCE_DIR}/../../src)
+include_directories(${PROJECT_SOURCE_DIR}/../../include)
 
 set(GOOGLETEST_DIR ${PROJECT_SOURCE_DIR}/../../googletest/googletest)
 
