@@ -3,7 +3,9 @@
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/785c3536264b4a90bd8d94e1a799d275)](https://www.codacy.com/manual/nnaumenko/metaf?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nnaumenko/metaf&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://codecov.io/gl/nnaumenko/metaf/branch/master/graph/badge.svg)](https://codecov.io/gl/nnaumenko/metaf)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+[![MIT license](https://img.shields.io/github/license/nnaumenko/metaf)](LICENSE.md)
+[![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/nqOCxCKCgJuawMkv)
+
 
 ## Introduction
 
