@@ -16,6 +16,7 @@ TEST(WeatherGroup, parseWeatherDz) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherRa) {
@@ -26,6 +27,7 @@ TEST(WeatherGroup, parseWeatherRa) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherSn) {
@@ -36,6 +38,7 @@ TEST(WeatherGroup, parseWeatherSn) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherSg) {
@@ -46,6 +49,7 @@ TEST(WeatherGroup, parseWeatherSg) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SNOW_GRAINS);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherIc) {
@@ -56,6 +60,7 @@ TEST(WeatherGroup, parseWeatherIc) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::ICE_CRYSTALS);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherIcCombination) {
@@ -70,6 +75,7 @@ TEST(WeatherGroup, parseWeatherPl) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherGr) {
@@ -80,6 +86,7 @@ TEST(WeatherGroup, parseWeatherGr) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::HAIL);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherGs) {
@@ -90,6 +97,7 @@ TEST(WeatherGroup, parseWeatherGs) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherUp) {
@@ -100,6 +108,7 @@ TEST(WeatherGroup, parseWeatherUp) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherBr) {
@@ -110,6 +119,7 @@ TEST(WeatherGroup, parseWeatherBr) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::MIST);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherFg) {
@@ -120,6 +130,7 @@ TEST(WeatherGroup, parseWeatherFg) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherFu) {
@@ -130,6 +141,7 @@ TEST(WeatherGroup, parseWeatherFu) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SMOKE);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherVa) {
@@ -140,6 +152,7 @@ TEST(WeatherGroup, parseWeatherVa) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::VOLCANIC_ASH);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherDu) {
@@ -150,6 +163,7 @@ TEST(WeatherGroup, parseWeatherDu) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::DUST);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherSa) {
@@ -160,6 +174,7 @@ TEST(WeatherGroup, parseWeatherSa) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SAND);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherHz) {
@@ -170,6 +185,7 @@ TEST(WeatherGroup, parseWeatherHz) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::HAZE);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherPy) {
@@ -180,6 +196,7 @@ TEST(WeatherGroup, parseWeatherPy) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SPRAY);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherPo) {
@@ -190,6 +207,7 @@ TEST(WeatherGroup, parseWeatherPo) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::DUST_WHIRLS);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherSq) {
@@ -200,6 +218,7 @@ TEST(WeatherGroup, parseWeatherSq) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SQUALLS);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherFc) {
@@ -210,6 +229,7 @@ TEST(WeatherGroup, parseWeatherFc) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::FUNNEL_CLOUD);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherSs) {
@@ -220,6 +240,7 @@ TEST(WeatherGroup, parseWeatherSs) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SANDSTORM);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherDs) {
@@ -230,6 +251,7 @@ TEST(WeatherGroup, parseWeatherDs) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::DUSTSTORM);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherNotReported) {
@@ -240,6 +262,7 @@ TEST(WeatherGroup, parseWeatherNotReported) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::NOT_REPORTED);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
@@ -251,6 +274,7 @@ TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
 	EXPECT_EQ(weather1.size(), 2u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("RAGR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -260,6 +284,7 @@ TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
 	EXPECT_EQ(weather2.size(), 2u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather2.at(1), metaf::Weather::HAIL);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("DZSG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -269,6 +294,7 @@ TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
 	EXPECT_EQ(weather3.size(), 2u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
 	EXPECT_EQ(weather3.at(1), metaf::Weather::SNOW_GRAINS);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("DSSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -278,6 +304,7 @@ TEST(WeatherGroup, parseWeatherMultiplePhenomena) {
 	EXPECT_EQ(weather4.size(), 2u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::DUSTSTORM);
 	EXPECT_EQ(weather4.at(1), metaf::Weather::SANDSTORM);
+	EXPECT_TRUE(wg4->isValid());
 }
 
 TEST(WeatherGroup, duplicatePhenomena) {
@@ -311,6 +338,7 @@ TEST(WeatherGroup, parseDescriptorMi) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorMi) {
@@ -354,6 +382,7 @@ TEST(WeatherGroup, parseDescriptorPr) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorPartial) {
@@ -397,6 +426,7 @@ TEST(WeatherGroup, parseDescriptorBc) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorPatches) {
@@ -440,6 +470,7 @@ TEST(WeatherGroup, parseDescriptorDr) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("DRSA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -448,6 +479,7 @@ TEST(WeatherGroup, parseDescriptorDr) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::SAND);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("DRDU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -456,6 +488,7 @@ TEST(WeatherGroup, parseDescriptorDr) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DUST);
+	EXPECT_TRUE(wg3->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorDr) {
@@ -490,6 +523,7 @@ TEST(WeatherGroup, parseDescriptorBl) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("BLSA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -498,6 +532,7 @@ TEST(WeatherGroup, parseDescriptorBl) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::SAND);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("BLDU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -506,6 +541,7 @@ TEST(WeatherGroup, parseDescriptorBl) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DUST);
+	EXPECT_TRUE(wg3->isValid());
 
 	//For BLPY see parseWeatherPy
 }
@@ -541,6 +577,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("SHSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -549,6 +586,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("SHPL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -557,6 +595,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("SHGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -565,6 +604,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg4->isValid());
 
 	const auto wg5 = metaf::WeatherGroup::parse("SHGR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
@@ -573,6 +613,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::HAIL);
+	EXPECT_TRUE(wg5->isValid());
 
 	const auto wg6 = metaf::WeatherGroup::parse("SHUP", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg6.has_value());
@@ -581,6 +622,7 @@ TEST(WeatherGroup, parseDescriptorSh) {
 	const auto weather6 = wg6->weather();
 	EXPECT_EQ(weather6.size(), 1u);
 	EXPECT_EQ(weather6.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg6->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorShMultiplePhenomena) {
@@ -592,6 +634,7 @@ TEST(WeatherGroup, parseDescriptorShMultiplePhenomena) {
 	EXPECT_EQ(weather1.size(), 2u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("SHRAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -601,6 +644,7 @@ TEST(WeatherGroup, parseDescriptorShMultiplePhenomena) {
 	EXPECT_EQ(weather2.size(), 2u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather2.at(1), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg2->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorSh) {
@@ -630,6 +674,7 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("TSSN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -638,6 +683,7 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("TSPL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -646,6 +692,7 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("TSGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -654,6 +701,7 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg4->isValid());
 
 	const auto wg5 = metaf::WeatherGroup::parse("TSGR", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
@@ -662,6 +710,7 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::HAIL);
+	EXPECT_TRUE(wg5->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorTsStandalone) {
@@ -670,6 +719,7 @@ TEST(WeatherGroup, parseDescriptorTsStandalone) {
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::NONE);
 	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg->weather().size(), 0u);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorTsMultiplePhenomena) {
@@ -681,6 +731,7 @@ TEST(WeatherGroup, parseDescriptorTsMultiplePhenomena) {
 	EXPECT_EQ(weather1.size(), 2u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	// TS is allowed with RA but not with DZ
 	const auto wg2 = metaf::WeatherGroup::parse("TSRADZ", metaf::ReportPart::METAR);
@@ -691,6 +742,7 @@ TEST(WeatherGroup, parseDescriptorTsMultiplePhenomena) {
 	EXPECT_EQ(weather2.size(), 2u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather2.at(1), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg2->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorTs) {
@@ -721,6 +773,7 @@ TEST(WeatherGroup, parseDescriptorFz) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("FZRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -729,6 +782,7 @@ TEST(WeatherGroup, parseDescriptorFz) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("FZFG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -737,6 +791,7 @@ TEST(WeatherGroup, parseDescriptorFz) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg3->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorFzMultiplePhenomena) {
@@ -748,6 +803,7 @@ TEST(WeatherGroup, parseDescriptorFzMultiplePhenomena) {
 	EXPECT_EQ(weather.size(), 2u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather.at(1), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorFz) {
@@ -780,6 +836,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("-RA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -788,6 +845,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("-SN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -796,6 +854,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("-SG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -804,6 +863,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::SNOW_GRAINS);
+	EXPECT_TRUE(wg4->isValid());
 
 	const auto wg5 = metaf::WeatherGroup::parse("-PL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
@@ -812,6 +872,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg5->isValid());
 
 	const auto wg6 = metaf::WeatherGroup::parse("-UP", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg6.has_value());
@@ -820,6 +881,7 @@ TEST(WeatherGroup, parseQualifierLightPrecipitation) {
 	const auto weather6 = wg6->weather();
 	EXPECT_EQ(weather6.size(), 1u);
 	EXPECT_EQ(weather6.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg6->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierLightWithDescriptor) {
@@ -830,6 +892,7 @@ TEST(WeatherGroup, parseQualifierLightWithDescriptor) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("-SHPL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -838,6 +901,7 @@ TEST(WeatherGroup, parseQualifierLightWithDescriptor) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("-FZDZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -846,6 +910,7 @@ TEST(WeatherGroup, parseQualifierLightWithDescriptor) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg3->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierLightMultiplePhenomena) {
@@ -857,6 +922,7 @@ TEST(WeatherGroup, parseQualifierLightMultiplePhenomena) {
 	EXPECT_EQ(weather.size(), 2u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::DRIZZLE);
 	EXPECT_EQ(weather.at(1), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierLightMultiplePhenomenaWithDescriptor) {
@@ -868,6 +934,7 @@ TEST(WeatherGroup, parseQualifierLightMultiplePhenomenaWithDescriptor) {
 	EXPECT_EQ(weather.size(), 2u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather.at(1), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierHeavy) {
@@ -878,6 +945,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("+RA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -886,6 +954,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("+SN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -894,6 +963,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("+SG", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -902,6 +972,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::SNOW_GRAINS);
+	EXPECT_TRUE(wg4->isValid());
 
 	const auto wg5 = metaf::WeatherGroup::parse("+PL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
@@ -910,6 +981,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg5->isValid());
 
 	const auto wg6 = metaf::WeatherGroup::parse("+UP", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg6.has_value());
@@ -918,6 +990,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather6 = wg6->weather();
 	EXPECT_EQ(weather6.size(), 1u);
 	EXPECT_EQ(weather6.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg6->isValid());
 
 	const auto wg7 = metaf::WeatherGroup::parse("+FC", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg7.has_value());
@@ -926,6 +999,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather7 = wg7->weather();
 	EXPECT_EQ(weather7.size(), 1u);
 	EXPECT_EQ(weather7.at(0), metaf::Weather::FUNNEL_CLOUD);
+	EXPECT_TRUE(wg7->isValid());
 
 	const auto wg8 = metaf::WeatherGroup::parse("+DS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg8.has_value());
@@ -934,6 +1008,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather8 = wg8->weather();
 	EXPECT_EQ(weather8.size(), 1u);
 	EXPECT_EQ(weather8.at(0), metaf::Weather::DUSTSTORM);
+	EXPECT_TRUE(wg8->isValid());
 
 	const auto wg9 = metaf::WeatherGroup::parse("+SS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg9.has_value());
@@ -942,6 +1017,7 @@ TEST(WeatherGroup, parseQualifierHeavy) {
 	const auto weather9 = wg9->weather();
 	EXPECT_EQ(weather9.size(), 1u);
 	EXPECT_EQ(weather9.at(0), metaf::Weather::SANDSTORM);
+	EXPECT_TRUE(wg9->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierHeavyWithDescriptor) {
@@ -952,6 +1028,7 @@ TEST(WeatherGroup, parseQualifierHeavyWithDescriptor) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("+SHPL", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -960,6 +1037,7 @@ TEST(WeatherGroup, parseQualifierHeavyWithDescriptor) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::ICE_PELLETS);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("+FZDZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -968,6 +1046,7 @@ TEST(WeatherGroup, parseQualifierHeavyWithDescriptor) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg3->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomena) {
@@ -979,6 +1058,7 @@ TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomena) {
 	EXPECT_EQ(weather1.size(), 2u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::DRIZZLE);
 	EXPECT_EQ(weather1.at(1), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("+DSSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -988,7 +1068,7 @@ TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomena) {
 	EXPECT_EQ(weather2.size(), 2u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::DUSTSTORM);
 	EXPECT_EQ(weather2.at(1), metaf::Weather::SANDSTORM);
-
+	EXPECT_TRUE(wg2->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomenaWithDescriptor) {
@@ -1000,6 +1080,7 @@ TEST(WeatherGroup, parseQualifierHeavyMultiplePhenomenaWithDescriptor) {
 	EXPECT_EQ(weather.size(), 2u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather.at(1), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidIntensityQualifier) {
@@ -1041,6 +1122,7 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::FOG);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("VCVA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -1049,6 +1131,7 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::VOLCANIC_ASH);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("VCDS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -1057,6 +1140,7 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto weather3 = wg3->weather();
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::DUSTSTORM);
+	EXPECT_TRUE(wg3->isValid());
 
 	const auto wg4 = metaf::WeatherGroup::parse("VCSS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg4.has_value());
@@ -1065,6 +1149,7 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto weather4 = wg4->weather();
 	EXPECT_EQ(weather4.size(), 1u);
 	EXPECT_EQ(weather4.at(0), metaf::Weather::SANDSTORM);
+	EXPECT_TRUE(wg4->isValid());
 
 	const auto wg5 = metaf::WeatherGroup::parse("VCPO", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg5.has_value());
@@ -1073,6 +1158,7 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	const auto weather5 = wg5->weather();
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::DUST_WHIRLS);
+	EXPECT_TRUE(wg5->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierVicinityDescriptorOnly) {
@@ -1081,12 +1167,14 @@ TEST(WeatherGroup, parseQualifierVicinityDescriptorOnly) {
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
 	EXPECT_EQ(wg1->descriptor(), metaf::WeatherDescriptor::SHOWERS);
 	EXPECT_EQ(wg1->weather().size(), 0u);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("VCTS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
 	EXPECT_EQ(wg2->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg2->weather().size(), 0u);
+	EXPECT_TRUE(wg2->isValid());
 }
 
 TEST(WeatherGroup, parseInvalidVicinityQualifier) {
@@ -1122,6 +1210,7 @@ TEST(WeatherGroup, parseQualifierVicinityDescriptorAndWeather) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeather) {
@@ -1132,6 +1221,7 @@ TEST(WeatherGroup, parseQualifierRecentWeather) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeatherWithDescriptor) {
@@ -1142,6 +1232,7 @@ TEST(WeatherGroup, parseQualifierRecentWeatherWithDescriptor) {
 	const auto weather1 = wg1->weather();
 	EXPECT_EQ(weather1.size(), 1u);
 	EXPECT_EQ(weather1.at(0), metaf::Weather::SNOW);
+	EXPECT_TRUE(wg1->isValid());
 
 	const auto wg2 = metaf::WeatherGroup::parse("RETSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
@@ -1150,6 +1241,7 @@ TEST(WeatherGroup, parseQualifierRecentWeatherWithDescriptor) {
 	const auto weather2 = wg2->weather();
 	EXPECT_EQ(weather2.size(), 1u);
 	EXPECT_EQ(weather2.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg2->isValid());
 
 	const auto wg3 = metaf::WeatherGroup::parse("RETSRAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg3.has_value());
@@ -1159,6 +1251,7 @@ TEST(WeatherGroup, parseQualifierRecentWeatherWithDescriptor) {
 	EXPECT_EQ(weather3.size(), 2u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::RAIN);
 	EXPECT_EQ(weather3.at(1), metaf::Weather::SMALL_HAIL);
+	EXPECT_TRUE(wg3->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierRecentWeatherDescriptorOnly) {
@@ -1167,6 +1260,7 @@ TEST(WeatherGroup, parseQualifierRecentWeatherDescriptorOnly) {
 	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::RECENT);
 	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
 	EXPECT_EQ(wg->weather().size(), 0u);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseRecentWeatherNotReported) {
@@ -1177,6 +1271,7 @@ TEST(WeatherGroup, parseRecentWeatherNotReported) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::NOT_REPORTED);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierModerateRainAndHail) {
@@ -1184,6 +1279,7 @@ TEST(WeatherGroup, parseQualifierModerateRainAndHail) {
 	const auto wg1 = metaf::WeatherGroup::parse("RAGS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
+	EXPECT_TRUE(wg1->isValid());
 }
 
 TEST(WeatherGroup, parseWeatherTaf) {
@@ -1194,6 +1290,7 @@ TEST(WeatherGroup, parseWeatherTaf) {
 	const auto weather = wg->weather();
 	EXPECT_EQ(weather.size(), 1u);
 	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WeatherGroup, parseWrongReportPart) {
