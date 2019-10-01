@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 #include <type_traits>
 
 //Confirm that Group occupies a contiguous memory area

@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(FixedGroup, parseMetar) {
 	static const char gs[] = "METAR";

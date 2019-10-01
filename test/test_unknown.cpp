@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(UnknownGroup, parse) {
 	static const std::string str = "AAAAAAAA";

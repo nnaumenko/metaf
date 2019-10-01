@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 static const auto margin = 0.01 / 2;
 static const auto slpMargin = 0.1 / 2;

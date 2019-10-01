@@ -5,7 +5,7 @@
 * of the MIT license. See the LICENSE file for details.
 */
 
-#include "metaf.h"
+#include "metaf.hpp"
 #include "testdata_real.h"
 #include <iostream>
 #include <chrono>
@@ -26,12 +26,12 @@ using namespace std;
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     if constexpr (I >= variant_size_v<V>) {
-    	return (variant_size_v<V>);
+    	return variant_size_v<V>;
     } else {
     	if constexpr (is_same_v<variant_alternative_t<I, V>, T>) {
-    		return (I);
+    		return I;
     	} else {
-    		return (variant_index<V, T, I + 1>());
+    		return variant_index<V, T, I + 1>();
     	}
     }
 }
@@ -44,81 +44,81 @@ constexpr size_t variant_index() {
 string_view groupName (size_t index) {
 	switch (index) {
 		case variant_index<metaf::Group, metaf::FixedGroup>():
-		return("FixedGroup");
+		return "FixedGroup";
 
 		case variant_index<metaf::Group, metaf::LocationGroup>():
-		return("LocationGroup");
+		return "LocationGroup";
 
 		case variant_index<metaf::Group, metaf::ReportTimeGroup>():
-		return("ReportTimeGroup");
+		return "ReportTimeGroup";
 
 		case variant_index<metaf::Group, metaf::TrendGroup>():
-		return("TrendGroup");
+		return "TrendGroup";
 
 		case variant_index<metaf::Group, metaf::WindGroup>():
-		return("WindGroup");
+		return "WindGroup";
 
 		case variant_index<metaf::Group, metaf::VisibilityGroup>():
-		return("VisibilityGroup");
+		return "VisibilityGroup";
 
 		case variant_index<metaf::Group, metaf::CloudGroup>():
-		return("CloudGroup");
+		return "CloudGroup";
 
 		case variant_index<metaf::Group, metaf::WeatherGroup>():
-		return("WeatherGroup");
+		return "WeatherGroup";
 
 		case variant_index<metaf::Group, metaf::TemperatureGroup>():
-		return("TemperatureGroup");
+		return "TemperatureGroup";
 
 		case variant_index<metaf::Group, metaf::TemperatureForecastGroup>():
-		return("TemperatureForecastGroup");
+		return "TemperatureForecastGroup";
 
 		case variant_index<metaf::Group, metaf::PressureGroup>():
-		return("PressureGroup");
+		return "PressureGroup";
 
 		case variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>():
-		return("RunwayVisualRangeGroup");
+		return "RunwayVisualRangeGroup";
 
 		case variant_index<metaf::Group, metaf::RunwayStateGroup>():
-		return("RunwayStateGroup");
+		return "RunwayStateGroup";
 
 		case variant_index<metaf::Group, metaf::SecondaryLocationGroup>():
-		return("SecondaryLocationGroup");
+		return "SecondaryLocationGroup";
 
 		case variant_index<metaf::Group, metaf::RainfallGroup>():
-		return("RainfallGroup");
+		return "RainfallGroup";
 
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
-		return("SeaSurfaceGroup");
+		return "SeaSurfaceGroup";
 
 		case variant_index<metaf::Group, metaf::ColourCodeGroup>():
-		return("ColourCodeGroup");
+		return "ColourCodeGroup";
 
 		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
-		return("MinMaxTemperatureGroup");
+		return "MinMaxTemperatureGroup";
 
 		case variant_index<metaf::Group, metaf::PrecipitationGroup>():
-		return("PrecipitationGroup");
+		return "PrecipitationGroup";
 
 		case variant_index<metaf::Group, metaf::LayerForecastGroup>():
-		return("LayerForecastGroup");
+		return "LayerForecastGroup";
 
 		case variant_index<metaf::Group, metaf::PressureTendencyGroup>():
-		return("PressureTendencyGroup");
+		return "PressureTendencyGroup";
 
 		case variant_index<metaf::Group, metaf::CloudTypesGroup>():
-		return("CloudTypesGroup");
+		return "CloudTypesGroup";
 
 		case variant_index<metaf::Group, metaf::CloudLayersGroup>():
-		return("CloudLayersGroup");
+		return "CloudLayersGroup";
 
 		case variant_index<metaf::Group, metaf::MiscGroup>():
-		return("MiscGroup");
+		return "MiscGroup";
 
 		case variant_index<metaf::Group, metaf::UnknownGroup>():
-		return("UnknownGroup");
+		return "UnknownGroup";
 
-		default: return("UNDEFINED");
+		default: return "UNDEFINED";
 	}
 }
 
@@ -129,7 +129,7 @@ class PerformanceCheckerBase {
 public:
 	void run(ostream & output);
 protected:
-	string_view getItemName() { return(itemName); }
+	string_view getItemName() { return itemName; }
 	void setItemName(string_view name) { itemName = name; }
 	virtual int process() = 0;
 private:
@@ -190,7 +190,7 @@ int ParserPerformanceChecker::process() {
 			reportCount++;
 		}
 	}
-	return(reportCount);
+	return reportCount;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -218,11 +218,11 @@ int GroupPerformanceChecker::process() {
 					metaf::missingMetadata);
 			(void)parseResult;
 			(void)index;
-			//if (parseResult.index() != index) return(0);
+			//if (parseResult.index() != index) return 0;
 			groupCount++;
 		}
 	}
-	return(groupCount);
+	return groupCount;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -234,14 +234,14 @@ int GroupPerformanceChecker::process() {
 class GroupsTestSet {
 public:
 	GroupsTestSet();
-	size_t size() { return(testSet.size()); }
+	size_t size() { return testSet.size(); }
 	const vector<pair<string, metaf::ReportPart>> & groupSet(size_t index) { 
-		return(testSet.at(index));
+		return testSet.at(index);
 	}
 	size_t totalGroups() {
 		auto count = 0;
 		for (const auto gs : testSet) { count += gs.size(); }
-		return(count);
+		return count;
 	}
 	void displayStats(ostream & output);
 	void runPerformanceTests(ostream & output);
@@ -322,7 +322,7 @@ int addPlainTextGroups(const metaf::ParseResult & src, vector< pair<int, string>
 			}
 		}
 	}
-	return(count);
+	return count;
 }
 
 void printFlaggedGroups(vector< pair<int, string> > flaggedGroups) {

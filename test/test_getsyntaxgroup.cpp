@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(getSyntaxGroup, METAR) {
 	const auto g = metaf::FixedGroup::parse("METAR", metaf::ReportPart::HEADER);

@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(FractionStrToUint, numerator1digit_denominator1digit) {
 	const auto r3_8 = metaf::fractionStrToUint("3/8", 0, 3);

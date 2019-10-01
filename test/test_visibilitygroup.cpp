@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(VisibilityGroup, parseMetersMetar) {
 	const auto vg = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::METAR);

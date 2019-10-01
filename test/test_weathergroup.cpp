@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(WeatherGroup, parseWeatherDz) {
 	const auto wg = metaf::WeatherGroup::parse("DZ", metaf::ReportPart::METAR);

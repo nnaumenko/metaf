@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(StrToUint, number1digit) {
 	const auto r1 = metaf::strToUint("0", 0, 1);

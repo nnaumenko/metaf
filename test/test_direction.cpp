@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(Direction, fromCardinalStringN) {
 	const auto d = metaf::Direction::fromCardinalString("N");

@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(TemperatureForecastGroup, parseMinimum) {
 	const auto tfg = metaf::TemperatureForecastGroup::parse("TN03/0620Z", metaf::ReportPart::TAF);

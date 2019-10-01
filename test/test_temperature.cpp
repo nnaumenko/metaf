@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 static const auto tempMargin = 0.1/2;
 static const auto rhMargin = 0.1/2;

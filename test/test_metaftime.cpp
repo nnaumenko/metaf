@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(MetafTime, fromStringDDHHMMwithDay) {
 	const auto t = metaf::MetafTime::fromStringDDHHMM("120830");

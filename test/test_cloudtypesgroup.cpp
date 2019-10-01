@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(CloudTypesGroup, parseCumulonimbus) {
 	const auto ctg = metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::RMK);

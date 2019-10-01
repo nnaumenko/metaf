@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(TrendGroup, parseProb30) {
 	const auto tg = metaf::TrendGroup::parse("PROB30", metaf::ReportPart::TAF);

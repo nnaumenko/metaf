@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(WindGroup, parseKnotsMetar) {
 	const auto wg = metaf::WindGroup::parse("18005KT", metaf::ReportPart::METAR);

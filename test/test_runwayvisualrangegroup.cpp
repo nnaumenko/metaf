@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(RunwayVisualRangeGroup, parseSingleValueMeters) {
 	const auto rvrg = metaf::RunwayVisualRangeGroup::parse("R05/1100", metaf::ReportPart::METAR);

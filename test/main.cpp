@@ -64,5 +64,5 @@ int main(int argc, char ** argv) {
         printFiles("/");
     }
     #endif
-    return(testResult);
+    return testResult;
 }

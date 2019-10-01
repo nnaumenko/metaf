@@ -7,7 +7,7 @@
 
 #include "gtest/gtest.h"
 #include "testdata_real.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(Parser, RealDataParsingMETAR) {
 	for (const auto & data : testdata::realDataSet) {
@@ -40,86 +40,86 @@ TEST(Parser, RealDataParsingTAF) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static bool isUnknown(const metaf::Group & group) {
-	return (std::holds_alternative<metaf::UnknownGroup>(group));
+	return std::holds_alternative<metaf::UnknownGroup>(group);
 }
 
 static bool isMetar(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::METAR);
 }
 
 static bool isSpeci(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::SPECI);
 }
 
 static bool isTaf(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::TAF);
 }
 
 static bool isAmd(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::AMD);
 }
 
 static bool isNil(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::NIL);
 }
 
 static bool isCnl(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::CNL);
 }
 
 static bool isCor(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::COR);
 }
 
 static bool isRmk(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::RMK);
 }
 
 static bool isMaintenanceIndicator(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return(false);
+	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
 	return (std::get<metaf::FixedGroup>(group).type() == 
 		metaf::FixedGroup::Type::MAINTENANCE_INDICATOR);
 }
 
 static bool isFixedGroup(const metaf::Group & group) {
-	return (std::holds_alternative<metaf::FixedGroup>(group));
+	return std::holds_alternative<metaf::FixedGroup>(group);
 }
 
 static bool isLocation(const metaf::Group & group) {
-	return (std::holds_alternative<metaf::LocationGroup>(group));
+	return std::holds_alternative<metaf::LocationGroup>(group);
 }
 
 static bool isReportTime(const metaf::Group & group) {
-	return (std::holds_alternative<metaf::ReportTimeGroup>(group));
+	return std::holds_alternative<metaf::ReportTimeGroup>(group);
 }
 
 static bool isTrend(const metaf::Group & group) {
-	return(std::holds_alternative<metaf::TrendGroup>(group));
+	return std::holds_alternative<metaf::TrendGroup>(group);
 }
 
 static bool isTimeSpan(const metaf::Group & group) {
-	if(!std::holds_alternative<metaf::TrendGroup>(group)) return(false);
-	return (std::get<metaf::TrendGroup>(group).isTimeSpanGroup());
+	if(!std::holds_alternative<metaf::TrendGroup>(group)) return false;
+	return std::get<metaf::TrendGroup>(group).isTimeSpanGroup();
 }
 
 static bool isWind(const metaf::Group & group) {
-	return(std::holds_alternative<metaf::WindGroup>(group));
+	return std::holds_alternative<metaf::WindGroup>(group);
 }
 
 static bool isVisibility(const metaf::Group & group) {
-	return(std::holds_alternative<metaf::VisibilityGroup>(group));
+	return std::holds_alternative<metaf::VisibilityGroup>(group);
 }
 
 static bool isCloud(const metaf::Group & group) {
-	return(std::holds_alternative<metaf::CloudGroup>(group));
+	return std::holds_alternative<metaf::CloudGroup>(group);
 }
 
 static bool isWeather(const metaf::Group & group) {

@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(ColourCodeGroup, parseBlue) {
 	const auto group = metaf::ColourCodeGroup::parse("BLU", metaf::ReportPart::METAR);

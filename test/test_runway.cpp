@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(Runway, fromStringWithoutDesignator) {
 	const auto r = metaf::Runway::fromString("R00");

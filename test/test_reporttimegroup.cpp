@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(ReportTimeGroup, parseReportTime) {
 	const auto rtg = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);

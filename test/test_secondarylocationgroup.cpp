@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(SecondaryLocationGroup, parseWs) {
 	const auto slg = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);

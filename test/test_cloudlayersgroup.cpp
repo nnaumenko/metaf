@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(CloudLayersGroup, parseLowLayer0) {
 	const auto clg = metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::RMK);

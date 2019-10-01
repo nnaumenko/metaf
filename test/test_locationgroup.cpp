@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(LocationGroup, parseLocationWithoutNumber) {
 	static const char gs[] = "UKLL"; //UKLL = Lviv Danylo Halytskyi International Airport 

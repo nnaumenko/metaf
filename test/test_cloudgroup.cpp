@@ -6,7 +6,7 @@
 */
 
 #include "gtest/gtest.h"
-#include "metaf.h"
+#include "metaf.hpp"
 
 TEST(CloudGroup, parseCloudLayerMetar) {
 	const auto cg = metaf::CloudGroup::parse("SCT040", metaf::ReportPart::METAR);
