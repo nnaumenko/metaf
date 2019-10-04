@@ -274,6 +274,34 @@ TEST(FixedGroup, parseAo2) {
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
+TEST(FixedGroup, parseAo1a) {
+	static const char gs[] = "AO1A";
+	static const auto type = metaf::FixedGroup::Type::AO1A;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(FixedGroup, parseAo2a) {
+	static const char gs[] = "AO2A";
+	static const auto type = metaf::FixedGroup::Type::AO2A;
+
+	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
 TEST(FixedGroup, parseNospeci) {
 	static const char gs[] = "NOSPECI";
 	static const auto type = metaf::FixedGroup::Type::NOSPECI;

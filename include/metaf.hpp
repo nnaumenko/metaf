@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 3;
-	inline static const int minor = 3;
-	inline static const int patch = 2;
+	inline static const int minor = 4;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -704,6 +704,8 @@ public:
 		MAINTENANCE_INDICATOR,
 		AO1,
 		AO2,
+		AO1A,
+		AO2A,
 		NOSPECI,
 		RVRNO,
 		PWINO,
@@ -1621,6 +1623,7 @@ private:
 	static inline std::optional<HighLayer> highLayerFromChar(char c);
 };
 
+// TODO: LTG groups
 class LightningGroup {
 public:
 	inline bool isValid() const { return true; }
@@ -1642,6 +1645,7 @@ public:
 	}
 };
 
+// TODO: RAB, RAE, SNB, DZB, etc.
 class WeatherBeginEndGroup {
 public:
 	inline bool isValid() const { return true; }
@@ -1663,6 +1667,7 @@ public:
 	}
 };
 
+// TODO: TS x MOV y, CB x MOV y, etc.
 class VicinityGroup {
 public:
 	inline bool isValid() const { return true; }
@@ -3270,6 +3275,8 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 	if (reportPart == ReportPart::RMK) {
 		if (group == "AO1") return FixedGroup(Type::AO1);
 		if (group == "AO2") return FixedGroup(Type::AO2);
+		if (group == "AO1A") return FixedGroup(Type::AO1A);
+		if (group == "AO2A") return FixedGroup(Type::AO2A);
 		if (group == "NOSPECI") return FixedGroup(Type::NOSPECI);
 		if (group == "RVRNO") return FixedGroup(Type::RVRNO);
 		if (group == "PWINO") return FixedGroup(Type::PWINO);

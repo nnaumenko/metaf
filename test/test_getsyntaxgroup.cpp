@@ -122,6 +122,18 @@ TEST(getSyntaxGroup, OTHER_AO2) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_AO1A) {
+	const auto g = metaf::FixedGroup::parse("AO1A", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_AO2A) {
+	const auto g = metaf::FixedGroup::parse("AO2A", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_NOSPECI) {
 	const auto g = metaf::FixedGroup::parse("NOSPECI", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());

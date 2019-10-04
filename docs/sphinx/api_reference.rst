@@ -1185,6 +1185,14 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Indicates an automated station with precipitation discriminator.
 
+		.. cpp:enumerator:: AO1A
+
+			Indicates an automated station without precipitation discriminator and denotes an automated observation augmented by a human observer.
+
+		.. cpp:enumerator:: AO2A
+
+			Indicates an automated station with precipitation discriminator and denotes an automated observation augmented by a human observer.
+
 		.. cpp:enumerator:: NOSPECI
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.

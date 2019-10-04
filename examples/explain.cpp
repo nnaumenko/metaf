@@ -263,6 +263,18 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "This automated station is equipped with a precipitation discriminator";
 		break;
 
+		case metaf::FixedGroup::Type::AO1A:
+		result << "This automated station is not equipped with a precipitation discriminator";
+		result << lineBreak;
+		result << "Automated observation is augmented by a human observer";
+		break;
+
+		case metaf::FixedGroup::Type::AO2A:
+		result << "This automated station is equipped with a precipitation discriminator";
+		result << lineBreak;
+		result << "Automated observation is augmented by a human observer";
+		break;
+
 		case metaf::FixedGroup::Type::NOSPECI:
 		result << "This manual station does not issue SPECI (unscheduled) reports";
 		break;
