@@ -491,6 +491,15 @@ Direction
 
 			True east (exactly 90 degrees).
 
+		.. cpp:enumerator:: OHD
+
+			Overhead.
+
+		.. cpp:enumerator:: ALQDS
+
+			All quadrants (i.e. all directions).
+
+
 	.. cpp:enum-class:: Status
 
 		The status of the direction value reported. If the status is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
@@ -570,11 +579,16 @@ Direction
 
 		.. cpp:function:: bool isValue() const
 
-			:returns: ``true`` if the stored direction contains a value, and ``false`` if the stored direction does not contain a concrete value. 
+			:returns: ``true`` if the stored direction contains a value, and ``false`` if the stored direction does not contain a concrete value.
 
 				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Status::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Status::VALUE_DEGREES`) is stored.
 
 				- ``false`` is returned if the status is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`.
+
+		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction &dir2)
+
+			:returns: ``std::vector`` if the stored
+
 
 
 	**Validating**
@@ -3047,11 +3061,79 @@ Example of the raw report data is ``8/578``, and ``8/903``.
 LightningGroup
 ^^^^^^^^^^^^^^
 
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: lightninggroup.svg
+
+Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, etc.
+
 .. cpp:class:: LightningGroup
 
-This group is added to maintain compatibility. It is not yet used in this version.
+	Stores information about observed lightning flashes. This group is included in the remarks and is used in North America.
 
-The planned use is to store lightning information included in METAR remarks.
+	.. cpp:enum-class:: Frequency
+
+		Frequency of lightning flashes.
+
+		.. cpp:enumerator::NONE
+
+			Frequency was not speficied.
+
+		.. cpp:enumerator::OCCASIONAL
+
+			Less than 1 flash per minute.
+
+		.. cpp:enumerator::FREQUENT
+
+			1 to 6 flashes per minute.
+
+		.. cpp:enumerator::CONSTANT
+
+			More than 6 flashes per minute.
+
+	**Acquiring group data**
+
+		.. cpp:function:: Frequency frequency() const
+
+			:returns: Observed frequency of lightning flashes.
+
+		.. cpp:function:: bool isDistant() const
+
+			:returns: ``true`` if distant (10 to 30 nautical miles) lightning is reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: std::vector<Direction> directions() const
+
+			:returns: Vector of directions where the lightning was reported (may include Overhead direction).
+
+	**Lightning types**
+
+		.. note:: More than one lightning type may be reported in this group.
+
+		.. cpp:function:: bool isCloudGround() const
+
+			:returns: ``true`` if cloud-to-ground lightning is observed and reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: bool isInCloud() const
+
+			:returns: ``true`` if in-cloud lightning is observed and reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: bool isCloudCloud() const
+
+			:returns: ``true`` if cloud-to-cloud lightning is observed and reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: bool isCloudAir() const
+
+			:returns: ``true`` if cloud to air (without strike to the ground) lightning is observed and reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: bool isUnknownType() const
+
+			:returns: ``true`` if lightning type other than listed above is reported in this group, ``false`` otherwise.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: ``true`` there are no unknown lightning types in this group.
 
 
 WeatherBeginEndGroup

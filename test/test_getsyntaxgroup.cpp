@@ -469,6 +469,12 @@ TEST(getSyntaxGroup, OTHER_CloudLayersGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_LightningGroup) {
+	const auto g = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_MiscGroupSunshineDuration) {
 	const auto g = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());

@@ -112,6 +112,15 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::CloudLayersGroup>():
 		return "CloudLayersGroup";
 
+		case variant_index<metaf::Group, metaf::LightningGroup>():
+		return "LightningGroup";
+
+		case variant_index<metaf::Group, metaf::WeatherBeginEndGroup>():
+		return "WeatherBeginEndGroup";
+
+		case variant_index<metaf::Group, metaf::VicinityGroup>():
+		return "VicinityGroup";
+
 		case variant_index<metaf::Group, metaf::MiscGroup>():
 		return "MiscGroup";
 

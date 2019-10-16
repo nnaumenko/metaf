@@ -78,6 +78,24 @@ TEST(Direction, fromCardinalStringNDV) {
 	EXPECT_EQ(d->status(), metaf::Direction::Status::NDV);
 }
 
+TEST(Direction, fromCardinalStringOhd) {
+	const auto d = metaf::Direction::fromCardinalString("OHD", true);
+	ASSERT_TRUE(d.has_value());
+	EXPECT_FALSE(d->degrees().has_value());
+	EXPECT_EQ(d->status(), metaf::Direction::Status::OVERHEAD);
+
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("OHD").has_value());
+}
+
+TEST(Direction, fromCardinalStringAlqds) {
+	const auto d = metaf::Direction::fromCardinalString("ALQDS", true);
+	ASSERT_TRUE(d.has_value());
+	EXPECT_FALSE(d->degrees().has_value());
+	EXPECT_EQ(d->status(), metaf::Direction::Status::ALQDS);
+
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("ALQDS").has_value());
+}
+
 TEST(Direction, fromCardinalStringSpecialOther) {
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("///").has_value());
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("VRB").has_value());
@@ -87,6 +105,14 @@ TEST(Direction, fromCardinalStringOther) {
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("AAA").has_value());
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("212").has_value());
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("SDV").has_value());
+
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("WS").has_value());
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("ES").has_value());
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("WN").has_value());
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("EN").has_value());
+
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("EW").has_value());
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("WE").has_value());
 }
 
 TEST(Direction, fromDegreesString) {
@@ -313,6 +339,18 @@ TEST(Direction, cardinalNdv) {
 	EXPECT_EQ(d->cardinal(), metaf::Direction::Cardinal::NDV);
 }
 
+TEST(Direction, cardinalOhd) {
+	auto d = metaf::Direction::fromCardinalString("OHD", true);
+	ASSERT_TRUE(d.has_value());
+	EXPECT_EQ(d->cardinal(), metaf::Direction::Cardinal::OHD);
+}
+
+TEST(Direction, cardinalAlqds) {
+	auto d = metaf::Direction::fromCardinalString("ALQDS", true);
+	ASSERT_TRUE(d.has_value());
+	EXPECT_EQ(d->cardinal(), metaf::Direction::Cardinal::ALQDS);
+}
+
 TEST(Direction, cardinalNone) {
 	auto d1 = metaf::Direction::fromCardinalString("");
 	ASSERT_TRUE(d1.has_value());
@@ -330,3 +368,166 @@ TEST(Direction, cardinalNone) {
 	EXPECT_EQ(d3->cardinal(), metaf::Direction::Cardinal::NONE);
 }
 
+TEST(Direction, fromSectorString_N_NE) {
+	const auto d = metaf::Direction::fromSectorString("N-NE");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
+
+	const auto d1 = std::get<1>(d.value());
+	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::NE);
+}
+
+TEST(Direction, fromSectorString_N_E_S) {
+	const auto d = metaf::Direction::fromSectorString("N-E-S");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
+
+	const auto d1 = std::get<1>(d.value());
+	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
+}
+
+TEST(Direction, fromSectorString_N_S) {
+	const auto d = metaf::Direction::fromSectorString("N-S");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
+
+	const auto d1 = std::get<1>(d.value());
+	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
+}
+
+TEST(Direction, fromSectorString_N_NE_E_SW_S) {
+	const auto d = metaf::Direction::fromSectorString("N-NE-E-SW-S");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
+
+	const auto d1 = std::get<1>(d.value());
+	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
+}
+
+TEST(Direction, fromSectorString_N_W_S) {
+	//Note: all middle values are ignored
+	const auto d = metaf::Direction::fromSectorString("N-W-S");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
+
+	const auto d1 = std::get<1>(d.value());
+	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
+}
+
+TEST(Direction, fromSectorString_WrongCardinal) {
+	EXPECT_FALSE(metaf::Direction::fromSectorString("NN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("EN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("WN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("EW-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("WE-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-WE-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-EW-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-EN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-WN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-NN-S").has_value());
+	EXPECT_FALSE(metaf::Direction::fromSectorString("N-WW-S").has_value());
+}
+
+TEST(Direction, fromSectorString_rotateOctantClockwise) {
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::N),
+		metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::NE),
+		metaf::Direction::Cardinal::E);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::E),
+		metaf::Direction::Cardinal::SE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::SE),
+		metaf::Direction::Cardinal::S);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::S),
+		metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::SW),
+		metaf::Direction::Cardinal::W);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::W),
+		metaf::Direction::Cardinal::NW);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::NW),
+		metaf::Direction::Cardinal::N);
+
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::TRUE_N),
+		metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::TRUE_E),
+		metaf::Direction::Cardinal::SE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::TRUE_S),
+		metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::TRUE_W),
+		metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::NONE),
+		metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::NDV),
+		metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::OHD),
+		metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(metaf::Direction::rotateOctantClockwise(metaf::Direction::Cardinal::ALQDS),
+		metaf::Direction::Cardinal::NONE);
+}
+
+TEST(Direction, sectorCardinalDirToVector_Sector) {
+	const auto d = metaf::Direction::fromSectorString("SW-NW");
+	ASSERT_TRUE(d.has_value());
+	const auto d0 = std::get<0>(d.value());
+	const auto d1 = std::get<1>(d.value());
+	const auto dv = metaf::Direction::sectorCardinalDirToVector(d0, d1);
+	ASSERT_EQ(dv.size(), 3u);
+	EXPECT_EQ(dv.at(0), metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(dv.at(1), metaf::Direction::Cardinal::W);
+	EXPECT_EQ(dv.at(2), metaf::Direction::Cardinal::NW);
+}
+
+TEST(Direction, sectorCardinalDirToVector_NonSector) {
+	const auto dn = metaf::Direction::fromCardinalString("N");
+	ASSERT_TRUE(dn.has_value());
+	const auto dnone = metaf::Direction::fromCardinalString("");
+	ASSERT_TRUE(dnone.has_value());
+	const auto dndv = metaf::Direction::fromCardinalString("NDV");
+	ASSERT_TRUE(dndv.has_value());
+	const auto dohd = metaf::Direction::fromCardinalString("OHD", true);
+	ASSERT_TRUE(dohd.has_value());
+	const auto dalqds = metaf::Direction::fromCardinalString("ALQDS", true);
+	ASSERT_TRUE(dalqds.has_value());
+
+	const auto dv1 = metaf::Direction::sectorCardinalDirToVector(dn.value(), dndv.value());
+	ASSERT_EQ(dv1.size(), 2u);
+	EXPECT_EQ(dv1.at(0), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(dv1.at(1), metaf::Direction::Cardinal::NDV);
+
+	const auto dv2 = metaf::Direction::sectorCardinalDirToVector(dn.value(), dnone.value());
+	ASSERT_EQ(dv2.size(), 1u);
+	EXPECT_EQ(dv2.at(0), metaf::Direction::Cardinal::N);
+
+	const auto dv3 = metaf::Direction::sectorCardinalDirToVector(dn.value(), dohd.value());
+	ASSERT_EQ(dv3.size(), 2u);
+	EXPECT_EQ(dv3.at(0), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(dv3.at(1), metaf::Direction::Cardinal::OHD);
+
+	const auto dv4 = metaf::Direction::sectorCardinalDirToVector(dn.value(), dalqds.value());
+	ASSERT_EQ(dv4.size(), 2u);
+	EXPECT_EQ(dv4.at(0), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(dv4.at(1), metaf::Direction::Cardinal::ALQDS);
+
+	const auto dv5 = metaf::Direction::sectorCardinalDirToVector(dohd.value(), dnone.value());
+	ASSERT_EQ(dv5.size(), 1u);
+	EXPECT_EQ(dv5.at(0), metaf::Direction::Cardinal::OHD);
+
+	const auto dv6 = metaf::Direction::sectorCardinalDirToVector(dalqds.value(), dnone.value());
+	ASSERT_EQ(dv6.size(), 1u);
+	EXPECT_EQ(dv6.at(0), metaf::Direction::Cardinal::ALQDS);
+}

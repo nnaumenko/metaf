@@ -31,7 +31,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 3;
-	inline static const int minor = 4;
+	inline static const int minor = 5;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -331,6 +331,8 @@ public:
 		TRUE_W,
 		TRUE_S,
 		TRUE_E,
+		OHD,	// Overhead
+		ALQDS	// All quadrants
 	};
 	enum class Status {
 		OMMITTED, 		// Direction is ommitted (not specified at all)
@@ -352,20 +354,28 @@ public:
 		return (dirStatus == Status::VALUE_DEGREES || 
 			dirStatus == Status::VALUE_CARDINAL);
 	}
+	static inline std::vector<Cardinal> sectorCardinalDirToVector(
+		const Direction & dir1from, 
+		const Direction & dir1to);
 	bool isValid() const {
 		if (isValue() && dirDegrees > maxDegrees) return false;
 		return true;
 	}
+	static inline Cardinal rotateOctantClockwise(Cardinal cardinal);
 
 	Direction() = default;
-	static inline std::optional<Direction> fromCardinalString(const std::string & s);
+	static inline std::optional<Direction> fromCardinalString(const std::string & s,
+		bool enableOhdAlqds = false);
 	static inline std::optional<Direction> fromDegreesString(const std::string & s);
+	static inline std::optional<std::pair<Direction, Direction>> fromSectorString(
+		const std::string & s);
 
 private:
 	unsigned int dirDegrees = 0;
 	Status dirStatus = Status::OMMITTED;
 private:
 	static const inline unsigned int maxDegrees = 360;
+	static const inline unsigned int octantSize = 45u;
 	static const inline unsigned int degreesTrueNorth = 360;
 	static const inline unsigned int degreesTrueWest = 270;
 	static const inline unsigned int degreesTrueSouth = 180;
@@ -1623,25 +1633,59 @@ private:
 	static inline std::optional<HighLayer> highLayerFromChar(char c);
 };
 
-// TODO: LTG groups
 class LightningGroup {
 public:
-	inline bool isValid() const { return true; }
+	enum class Frequency {
+		NONE,			// Not specified
+		OCCASSIONAL,	// Less than 1 flash/minute
+		FREQUENT,		// 1 to 6 flashes/minute
+		CONSTANT		// More than 6 flashes/minute
+	};
+	Frequency frequency() const { return(freq); }
+	bool isDistant() const { return(distant); }
+	bool isCloudGround() const { return typeCloudGround; }
+	bool isInCloud() const { return(typeInCloud); }
+	bool isCloudCloud() const { return(typeCloudCloud); }
+	bool isCloudAir() const { return(typeCloudAir); }
+	bool isUnknownType() const { return(typeUnknown); }
+	inline std::vector<Direction::Cardinal> directions() const;
+	inline bool isValid() const { return !typeUnknown; }
 
 	LightningGroup() = default;
-	static std::optional<LightningGroup> parse(const std::string & group,
+	static inline std::optional<LightningGroup> parse(const std::string & group,
 		ReportPart reportPart,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{ 
-		(void)group; (void)reportPart; (void)reportMetadata;
-		return std::optional<LightningGroup>(); 
-	}
-	AppendResult append(const std::string & group,
+		const ReportMetadata & reportMetadata = missingMetadata);
+	inline AppendResult append(const std::string & group,
 		ReportPart reportPart = ReportPart::UNKNOWN,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{
-		(void)group; (void)reportPart; (void)reportMetadata; 
-		return AppendResult::NOT_APPENDED;
+		const ReportMetadata & reportMetadata = missingMetadata);
+
+private:
+	Frequency freq = Frequency::NONE;
+	bool distant = false;
+	bool typeCloudGround = false;
+	bool typeInCloud = false;
+	bool typeCloudCloud = false;
+	bool typeCloudAir = false;
+	bool typeUnknown = false;
+	Direction dir1from;
+	Direction dir1to;
+	Direction dir2from;
+	Direction dir2to;
+	bool incomplete = false;
+
+	LightningGroup(Frequency frequency) {
+		freq = frequency;
+		incomplete = true;
+	}
+	static inline std::optional<LightningGroup> fromLtgGroup(
+		const std::string & group);
+	bool isOmmittedDir1() const {
+		return (dir1from.status() == Direction::Status::OMMITTED && 
+			dir1to.status() == Direction::Status::OMMITTED);
+	} 
+	bool isOmmittedDir2() const {
+		return (dir2from.status() == Direction::Status::OMMITTED && 
+			dir2to.status() == Direction::Status::OMMITTED);
 	}
 };
 
@@ -2753,7 +2797,10 @@ inline Distance Distance::cavokVisibility(bool unitMiles) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-std::optional<Direction> Direction::fromCardinalString(const std::string & s) {
+std::optional<Direction> Direction::fromCardinalString(
+	const std::string & s, 
+	bool enableOhdAlqds)
+{
 	if (s.empty()) {
 		Direction dir;
 		dir.dirStatus = Status::OMMITTED;
@@ -2763,6 +2810,19 @@ std::optional<Direction> Direction::fromCardinalString(const std::string & s) {
 		Direction dir;
 		dir.dirStatus = Status::NDV;
 		return dir;
+	}
+	if (enableOhdAlqds)
+	{
+		if (s == "OHD") {
+			Direction dir;
+			dir.dirStatus = Status::OVERHEAD;
+			return dir;
+		}
+		if (s == "ALQDS") {
+			Direction dir;
+			dir.dirStatus = Status::ALQDS;
+			return dir;
+		}	
 	}
 	int cardinalDegrees = 0;
 	if (s == "N") cardinalDegrees = degreesTrueNorth;
@@ -2810,6 +2870,8 @@ Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 		status() == Status::NOT_REPORTED ||
 		status() == Status::VARIABLE) return metaf::Direction::Cardinal::NONE;
 	if (status() == Status::NDV) return metaf::Direction::Cardinal::NDV;
+	if (status() == Status::OVERHEAD) return metaf::Direction::Cardinal::OHD;
+	if (status() == Status::ALQDS) return metaf::Direction::Cardinal::ALQDS;
 	if (trueDirections) {
 		if (dirDegrees == degreesTrueNorth) return Cardinal::TRUE_N;
 		if (dirDegrees == degreesTrueSouth) return Cardinal::TRUE_S;
@@ -2817,17 +2879,91 @@ Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 		if (dirDegrees == degreesTrueEast) return Cardinal::TRUE_E;
 	}
 	//Degree values specifying cardinal direction sectors must be sorted.
-	auto sectorSize = 45u; //cardinal direction sector size
-	if (dirDegrees <= sectorSize/2) 						return Cardinal::N;
-	if (dirDegrees <= (degreesNorthEast + sectorSize/2)) 	return Cardinal::NE;
-	if (dirDegrees <= (degreesTrueEast + sectorSize/2))		return Cardinal::E;
-	if (dirDegrees <= (degreesSouthEast + sectorSize/2)) 	return Cardinal::SE;
-	if (dirDegrees <= (degreesTrueSouth + sectorSize/2))	return Cardinal::S;
-	if (dirDegrees <= (degreesSouthWest + sectorSize/2)) 	return Cardinal::SW;
-	if (dirDegrees <= (degreesTrueWest + sectorSize/2))		return Cardinal::W;
-	if (dirDegrees <= (degreesNorthWest + sectorSize/2)) 	return Cardinal::NW;
+	if (dirDegrees <= octantSize/2) 						return Cardinal::N;
+	if (dirDegrees <= (degreesNorthEast + octantSize/2)) 	return Cardinal::NE;
+	if (dirDegrees <= (degreesTrueEast + octantSize/2))		return Cardinal::E;
+	if (dirDegrees <= (degreesSouthEast + octantSize/2)) 	return Cardinal::SE;
+	if (dirDegrees <= (degreesTrueSouth + octantSize/2))	return Cardinal::S;
+	if (dirDegrees <= (degreesSouthWest + octantSize/2)) 	return Cardinal::SW;
+	if (dirDegrees <= (degreesTrueWest + octantSize/2))		return Cardinal::W;
+	if (dirDegrees <= (degreesNorthWest + octantSize/2)) 	return Cardinal::NW;
 	if (dirDegrees <= maxDegrees) 							return Cardinal::N;
 	return Cardinal::NONE;
+}
+
+std::optional<std::pair<Direction, Direction>> Direction::fromSectorString(
+	const std::string & s)
+{
+	static const std::optional<std::pair<Direction, Direction>> notRecognised;
+	static const std::regex rgx 
+		("([NSWE][WE]?)(?:-[NSWE]|-[NS][WE])*-([NSWE][WE]?)");
+	static const auto matchBegin = 1, matchEnd = 2;
+	std::smatch match;
+	if (!regex_match(s, match, rgx)) return notRecognised;
+	const auto dirBegin = fromCardinalString(match.str(matchBegin));
+	if (!dirBegin.has_value()) return(notRecognised);
+	const auto dirEnd = fromCardinalString(match.str(matchEnd));
+	if (!dirEnd.has_value()) return(notRecognised);
+	return std::pair(dirBegin.value(), dirEnd.value());
+}
+
+std::vector<Direction::Cardinal> Direction::sectorCardinalDirToVector(
+	const Direction & dirFrom, 
+	const Direction & dirTo)
+{
+	std::vector<Cardinal> result;
+	const auto cardinalFrom = dirFrom.cardinal();
+	const auto cardinalTo = dirTo.cardinal();
+	if (cardinalFrom == Cardinal::NONE || 
+		cardinalFrom == Cardinal::NDV ||
+		cardinalFrom == Cardinal::OHD ||
+		cardinalFrom == Cardinal::ALQDS ||
+		cardinalTo == Cardinal::NONE || 
+		cardinalTo == Cardinal::NDV || 
+		cardinalTo == Cardinal::OHD ||
+		cardinalTo == Cardinal::ALQDS)
+	{
+		// Not a valid direction sector, one or both begin and end directions are 
+		// not cardinal directions
+		if (cardinalFrom != Cardinal::NONE) result.push_back(cardinalFrom);
+		if (cardinalTo != Cardinal::NONE) result.push_back(cardinalTo);
+		return result;
+	}
+	// Both sector begin and end are cardinal directions
+	auto cardinalCurr = cardinalFrom;
+	while (cardinalCurr != cardinalTo) 
+	{
+		result.push_back(cardinalCurr);
+		cardinalCurr = rotateOctantClockwise(cardinalCurr);
+	}
+	result.push_back(cardinalTo);
+	return result;
+}
+
+Direction::Cardinal Direction::rotateOctantClockwise(Cardinal cardinal) {
+	switch(cardinal) {
+		case Cardinal::TRUE_N:
+		case Cardinal::N: 
+		return Cardinal::NE;
+
+		case Cardinal::TRUE_E:
+		case Cardinal::E:
+		return Cardinal::SE;
+		
+		case Cardinal::TRUE_S:
+		case Cardinal::S:
+		return Cardinal::SW;
+
+		case Cardinal::TRUE_W:
+		case Cardinal::W:
+		return Cardinal::NW;
+
+		case Cardinal::NE: 	return Cardinal::E;
+		case Cardinal::SE: 	return Cardinal::S;
+		case Cardinal::SW: 	return Cardinal::W;
+		case Cardinal::NW: 	return Cardinal::N;
+		default: 			return Cardinal::NONE;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -5255,6 +5391,117 @@ std::optional<CloudLayersGroup::HighLayer> CloudLayersGroup::highLayerFromChar(c
 		default:  return std::optional<HighLayer>();
 	}
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::optional<LightningGroup> LightningGroup::parse(
+	const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void) reportMetadata;
+	if (reportPart != ReportPart::RMK) return std::optional<LightningGroup>();
+	if (group == "OCNL") return LightningGroup(Frequency::OCCASSIONAL);
+	if (group == "FRQ") return LightningGroup(Frequency::FREQUENT);
+	if (group == "CONS") return LightningGroup(Frequency::CONSTANT);
+	return fromLtgGroup(group);
+}
+
+AppendResult LightningGroup::append(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void)reportPart; (void)reportMetadata;
+	if (incomplete) {
+		//Frequency was specified, now expecting LTG group
+		if (const auto ltg = fromLtgGroup(group); ltg.has_value())
+		{
+			Frequency f = freq;
+			*this = ltg.value();
+			freq = f;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+	}
+
+	if (!isOmmittedDir2()) return AppendResult::NOT_APPENDED;
+	if (!isOmmittedDir1()) {
+		// First direction sector is already appended, try to append second one 
+		if (group == "AND") return AppendResult::APPENDED;
+		if (const auto dir = Direction::fromCardinalString(group, true); dir.has_value()) {
+			//Single direction is specified
+			dir2from = dir.value();
+			return AppendResult::APPENDED;
+		}
+		if (const auto dirSec = Direction::fromSectorString(group); dirSec.has_value())
+		{
+			//Direction sector is specified
+			dir2from = std::get<0>(dirSec.value());
+			dir2to = std::get<1>(dirSec.value());
+			return AppendResult::APPENDED;
+		}
+	return AppendResult::NOT_APPENDED;
+	}
+
+	// No direction sector was previously appended to group
+	if (group == "DSNT") { distant = true; return AppendResult::APPENDED; }
+	if (const auto dir = Direction::fromCardinalString(group, true); dir.has_value()) {
+		//Single direction is specified
+		dir1from = dir.value();
+		return AppendResult::APPENDED;
+	}
+	if (const auto dirSec = Direction::fromSectorString(group); dirSec.has_value())
+	{
+		dir1from = std::get<0>(dirSec.value());
+		dir1to = std::get<1>(dirSec.value());
+		return AppendResult::APPENDED;
+	}
+	return AppendResult::NOT_APPENDED;
+}
+
+std::optional<LightningGroup> LightningGroup::fromLtgGroup(const std::string & group) {
+	std::optional<LightningGroup> notRecognised;
+	static const auto ltgLen = 3u; // length of string LTG
+	static const char ltg[ltgLen + 1] = "LTG";
+
+	LightningGroup result;
+	if (group == ltg) return (result);
+
+	if (group.length() < ltgLen) return notRecognised;
+	if (group.substr(0, ltgLen) != ltg) return notRecognised;
+
+	auto currPos = ltgLen;
+	static const auto typeLen = 2;
+	while(currPos < group.length()) {
+		if ((currPos - group.length()) < typeLen) {result.typeUnknown = true; continue; };
+		const auto currType = group.substr(currPos, typeLen);
+		currPos += typeLen;
+		if (currType == "IC") { result.typeInCloud = true; continue; }
+		if (currType == "CC") { result.typeCloudCloud = true; continue; }
+		if (currType == "CG") { result.typeCloudGround = true; continue; }
+		if (currType == "CA") { result.typeCloudAir = true; continue; }
+		result.typeUnknown = true;
+	}
+	return result;
+}
+
+std::vector<Direction::Cardinal> LightningGroup::directions() const {
+	// The result vector is max 10 elements possible, typically up to 
+	// 5 elements which does not justify using std::set and std::find
+	std::vector<Direction::Cardinal> result = 
+		Direction::sectorCardinalDirToVector(dir1from, dir1to);
+	const auto result2 = Direction::sectorCardinalDirToVector(dir2from, dir2to);
+	for (const auto r2 : result2) {
+		// Check if r2 is already present in result
+		bool r2_alreadyPresent = false;
+		for (const auto r : result) {
+			if (r == r2) { r2_alreadyPresent = true; break;}
+		}
+		if (!r2_alreadyPresent) result.push_back(r2);
+	}
+	return result;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
