@@ -993,8 +993,77 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
-	(void)group; (void)reportPart; (void)rawString;
-	return "This is a placeholder group which is not used yet.";
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+
+	result << "Lightning strikes observed";
+	if (group.isDistant()) result << " at distance 10 to 30 nautical miles";
+	result << lineBreak;
+
+	switch(group.frequency()) {
+		case metaf::LightningGroup::Frequency::NONE:
+		break;
+
+		case metaf::LightningGroup::Frequency::OCCASSIONAL:
+		result << "Less than 1 strike per minute" << lineBreak;
+		break;
+
+		case metaf::LightningGroup::Frequency::FREQUENT:
+		result << "1 to 6 strikes per minute" << lineBreak;
+		break;
+
+		case metaf::LightningGroup::Frequency::CONSTANT:
+		result << "More than 6 strikes per minute" << lineBreak;
+		break;
+	}
+
+	if (group.isCloudGround() || 
+	 	group.isInCloud() ||
+		group.isCloudCloud() ||
+		group.isCloudAir()) 
+	{
+		result << "The following lightning types are observed: ";
+	}
+	if (group.isCloudGround()) {
+		result << "cloud-to-ground";
+		if (group.isInCloud() || group.isCloudCloud() || group.isCloudAir()) result << ", ";
+	}
+	if (group.isInCloud()) {
+		result << "in-cloud";
+		if (group.isCloudCloud() || group.isCloudAir()) result << ", ";
+	}
+	if (group.isCloudCloud()) {
+		result << "cloud-to-cloud";
+		if (group.isCloudAir()) result << ", ";
+	}
+	if (group.isCloudAir()) {
+		result << "cloud-to-air (without strike to ground)";
+	}
+	if (group.isCloudGround() || 
+	 	group.isInCloud() ||
+		group.isCloudCloud() ||
+		group.isCloudAir()) 
+	{
+		result << lineBreak;
+	}
+
+	if (group.isUnknownType()) 
+	{
+		result << "Some lightning types specified in this group ";
+		result << "were not recognised by parser" << lineBreak; 
+	}
+
+	const auto directions = group.directions();
+	if (directions.size()) {
+		result << "Lightning strikes observed in the following directions: ";
+		for (auto i=0u; i<directions.size(); i++) {
+			if (i) result << ", ";
+			result << cardinalDirectionToString(directions[i]);
+		}
+		result << lineBreak;
+	}
+	return result.str();
 }
 
 std::string VisitorExplain::visitWeatherBeginEndGroup(
@@ -1440,6 +1509,9 @@ std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Car
 		case metaf::Direction::Cardinal::TRUE_W: 	return "true west";
 		case metaf::Direction::Cardinal::TRUE_S: 	return "true south";
 		case metaf::Direction::Cardinal::TRUE_E: 	return "true east";
+		case metaf::Direction::Cardinal::NDV:		return "no directional variations";
+		case metaf::Direction::Cardinal::OHD:		return "overhead";
+		case metaf::Direction::Cardinal::ALQDS:		return "all quadrants (in all directions)";
 		default: 									return "[unknown cardinal direction]";
 	}
 }
