@@ -108,6 +108,7 @@ Example of a TAF report is as follows:
 * Groups indicating non-operational sensors
 * Icing and turbulence forecast used by NATO militaries
 * Lightning data such as strike type and frequency
+* Groups reporting various phenomena in vicinity of the station (thunderstorm, towering cumulus, altocumulus castellanus, cumulonimbus, mammatus, lenticular and rotor clouds, virga, etc.)
 * Miscellaneous rare groups (e.g. sunshine duration)
 
 ## License
