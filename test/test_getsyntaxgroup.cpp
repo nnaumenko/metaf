@@ -475,6 +475,13 @@ TEST(getSyntaxGroup, OTHER_LightningGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_VicinityGroup) {
+	auto g = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	ASSERT_EQ(g->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_MiscGroupSunshineDuration) {
 	const auto g = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
