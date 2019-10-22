@@ -31,7 +31,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 3;
-	inline static const int minor = 5;
+	inline static const int minor = 6;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -293,6 +293,7 @@ public:
 	static inline std::optional< std::pair<Distance,Distance> > fromLayerString(
 		const std::string & s);
 	static inline Distance cavokVisibility(bool unitMiles = false);
+	static inline std::optional<Distance> fromKmString(const std::string & s);
 private:
 	Modifier distModifier = Modifier::NONE;
 	std::optional<unsigned int> distValueInt;
@@ -1641,13 +1642,13 @@ public:
 		FREQUENT,		// 1 to 6 flashes/minute
 		CONSTANT		// More than 6 flashes/minute
 	};
-	Frequency frequency() const { return(freq); }
-	bool isDistant() const { return(distant); }
+	Frequency frequency() const { return freq; }
+	bool isDistant() const { return distant; }
 	bool isCloudGround() const { return typeCloudGround; }
-	bool isInCloud() const { return(typeInCloud); }
-	bool isCloudCloud() const { return(typeCloudCloud); }
-	bool isCloudAir() const { return(typeCloudAir); }
-	bool isUnknownType() const { return(typeUnknown); }
+	bool isInCloud() const { return typeInCloud; }
+	bool isCloudCloud() const { return typeCloudCloud; }
+	bool isCloudAir() const { return typeCloudAir; }
+	bool isUnknownType() const { return typeUnknown; }
 	inline std::vector<Direction::Cardinal> directions() const;
 	inline bool isValid() const { return !typeUnknown; }
 
@@ -1711,26 +1712,79 @@ public:
 	}
 };
 
-// TODO: TS x MOV y, CB x MOV y, etc.
 class VicinityGroup {
 public:
-	inline bool isValid() const { return true; }
-
 	VicinityGroup() = default;
-	static std::optional<VicinityGroup> parse(const std::string & group,
-		ReportPart reportPart,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{ 
-		(void)group; (void)reportPart; (void)reportMetadata;
-		return std::optional<VicinityGroup>();
+	enum class Type {
+		THUNDERSTORM,
+		CUMULONIMBUS,
+		CUMULONIMBUS_MAMMATUS,
+		TOWERING_CUMULUS,
+		ALTOCUMULUS_CASTELLANUS,
+		STRATOCUMULUS_STANDING_LENTICULAR,
+		ALTOCUMULUS_STANDING_LENTICULAR,
+		CIRROCUMULUS_STANDING_LENTICULAR,
+		ROTOR_CLOUD,
+		VIRGA,
+		PRECIPITATION_IN_VICINITY
+	};
+	Type type() const { return t; }
+	bool isDistant() const { return distant; }
+	Distance distance() const { return dist; }
+	inline std::vector<Direction::Cardinal> directions() const;
+	inline Direction::Cardinal movingDirection() const { return movDir; }
+	inline bool isValid() const {
+		return (incompleteType == IncompleteType::NONE);
 	}
-	AppendResult append(const std::string & group,
+
+	static inline std::optional<VicinityGroup> parse(const std::string & group,
+		ReportPart reportPart,
+		const ReportMetadata & reportMetadata = missingMetadata);
+	inline AppendResult append(const std::string & group,
 		ReportPart reportPart = ReportPart::UNKNOWN,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{
-		(void)group; (void)reportPart; (void)reportMetadata; 
+		const ReportMetadata & reportMetadata = missingMetadata);
+
+private:
+	Type t;
+	bool distant = false;
+	Distance dist;
+	Direction dir1from;
+	Direction dir1to;
+	Direction dir2from;
+	Direction dir2to;
+	Direction::Cardinal movDir = Direction::Cardinal::NONE;
+
+	enum class IncompleteType {
+		NONE,				// Group complete
+		EXPECT_TYPE,		// Expecting type (CB, CBMAM, TS, ROTOR, SCSL, etc.)
+		EXPECT_CLD, 		// ROTOR previously specified, now expecting CLD
+		EXPECT_DIST_DIR1,	// Expect distance or first direction sector
+		EXPECT_DIR1,		// Expect first direction sector
+		EXPECT_DIR2_MOV,	// Expect second direction sector
+		EXPECT_MOV,			// Expect MOV
+		EXPECT_MOVDIR		// Expect cardinal direction of movement
+	};
+	IncompleteType incompleteType = IncompleteType::EXPECT_TYPE;
+	AppendResult expectNext(IncompleteType newType) {
+		incompleteType = newType; return AppendResult::APPENDED;
+	}
+	AppendResult finalise() {
+		incompleteType = IncompleteType::NONE; 
+		return AppendResult::APPENDED;
+	}
+	AppendResult rejectGroup() {
+		incompleteType = IncompleteType::NONE; 
 		return AppendResult::NOT_APPENDED;
 	}
+
+	VicinityGroup(Type tp) : t(tp) {
+		expectNext(IncompleteType::EXPECT_DIST_DIR1);
+		if (type() == Type::ROTOR_CLOUD) expectNext(IncompleteType::EXPECT_CLD);
+	}
+
+	inline bool appendDir1(const std::string & str);
+	inline bool appendDir2(const std::string & str);
+	inline bool appendDistance(const std::string & str);
 };
 
 class MiscGroup {
@@ -2717,6 +2771,28 @@ std::optional<std::pair<Distance, Distance>> Distance::fromLayerString(
 		h.value() * heightFactor + d.value() * layerDepthFactor;
 	return std::pair(baseHeight, topHeight);
 }
+
+std::optional<Distance> Distance::fromKmString(const std::string & s) {
+	//static const std::regex rgx ("(\\d\\d?)KM");
+	static const std::optional<Distance> error;
+	static const auto metersPerKm = 1000u;
+
+	if (s.length() != 3 && s.length() != 4) return error;
+
+	static const char kmStr[] = "KM"; 
+	static const size_t kmStrLen = std::strlen(kmStr);
+	const auto numLen = s.length() - kmStrLen;
+	if (s.substr(numLen) != kmStr) return error;
+
+	const auto dist = strToUint(s, 0, numLen);
+	if (!dist.has_value()) return error;
+
+	Distance distance;
+	distance.distUnit = Unit::METERS;
+	distance.distValueInt = dist.value() * metersPerKm;
+	return distance;
+}
+
 
 std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer,
 	const Distance & fraction)
@@ -5502,6 +5578,131 @@ std::vector<Direction::Cardinal> LightningGroup::directions() const {
 	return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+std::optional<VicinityGroup> VicinityGroup::parse(
+	const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void) reportMetadata;
+	std::optional<VicinityGroup> notRecognised;
+	if (reportPart != ReportPart::RMK) return notRecognised;
+	if (group == "TS") return VicinityGroup(Type::THUNDERSTORM);
+	if (group == "CB") return VicinityGroup(Type::CUMULONIMBUS);
+	if (group == "CBMAM") return VicinityGroup(Type::CUMULONIMBUS_MAMMATUS);
+	if (group == "ACC") return VicinityGroup(Type::ALTOCUMULUS_CASTELLANUS);
+	if (group == "TCU") return VicinityGroup(Type::TOWERING_CUMULUS);
+	if (group == "SCSL") return VicinityGroup(Type::STRATOCUMULUS_STANDING_LENTICULAR);
+	if (group == "ACSL") return VicinityGroup(Type::ALTOCUMULUS_STANDING_LENTICULAR);
+	if (group == "CCSL") return VicinityGroup(Type::CIRROCUMULUS_STANDING_LENTICULAR);
+	if (group == "ROTOR") return VicinityGroup(Type::ROTOR_CLOUD);
+	if (group == "VIRGA") return VicinityGroup(Type::VIRGA);
+	if (group == "VCSH") return VicinityGroup(Type::PRECIPITATION_IN_VICINITY);
+	return notRecognised;
+}
+
+AppendResult VicinityGroup::append(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void)reportPart; (void)reportMetadata;
+	switch(incompleteType) {
+		case IncompleteType::NONE:
+		//Group is complete, nothing more to append
+		return AppendResult::NOT_APPENDED; 
+
+		case IncompleteType::EXPECT_TYPE:
+		//Attempt to append to a VicinityGroup object created with default constructor
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::EXPECT_CLD:
+		if (group == "CLD") return expectNext(IncompleteType::EXPECT_DIST_DIR1);
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::EXPECT_DIST_DIR1:
+		if (appendDistance(group)) return expectNext(IncompleteType::EXPECT_DIR1);
+		if (appendDir1(group)) return expectNext(IncompleteType::EXPECT_DIR2_MOV);
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::EXPECT_DIR1:
+		if (appendDir1(group)) return expectNext(IncompleteType::EXPECT_DIR2_MOV);
+		return rejectGroup();
+
+		case IncompleteType::EXPECT_DIR2_MOV:
+		if (group == "MOV") return expectNext(IncompleteType::EXPECT_MOVDIR);
+		if (group == "AND") return expectNext(IncompleteType::EXPECT_DIR2_MOV);
+		if (appendDir2(group)) return expectNext(IncompleteType::EXPECT_MOV);
+		return rejectGroup();
+
+		case IncompleteType::EXPECT_MOV:
+		if (group == "MOV") return expectNext(IncompleteType::EXPECT_MOVDIR);
+		return rejectGroup();
+
+		case IncompleteType::EXPECT_MOVDIR:
+		if (const auto dir = Direction::fromCardinalString(group); 
+			dir.has_value()) 
+		{
+			movDir = dir->cardinal();
+			return finalise();
+		}
+		return rejectGroup();
+	};
+}
+
+bool VicinityGroup::appendDir1(const std::string & str) {
+	if (const auto dir = Direction::fromCardinalString(str, true); dir.has_value()) {
+		//Single direction is specified
+		dir1from = dir.value();
+		return true;
+	}
+	if (const auto dirSec = Direction::fromSectorString(str); dirSec.has_value())
+	{
+		dir1from = std::get<0>(dirSec.value());
+		dir1to = std::get<1>(dirSec.value());
+		return true;
+	}
+	return false;
+}
+
+bool VicinityGroup::appendDir2(const std::string & str) {
+	if (const auto dir = Direction::fromCardinalString(str, true); dir.has_value()) {
+		//Single direction is specified
+		dir2from = dir.value();
+		return true;
+	}
+	if (const auto dirSec = Direction::fromSectorString(str); dirSec.has_value())
+	{
+		dir2from = std::get<0>(dirSec.value());
+		dir2to = std::get<1>(dirSec.value());
+		return true;
+	}
+	return false;
+}
+
+bool VicinityGroup::appendDistance(const std::string & str) {
+	if (str == "DSNT") { distant = true; return true; }
+	const auto d = Distance::fromKmString(str);
+	if (!d.has_value()) return false;
+	dist = d.value();
+	return true;
+}
+
+std::vector<Direction::Cardinal> VicinityGroup::directions() const {
+	// Copy of LightningGroup::directions
+	std::vector<Direction::Cardinal> result = 
+		Direction::sectorCardinalDirToVector(dir1from, dir1to);
+	const auto result2 = Direction::sectorCardinalDirToVector(dir2from, dir2to);
+	for (const auto r2 : result2) {
+		// Check if r2 is already present in result
+		bool r2_alreadyPresent = false;
+		for (const auto r : result) {
+			if (r == r2) { r2_alreadyPresent = true; break;}
+		}
+		if (!r2_alreadyPresent) result.push_back(r2);
+	}
+	return result;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 

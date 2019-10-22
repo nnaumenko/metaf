@@ -512,6 +512,36 @@ TEST(Distance, fromLayerStringWrongFormat) {
 	EXPECT_FALSE(metaf::Distance::fromLayerString("03A4").has_value());
 }
 
+TEST(Distance, fromKmString) {
+	const auto d4 = metaf::Distance::fromKmString("4KM");
+	ASSERT_TRUE(d4.has_value());
+	EXPECT_EQ(d4->unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(d4->modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(d4->numerator().has_value());
+	EXPECT_FALSE(d4->denominator().has_value());
+	ASSERT_TRUE(d4->integer().has_value());
+	EXPECT_EQ(d4->integer(), 4000u);
+
+	const auto d18 = metaf::Distance::fromKmString("18KM");
+	ASSERT_TRUE(d18.has_value());
+	EXPECT_EQ(d18->unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(d18->modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(d18->numerator().has_value());
+	EXPECT_FALSE(d18->denominator().has_value());
+	ASSERT_TRUE(d18->integer().has_value());
+	EXPECT_EQ(d18->integer(), 18000u);
+}
+
+TEST(Distance, fromKmStringWrongFormat) {
+	EXPECT_FALSE(metaf::Distance::fromKmString("").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("//KM").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("DSNT").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("KM").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("012KM").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("A0KM").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("0AKM").has_value());
+	EXPECT_FALSE(metaf::Distance::fromKmString("AKM").has_value());
+}
 
 TEST(Distance, fromIntegerAndFraction) {
 	const auto integer = metaf::Distance(2, metaf::Distance::Unit::STATUTE_MILES);

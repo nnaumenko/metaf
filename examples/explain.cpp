@@ -1079,8 +1079,68 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
-	(void)group; (void)reportPart; (void)rawString;
-	return "This is a placeholder group which is not used yet.";
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	switch (group.type()) {
+		case metaf::VicinityGroup::Type::THUNDERSTORM:
+		result << "Thunderstorm"; break;
+
+		case metaf::VicinityGroup::Type::CUMULONIMBUS:
+		result << "Cumulonimbus cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::CUMULONIMBUS_MAMMATUS:
+		result << "Cumulonimbus cloud(s) with mammatus"; break;
+
+		case metaf::VicinityGroup::Type::TOWERING_CUMULUS:
+		result << "Towering cumulus cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::ALTOCUMULUS_CASTELLANUS:
+		result << "Altocumulus cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::STRATOCUMULUS_STANDING_LENTICULAR:
+		result << "Stratocumulus standing lenticular cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::ALTOCUMULUS_STANDING_LENTICULAR:
+		result << "Altocumulus standing lenticular cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::CIRROCUMULUS_STANDING_LENTICULAR:
+		result << "Cirrocumulus standing lenticular cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::ROTOR_CLOUD:
+		result << "Rotor cloud(s)"; break;
+
+		case metaf::VicinityGroup::Type::VIRGA:
+		result << "Virga"; break;
+
+		case metaf::VicinityGroup::Type::PRECIPITATION_IN_VICINITY:
+		result << "Precipitation"; break;
+	}
+	result << " observed";
+	if (group.isDistant()) result << " at distance 10 to 30 nautical miles";
+	if (group.distance().isReported()) {
+		result << " at distance " << explainDistance(group.distance());
+	}
+	result << lineBreak;
+
+	const auto directions = group.directions();
+	if (directions.size()) {
+		result << "Observed in the following directions: ";
+		for (auto i=0u; i<directions.size(); i++) {
+			if (i) result << ", ";
+			result << cardinalDirectionToString(directions[i]);
+		}
+		result << lineBreak;
+	}
+
+	if (group.movingDirection() != metaf::Direction::Cardinal::NONE) {
+		result << "Moving towards ";
+		result << cardinalDirectionToString(group.movingDirection());
+		result << lineBreak;
+	}
+
+	return result.str();
+
 }
 
 std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,

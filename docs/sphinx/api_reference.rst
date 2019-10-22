@@ -3075,19 +3075,19 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 		Frequency of lightning flashes.
 
-		.. cpp:enumerator::NONE
+		.. cpp:enumerator:: NONE
 
 			Frequency was not speficied.
 
-		.. cpp:enumerator::OCCASIONAL
+		.. cpp:enumerator:: OCCASIONAL
 
 			Less than 1 flash per minute.
 
-		.. cpp:enumerator::FREQUENT
+		.. cpp:enumerator:: FREQUENT
 
 			1 to 6 flashes per minute.
 
-		.. cpp:enumerator::CONSTANT
+		.. cpp:enumerator:: CONSTANT
 
 			More than 6 flashes per minute.
 
@@ -3133,7 +3133,7 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: ``true`` there are no unknown lightning types in this group.
+			:returns: ``true`` if there are no unknown lightning types in this group.
 
 
 WeatherBeginEndGroup
@@ -3149,11 +3149,91 @@ The planned use is to store time of the beginning and ending of weather phenomen
 VicinityGroup
 ^^^^^^^^^^^^^
 
+The following syntax corresponds to this group in METAR/TAF reports.
+
+.. image:: vicinitygroup.svg
+
+Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MOV NE``, ``TCU DSNT W-NW AND S MOV W``, ``ACC ALQDS``, ``CB OHD AND E MOV E`` etc.
+
 .. cpp:class:: VicinityGroup
 
-This group is added to maintain compatibility. It is not yet used in this version.
+	Stores information about significant phenomena observed in the vicinity of the station. This group is included in the remarks.
 
-The planned use is to phenomena observed in vicinity of the station and included in METAR remarks.
+	.. cpp:enum-class:: Type
+
+		Type of the phenomena observed.
+
+		.. cpp:enumerator:: THUNDERSTORM
+
+			Thunderstorm.
+
+		.. cpp:enumerator:: CUMULONIMBUS
+
+			Cumulonimbus cloud.
+
+		.. cpp:enumerator:: CUMULONIMBUS_MAMMATUS
+
+			Cumulonimbus cloud with mammatus.
+
+		.. cpp:enumerator:: TOWERING_CUMULUS
+
+			Towering cumulus cloud.
+
+		.. cpp:enumerator:: ALTOCUMULUS_CASTELLANUS
+
+			Altocumulus castellanus clouds.
+
+		.. cpp:enumerator:: STRATOCUMULUS_STANDING_LENTICULAR
+
+			Standing lenticular cloud of genus stratocumulus.
+
+		.. cpp:enumerator:: ALTOCUMULUS_STANDING_LENTICULAR
+
+			Standing lenticular cloud of genus altocumulus.
+
+		.. cpp:enumerator:: CIRROCUMULUS_STANDING_LENTICULAR
+
+			Standing lenticular cloud of genus cirrocumulus.
+
+		.. cpp:enumerator:: ROTOR_CLOUD
+
+			Rotor cloud.
+
+		.. cpp:enumerator:: VIRGA
+
+			Virga.
+
+		.. cpp:enumerator:: PRECIPITATION_IN_VICINITY
+
+			Precipitation.
+
+	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of observed phenomena.
+
+		.. cpp:function:: bool isDistant() const
+
+			:returns: ``true`` if distant (10 to 30 nautical miles) phemonena is reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: Distance distance() const
+
+			:returns: Distance at to the observed phenomena (if reported in the group) or non-reported distance.
+
+		.. cpp:function:: std::vector<Direction> directions() const
+
+			:returns: Vector of directions where the phenomena was observed (may include Overhead direction).
+
+		.. cpp:function:: Direction::Cardinal movingDirection() const
+
+			:returns: Direction in which phenomena is moving or :cpp:enumerator:`Direction::Cardinal::NONE` if the phenomena is not moving or direction is not specified.
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: ``true`` if group syntax is complete (e.g. no stray ``AND`` or ``MOV`` at the end of the group), and ``false`` otherwise.
 
 
 MiscGroup
