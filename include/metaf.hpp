@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 3;
 	inline static const int minor = 6;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -563,6 +563,7 @@ private:
 	static const inline auto minWaveHeightPhenomenal = 141;
 };
 
+// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
 enum class WeatherDescriptor {
 	NONE,
 	SHALLOW,
@@ -575,9 +576,11 @@ enum class WeatherDescriptor {
 	FREEZING
 };
 
+// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
 inline std::optional<WeatherDescriptor> weatherDescriptorFromString(
 	const std::string & s);
 
+// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
 enum class Weather {
 	OMMITTED,
 	NOT_REPORTED,
@@ -605,7 +608,103 @@ enum class Weather {
 	DUSTSTORM
 };
 
+// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
 inline std::optional<Weather> weatherFromString(const std::string & s);
+
+// Planned to be used instead of WeatherDescriptor, Weather, etc.
+class WeatherPhenomena {
+public:
+	enum class Qualifier {
+		NONE,
+		RECENT,
+		VICINITY,
+		LIGHT,
+		MODERATE,
+		HEAVY
+	};
+	enum class Descriptor {
+		NONE,
+		SHALLOW,
+		PARTIAL,
+		PATCHES,
+		LOW_DRIFTING,
+		BLOWING,
+		SHOWERS,
+		THUNDERSTORM,
+		FREEZING
+	};	
+	enum class Weather {
+		OMMITTED,
+		NOT_REPORTED,
+		DRIZZLE,
+		RAIN,
+		SNOW,
+		SNOW_GRAINS,
+		ICE_CRYSTALS,
+		ICE_PELLETS,
+		HAIL,
+		SMALL_HAIL,
+		UNDETERMINED,
+		MIST,
+		FOG,
+		SMOKE,
+		VOLCANIC_ASH,
+		DUST,
+		SAND,
+		HAZE,
+		SPRAY,
+		DUST_WHIRLS,
+		SQUALLS,
+		FUNNEL_CLOUD,
+		SANDSTORM,
+		DUSTSTORM
+	};
+	enum class Event {
+		NONE,
+		BEGINNING,
+		ENDING
+	};
+
+	Qualifier qualifier() const { return q; }
+	Descriptor descriptor() const { return d; }
+	inline std::vector<Weather> weather() const;
+	Event event() const { return ev; }
+	std::optional<MetafTime> time() const { return tm; }
+	inline bool isValid() const;
+
+	WeatherPhenomena() = default;
+	static inline std::optional <WeatherPhenomena> fromString(const std::string & s,
+		bool enableQualifiers = false);
+	static inline std::optional <WeatherPhenomena> fromWeatherBeginEndString(
+		const std::string & s,
+		const MetafTime & reportTime,
+		const WeatherPhenomena & previous);
+
+private:
+	Qualifier q = Qualifier::NONE;
+	Descriptor d = Descriptor::NONE;
+	static const inline size_t wSize = 5;
+	Weather w[wSize] = { Weather::OMMITTED };
+	Event ev = Event::NONE;
+	std::optional<MetafTime> tm;
+
+	WeatherPhenomena(Weather wthr1, 
+		Weather wthr2, 
+		Descriptor dscr = Descriptor::NONE, 
+		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)  
+	{
+		w[0] = wthr1; w[1] = wthr2;
+		w[2] = Weather::OMMITTED; 
+	}
+
+	WeatherPhenomena(Weather wthr, 
+		Descriptor dscr = Descriptor::NONE, 
+		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)
+	{
+		w[0] = wthr; w[1] = Weather::OMMITTED;
+	}
+
+};
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -3403,6 +3502,193 @@ std::optional<unsigned int> WaveHeight::waveHeightFromStateOfSurfaceChar(char c)
 		case '9': return minWaveHeightPhenomenal;
 		default:  return std::optional<unsigned int>();
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::vector<WeatherPhenomena::Weather> WeatherPhenomena::weather() const 
+{
+	std::vector<Weather> result;
+	for (auto i=0u; i < wSize; i++) {
+		if (w[i] == Weather::OMMITTED) break;
+		result.push_back(w[i]);
+	}
+	return result;
+}
+
+
+std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string & s,
+		bool enableQualifiers)
+{
+	// Descriptors MI, PR, BC are allowed only with FG
+	if (s == "MIFG") return WeatherPhenomena(Weather::FOG, Descriptor::SHALLOW);
+	if (s == "PRFG") return WeatherPhenomena(Weather::FOG, Descriptor::PARTIAL);
+	if (s == "BCFG") return WeatherPhenomena(Weather::FOG, Descriptor::PATCHES);
+	// Descriptor DR is allowed only with DU SA SN
+	if (s == "DRDU") return WeatherPhenomena(Weather::DUST, Descriptor::LOW_DRIFTING);
+	if (s == "DRSA") return WeatherPhenomena(Weather::SAND, Descriptor::LOW_DRIFTING);
+	if (s == "DRSN") return WeatherPhenomena(Weather::SNOW, Descriptor::LOW_DRIFTING);
+	// Descriptor BL is allowed only with DU SA SN PY
+	if (s == "BLDU") return WeatherPhenomena(Weather::DUST, Descriptor::BLOWING);
+	if (s == "BLSA") return WeatherPhenomena(Weather::SAND, Descriptor::BLOWING);
+	if (s == "BLSN") return WeatherPhenomena(Weather::SNOW, Descriptor::BLOWING);
+	if (s == "BLPY") return WeatherPhenomena(Weather::SPRAY, Descriptor::BLOWING);
+	// Descriptor TS is allowed alone (or with precipitation)
+	if (s == "TS") return WeatherPhenomena(Weather::OMMITTED, Descriptor::THUNDERSTORM);
+	// Descriptor FZ is allowed only with FG (or with precipitation)
+	if (s == "FZFG") return WeatherPhenomena(Weather::FOG, Descriptor::FREEZING);
+	// Phenomena IC BR FG FU VA DU SA HZ PO SQ FC are allowed only when alone 
+	// in the group, with no other phenomena present
+	if (s == "IC") return WeatherPhenomena(Weather::ICE_CRYSTALS);
+	if (s == "BR") return WeatherPhenomena(Weather::MIST);
+	if (s == "FG") return WeatherPhenomena(Weather::FOG);
+	if (s == "FU") return WeatherPhenomena(Weather::SMOKE);
+	if (s == "VA") return WeatherPhenomena(Weather::VOLCANIC_ASH);
+	if (s == "DU") return WeatherPhenomena(Weather::DUST);
+	if (s == "SA") return WeatherPhenomena(Weather::SAND);
+	if (s == "HZ") return WeatherPhenomena(Weather::HAZE);
+	if (s == "PO") return WeatherPhenomena(Weather::DUST_WHIRLS);
+	if (s == "SQ") return WeatherPhenomena(Weather::SQUALLS);
+	if (s == "FC") return WeatherPhenomena(Weather::FUNNEL_CLOUD);
+	// Phenomena SS DS are only allowed alone or in combination with each other
+	if (s == "DS") return WeatherPhenomena(Weather::DUSTSTORM);
+	if (s == "SS") return WeatherPhenomena(Weather::SANDSTORM);
+	if (s == "DSSS") return WeatherPhenomena(Weather::DUSTSTORM, Weather::SANDSTORM);
+	if (s == "SSDS") return WeatherPhenomena(Weather::SANDSTORM, Weather::DUSTSTORM);
+	if (enableQualifiers) {
+		// Qualifier VC is allowed only with VCTS VCFG VCSH VCPO VCVA VCBLDU 
+		// VCBLSA VCBLSN VCDS VCSS
+		if (s == "VCTS") 
+			return WeatherPhenomena(Weather::OMMITTED, Descriptor::THUNDERSTORM, Qualifier::VICINITY);
+		if (s == "VCFG") 
+			return WeatherPhenomena(Weather::FOG, Descriptor::NONE, Qualifier::VICINITY);
+		if (s == "VCSH") 
+			return WeatherPhenomena(Weather::OMMITTED, Descriptor::SHOWERS, Qualifier::VICINITY);
+		if (s == "VCPO") 
+			return WeatherPhenomena(Weather::DUST_WHIRLS, Descriptor::NONE, Qualifier::VICINITY);
+		if (s == "VCVA") 
+			return WeatherPhenomena(Weather::VOLCANIC_ASH, Descriptor::NONE, Qualifier::VICINITY);
+		if (s == "VCBLDU") 
+			return WeatherPhenomena(Weather::DUST, Descriptor::BLOWING, Qualifier::VICINITY);
+		if (s == "VCBLSA") 
+			return WeatherPhenomena(Weather::SAND, Descriptor::BLOWING, Qualifier::VICINITY);
+		if (s == "VCBLSN") 
+			return WeatherPhenomena(Weather::SNOW, Descriptor::BLOWING, Qualifier::VICINITY);
+		if (s == "VCDS") 
+			return WeatherPhenomena(Weather::DUSTSTORM, Descriptor::NONE, Qualifier::VICINITY);
+		if (s == "VCSS") 
+			return WeatherPhenomena(Weather::SANDSTORM, Descriptor::NONE, Qualifier::VICINITY);
+		// Qualifier + are allowed with FC DS SS (or with precipitation)
+		if (s == "+FC")
+			return WeatherPhenomena(Weather::FUNNEL_CLOUD, Descriptor::NONE, Qualifier::HEAVY);
+		if (s == "+DS")
+			return WeatherPhenomena(Weather::DUSTSTORM, Descriptor::NONE, Qualifier::HEAVY);
+		if (s == "+SS")
+			return WeatherPhenomena(Weather::SANDSTORM, Descriptor::NONE, Qualifier::HEAVY);
+		if (s == "+DSSS") 
+			return WeatherPhenomena(Weather::DUSTSTORM, Weather::SANDSTORM, 
+				Descriptor::NONE, Qualifier::HEAVY);
+		if (s == "+SSDS") 
+			return WeatherPhenomena(Weather::SANDSTORM, Weather::DUSTSTORM, 
+				Descriptor::NONE, Qualifier::HEAVY);
+	}
+	// Precipitation
+	WeatherPhenomena result;
+	std::string precipStr = s;
+	static const std::optional <WeatherPhenomena> error;
+	if (precipStr.length() < 2) return(error);
+	// Only + - RE qualifiers are allowed; no qualifier equals moderate intensity
+	if (enableQualifiers) {
+		result.q = Qualifier::MODERATE;
+		switch (precipStr[0]) {
+			case '+':
+			result.q = Qualifier::HEAVY;
+			precipStr = precipStr.substr(1);
+			break;
+
+			case '-':
+			result.q = Qualifier::LIGHT;
+			precipStr = precipStr.substr(1);
+			break;
+
+			case 'R': // qualifier "RE"
+			if (precipStr[1] == 'E') { 
+				result.q = Qualifier::RECENT;
+				precipStr = precipStr.substr(2);
+			}
+			break;
+
+			default:
+			break;
+		}
+	}
+	// Descriptors SH TS and FZ are allowed
+	if (precipStr.length() < 2) return(error);
+	if (precipStr.substr(0, 2) == "SH") result.d = Descriptor::SHOWERS;
+	if (precipStr.substr(0, 2) == "TS") result.d = Descriptor::THUNDERSTORM;
+	if (precipStr.substr(0, 2) == "FZ") result.d = Descriptor::FREEZING;
+	if (result.d != Descriptor::NONE) precipStr = precipStr.substr(2);
+	// Phenomena DZ RA SN SG PL GR GS UP are allowed in any combinations if no 
+	// duplicate phenomena is specified
+	// Descriptors without weather phenomena are not allowed at this point 
+	if (precipStr.length() < 2 || precipStr.length() % 2) return(error);
+	for (auto i = 0u; i < wSize; i++) {
+		if (precipStr.empty()) break; 
+		const auto ws = precipStr.substr(0,2);
+		if (ws == "DZ") result.w[i] = Weather::DRIZZLE;
+		if (ws == "RA") result.w[i] = Weather::RAIN;
+		if (ws == "SN") result.w[i] = Weather::SNOW;
+		if (ws == "SG") result.w[i] = Weather::SNOW_GRAINS;
+		if (ws == "PL") result.w[i] = Weather::ICE_PELLETS;
+		if (ws == "GR") result.w[i] = Weather::HAIL;
+		if (ws == "GS") result.w[i] = Weather::SMALL_HAIL;
+		if (ws == "UP") result.w[i] = Weather::UNDETERMINED;
+		if (result.w[i] == Weather::OMMITTED) return error;
+		for (auto j = 0u; j < i ; j++)
+			if (result.w[j] == result.w[i]) return error;
+		precipStr = precipStr.substr(2);
+	}
+	if (!precipStr.empty()) return error;
+	return result;
+}
+/*
+std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
+	const std::string & s,
+	const MetafTime & reportTime,
+	const WeatherPhenomena & previous)
+{
+	std::optional <WeatherPhenomena> notRecognised;
+	static const std::regex rgx("((?:[A-Z][A-Z]){0,4})([BE])(\\d\\d)?(\\d\\d)");
+	static const auto matchPhenomena = 1, matchEvent = 2;
+	static const auto matchHour = 3, matchMinute = 4;
+	std::smatch match;
+	if (!regex_match(s, match, rgx)) return notRecognised;
+s	//TODO
+}
+*/
+bool WeatherPhenomena::isValid() const { 
+	// Empty weather phenomena is not valid 
+	if (qualifier() == Qualifier::NONE && 
+		descriptor() == Descriptor::NONE &&
+		w[0] == Weather::OMMITTED) 
+			return false;
+	// Event time must be valid if present
+	if (tm.has_value() && !tm->isValid()) return false;
+	// Descriptor FZ only makes sense with precipitation which
+	// can potentially freeze, i.e. DZ RA, or with UP, or with FG
+	if (descriptor() == Descriptor::FREEZING) {
+		bool dzRaUpFg = false;
+		for (auto i = 0u; i < wSize; i++) {
+			if (w[i] == Weather::DRIZZLE || w[i] == Weather::RAIN ||
+				w[i] == Weather::UNDETERMINED || w[i] == Weather::FOG) 
+			{
+				dzRaUpFg = true; break;
+			}
+		}
+		if (!dzRaUpFg) return false;
+	}
+	// Everything else is valid
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
