@@ -1565,6 +1565,170 @@ TEST(WeatherPhenomena, fromString_precipitation_multiple_descriptor_fz) {
 	EXPECT_FALSE(wp8->time().has_value());
 }
 
+TEST(WeatherPhenomena, fromWeatherBeginEndString_first) {
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
+	ASSERT_TRUE(reportTime.has_value());
+
+	const auto wp1 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB1456", 
+		metaf::MetafTime(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(wp1.has_value());
+
+	EXPECT_EQ(wp1->qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp1->descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp1->weather().size(), 1u);
+	EXPECT_EQ(wp1->weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp1->event(), metaf::WeatherPhenomena::Event::BEGINNING);
+	ASSERT_TRUE(wp1->time().has_value());
+	EXPECT_FALSE(wp1->time()->day().has_value());
+	EXPECT_EQ(wp1->time()->hour(), 14u);
+	EXPECT_EQ(wp1->time()->minute(), 56u);
+
+	const auto wp2 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"SHRASNE0212", 
+		metaf::MetafTime(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(wp2.has_value());
+
+	EXPECT_EQ(wp2->qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp2->descriptor(), metaf::WeatherPhenomena::Descriptor::SHOWERS);
+	EXPECT_EQ(wp2->weather().size(), 2u);
+	EXPECT_EQ(wp2->weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp2->weather().at(1), metaf::WeatherPhenomena::Weather::SNOW);
+	EXPECT_EQ(wp2->event(), metaf::WeatherPhenomena::Event::ENDING);
+	ASSERT_TRUE(wp2->time().has_value());
+	EXPECT_FALSE(wp2->time()->day().has_value());
+	EXPECT_EQ(wp2->time()->hour(), 02u);
+	EXPECT_EQ(wp2->time()->minute(), 12u);
+
+	const auto wp3 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"TSB25", 
+		reportTime.value(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(wp3.has_value());
+
+	EXPECT_EQ(wp3->qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp3->descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wp3->weather().size(), 0u);
+	EXPECT_EQ(wp3->event(), metaf::WeatherPhenomena::Event::BEGINNING);
+	ASSERT_TRUE(wp3->time().has_value());
+	EXPECT_FALSE(wp3->time()->day().has_value());
+	EXPECT_EQ(wp3->time()->hour(), reportTime->hour());
+	EXPECT_EQ(wp3->time()->minute(), 25u);
+}
+
+TEST(WeatherPhenomena, fromWeatherBeginEndString_subsequent) {
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
+	ASSERT_TRUE(reportTime.has_value());
+
+	const auto previous = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB0756", 
+		metaf::MetafTime(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(previous.has_value());
+
+	const auto wp1 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"E0812",
+		metaf::MetafTime(), 
+		previous.value());
+	ASSERT_TRUE(wp1.has_value());
+
+	EXPECT_EQ(wp1->qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp1->descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp1->weather().size(), 1u);
+	EXPECT_EQ(wp1->weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp1->event(), metaf::WeatherPhenomena::Event::ENDING);
+	ASSERT_TRUE(wp1->time().has_value());
+	EXPECT_FALSE(wp1->time()->day().has_value());
+	EXPECT_EQ(wp1->time()->hour(), 8u);
+	EXPECT_EQ(wp1->time()->minute(), 12u);
+
+	const auto wp2 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"E12", 
+		reportTime.value(),
+		previous.value());
+	ASSERT_TRUE(wp2.has_value());
+
+	EXPECT_EQ(wp2->qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp2->descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp2->weather().size(), 1u);
+	EXPECT_EQ(wp2->weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp2->event(), metaf::WeatherPhenomena::Event::ENDING);
+	ASSERT_TRUE(wp2->time().has_value());
+	EXPECT_FALSE(wp2->time()->day().has_value());
+	EXPECT_EQ(wp2->time()->hour(), 8u);
+	EXPECT_EQ(wp2->time()->minute(), 12u);
+}
+
+TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectPrevious) {
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
+	ASSERT_TRUE(reportTime.has_value());
+
+	const auto previous = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB0756", 
+		metaf::MetafTime(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(previous.has_value());
+
+	ASSERT_TRUE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+			"B25",
+			reportTime.value(), 
+			previous.value()).has_value());
+
+	EXPECT_FALSE(
+		metaf::WeatherPhenomena::fromWeatherBeginEndString(
+			"B25",
+			reportTime.value(), 
+			metaf::WeatherPhenomena()).has_value());
+}
+
+TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectFormat) {
+	const auto rt = metaf::MetafTime::fromStringDDHHMM("120830");
+	ASSERT_TRUE(rt.has_value());
+	const auto reportTime = rt.value();
+
+	const auto p = metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB0756", 
+		metaf::MetafTime(), 
+		metaf::WeatherPhenomena());
+	ASSERT_TRUE(p.has_value());
+	const auto previous = p.value();
+
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"MIBRB1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"+RAB1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"VCSHB1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RERAB1225", reportTime, previous));
+
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"ZZB1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAZ1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RABB1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RA1225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB", reportTime, previous));
+
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB01225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB225", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB025", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB5", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB1A25", reportTime, previous));
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromWeatherBeginEndString(
+		"RAB0A", reportTime, previous));
+}
+
 TEST(WeatherPhenomena, isValidTrueFreezing) {
 	EXPECT_TRUE(metaf::WeatherPhenomena::fromString("FZFG", true)->isValid());
 	EXPECT_TRUE(metaf::WeatherPhenomena::fromString("FZRA", true)->isValid());

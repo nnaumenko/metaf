@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 3;
 	inline static const int minor = 6;
-	inline static const int patch = 1;
+	inline static const int patch = 2;
 	inline static const char tag [] = "";
 };
 
@@ -3651,21 +3651,43 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	if (!precipStr.empty()) return error;
 	return result;
 }
-/*
+
 std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 	const std::string & s,
 	const MetafTime & reportTime,
 	const WeatherPhenomena & previous)
 {
-	std::optional <WeatherPhenomena> notRecognised;
+	std::optional <WeatherPhenomena> error;
 	static const std::regex rgx("((?:[A-Z][A-Z]){0,4})([BE])(\\d\\d)?(\\d\\d)");
 	static const auto matchPhenomena = 1, matchEvent = 2;
 	static const auto matchHour = 3, matchMinute = 4;
+
 	std::smatch match;
-	if (!regex_match(s, match, rgx)) return notRecognised;
-s	//TODO
+	if (!regex_match(s, match, rgx)) return error;
+
+	WeatherPhenomena result;
+
+	if (const auto phstr = match.str(matchPhenomena); !phstr.empty()) {
+		const auto ph = WeatherPhenomena::fromString(phstr);
+		if (!ph.has_value()) return error;
+		result = ph.value();
+	} else {
+		if (!previous.isValid()) return error;
+		result = previous;
+	}
+
+	if (match.str(matchEvent) == "B") result.ev = Event::BEGINNING;
+	if (match.str(matchEvent) == "E") result.ev = Event::ENDING;
+
+	unsigned int hour = reportTime.hour();
+	unsigned int minute = static_cast<unsigned int>(std::stoi(match.str(matchMinute)));
+	if (const auto h = match.str(matchHour); !h.empty())
+		hour = static_cast<unsigned int>(std::stoi(h));
+	result.tm = MetafTime(hour, minute);
+
+	return result;
 }
-*/
+
 bool WeatherPhenomena::isValid() const { 
 	// Empty weather phenomena is not valid 
 	if (qualifier() == Qualifier::NONE && 
