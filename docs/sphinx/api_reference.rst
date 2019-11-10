@@ -1936,9 +1936,11 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 	**Acquiring group data**
 
-		.. cpp:function:: WeatherPhenomena weatherPhenomena() const
+		.. cpp:function:: std::vector<WeatherPhenomena> weatherPhenomena() const
 
-			:returns: Weather phenomena which includes qualifier, descriptor and weather phenomena reported in this group.
+			:returns: The vector or weather phenomena; each :cpp:class:`metaf::WeatherPhenomena` includes qualifier, descriptor and weather phenomena reported in this group.
+
+			.. note:: Currently this method always returns a vector of a single element only.
 
 		.. cpp:function:: Qualifier qualifier() const
 
@@ -3244,9 +3246,11 @@ WeatherBeginEndGroup
 
 .. cpp:class:: WeatherBeginEndGroup
 
-This group is added to maintain compatibility. It is not yet used in this version.
+This group was added to maintain compatibility. It is not used in this version.
 
-The planned use is to store time of the beginning and ending of weather phenomena included in METAR remarks.
+	.. deprecated:: 3.7.0
+
+	This function is planned to be removed in version 4.0.0; use :cpp:class:`WeatherGroup` is planned to be used to store information on the weather event since version 4.0.0.
 
 
 VicinityGroup

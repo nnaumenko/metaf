@@ -1351,8 +1351,12 @@ TEST(WeatherGroup, contains) {
 TEST(WeatherGroup, parseWeatherMetar) {
 	const auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
+
 	EXPECT_TRUE(wg->isValid());
-	const auto wp = wg->weatherPhenomena();
+
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+
+	const auto wp = wg->weatherPhenomena().at(0);
 	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::MODERATE);
 	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
 	EXPECT_EQ(wp.weather().size(), 1u);
@@ -1364,8 +1368,12 @@ TEST(WeatherGroup, parseWeatherMetar) {
 TEST(WeatherGroup, parseWeatherTaf) {
 	const auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::TAF);
 	ASSERT_TRUE(wg.has_value());
+
 	EXPECT_TRUE(wg->isValid());
-	const auto wp = wg->weatherPhenomena();
+
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+
+	const auto wp = wg->weatherPhenomena().at(0);
 	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::MODERATE);
 	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
 	EXPECT_EQ(wp.weather().size(), 1u);

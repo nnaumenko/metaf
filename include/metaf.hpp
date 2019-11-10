@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 3;
-	inline static const int minor = 6;
-	inline static const int patch = 3;
+	inline static const int minor = 7;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -1142,7 +1142,9 @@ public:
 		MODERATE,
 		HEAVY
 	};
-	WeatherPhenomena weatherPhenomena() const { return w; }
+	std::vector<WeatherPhenomena> weatherPhenomena() const { 
+		return std::vector<WeatherPhenomena>({w}); 
+	}
 	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
 	inline Qualifier qualifier() const;
 	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
@@ -1811,7 +1813,7 @@ private:
 	}
 };
 
-// TODO: RAB, RAE, SNB, DZB, etc.
+// Deprecated, to be removed in version 4.0.0 in favour of WeatherGroup
 class WeatherBeginEndGroup {
 public:
 	inline bool isValid() const { return true; }
