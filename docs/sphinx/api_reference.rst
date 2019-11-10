@@ -1899,30 +1899,16 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, etc.
 
-Then the group is parsed, it is checked agains the following preconditions. If any precondition fails, the group cannot be recognised:
-
-- Weather phenomena must not be duplicated (e.g. group ``RASNRA`` is not valid because ``RA`` (:cpp:enumerator:`Weather::RAIN`) is duplicated).
-- :cpp:enumerator:`Weather::ICE_CRYSTALS`, :cpp:enumerator:`Weather::MIST`, :cpp:enumerator:`Weather::FOG`, :cpp:enumerator:`Weather::SMOKE`, :cpp:enumerator:`Weather::VOLCANIC_ASH`, :cpp:enumerator:`Weather::DUST`, :cpp:enumerator:`Weather::SAND`, :cpp:enumerator:`Weather::HAZE`, :cpp:enumerator:`Weather::SPRAY`, :cpp:enumerator:`Weather::DUST_WHIRLS`, :cpp:enumerator:`Weather::SQUALLS`, :cpp:enumerator:`Weather::FUNNEL_CLOUD`, :cpp:enumerator:`Weather::DUSTSTORM`, and :cpp:enumerator:`Weather::SANDSTORM` must not be included in groups with more than one weather phenomena (e.g. group ``BRDZ`` is not valid because ``BR`` (mist) cannot be included in the group with more than one phenomena). The exception is :cpp:enumerator:`Weather::DUSTSTORM` and :cpp:enumerator:`Weather::SANDSTORM` which may be included in the same group ``DSSS``, though no other weather phenomena must be included in this group.
-- Qualifier :cpp:enumerator:`Qualifier::VICINITY` must be used only with the following phenomena without descriptor :cpp:enumerator:`Weather::FOG`, :cpp:enumerator:`Weather::DUST_WHIRLS`, :cpp:enumerator:`Weather::SANDSTORM`, :cpp:enumerator:`Weather::DUSTSTORM`, :cpp:enumerator:`Weather::VOLCANIC_ASH`. With descriptor :cpp:enumerator:`WeatherDescriptor::BLOWING` only  :cpp:enumerator:`Weather::SAND`, :cpp:enumerator:`Weather::DUST`, :cpp:enumerator:`Weather::SNOW` may be used. Also descriptors :cpp:enumerator:`WeatherDescriptor::SHOWERS` and :cpp:enumerator:`WeatherDescriptor::THUNDERSTORM` may be used without any additional groups. Thus only groups ``VCFG``, ``VCPO``, ``VCSS``, ``VCDS``, ``VSVA``, ``VCBLSA``, ``VCBLDU``, ``VCBLSN``, ``VCSH``, ``VCTS`` are allowed with qualifier :cpp:enumerator:`Qualifier::VICINITY`.
-- Descriptor :cpp:enumerator:`WeatherDescriptor::THUNDERSTORM` may be used alone, with no qualifier and no weather phenomena specified: ``TS``.
-- Intensity qualifiers :cpp:enumerator:`Qualifier::LIGHT` and :cpp:enumerator:`Qualifier::HEAVY` must be used only in combination with :cpp:enumerator:`Weather::DRIZZLE`, :cpp:enumerator:`Weather::RAIN`, :cpp:enumerator:`Weather::SNOW`, :cpp:enumerator:`Weather::SNOW_GRAINS`, :cpp:enumerator:`Weather::ICE_PELLETS`, :cpp:enumerator:`Weather::UNDETERMINED`, :cpp:enumerator:`Weather::FUNNEL_CLOUD`, :cpp:enumerator:`Weather::SANDSTORM`, :cpp:enumerator:`Weather::DUSTSTORM`. Only qualifier :cpp:enumerator:`Qualifier::HEAVY` can be used with :cpp:enumerator:`Weather::FUNNEL_CLOUD`, :cpp:enumerator:`Weather::SANDSTORM`, :cpp:enumerator:`Weather::DUSTSTORM`. If the group contains at least one abovementioned weather phenomena the intensity qualifier may be used, e.g. ``+TSRAGR`` is a valid group because intensity qualifier ``+`` (:cpp:enumerator:`Qualifier::HEAVY`) may be used with ``RA`` (:cpp:enumerator:`Weather::RAIN`), but group ``+GR`` is not valid because ``GR`` (:cpp:enumerator:`Weather::HAIL`) may not be used with intensity qualifiers.
-- Descriptors :cpp:enumerator:`WeatherDescriptor::LOW_DRIFTING` and :cpp:enumerator:`WeatherDescriptor::BLOWING` must not be used with intensity qualifiers, e.g. group ``-DRSN`` is not valid, though group ``-SN`` is valid.
-- At least one of weather phenomena must be specified with intensity qualifier, e.g. group ``+TS`` is not valid because it contains descriptor :cpp:enumerator:`WeatherDescriptor::THUNDERSTORM` but no weather phenomena.
-- :cpp:enumerator:`Weather::SPRAY` may be used only with descriptor :cpp:enumerator:`WeatherDescriptor::BLOWING` and cannot be used without descriptor, e.g. group ``BLPY`` is valid, but groups ``PY`` or ``DRPY`` are not.
-- Descriptors :cpp:enumerator:`WeatherDescriptor::SHALLOW`, :cpp:enumerator:`WeatherDescriptor::PARTIAL`, and  :cpp:enumerator:`WeatherDescriptor::PATCHES` may be used only with :cpp:enumerator:`Weather::FOG`, thus the only allowed combinations are ``MIFG`` (shallow fog), ``PRFG`` (partial fog), ``BCFG`` (patches of fog).
-- Exactly one of weather phenomena may be used with desriptors :cpp:enumerator:`WeatherDescriptor::LOW_DRIFTING` and :cpp:enumerator:`WeatherDescriptor::BLOWING`, e.g. groups ``DRSN``, ``BLSA`` or ``BLDU`` are valid, but group ``BLSADU`` is not because two weather phenomena are specified.
-- Descriptor :cpp:enumerator:`WeatherDescriptor::LOW_DRIFTING` may be used only with :cpp:enumerator:`Weather::SNOW`, :cpp:enumerator:`Weather::DUST`, and :cpp:enumerator:`Weather::SAND` thus the only allowed combinations are ``DRSN`` (low drifting snow), ``DRSA`` (low drifting sand), and ``DRDU`` (low drifting dust).
-- Descriptor :cpp:enumerator:`WeatherDescriptor::BLOWING` may be used only with :cpp:enumerator:`Weather::SNOW`, :cpp:enumerator:`Weather::DUST`, :cpp:enumerator:`Weather::SAND`, and :cpp:enumerator:`Weather::SPRAY`, thus the only allowed combinations are ``BLSN`` (blowing snow), ``BLSA`` (blowing dust), ``BLDU`` (blowing dust), and ``BLPY`` (blowing spray).
-- Descriptor :cpp:enumerator:`WeatherDescriptor::SHOWERS` may be used only with :cpp:enumerator:`Weather::RAIN`, :cpp:enumerator:`Weather::SNOW`, :cpp:enumerator:`Weather::ICE_PELLETS`, :cpp:enumerator:`Weather::HAIL`, :cpp:enumerator:`Weather::SMALL_HAIL`, and :cpp:enumerator:`Weather::UNDETERMINED`, e.g. groups ``SHRAGR`` and ``SHUP`` are valid but group ``SHDZ`` is not.
-- Descriptor :cpp:enumerator:`WeatherDescriptor::THUNDERSTORM` may be used only with :cpp:enumerator:`Weather::RAIN`, :cpp:enumerator:`Weather::SNOW`, :cpp:enumerator:`Weather::ICE_PELLETS`, :cpp:enumerator:`Weather::HAIL`, and  :cpp:enumerator:`Weather::SMALL_HAIL`, e.g. groups ``TSRAGS`` and ``TSRA`` are valid but group ``TSDZ`` is not.
-- Descriptor :cpp:enumerator:`WeatherDescriptor::FREEZING` may be used only with :cpp:enumerator:`Weather::DRIZZLE`, :cpp:enumerator:`Weather::RAIN`, and :cpp:enumerator:`Weather::FOG`. Other weather phenomena may be included but at least one of them must be allowed with :cpp:enumerator:`WeatherDescriptor::FREEZING`, e.g. groups ``FZDZ`` and ``FZRASN`` are valid but group ``FZBR`` is not.
-
-
 .. cpp:class:: WeatherGroup
 
 	Stores information about recent or current weather phenomena.
 
 	.. cpp:enum-class:: Qualifier
+
+	    .. deprecated:: 3.6.3
+	       Same as :cpp:enum:`metaf::WeatherPhenomena::Qualifier`.
+
+	    This type is planned to be removed in version 4.0.0.
 
 		.. cpp:enumerator:: NONE
 
@@ -1950,21 +1936,41 @@ Then the group is parsed, it is checked agains the following preconditions. If a
 
 	**Acquiring group data**
 
+		.. cpp:function:: WeatherPhenomena weatherPhenomena() const
+
+			:returns: Weather phenomena which includes qualifier, descriptor and weather phenomena reported in this group.
+
 		.. cpp:function:: Qualifier qualifier() const
+
+		    .. deprecated:: 3.6.3
+
+		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
 
 			:returns: Weather qualifier which indicates time or intensity or proximity of the weather phenomena.
 		
 		.. cpp:function:: WeatherDescriptor descriptor() const
 
+		    .. deprecated:: 3.6.3
+
+		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
+
 			:returns: Weather descriptor which indicates additional properties of weather phenomena.
 
 		.. cpp:function:: std::vector<Weather> weather() const
+
+		    .. deprecated:: 3.6.3
+
+		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
 
 			:returns: Vector of individual weather phenomena included in this group.
 
 	**Miscellaneous**
 
 		.. cpp:function:: bool contains(Weather weather) const
+
+		    .. deprecated:: 3.6.3
+
+		    This function is planned to be removed in version 4.0.0.
 
 			:param weather: A weacher phenomenon to check current group for.
 
@@ -1974,7 +1980,7 @@ Then the group is parsed, it is checked agains the following preconditions. If a
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: Always returns ``true`` because the groups are checked during the parsing.
+			:returns: This method is for compatibility only and always returns ``true`` for this group. All groups that are not valid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) are not recognised as a valid WeatherGroup.
 
 
 TemperatureGroup
@@ -2968,7 +2974,7 @@ Example of the raw report data is ``AC1CI1``, and ``SC1SC1SC3AC2``.
 
 			:returns: A vector of pairs Type/okta, i.e. types of clouds forming cloud layers and associated sky coverage for each layer. Sky coverage is reported in oktas or 1/8s, e.g. 1 okta means that cloud layer covers 1/8 of sky and 8 okta means that cloud layer covers entire sky (8/8 of sky).
 
-		.. note::Sum of oktas for all layers may exceed 8 octa if higher cloud layer is observed through the gaps in the lower cloud layer.
+		.. note:: Sum of oktas for all layers may exceed 8 octa if higher cloud layer is observed through the gaps in the lower cloud layer.
 
 	**Validating**
 

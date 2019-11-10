@@ -8,6 +8,14 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+
+// TODO: add test for // and RE// using weatherPhenomena()
+
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO: remove the following section when transitioning to version 4.0.0
+// since it duplicates WeatherPhenomena tests now
+
 TEST(WeatherGroup, parseWeatherDz) {
 	const auto wg = metaf::WeatherGroup::parse("DZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
@@ -667,6 +675,15 @@ TEST(WeatherGroup, parseInvalidDescriptorSh) {
 }
 
 TEST(WeatherGroup, parseDescriptorTs) {
+	const auto wg0 = metaf::WeatherGroup::parse("TSDZ", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg0.has_value());
+	EXPECT_EQ(wg0->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
+	EXPECT_EQ(wg0->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
+	const auto weather0 = wg0->weather();
+	EXPECT_EQ(weather0.size(), 1u);
+	EXPECT_EQ(weather0.at(0), metaf::Weather::DRIZZLE);
+	EXPECT_TRUE(wg0->isValid());
+
 	const auto wg1 = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 	EXPECT_EQ(wg1->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
@@ -711,6 +728,24 @@ TEST(WeatherGroup, parseDescriptorTs) {
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::HAIL);
 	EXPECT_TRUE(wg5->isValid());
+
+	const auto wg6 = metaf::WeatherGroup::parse("TSSG", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg6.has_value());
+	EXPECT_EQ(wg6->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
+	EXPECT_EQ(wg6->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
+	const auto weather6 = wg6->weather();
+	EXPECT_EQ(weather6.size(), 1u);
+	EXPECT_EQ(weather6.at(0), metaf::Weather::SNOW_GRAINS);
+	EXPECT_TRUE(wg6->isValid());
+
+	const auto wg7 = metaf::WeatherGroup::parse("TSUP", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg7.has_value());
+	EXPECT_EQ(wg7->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
+	EXPECT_EQ(wg7->descriptor(), metaf::WeatherDescriptor::THUNDERSTORM);
+	const auto weather7 = wg7->weather();
+	EXPECT_EQ(weather7.size(), 1u);
+	EXPECT_EQ(weather7.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg7->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorTsStandalone) {
@@ -733,7 +768,6 @@ TEST(WeatherGroup, parseDescriptorTsMultiplePhenomena) {
 	EXPECT_EQ(weather1.at(1), metaf::Weather::SNOW);
 	EXPECT_TRUE(wg1->isValid());
 
-	// TS is allowed with RA but not with DZ
 	const auto wg2 = metaf::WeatherGroup::parse("TSRADZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg2.has_value());
 	EXPECT_EQ(wg2->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
@@ -746,10 +780,7 @@ TEST(WeatherGroup, parseDescriptorTsMultiplePhenomena) {
 }
 
 TEST(WeatherGroup, parseInvalidDescriptorTs) {
-	EXPECT_FALSE(metaf::WeatherGroup::parse("TSDZ", metaf::ReportPart::METAR).has_value());	
-	EXPECT_FALSE(metaf::WeatherGroup::parse("TSSG", metaf::ReportPart::METAR).has_value());	
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSIC", metaf::ReportPart::METAR).has_value());	
-	EXPECT_FALSE(metaf::WeatherGroup::parse("TSUP", metaf::ReportPart::METAR).has_value());	
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSBR", metaf::ReportPart::METAR).has_value());	
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSFG", metaf::ReportPart::METAR).has_value());	
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSFU", metaf::ReportPart::METAR).has_value());	
@@ -792,6 +823,15 @@ TEST(WeatherGroup, parseDescriptorFz) {
 	EXPECT_EQ(weather3.size(), 1u);
 	EXPECT_EQ(weather3.at(0), metaf::Weather::FOG);
 	EXPECT_TRUE(wg3->isValid());
+
+	const auto wg4 = metaf::WeatherGroup::parse("FZUP", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
+	EXPECT_EQ(wg4->descriptor(), metaf::WeatherDescriptor::FREEZING);
+	const auto weather4 = wg4->weather();
+	EXPECT_EQ(weather4.size(), 1u);
+	EXPECT_EQ(weather4.at(0), metaf::Weather::UNDETERMINED);
+	EXPECT_TRUE(wg4->isValid());
 }
 
 TEST(WeatherGroup, parseDescriptorFzMultiplePhenomena) {
@@ -813,7 +853,6 @@ TEST(WeatherGroup, parseInvalidDescriptorFz) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZPL", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZGR", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZGS", metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::WeatherGroup::parse("FZUP", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZBR", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZFU", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("FZVA", metaf::ReportPart::METAR).has_value());
@@ -1159,6 +1198,15 @@ TEST(WeatherGroup, parseQualifierVicinityWeather) {
 	EXPECT_EQ(weather5.size(), 1u);
 	EXPECT_EQ(weather5.at(0), metaf::Weather::DUST_WHIRLS);
 	EXPECT_TRUE(wg5->isValid());
+
+	const auto wg6 = metaf::WeatherGroup::parse("VCFC", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg6.has_value());
+	EXPECT_EQ(wg6->qualifier(), metaf::WeatherGroup::Qualifier::VICINITY);
+	EXPECT_EQ(wg6->descriptor(), metaf::WeatherDescriptor::NONE);
+	const auto weather6 = wg6->weather();
+	EXPECT_EQ(weather6.size(), 1u);
+	EXPECT_EQ(weather6.at(0), metaf::Weather::FUNNEL_CLOUD);
+	EXPECT_TRUE(wg6->isValid());
 }
 
 TEST(WeatherGroup, parseQualifierVicinityDescriptorOnly) {
@@ -1193,7 +1241,6 @@ TEST(WeatherGroup, parseInvalidVicinityQualifier) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCHZ", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCPY", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCSQ", metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::WeatherGroup::parse("VCFC", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCSHRA", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCRASN", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCTSRA", metaf::ReportPart::METAR).has_value());
@@ -1282,15 +1329,49 @@ TEST(WeatherGroup, parseQualifierModerateRainAndHail) {
 	EXPECT_TRUE(wg1->isValid());
 }
 
-TEST(WeatherGroup, parseWeatherTaf) {
-	const auto wg = metaf::WeatherGroup::parse("RA", metaf::ReportPart::TAF);
+TEST(WeatherGroup, contains) {
+	const auto wgPlusTsRaGr = metaf::WeatherGroup::parse("+TSRAGR", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgPlusTsRaGr.has_value());
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::RAIN));
+	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::HAIL));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::SNOW));
+	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::NOT_REPORTED));
+
+	const auto wgNr = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wgNr.has_value());
+	EXPECT_FALSE(wgNr->contains(metaf::Weather::RAIN));
+	EXPECT_TRUE(wgNr->contains(metaf::Weather::NOT_REPORTED));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+//TODO: recent weather, non reported weather, non reported recent weather
+//all of the above allowed for METAR but not for TAF
+
+TEST(WeatherGroup, parseWeatherMetar) {
+	const auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->qualifier(), metaf::WeatherGroup::Qualifier::MODERATE);
-	EXPECT_EQ(wg->descriptor(), metaf::WeatherDescriptor::NONE);
-	const auto weather = wg->weather();
-	EXPECT_EQ(weather.size(), 1u);
-	EXPECT_EQ(weather.at(0), metaf::Weather::RAIN);
 	EXPECT_TRUE(wg->isValid());
+	const auto wp = wg->weatherPhenomena();
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::MODERATE);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wp.weather().size(), 1u);
+	EXPECT_EQ(wp.weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::NONE);
+	EXPECT_FALSE(wp.time().has_value());
+}
+
+TEST(WeatherGroup, parseWeatherTaf) {
+	const auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::TAF);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_TRUE(wg->isValid());
+	const auto wp = wg->weatherPhenomena();
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::MODERATE);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wp.weather().size(), 1u);
+	EXPECT_EQ(wp.weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::NONE);
+	EXPECT_FALSE(wp.time().has_value());
 }
 
 TEST(WeatherGroup, parseWrongReportPart) {
@@ -1318,20 +1399,6 @@ TEST(WeatherGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("VCTSRZ", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("TSRARZ", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("+TSRARZ", metaf::ReportPart::METAR).has_value());
-}
-
-TEST(WeatherGroup, contains) {
-	const auto wgPlusTsRaGr = metaf::WeatherGroup::parse("+TSRAGR", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wgPlusTsRaGr.has_value());
-	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::RAIN));
-	EXPECT_TRUE(wgPlusTsRaGr->contains(metaf::Weather::HAIL));
-	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::SNOW));
-	EXPECT_FALSE(wgPlusTsRaGr->contains(metaf::Weather::NOT_REPORTED));
-
-	const auto wgNr = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
-	ASSERT_TRUE(wgNr.has_value());
-	EXPECT_FALSE(wgNr->contains(metaf::Weather::RAIN));
-	EXPECT_TRUE(wgNr->contains(metaf::Weather::NOT_REPORTED));
 }
 
 TEST(WeatherGroup, append) {
