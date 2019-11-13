@@ -1316,10 +1316,30 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 	if (!distance.isReported()) return "not reported";
 	std::ostringstream result;
 	switch (distance.modifier()) {
-		case metaf::Distance::Modifier::NONE:			break;
-		case metaf::Distance::Modifier::LESS_THAN:		result << "&lt;"; break;
-		case metaf::Distance::Modifier::MORE_THAN:		result << "&gt;"; break;
-		default: result << "unknown modifier, "; break;
+		case metaf::Distance::Modifier::NONE:
+		break;
+		
+		case metaf::Distance::Modifier::LESS_THAN:
+		result << "&lt;"; 
+		break;
+		
+		case metaf::Distance::Modifier::MORE_THAN:
+		result << "&gt;";
+		break;
+
+		case metaf::Distance::Modifier::DISTANT:
+		result << "10 to 30 nautical miles ";
+		result << "(19 to 55 km, 12 to 35 statue miles)";
+		return result.str();
+
+		case metaf::Distance::Modifier::VICINITY:
+		result << "5 to 10 nautical miles "; 
+		result << "(9 to 19 km, 6 to 12 statue miles)";
+		return result.str();
+		
+		default: 
+		result << "unknown modifier, "; 
+		break;
 	}
 	const auto d = distance.toUnit(distance.unit());
 	if (!d.has_value()) return "[unable to get distance's floating-point value]";

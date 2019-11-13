@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 3;
 	inline static const int minor = 7;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -252,6 +252,8 @@ public:
 		NONE,
 		LESS_THAN,
 		MORE_THAN,
+		DISTANT,
+		VICINITY
 	};
 	inline std::optional<unsigned int> integer() const { return distValueInt; }
 	inline std::optional<unsigned int> numerator() const { return distValueNum; }
@@ -294,6 +296,8 @@ public:
 		const std::string & s);
 	static inline Distance cavokVisibility(bool unitMiles = false);
 	static inline std::optional<Distance> fromKmString(const std::string & s);
+	static inline Distance makeDistant();
+	static inline Distance makeVicinity();
 private:
 	Modifier distModifier = Modifier::NONE;
 	std::optional<unsigned int> distValueInt;
@@ -2916,7 +2920,6 @@ std::optional<Distance> Distance::fromKmString(const std::string & s) {
 	return distance;
 }
 
-
 std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer,
 	const Distance & fraction)
 {
@@ -2981,7 +2984,7 @@ std::optional<float> Distance::feetToUnit(float value, Unit unit) {
 	}
 }
 
-inline Distance Distance::cavokVisibility(bool unitMiles) {
+Distance Distance::cavokVisibility(bool unitMiles) {
 	Distance result;
 	result.distModifier = Modifier::MORE_THAN;
 	result.distValueInt = cavokVisibilityMeters;
@@ -2993,6 +2996,17 @@ inline Distance Distance::cavokVisibility(bool unitMiles) {
 	return result;
 }
 
+Distance Distance::makeDistant() {
+	Distance result;
+	result.distModifier = Modifier::DISTANT;
+	return result;
+}
+
+Distance Distance::makeVicinity() {
+	Distance result;
+	result.distModifier = Modifier::VICINITY;
+	return result;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

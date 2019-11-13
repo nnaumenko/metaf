@@ -343,7 +343,7 @@ Distance
 
 	.. cpp:enum-class:: Modifier
 
-		Modifier is used when instead of exact distance, a minimum or maximum value is provided. Modifier is used to report distances such as 'less than 1/4 Statute Mile' or 'more than 10000 meters'.
+		Modifier is used when the value other than the exact distance, is stored (e.g. minimum or maximum value). Modifier is used to report distances such as 'less than 1/4 Statute Mile', 'more than 10000 meters', 'distant', 'in vicinity'.
 
 		.. cpp:enumerator:: NONE
 
@@ -356,6 +356,14 @@ Distance
 		.. cpp:enumerator:: MORE_THAN
 
 			The distance is more than reported value.
+
+		.. cpp:enumerator:: DISTANT
+
+			The distance is 10 to 30 nautical miles (coded ``DSNT`` in remark groups). The exact value is not reported.
+
+		.. cpp:enumerator:: VICINITY
+
+			The distance is 5 to 10 nautical miles (coded ``VC`` in remark groups). The exact value is not reported.
 
 	**Acquiring the data**
 

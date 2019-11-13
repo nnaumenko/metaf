@@ -966,3 +966,21 @@ TEST(Distance, cavokVisibilityMiles) {
 	EXPECT_EQ(d.unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
 }
+
+TEST(Distance, makeDistant) {
+	const auto d = metaf::Distance::makeDistant();
+	EXPECT_FALSE(d.integer().has_value());
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_FALSE(d.isReported());
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::DISTANT);
+}
+
+TEST(Distance, makeVicinity) {
+	const auto d = metaf::Distance::makeVicinity();
+	EXPECT_FALSE(d.integer().has_value());
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_FALSE(d.isReported());
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::VICINITY);
+}
