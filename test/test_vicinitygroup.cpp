@@ -16,6 +16,7 @@ TEST(VicinityGroup, parseCB_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -30,6 +31,7 @@ TEST(VicinityGroup, parseCBMAM_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS_MAMMATUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -44,6 +46,7 @@ TEST(VicinityGroup, parseTS_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::THUNDERSTORM);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -58,6 +61,7 @@ TEST(VicinityGroup, parseTCU_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::TOWERING_CUMULUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -72,6 +76,7 @@ TEST(VicinityGroup, parseACC_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::ALTOCUMULUS_CASTELLANUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -86,6 +91,7 @@ TEST(VicinityGroup, parseSCSL_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::STRATOCUMULUS_STANDING_LENTICULAR);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -100,6 +106,7 @@ TEST(VicinityGroup, parseACSL_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::ALTOCUMULUS_STANDING_LENTICULAR);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -114,6 +121,7 @@ TEST(VicinityGroup, parseCCSL_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CIRROCUMULUS_STANDING_LENTICULAR);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -128,6 +136,7 @@ TEST(VicinityGroup, parseVIRGA_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::VIRGA);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -142,6 +151,7 @@ TEST(VicinityGroup, parseVCSH_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::PRECIPITATION_IN_VICINITY);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -157,6 +167,7 @@ TEST(VicinityGroup, parseROTOR_CLD_N) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::ROTOR_CLOUD);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -199,6 +210,7 @@ TEST(VicinityGroup, parseCB_N_SE) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 4u);
@@ -255,6 +267,7 @@ TEST(VicinityGroup, parseCB_W_AND_OHD) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 2u);
@@ -270,6 +283,7 @@ TEST(VicinityGroup, parseCB_ALQDS) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 1u);
@@ -362,6 +376,7 @@ TEST(VicinityGroup, parseCB_DSNT) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_TRUE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 0u);
@@ -376,6 +391,7 @@ TEST(VicinityGroup, parseCB_DSNT_N_SE) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_TRUE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 4u);
@@ -394,6 +410,7 @@ TEST(VicinityGroup, parseCB_15KM_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
 	ASSERT_TRUE(vg->distance().integer().has_value());
 	EXPECT_EQ(vg->distance().integer().value(), 15000u);
@@ -415,6 +432,7 @@ TEST(VicinityGroup, parseCB_DSNT_E_SE_MOV_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_TRUE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
 	EXPECT_FALSE(vg->distance().isReported());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::E);
 	EXPECT_EQ(vg->directions().size(), 2u);
@@ -435,6 +453,7 @@ TEST(VicinityGroup, parseCB_5KM_E_AND_OHD_MOV_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(vg->isDistant());
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
 	ASSERT_TRUE(vg->distance().integer().has_value());
 	EXPECT_EQ(vg->distance().integer(), 5000u);

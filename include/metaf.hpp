@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 3;
 	inline static const int minor = 7;
-	inline static const int patch = 1;
+	inline static const int patch = 2;
 	inline static const char tag [] = "";
 };
 
@@ -1770,7 +1770,9 @@ public:
 		CONSTANT		// More than 6 flashes/minute
 	};
 	Frequency frequency() const { return freq; }
-	bool isDistant() const { return distant; }
+	// Deprecated and will be removed in version 4.0.0; use distance() instead 
+	bool isDistant() const { return (dist.modifier() == Distance::Modifier::DISTANT); }
+	Distance distance() const { return dist; }
 	bool isCloudGround() const { return typeCloudGround; }
 	bool isInCloud() const { return typeInCloud; }
 	bool isCloudCloud() const { return typeCloudCloud; }
@@ -1789,7 +1791,7 @@ public:
 
 private:
 	Frequency freq = Frequency::NONE;
-	bool distant = false;
+	Distance dist;
 	bool typeCloudGround = false;
 	bool typeInCloud = false;
 	bool typeCloudCloud = false;
@@ -1856,7 +1858,8 @@ public:
 		PRECIPITATION_IN_VICINITY
 	};
 	Type type() const { return t; }
-	bool isDistant() const { return distant; }
+	// Deprecated and will be removed in version 4.0.0; use distance() instead 
+	bool isDistant() const { return (dist.modifier() == Distance::Modifier::DISTANT); }
 	Distance distance() const { return dist; }
 	inline std::vector<Direction::Cardinal> directions() const;
 	inline Direction::Cardinal movingDirection() const { return movDir; }
@@ -1873,7 +1876,6 @@ public:
 
 private:
 	Type t;
-	bool distant = false;
 	Distance dist;
 	Direction dir1from;
 	Direction dir1to;
@@ -5967,7 +5969,7 @@ AppendResult LightningGroup::append(const std::string & group,
 	}
 
 	// No direction sector was previously appended to group
-	if (group == "DSNT") { distant = true; return AppendResult::APPENDED; }
+	if (group == "DSNT") { dist = Distance::makeDistant(); return AppendResult::APPENDED; }
 	if (const auto dir = Direction::fromCardinalString(group, true); dir.has_value()) {
 		//Single direction is specified
 		dir1from = dir.value();
@@ -6128,7 +6130,7 @@ bool VicinityGroup::appendDir2(const std::string & str) {
 }
 
 bool VicinityGroup::appendDistance(const std::string & str) {
-	if (str == "DSNT") { distant = true; return true; }
+	if (str == "DSNT") { dist = Distance::makeDistant(); return true; }
 	const auto d = Distance::fromKmString(str);
 	if (!d.has_value()) return false;
 	dist = d.value();

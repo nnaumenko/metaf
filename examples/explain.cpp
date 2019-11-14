@@ -964,7 +964,11 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 
 	result << "Lightning strikes observed";
-	if (group.isDistant()) result << " at distance 10 to 30 nautical miles";
+	if (group.distance().modifier() != metaf::Distance::Modifier::NONE || 
+		group.distance().isReported())
+	{
+		result << " at distance " << explainDistance(group.distance());
+	}
 	result << lineBreak;
 
 	switch(group.frequency()) {
@@ -1083,8 +1087,9 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 		result << "Precipitation"; break;
 	}
 	result << " observed";
-	if (group.isDistant()) result << " at distance 10 to 30 nautical miles";
-	if (group.distance().isReported()) {
+	if (group.distance().modifier() != metaf::Distance::Modifier::NONE || 
+		group.distance().isReported())
+	{
 		result << " at distance " << explainDistance(group.distance());
 	}
 	result << lineBreak;
@@ -1313,7 +1318,9 @@ std::string VisitorExplain::explainSpeed(const metaf::Speed & speed) {
 }
 
 std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
-	if (!distance.isReported()) return "not reported";
+	if (!distance.isReported() && 
+		distance.modifier() == metaf::Distance::Modifier::NONE) 
+			return "not reported";
 	std::ostringstream result;
 	switch (distance.modifier()) {
 		case metaf::Distance::Modifier::NONE:

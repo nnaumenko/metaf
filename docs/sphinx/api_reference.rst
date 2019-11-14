@@ -3212,7 +3212,15 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 		.. cpp:function:: bool isDistant() const
 
+		    .. deprecated:: 3.7.1
+
+		    This function is planned to be removed in version 4.0.0; :cpp:func:`distance()` instead.
+
 			:returns: ``true`` if distant (10 to 30 nautical miles) lightning is reported in this group, ``false`` otherwise.
+
+		.. cpp:function:: Distance distance() const
+
+			:returns: Currently this function only returns a non-reported value with modifier :cpp:enumerator:`Distance::Modifier::DISTANT` if distant (10 to 30 nautical miles) lightning is reported in this group. Otherwise the function returns a non-reported value with the modifier :cpp:enumerator:`Distance::Modifier::NONE`.
 
 		.. cpp:function:: std::vector<Direction> directions() const
 
@@ -3332,9 +3340,13 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 
 			:returns: ``true`` if distant (10 to 30 nautical miles) phemonena is reported in this group, ``false`` otherwise.
 
+		    .. deprecated:: 3.7.1
+
+		    This function is planned to be removed in version 4.0.0; :cpp:func:`distance()` instead.
+
 		.. cpp:function:: Distance distance() const
 
-			:returns: Distance at to the observed phenomena (if reported in the group) or non-reported distance.
+			:returns: Distance at to the observed phenomena (if reported in the group) or non-reported value with modifier :cpp:enumerator:`Distance::Modifier::DISTANT` if distant (10 to 30 nautical miles) phenomena is reported in this group, or non-reported value with modifier :cpp:enumerator:`Distance::Modifier::NONE` if no distance was specified.
 
 		.. cpp:function:: std::vector<Direction> directions() const
 

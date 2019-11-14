@@ -14,6 +14,7 @@ TEST(LightningGroup, parseLtg) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -30,6 +31,7 @@ TEST(LightningGroup, parseLtgDsnt) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_TRUE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -46,6 +48,7 @@ TEST(LightningGroup, parseOcnlLtg) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::OCCASSIONAL);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -62,6 +65,7 @@ TEST(LightningGroup, parseFrqLtg) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::FREQUENT);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -78,6 +82,7 @@ TEST(LightningGroup, parseConsLtg) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::CONSTANT);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -94,6 +99,7 @@ TEST(LightningGroup, parseLtgNE) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -111,6 +117,7 @@ TEST(LightningGroup, parseLtgNES) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -132,6 +139,7 @@ TEST(LightningGroup, parseLtgAlqds) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -151,6 +159,7 @@ TEST(LightningGroup, parseLtgNESandOHD) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -175,6 +184,7 @@ TEST(LightningGroup, parseLtgSWNWandSES) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -198,6 +208,7 @@ TEST(LightningGroup, parseLtgSWandE) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -219,6 +230,7 @@ TEST(LightningGroup, parseConsLtgOhdAndAlqds) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::CONSTANT);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
@@ -237,6 +249,7 @@ TEST(LightningGroup, parseLtgIcCcCgOhd) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_TRUE(lg->isCloudGround());
 	EXPECT_TRUE(lg->isInCloud());
 	EXPECT_TRUE(lg->isCloudCloud());
@@ -254,6 +267,7 @@ TEST(LightningGroup, parseLtgCcCaOhd) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_TRUE(lg->isCloudCloud());
@@ -269,6 +283,7 @@ TEST(LightningGroup, parseLtgCb) {
 
 	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
 	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());
 	EXPECT_FALSE(lg->isCloudCloud());
