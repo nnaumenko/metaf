@@ -291,3 +291,34 @@ TEST(LightningGroup, parseLtgCb) {
 	EXPECT_TRUE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 0u);
 }
+
+TEST(LightningGroup, parseLtgICC) {
+	auto lg = metaf::LightningGroup::parse("LTGICC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(lg.has_value());
+
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
+	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(lg->isCloudGround());
+	EXPECT_TRUE(lg->isInCloud());
+	EXPECT_FALSE(lg->isCloudCloud());
+	EXPECT_FALSE(lg->isCloudAir());
+	EXPECT_TRUE(lg->isUnknownType());
+	EXPECT_EQ(lg->directions().size(), 0u);
+}
+
+TEST(LightningGroup, parseLtgICICICICICICCC) {
+	//Here assuming that max 6 lightning types are recognised by group
+	auto lg = metaf::LightningGroup::parse("LTGICICICICICICCC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(lg.has_value());
+
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
+	EXPECT_FALSE(lg->isDistant());
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(lg->isCloudGround());
+	EXPECT_TRUE(lg->isInCloud());
+	EXPECT_FALSE(lg->isCloudCloud());
+	EXPECT_FALSE(lg->isCloudAir());
+	EXPECT_FALSE(lg->isUnknownType());
+	EXPECT_EQ(lg->directions().size(), 0u);
+}

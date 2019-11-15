@@ -3569,6 +3569,11 @@ ReportError
 		This error occurs if maintenance indicator ($) is encountered in a TAF report.
 
 
+	.. cpp:enumerator:: GROUP_LIMIT_EXCEEDED
+
+		Too many groups included in the report. Group number limit is specified in the parameter ``groupLimit`` of :cpp:func:`Parser::parse()`.
+
+
 ReportPart
 ^^^^^^^^^^
 
@@ -3678,7 +3683,7 @@ Parser
 
 	Parser class is used to parse strings which contain raw METAR or TAF reports, check for syntax errors, autodetect report type and produce a vector of individual groups.
 
-		.. cpp:function:: ParseResult parse (const std::string & report)
+		.. cpp:function:: static ParseResult parse (const std::string & report, size_t groupLimit = 100)
 
 			Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately.
 
@@ -3687,6 +3692,10 @@ Parser
 			.. note:: If report is parsed successfully, it does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
 			:param report: String which contains a METAR or TAF report.
+
+			:param groupLimit: Maximum number of the groups allowed in the report. Limiting the number of groups allows detecting large chunks of text/HTML/XML/JSON/etc. errorneously appended at the end of the METAR or TAF report. The default value of 100 is an arbitrarily set large number which would not prevent even large reports from being parsed, and generates error for malformed reports which are beyound reasonable size.
+
+			.. note:: Presence of this parameter also guarantees that the parsing process cannot become an infinite loop in all cases.
 
 
 Visitor

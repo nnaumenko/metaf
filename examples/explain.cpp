@@ -1213,6 +1213,9 @@ std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportEr
 		case metaf::ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
 		return "Maintenance indicator is allowed only in METAR reports";
 				
+		case metaf::ReportError::GROUP_LIMIT_EXCEEDED:
+		return "Report has too many groups";
+				
 		default: 
 		return "unknown error";
 	}

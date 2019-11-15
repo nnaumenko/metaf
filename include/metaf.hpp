@@ -30,10 +30,10 @@ namespace metaf {
 
 // Metaf library version
 struct Version {
-	inline static const int major = 3;
-	inline static const int minor = 7;
-	inline static const int patch = 2;
-	inline static const char tag [] = "";
+	inline static const int major = 4;
+	inline static const int minor = 0;
+	inline static const int patch = 0;
+	inline static const char tag [] = "phase1";
 };
 
 class FixedGroup;
@@ -749,7 +749,8 @@ enum class ReportError {
 	UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY,
 	AMD_ALLOWED_IN_TAF_ONLY,
 	CNL_ALLOWED_IN_TAF_ONLY,
-	MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
+	MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
+	GROUP_LIMIT_EXCEEDED
 };
 
 struct ReportMetadata {
@@ -2026,7 +2027,7 @@ struct ParseResult {
 
 class Parser {
 public:
-	static inline ParseResult parse (const std::string & report);
+	static inline ParseResult parse (const std::string & report, size_t groupLimit = 100); 
 
 private:
 	static inline bool appendToLastResultGroup(ParseResult & result,
@@ -2055,6 +2056,7 @@ private:
 		bool isReparseRequired() {
 			return (state == State::REPORT_BODY_BEGIN_METAR_REPEAT_PARSE);
 		}
+		void setError(ReportError e) { state = State::ERROR; reportError = e; }
 	private:
 		enum class State {
 			// States of state machine used to check syntax of METAR/TAF reports
@@ -2077,7 +2079,6 @@ private:
 		};
 
 		void setState(State s) { state = s; }
-		void setError(ReportError e) { state = State::ERROR; reportError = e; }
 		void setReportType(ReportType rt) { reportType = rt; }
 
 		inline void transitionFromReportTypeOrLocation(SyntaxGroup group);
@@ -5997,10 +5998,13 @@ std::optional<LightningGroup> LightningGroup::fromLtgGroup(const std::string & g
 
 	auto currPos = ltgLen;
 	static const auto typeLen = 2;
-	while(currPos < group.length()) {
-		if ((currPos - group.length()) < typeLen) {result.typeUnknown = true; continue; };
+	static const auto maxLightningTypeCount = 
+		6; // arbitrary number greater than 4; well formed group can have max 4 types
+	auto lightningTypeCount = 0;
+	while(currPos < group.length() && lightningTypeCount < maxLightningTypeCount) {
 		const auto currType = group.substr(currPos, typeLen);
 		currPos += typeLen;
+		lightningTypeCount++;
 		if (currType == "IC") { result.typeInCloud = true; continue; }
 		if (currType == "CC") { result.typeCloudCloud = true; continue; }
 		if (currType == "CG") { result.typeCloudGround = true; continue; }
@@ -6240,7 +6244,7 @@ SyntaxGroup getSyntaxGroup(const Group & group) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ParseResult Parser::parse(const std::string & report) {
+ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
 	std::sregex_token_iterator iter(report.begin(), report.end(),
 		groupDelimiterRegex,
 		-1);
@@ -6248,32 +6252,68 @@ ParseResult Parser::parse(const std::string & report) {
 	Status status;
 	ReportMetadata reportMetadata;
 	ParseResult result;
+	size_t groupCount = 0;
 
+	//Iterate through report groups separated by delimiters
 	while (iter != std::sregex_token_iterator() && !reportEnd && !status.isError()) {
 		std::string groupStr = *iter;
 
+		// Check for report end character (=), it is normally appended to the end
+		// of last group, eg "NOSIG=" 
 		if (groupStr.back() == reportEndChar) {
 			reportEnd = true;
 			groupStr.pop_back();
 		}
-		if (groupStr.length()) {
 
+		if (groupStr.length()) {
 			Group group;
 			ReportPart reportPart = status.getReportPart();
+			// Try to append the raw string to the last group first
 			if (!appendToLastResultGroup(result, groupStr, reportPart, reportMetadata)) {
+				// Raw string cannot be appended to the previous group or this is the first group
 				do {
-					reportPart = status.getReportPart();
+					// Try to parse group in a loop until no more re-parsing is required
+					// re-parsing may be required because at some point parser does not
+					// 'know' to which report part the next group belongs.
+					// E.g. if report begins with ZZZZ 151000Z, at this point the parser
+					// has no info on the report type yet. If the group to follow is
+					// 32007KT, then the report type is METAR, but if the group to follow
+					// is 1510/1610 then the report type is TAF. So the parser must first
+					// try to parse the raw string as a Trend Group (if it succeds then 
+					// the report type is autodetected as TAF), otherwise the parser 
+					// attempts to parse the same raw string as a group from METAR report 
+					// body. This is why the string is parsed in the loop. 
+
+					// updating report part here is mandatory since the group may 
+					// be re-parsed with different report part
+					reportPart = status.getReportPart(); 
 					group = GroupParser::parse(groupStr, reportPart, reportMetadata);
 					status.transition(getSyntaxGroup(group));
-				} while(status.isReparseRequired());
+					groupCount++;
+					if (groupCount >= groupLimit) status.setError(ReportError::GROUP_LIMIT_EXCEEDED);
+				} while(status.isReparseRequired()  && !status.isError());
+				// Update report metadata, e.g. set global report release time which can 
+				// be used by other groups (for example by PK WND group if hour is not specified)
 				updateMetadata(group, reportMetadata);
+				// Add group to result along with its report part and raw string
 				addGroupToResult(result,
 					std::move(group),
 					reportPart,
 					std::move(groupStr));
+			} else {
+				// Raw string was appended to the group, just increase group count
+				groupCount++;
+				if (groupCount >= groupLimit) status.setError(ReportError::GROUP_LIMIT_EXCEEDED);
 			}
 		}
+		
 		iter++;
+	}
+	if (!result.groups.empty()) {
+		// if last group is incomplete, invalidate it by adding an empty string
+		appendToLastResultGroup(result, "", status.getReportPart(), reportMetadata);
+		// but do not save this empty string if the group just rejects it
+		if (result.groups.back().rawString.empty()) result.groups.pop_back();
 	}
 	status.finalTransition();
 	reportMetadata.type = status.getReportType();

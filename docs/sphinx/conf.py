@@ -24,9 +24,9 @@ copyright = '2018-2019, Nick Naumenko'
 author = 'Nick Naumenko'
 
 # The short X.Y version
-version = '3.7.2'
+version = '4.0.0'
 # The full version, including alpha/beta/rc tags
-release = '3.7.2'
+release = '4.0.0 phase1'
 
 
 # -- General configuration ---------------------------------------------------
