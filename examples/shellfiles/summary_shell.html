@@ -1063,7 +1063,7 @@
 		}
 
 		function getAWCweather(latitude, longitude, distance) {
-			const metarUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true&fields=raw_text,station_id,latitude,longitude`;			
+			const metarUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=3&mostRecentForEachStation=true`;
 			const tafUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=tafs&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&hoursBeforeNow=24&mostRecentForEachStation=true`;
 			const stationUrl = `https://cors-anywhere.herokuapp.com/https://www.aviationweather.gov/adds/dataserver_current/httpparam?dataSource=stations&requestType=retrieve&format=xml&radialDistance=${distance};${longitude},${latitude}&fields=station_id,site`;
 			console.log("Fetching METAR & TAF data from AWC");
