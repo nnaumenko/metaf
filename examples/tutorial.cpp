@@ -291,15 +291,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Lightning data: " + rawString);
 	}
 
-	virtual std::string visitWeatherBeginEndGroup(
-		const WeatherBeginEndGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Weather phenomena beginning and ending: " + rawString);
-	}
-
 	virtual std::string visitVicinityGroup(
 		const VicinityGroup & group,
 		ReportPart reportPart,

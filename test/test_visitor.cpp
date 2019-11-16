@@ -205,14 +205,6 @@ protected:
 		count[variant_index<metaf::Group, metaf::LightningGroup>()]++;
 	}
 
-	virtual void visitWeatherBeginEndGroup(const metaf::WeatherBeginEndGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart; (void)rawString;
-		count[variant_index<metaf::Group, metaf::WeatherBeginEndGroup>()]++;
-	}
-
 	virtual void visitVicinityGroup(const metaf::VicinityGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -267,7 +259,10 @@ static const std::vector<std::string> testReports = {
 	" RMK 8/578 HZY"s,
 
 	"METAR EGUL 211156Z 25014G22KT 9999 FEW046 SCT055 14/04 A2971"
-	" RMK AO2A PK WND 24029/06 SLP064 70021 T01370043 10145 20103 52016 $"s
+	" RMK AO2A PK WND 24029/06 SLP064 70021 T01370043 10145 20103 52016 $"s,
+
+	"METAR KABQ 092052Z 23004KT 10SM FEW080 FEW120 FEW180 SCT300 29/07 A3005"
+	" RMK AO2 LTG DSNT SE SLP085 CB DSNT N-NE AND SE T02940067 58025"s
 };
 
 
@@ -282,17 +277,17 @@ TEST(Visitor, visitorVoid) {
 			}
 	}
 
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::FixedGroup>()]), 19);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 10);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 10);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::FixedGroup>()]), 22);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 11);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 11);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TrendGroup>()]), 3);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 12);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 13);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 24);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 13);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 14);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 28);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 11);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureGroup>()]), 11);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureGroup>()]), 13);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureForecastGroup>()]), 2);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 14);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 16);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayStateGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]), 1);
@@ -302,13 +297,11 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]), 2);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 0);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherBeginEndGroup>()]), 0);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 4);
 }
-

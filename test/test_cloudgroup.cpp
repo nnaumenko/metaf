@@ -18,7 +18,7 @@ TEST(CloudGroup, parseCloudLayerMetar) {
 	EXPECT_EQ(cg->height().integer().value(), 4000u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -33,7 +33,7 @@ TEST(CloudGroup, parseCloudLayerTaf) {
 	EXPECT_EQ(cg->height().integer().value(), 4000u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -48,10 +48,10 @@ TEST(CloudGroup, parseCloudLayerFew) {
 	EXPECT_EQ(cg->height().integer().value(), 11700u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -66,7 +66,7 @@ TEST(CloudGroup, parseCloudLayerScattered) {
 	EXPECT_EQ(cg->height().integer().value(), 37000u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -81,7 +81,7 @@ TEST(CloudGroup, parseCloudLayerBroken) {
 	EXPECT_EQ(cg->height().integer().value(), 2600u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -96,7 +96,7 @@ TEST(CloudGroup, parseCloudLayerOvercast) {
 	EXPECT_EQ(cg->height().integer().value(), 200u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -111,7 +111,7 @@ TEST(CloudGroup, parseCloudLayerToweringCumulus) {
 	EXPECT_EQ(cg->height().integer().value(), 2500u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -126,7 +126,7 @@ TEST(CloudGroup, parseCloudLayerCumulonimbus) {
 	EXPECT_EQ(cg->height().integer().value(), 1200u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CUMULONIMBUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -141,7 +141,7 @@ TEST(CloudGroup, parseCloudLayerConvectiveTypeNotReported) {
 	EXPECT_EQ(cg->height().integer().value(), 1600u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -156,7 +156,7 @@ TEST(CloudGroup, parseCloudLayerAmountAndTypeNotReported) {
 	EXPECT_EQ(cg->height().integer().value(), 7400u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -169,7 +169,7 @@ TEST(CloudGroup, parseCloudLayerAmountAndHeightNotReported) {
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -182,7 +182,7 @@ TEST(CloudGroup, parseCloudLayerNotReported) {
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -219,7 +219,7 @@ TEST(CloudGroup, parseVerticalVisibilityMetar) {
 	ASSERT_TRUE(cg->verticalVisibility().integer().has_value());
 	EXPECT_EQ(cg->verticalVisibility().integer().value(), 1600u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -234,7 +234,7 @@ TEST(CloudGroup, parseVerticalVisibilityTaf) {
 	EXPECT_EQ(cg->verticalVisibility().integer().value(), 1600u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -249,7 +249,7 @@ TEST(CloudGroup, parseVerticalVisibilityZero) {
 	EXPECT_EQ(cg->verticalVisibility().integer().value(), 0u);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -262,7 +262,7 @@ TEST(CloudGroup, parseVerticalVisibilityNotReported) {
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::NONE);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
 }
@@ -294,7 +294,7 @@ TEST(CloudGroup, parseClr) {
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->height().isReported());
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg1->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg1->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
 
@@ -304,7 +304,7 @@ TEST(CloudGroup, parseClr) {
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->height().isReported());
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg2->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg2->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
 }
@@ -319,7 +319,7 @@ TEST(CloudGroup, parseSkc) {
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->height().isReported());
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg1->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg1->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
 
@@ -329,7 +329,7 @@ TEST(CloudGroup, parseSkc) {
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->height().isReported());
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg2->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg2->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
 }
@@ -344,7 +344,7 @@ TEST(CloudGroup, parseNcd) {
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->height().isReported());
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg1->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg1->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
 
@@ -354,7 +354,7 @@ TEST(CloudGroup, parseNcd) {
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->height().isReported());
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg2->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg2->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
 }
@@ -369,7 +369,7 @@ TEST(CloudGroup, parseNsc) {
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->height().isReported());
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg1->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg1->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
 
@@ -379,7 +379,7 @@ TEST(CloudGroup, parseNsc) {
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->height().isReported());
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::NONE);
-	EXPECT_EQ(cg2->obscuration(), metaf::Weather::OMMITTED);
+	EXPECT_EQ(cg2->obscuration(), metaf::WeatherPhenomena::Weather::OMMITTED);
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
 }

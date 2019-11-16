@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase1";
+	inline static const char tag [] = "phase2";
 };
 
 class FixedGroup;
@@ -60,7 +60,6 @@ class PressureTendencyGroup;
 class CloudTypesGroup;
 class CloudLayersGroup;
 class LightningGroup;
-class WeatherBeginEndGroup;
 class VicinityGroup;
 class MiscGroup;
 class UnknownGroup;
@@ -90,7 +89,6 @@ using Group = std::variant<
 	CloudTypesGroup,
 	CloudLayersGroup,
 	LightningGroup,
-	WeatherBeginEndGroup,
 	VicinityGroup,
 	MiscGroup,
 	UnknownGroup
@@ -567,55 +565,7 @@ private:
 	static const inline auto minWaveHeightPhenomenal = 141;
 };
 
-// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
-enum class WeatherDescriptor {
-	NONE,
-	SHALLOW,
-	PARTIAL,
-	PATCHES,
-	LOW_DRIFTING,
-	BLOWING,
-	SHOWERS,
-	THUNDERSTORM,
-	FREEZING
-};
-
-// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
-inline std::optional<WeatherDescriptor> weatherDescriptorFromString(
-	const std::string & s);
-
-// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
-enum class Weather {
-	OMMITTED,
-	NOT_REPORTED,
-	DRIZZLE,
-	RAIN,
-	SNOW,
-	SNOW_GRAINS,
-	ICE_CRYSTALS,
-	ICE_PELLETS,
-	HAIL,
-	SMALL_HAIL,
-	UNDETERMINED,
-	MIST,
-	FOG,
-	SMOKE,
-	VOLCANIC_ASH,
-	DUST,
-	SAND,
-	HAZE,
-	SPRAY,
-	DUST_WHIRLS,
-	SQUALLS,
-	FUNNEL_CLOUD,
-	SANDSTORM,
-	DUSTSTORM
-};
-
-// Deprecated, to be removed in version 4.0.0 in favour of WeatherPhenomena
-inline std::optional<Weather> weatherFromString(const std::string & s);
-
-// Planned to be used instead of WeatherDescriptor, Weather, etc.
+// Describes recent, current, or forecast weather phenomena
 class WeatherPhenomena {
 public:
 	enum class Qualifier {
@@ -1094,7 +1044,7 @@ public:
 	};
 	Amount amount() const { return amnt; }
 	Type type() const { return tp; }
-	Weather obscuration() const { return Weather::OMMITTED; }
+	WeatherPhenomena::Weather obscuration() const { return WeatherPhenomena::Weather::OMMITTED; }
 	inline Distance height() const;
 	inline Distance minHeight() const { return Distance(); }
 	inline Distance maxHeight() const { return Distance(); }
@@ -1150,28 +1100,6 @@ public:
 	std::vector<WeatherPhenomena> weatherPhenomena() const { 
 		return std::vector<WeatherPhenomena>({w}); 
 	}
-	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
-	inline Qualifier qualifier() const;
-	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
-	WeatherDescriptor descriptor() const { 
-		return static_cast<WeatherDescriptor>(w.descriptor()); 
-	}
-	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
-	std::vector<Weather> weather() const {
-		std::vector<Weather> result;
-		const auto phenomena = w.weather();
-		for (auto p : phenomena) {
-			result.push_back(static_cast<Weather>(p));
-		}
-		return result;
-	}
-	// Deprecated and planned to be removed in 4.0.0, use weatherPhenomena() instead
-	bool contains(Weather weather) const {
-		const auto phenomena = w.weather();
-		for (auto p : phenomena) 
-			if (static_cast<Weather>(p) == weather) return true;
-		return false;
-	}
 	bool isValid() const { return w.isValid(); }
 
 	WeatherGroup() = default;
@@ -1184,16 +1112,7 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
-/*	Qualifier q = Qualifier::NONE;
-	WeatherDescriptor d = WeatherDescriptor::NONE;
-	inline static const size_t maxwSize = 8;
-	Weather w[maxwSize];
-	size_t wSize = 0;
-*/
 	inline bool isModerateQualifier() const;
-/*	inline bool isGroupValid() const;
-
-	static inline Qualifier qualifierFromString(const std::string & s);*/
 
 	WeatherPhenomena w;
 
@@ -1771,8 +1690,6 @@ public:
 		CONSTANT		// More than 6 flashes/minute
 	};
 	Frequency frequency() const { return freq; }
-	// Deprecated and will be removed in version 4.0.0; use distance() instead 
-	bool isDistant() const { return (dist.modifier() == Distance::Modifier::DISTANT); }
 	Distance distance() const { return dist; }
 	bool isCloudGround() const { return typeCloudGround; }
 	bool isInCloud() const { return typeInCloud; }
@@ -1820,28 +1737,6 @@ private:
 	}
 };
 
-// Deprecated, to be removed in version 4.0.0 in favour of WeatherGroup
-class WeatherBeginEndGroup {
-public:
-	inline bool isValid() const { return true; }
-
-	WeatherBeginEndGroup() = default;
-	static std::optional<WeatherBeginEndGroup> parse(const std::string & group,
-		ReportPart reportPart,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{ 
-		(void)group; (void)reportPart; (void)reportMetadata;
-		return std::optional<WeatherBeginEndGroup>(); 
-	}
-	AppendResult append(const std::string & group,
-		ReportPart reportPart = ReportPart::UNKNOWN,
-		const ReportMetadata & reportMetadata = missingMetadata)
-	{
-		(void)group; (void)reportPart; (void)reportMetadata; 
-		return AppendResult::NOT_APPENDED;
-	}
-};
-
 class VicinityGroup {
 public:
 	VicinityGroup() = default;
@@ -1859,8 +1754,6 @@ public:
 		PRECIPITATION_IN_VICINITY
 	};
 	Type type() const { return t; }
-	// Deprecated and will be removed in version 4.0.0; use distance() instead 
-	bool isDistant() const { return (dist.modifier() == Distance::Modifier::DISTANT); }
 	Distance distance() const { return dist; }
 	inline std::vector<Direction::Cardinal> directions() const;
 	inline Direction::Cardinal movingDirection() const { return movDir; }
@@ -2180,9 +2073,6 @@ protected:
 	virtual T visitLightningGroup(const LightningGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
-	virtual T visitWeatherBeginEndGroup(const WeatherBeginEndGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString) = 0;
 	virtual T visitVicinityGroup(const VicinityGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
@@ -2270,9 +2160,6 @@ inline T Visitor<T>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
 		return this->visitLightningGroup(*gr, reportPart, rawString);
-	}
-	if (const auto gr = std::get_if<WeatherBeginEndGroup>(&group); gr) {
-		return this->visitWeatherBeginEndGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
 		return this->visitVicinityGroup(*gr, reportPart, rawString);
@@ -2385,10 +2272,6 @@ inline void Visitor<void>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
 		this->visitLightningGroup(*gr, reportPart, rawString);
-		return;
-	}
-	if (const auto gr = std::get_if<WeatherBeginEndGroup>(&group); gr) {
-		this->visitWeatherBeginEndGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
@@ -3800,50 +3683,6 @@ bool WeatherPhenomena::isValid() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::optional<WeatherDescriptor> weatherDescriptorFromString(
-	const std::string & s)
-{
-	if (s.empty()) return WeatherDescriptor::NONE;
-	if (s == "MI") return WeatherDescriptor::SHALLOW;
-	if (s == "PR") return WeatherDescriptor::PARTIAL;
-	if (s == "BC") return WeatherDescriptor::PATCHES;
-	if (s == "DR") return WeatherDescriptor::LOW_DRIFTING;
-	if (s == "BL") return WeatherDescriptor::BLOWING;
-	if (s == "SH") return WeatherDescriptor::SHOWERS;
-	if (s == "TS") return WeatherDescriptor::THUNDERSTORM;
-	if (s == "FZ") return WeatherDescriptor::FREEZING;
-	return std::optional<WeatherDescriptor>();
-}
-
-std::optional<Weather> weatherFromString(const std::string & s)
-{
-	if (s == "DZ") return Weather::DRIZZLE;
-	if (s == "RA") return Weather::RAIN;
-	if (s == "SN") return Weather::SNOW;
-	if (s == "SG") return Weather::SNOW_GRAINS;
-	if (s == "IC") return Weather::ICE_CRYSTALS;
-	if (s == "PL") return Weather::ICE_PELLETS;
-	if (s == "GR") return Weather::HAIL;
-	if (s == "GS") return Weather::SMALL_HAIL;
-	if (s == "UP") return Weather::UNDETERMINED;
-	if (s == "BR") return Weather::MIST;
-	if (s == "FG") return Weather::FOG;
-	if (s == "FU") return Weather::SMOKE;
-	if (s == "VA") return Weather::VOLCANIC_ASH;
-	if (s == "DU") return Weather::DUST;
-	if (s == "SA") return Weather::SAND;
-	if (s == "HZ") return Weather::HAZE;
-	if (s == "PY") return Weather::SPRAY;
-	if (s == "PO") return Weather::DUST_WHIRLS;
-	if (s == "SQ") return Weather::SQUALLS;
-	if (s == "FC") return Weather::FUNNEL_CLOUD;
-	if (s == "SS") return Weather::SANDSTORM;
-	if (s == "DS") return Weather::DUSTSTORM;
-	return std::optional<Weather>();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
@@ -4629,33 +4468,6 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 
 	result.w = wp.value();
 	return result;
-/*
-	if (group.empty()) return notRecognised;
-	static const std::regex rgx("([\\+-]|RE|VC)?((?:[A-Z][A-Z])+)");
-	static const auto matchQualifier = 1, matchWeather = 2;
-	std::smatch match;
-	if (!regex_match(group, match, rgx)) return notRecognised;
-	const auto qualifier = qualifierFromString(match.str(matchQualifier));
-	const auto descriptorStr = match.str(matchWeather).substr(0, 2);
-	const auto descriptorOptional = weatherDescriptorFromString(descriptorStr);
-	const auto descriptor = descriptorOptional.has_value() ? 
-		descriptorOptional.value() : WeatherDescriptor::NONE;
-
-	WeatherGroup result;
-	const auto weatherStr = descriptorOptional.has_value() ? 
-		match.str(matchWeather).substr(2) : match.str(matchWeather);
-	static const auto wthrTokenSize = 2;
-	for (auto i = 0u; i < weatherStr.length(); i += wthrTokenSize) {
-		auto weather = weatherFromString(weatherStr.substr(i, wthrTokenSize));
-		if (!weather.has_value()) return notRecognised;
-		if (result.wSize >= maxwSize) return notRecognised;
-		result.w[result.wSize++] = weather.value();
-	}
-	result.d = descriptor;
-	result.q = qualifier;
-	if (result.q == Qualifier::NONE && result.isModerateQualifier()) result.q = Qualifier::MODERATE;
-	if (!result.isGroupValid()) return notRecognised;
-	return result;*/
 }
 
 AppendResult WeatherGroup::append(const std::string & group,
@@ -4665,290 +4477,6 @@ AppendResult WeatherGroup::append(const std::string & group,
 	(void)reportMetadata; (void)group; (void)reportPart;
 	return AppendResult::NOT_APPENDED;
 }
-
-WeatherGroup::Qualifier WeatherGroup::qualifier() const { 
-	if (w.qualifier() == WeatherPhenomena::Qualifier::MODERATE && 
-		!isModerateQualifier()) 
-			return(Qualifier::NONE);
-	return static_cast<Qualifier>(w.qualifier()); 
-}
-
-bool WeatherGroup::isModerateQualifier() const {
-	const auto phenomena = w.weather();
-	for (const auto p : phenomena) {
-		switch (p) {
-			case WeatherPhenomena::Weather::DRIZZLE:
-			case WeatherPhenomena::Weather::RAIN:
-			case WeatherPhenomena::Weather::SNOW_GRAINS:
-			case WeatherPhenomena::Weather::ICE_PELLETS:
-			case WeatherPhenomena::Weather::UNDETERMINED:
-			return true;
-
-			case WeatherPhenomena::Weather::SNOW:
-			if (descriptor() != WeatherDescriptor::LOW_DRIFTING &&
-				descriptor() != WeatherDescriptor::BLOWING) return true;
-			break;
-
-			default:
-			break;
-		}
-	}
-	return false;
-}
-
-/*
-bool WeatherGroup::isModerateQualifier() const {
-	for (auto i=0u; i < wSize; i++) {
-		switch (w[i]) {
-			case Weather::DRIZZLE:
-			case Weather::RAIN:
-			case Weather::SNOW_GRAINS:
-			case Weather::ICE_PELLETS:
-			case Weather::UNDETERMINED:
-			return true;
-
-			case Weather::SNOW:
-			if (descriptor() != WeatherDescriptor::LOW_DRIFTING &&
-				descriptor() != WeatherDescriptor::BLOWING) return true;
-			break;
-
-			default:
-			break;
-		}
-	}
-	return false;
-}
-
-WeatherGroup::Qualifier WeatherGroup::qualifierFromString(const std::string & s) {
-	if (s == "RE") return Qualifier::RECENT;
-	if (s == "-") return Qualifier::LIGHT;
-	if (s == "+") return Qualifier::HEAVY;
-	if (s == "VC") return Qualifier::VICINITY;
-	return Qualifier::NONE;
-}
-
-WeatherGroup WeatherGroup::notReported() {
-	WeatherGroup result;
-	result.w[0] = Weather::NOT_REPORTED; result.wSize = 1;
-	return result;
-}
-
-WeatherGroup WeatherGroup::notReportedRecent() {
-	WeatherGroup result = notReported();
-	result.q = Qualifier::RECENT;
-	return result;
-}
-
-bool WeatherGroup::isGroupValid() const {
-	// Weather Groups are too small to use sets efficiently
-	// Performance is a factor because groups are checked during parsing
-
-	//Check for qualifier
-	const bool noQualifier = 
-		(qualifier() == Qualifier::NONE || qualifier() == Qualifier::RECENT);
-	const bool vicinityQualifier = (qualifier() == Qualifier::VICINITY);
-	const bool intensityQualifier = (qualifier() == Qualifier::LIGHT || 
-			qualifier() == Qualifier::MODERATE || qualifier() == Qualifier::HEAVY);
-	const bool heavyQualifier = (qualifier() == Qualifier::HEAVY);
-	//Check for descriptor
-	const bool noDescriptor = (descriptor() == WeatherDescriptor::NONE);
-	const bool descrShallowPartialPatches =
-		(descriptor() == WeatherDescriptor::SHALLOW ||
-		 descriptor() == WeatherDescriptor::PARTIAL ||
-		 descriptor() == WeatherDescriptor::PATCHES);
-	const bool descrDrifting = (descriptor() == WeatherDescriptor::LOW_DRIFTING);
-	const bool descrBlowing = (descriptor() == WeatherDescriptor::BLOWING);
-	const bool descrThunderstorm = (descriptor() == WeatherDescriptor::THUNDERSTORM);
-	const bool descrShowers = (descriptor() == WeatherDescriptor::SHOWERS);
-	const bool descrFreezing = (descriptor() == WeatherDescriptor::FREEZING);
-	//Check for phenomena present in group
-	bool 	hasNotReported = false,
-			hasDrizzle = false, hasRain = false, hasSnow = false, 
-	 		hasSnowGrains = false, hasIceCrystals = false, 
-	 		hasIcePellets = false, hasHail = false, hasSmallHail = false, 
-	 		hasUndetermined = false, 
-	 		hasMist = false, hasFog = false, hasSmoke = false, 
-	 		hasVolcanicAsh = false, hasDust = false, hasSand = false,
-	 		hasHaze = false, hasSpray = false, hasDustWhirls = false,
-	 		hasSqualls = false, hasFunnelCloud = false,
-	 		hasSandStorm = false, hasDustStorm = false;
-	// Duplicate phenomena is not allowed
-	for (auto i = 0u; i < wSize; i++) { 
-		switch (w[i]) {
-			case Weather::OMMITTED:
-			return false;
-
-			case Weather::NOT_REPORTED:
-			if (hasNotReported) return false;
-			hasNotReported = true; break;
-
-			case Weather::DRIZZLE:
-			if (hasDrizzle) return false;
-			hasDrizzle = true; break;
-
-			case Weather::RAIN:
-			if (hasRain) return false;
-			hasRain = true; break;
-
-			case Weather::SNOW:
-			if (hasSnow) return false;
-			hasSnow = true; break;
-
-			case Weather::SNOW_GRAINS:
-			if (hasSnowGrains) return false;
-			hasSnowGrains = true; break;
-
-			case Weather::ICE_CRYSTALS:
-			if (hasIceCrystals) return false;
-			hasIceCrystals = true; break;
-
-			case Weather::ICE_PELLETS:
-			if (hasIcePellets) return false;
-			hasIcePellets = true; break;
-
-			case Weather::HAIL:
-			if (hasHail) return false;
-			hasHail = true; break;
-
-			case Weather::SMALL_HAIL:
-			if (hasSmallHail) return false;
-			hasSmallHail = true; break;
-
-			case Weather::UNDETERMINED:
-			if (hasUndetermined) return false;
-			hasUndetermined = true; break;
-
-			case Weather::MIST:
-			if (hasMist) return false;
-			hasMist = true; break;
-
-			case Weather::FOG:
-			if (hasFog) return false;
-			hasFog = true; break;
-
-			case Weather::SMOKE:
-			if (hasSmoke) return false;
-			hasSmoke = true; break;
-
-			case Weather::VOLCANIC_ASH:
-			if (hasVolcanicAsh) return false;
-			hasVolcanicAsh = true; break;
-
-			case Weather::DUST:
-			if (hasDust) return false;
-			hasDust = true; break;
-
-			case Weather::SAND:
-			if (hasSand) return false;
-			hasSand = true; break;
-
-			case Weather::HAZE:
-			if (hasHaze) return false;
-			hasHaze = true; break;
-
-			case Weather::SPRAY:
-			if (hasSpray) return false;
-			hasSpray = true; break;
-
-			case Weather::DUST_WHIRLS:
-			if (hasDustWhirls) return false;
-			hasDustWhirls = true; break;
-
-			case Weather::SQUALLS:
-			if (hasSqualls) return false;
-			hasSqualls = true; break;
-
-			case Weather::FUNNEL_CLOUD:
-			if (hasFunnelCloud) return false;
-			hasFunnelCloud = true; break;
-
-			case Weather::SANDSTORM:
-			if (hasSandStorm) return false;
-			hasSandStorm = true; break;
-
-			case Weather::DUSTSTORM:
-			if (hasDustStorm) return false;
-			hasDustStorm = true; break;
-		}
-	}
-	// Ice crystals, obscurations and misc phenomena are only allowed without
-	// any other phenomena in the same group.
-	// Sandstorm is only allowed in combination with dust storm
-	if (wSize != 1) {
-		if (hasIceCrystals || hasMist || hasFog || hasSmoke || 
-			hasVolcanicAsh || hasDust || hasSand || hasHaze || hasSpray ||
-			hasDustWhirls || hasSqualls || hasFunnelCloud) return false;
-		if ((hasDustStorm || hasSandStorm) && 
-			!(wSize == 2 && hasDustStorm && hasSandStorm)) return false;
-	}
-	// Vicinity qualifier is only allowed with the following phenomena: 
-	// Fog, Dust Whirls, Blowing Dust, Blowing Sand, Blowing Snow, 
-	// Sandstorm, Duststorm, Volcanic Ash. 
-	// Vicinity qualifier is also allowed with Thunderstorm or Showers when 
-	// no phenomena are specified.
-	// All other combinations of descriptors and phenomena with Vicinity 
-	// Qualifier are not allowed.
-	if (vicinityQualifier) {
-		if (noDescriptor && 
-			(hasFog || hasDustWhirls || 
-			 hasSandStorm || hasDustStorm || hasVolcanicAsh)) 
-				return true;
-		if (descrBlowing && (hasSand || hasDust || hasSnow)) return true;
-		if (descrShowers && !wSize) return true;
-		if (descrThunderstorm && !wSize) return true;
-		return false;
-	}
-	// Only descriptor Thunderstorm is allowed with no Qualifier and no 
-	// phenomena. 
-	if (noQualifier && !wSize) {
-		if (descrThunderstorm) return true;
-		return false;
-	}
-	// Intensity Qualifier only allowed with Drizzle, Rain, Snow, Snow Grains, 
-	// Ice Pellets, Undetermined Precipitation, Funnel Cloud, Sandstorm, Duststorm.
-	// Only 'Heavy' Intensity Qualifier is allowed with Funnel Cloud, Sandstorm,
-	// and Duststorm.
-	// Drifting Snow and Blowind Snow are not allowed with Intensity Qualifier.
-	if (intensityQualifier) {
-		if (!hasDrizzle && !hasRain && !hasSnow && !hasSnowGrains && 
-			!hasIcePellets && !hasUndetermined && !hasFunnelCloud && 
-			!hasSandStorm && !hasDustStorm)
-				return false;
-		if (!heavyQualifier && (hasFunnelCloud || hasSandStorm || hasDustStorm)) 
-			return false;		
-		// Intensity qualifier is not allowed with Drifting or Blowing descriptor
-		// (i.e. drifting or blowind snow)
-		if (descrDrifting || descrBlowing) return false;
-		// Intensity qualifier is not allowed if only descriptor is specified
-		if (!wSize) return false;
-	}
-	// Spray is only allowed with descriptor Blowing, and not allowed without
-	// a descriptor.
-	if (hasSpray && !descrBlowing) return false;
-	// Descriptors Shallow, Partial, Patches are only allowed with Fog.
-	if (descrShallowPartialPatches && !hasFog) return false;
-	// Exactly one phenomena is allowed with descriptor LowDrifting or Blowing.
-	if ((descrDrifting || descrBlowing) && wSize != 1) return false;
-	// Descriptor LowDrifting is only allowed with Dust, Sand, or Snow.
-	if (descrDrifting && !hasDust && !hasSand && !hasSnow) return false; 
-	// Descriptor Blowing is only allowed with Dust, Sand, Snow, or Spray.
-	if (descrBlowing && !hasDust && !hasSand && !hasSnow && !hasSpray) return false; 
-	// Descriptor Showers only allowed with Rain, Snow, Ice Pellets, Small Hail,  
-	// Hail, or Undetermined Precipitation.
-	if (descrShowers && !hasRain && !hasSnow && !hasIcePellets && 
-		!hasSmallHail && !hasHail && !hasUndetermined) 
-			return false;
-	// Descriptor Thunderstorm is only allowed with Rain, Snow, Ice Pellets, 
-	// Small Hail, Hail.
-	if (descrThunderstorm && !hasRain && !hasSnow && !hasIcePellets && 
-		!hasSmallHail && !hasHail)
-			return false;
-	// Descriptor Freezing is only allowed with Drizzle, Rain, and Fog
-	if (descrFreezing && !hasFog && !hasDrizzle && !hasRain) return false;
-	// All other combinations are allowed
-	return true;
-}
-*/
 
 ///////////////////////////////////////////////////////////////////////////
 

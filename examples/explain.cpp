@@ -107,10 +107,6 @@ private:
 		const metaf::LightningGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitWeatherBeginEndGroup(
-		const metaf::WeatherBeginEndGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
 	virtual std::string visitVicinityGroup(
 		const metaf::VicinityGroup & group,
 		metaf::ReportPart reportPart,
@@ -1034,15 +1030,6 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 		result << lineBreak;
 	}
 	return result.str();
-}
-
-std::string VisitorExplain::visitWeatherBeginEndGroup(
-	const metaf::WeatherBeginEndGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)group; (void)reportPart; (void)rawString;
-	return "This is a placeholder group which is not used yet.";
 }
 
 std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & group,

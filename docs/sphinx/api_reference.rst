@@ -1125,7 +1125,7 @@ WeatherPhenomena
 
 		:returns: Weather qualifier which indicates time or intensity or proximity of the weather phenomena.
 
-	.. cpp:function:: WeatherDescriptor descriptor() const
+	.. cpp:function:: Descriptor descriptor() const
 
 		:returns: Weather descriptor which indicates additional properties of weather phenomena.
 
@@ -1152,32 +1152,12 @@ WeatherPhenomena
 					 - event time is valid if specified;
 					 - if descriptor FZ (freezing) is present, the weather phenomena must contain FG (fog), or the precipitation type which is potentially may freeze: UP (undetermined precipitation), or RA(rain), or DZ (drizzle); other precipitation may be present alone with specified above, e.g. ``FZRASN`` (freezing rain and snow) is valid, while ``FZSNPL`` (freezing snow and ice pellets) is not valid;
 
-Weather
-^^^^^^^
-
-.. cpp:enum-class:: Weather
-
-    .. deprecated:: 3.6.1
-       Same as :cpp:enum:`metaf::WeatherPhenomena::Weather`.
-
-    This type is planned to be removed in version 4.0.0.
-
-
-WeatherDescriptor
-^^^^^^^^^^^^^^^^^
-
-.. cpp:enum-class:: WeatherDescriptor
-
-    .. deprecated:: 3.6.1
-       Planned to be replaced with :cpp:enum:`metaf::WeatherPhenomena::Descriptor`.
-
-    This type is planned to be removed in version 4.0.0.
 
 
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1911,37 +1891,6 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 	Stores information about recent or current weather phenomena.
 
-	.. cpp:enum-class:: Qualifier
-
-	    .. deprecated:: 3.6.3
-	       Same as :cpp:enum:`metaf::WeatherPhenomena::Qualifier`.
-
-	    This type is planned to be removed in version 4.0.0.
-
-		.. cpp:enumerator:: NONE
-
-			No qualifier. This group reports current weather observed at location.
-
-		.. cpp:enumerator:: RECENT
-
-			This group reports recent weather rather than current weather.
-
-		.. cpp:enumerator:: VICINITY
-
-			This group reports weather in vicinity rather than on site.
-
-		.. cpp:enumerator:: LIGHT
-
-			Light intensity.
-
-		.. cpp:enumerator:: MODERATE
-
-			Moderate intensity. This qualier is used with precipitation only.
-
-		.. cpp:enumerator:: HEAVY
-
-			Heavy intensity.
-
 	**Acquiring group data**
 
 		.. cpp:function:: std::vector<WeatherPhenomena> weatherPhenomena() const
@@ -1950,47 +1899,11 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 			.. note:: Currently this method always returns a vector of a single element only.
 
-		.. cpp:function:: Qualifier qualifier() const
-
-		    .. deprecated:: 3.6.3
-
-		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
-
-			:returns: Weather qualifier which indicates time or intensity or proximity of the weather phenomena.
-		
-		.. cpp:function:: WeatherDescriptor descriptor() const
-
-		    .. deprecated:: 3.6.3
-
-		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
-
-			:returns: Weather descriptor which indicates additional properties of weather phenomena.
-
-		.. cpp:function:: std::vector<Weather> weather() const
-
-		    .. deprecated:: 3.6.3
-
-		    This function is planned to be removed in version 4.0.0; use :cpp:func:`weatherPhenomena()` to get qualifier, descriptor and phenomena instead.
-
-			:returns: Vector of individual weather phenomena included in this group.
-
-	**Miscellaneous**
-
-		.. cpp:function:: bool contains(Weather weather) const
-
-		    .. deprecated:: 3.6.3
-
-		    This function is planned to be removed in version 4.0.0.
-
-			:param weather: A weacher phenomenon to check current group for.
-
-			:returns: ``true`` if this group contains the specified weather phenomenon or ``false`` if the specified weather phenomenon is not included in this group.
-
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: This method is for compatibility only and always returns ``true`` for this group. All groups that are not valid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) are not recognised as a valid WeatherGroup.
+			:returns: This method is for compatibility only and always returns ``true`` for this group. All groups that are not valid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) are not recognised as a WeatherGroup.
 
 
 TemperatureGroup
@@ -3210,14 +3123,6 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 			:returns: Observed frequency of lightning flashes.
 
-		.. cpp:function:: bool isDistant() const
-
-		    .. deprecated:: 3.7.1
-
-		    This function is planned to be removed in version 4.0.0; :cpp:func:`distance()` instead.
-
-			:returns: ``true`` if distant (10 to 30 nautical miles) lightning is reported in this group, ``false`` otherwise.
-
 		.. cpp:function:: Distance distance() const
 
 			:returns: Currently this function only returns a non-reported value with modifier :cpp:enumerator:`Distance::Modifier::DISTANT` if distant (10 to 30 nautical miles) lightning is reported in this group. Otherwise the function returns a non-reported value with the modifier :cpp:enumerator:`Distance::Modifier::NONE`.
@@ -3255,18 +3160,6 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 		.. cpp:function:: bool isValid() const
 
 			:returns: ``true`` if there are no unknown lightning types in this group.
-
-
-WeatherBeginEndGroup
-^^^^^^^^^^^^^^^^^^^^
-
-.. cpp:class:: WeatherBeginEndGroup
-
-This group was added to maintain compatibility. It is not used in this version.
-
-	.. deprecated:: 3.7.0
-
-	This function is planned to be removed in version 4.0.0; use :cpp:class:`WeatherGroup` is planned to be used to store information on the weather event since version 4.0.0.
 
 
 VicinityGroup
@@ -3335,14 +3228,6 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 		.. cpp:function:: Type type() const
 
 			:returns: Type of observed phenomena.
-
-		.. cpp:function:: bool isDistant() const
-
-			:returns: ``true`` if distant (10 to 30 nautical miles) phemonena is reported in this group, ``false`` otherwise.
-
-		    .. deprecated:: 3.7.1
-
-		    This function is planned to be removed in version 4.0.0; :cpp:func:`distance()` instead.
 
 		.. cpp:function:: Distance distance() const
 
@@ -3770,6 +3655,10 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected T visitCloudLayersGroup(const CloudLayersGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+
+	.. cpp:function:: protected T visitLightningGroup(const LightningGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+
+	.. cpp:function:: protected T visitVicinityGroup(const VicinityGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
