@@ -387,7 +387,6 @@ Distance
 
 			:returns: Distance measurement unit which was used with stored value.
 
-
 	**Integer & fraction components**
 
 		.. cpp:function:: bool isInteger() const
@@ -406,10 +405,15 @@ Distance
 
 			:returns: ``true`` if the stored value has fraction component, and ``false`` if the stored value does not have a fraction component or is not reported. Presence or absence of integer component is ignored.
 
+	**Miscellaneous**
+
+		.. cpp:function:: bool isValue()
+
+			:returns: ``true`` if integer component or both numerator and denomerator are non-empty ``std::optional``s; ``false`` otherwise.
+
 		.. cpp:function:: bool isReported()
 
-			:returns: ``true`` if the stored value is reported, and ``false`` if the stored value is not reported.
-
+			:returns: ``true`` if the conditions for :cpp:func:`isValue()` are met, or the modifier is either :cpp:enumerator:`Modifier::DISTANT` or :cpp:enumerator:`Modifier::VICINITY`; ``false`` otherwise.
 
 	**Converting to other measurement units**
 
@@ -419,7 +423,6 @@ Distance
 			:returns: Stored distance value converted into specified measurement unit or empty ``std::optional`` if conversion failed or the stored value was not reported.
 
 				Both integer and fractional components are used in conversion. For example, attempting to convert value of 1 1/2 statute miles into statute miles will return value 1.5.
-
 
 	**Validating**
 

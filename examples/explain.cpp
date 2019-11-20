@@ -545,10 +545,10 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 		result << ", type: " << typeStr;
 	}
 	result << lineBreak;
-	if (group.height().isReported()) {
+	if (group.height().isValue()) {
 		result << "Base height " << explainDistance(group.height()) << lineBreak;
 	}
-	if (group.verticalVisibility().isReported()) {
+	if (group.verticalVisibility().isValue()) {
 		result << "Vertical visibility " << explainDistance(group.verticalVisibility()) << lineBreak;
 	}
 	return result.str();
@@ -960,8 +960,7 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 
 	result << "Lightning strikes observed";
-	if (group.distance().modifier() != metaf::Distance::Modifier::NONE || 
-		group.distance().isReported())
+	if (group.distance().isReported())
 	{
 		result << " at distance " << explainDistance(group.distance());
 	}
@@ -1074,8 +1073,7 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 		result << "Precipitation"; break;
 	}
 	result << " observed";
-	if (group.distance().modifier() != metaf::Distance::Modifier::NONE || 
-		group.distance().isReported())
+	if (group.distance().isReported())
 	{
 		result << " at distance " << explainDistance(group.distance());
 	}
@@ -1308,9 +1306,7 @@ std::string VisitorExplain::explainSpeed(const metaf::Speed & speed) {
 }
 
 std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
-	if (!distance.isReported() && 
-		distance.modifier() == metaf::Distance::Modifier::NONE) 
-			return "not reported";
+	if (!distance.isReported()) return "not reported";
 	std::ostringstream result;
 	switch (distance.modifier()) {
 		case metaf::Distance::Modifier::NONE:
@@ -1327,17 +1323,19 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 		case metaf::Distance::Modifier::DISTANT:
 		result << "10 to 30 nautical miles ";
 		result << "(19 to 55 km, 12 to 35 statue miles)";
-		return result.str();
+		break;
 
 		case metaf::Distance::Modifier::VICINITY:
 		result << "5 to 10 nautical miles "; 
 		result << "(9 to 19 km, 6 to 12 statue miles)";
-		return result.str();
-		
+		break;
+
 		default: 
 		result << "unknown modifier, "; 
 		break;
 	}
+	if (!distance.isValue()) return result.str();
+
 	const auto d = distance.toUnit(distance.unit());
 	if (!d.has_value()) return "[unable to get distance's floating-point value]";
 	if (distance.unit() == metaf::Distance::Unit::STATUTE_MILES) {

@@ -588,6 +588,42 @@ TEST(Distance, fromIntegerAndFractionWrongCombination) {
 		fractionWithModifier.value()).has_value());
 }
 
+TEST(Distance, cavokVisibilityMeters) {
+	const auto d = metaf::Distance::cavokVisibility();
+	ASSERT_TRUE(d.integer().has_value());
+	EXPECT_EQ(d.integer().value(), 10000u);
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
+}
+
+TEST(Distance, cavokVisibilityMiles) {
+	const auto d = metaf::Distance::cavokVisibility(true);
+	ASSERT_TRUE(d.integer().has_value());
+	EXPECT_EQ(d.integer().value(), 6u);
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
+}
+
+TEST(Distance, makeDistant) {
+	const auto d = metaf::Distance::makeDistant();
+	EXPECT_FALSE(d.integer().has_value());
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::DISTANT);
+}
+
+TEST(Distance, makeVicinity) {
+	const auto d = metaf::Distance::makeVicinity();
+	EXPECT_FALSE(d.integer().has_value());
+	EXPECT_FALSE(d.numerator().has_value());
+	EXPECT_FALSE(d.denominator().has_value());
+	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::VICINITY);
+}
+
 TEST(Distance, isIntegerTrue) {
 	const auto d = metaf::Distance::fromMileString("3SM");
 	ASSERT_TRUE(d.has_value());
@@ -658,6 +694,16 @@ TEST(Distance, isReportedTrue) {
 	const auto d6 = metaf::Distance::fromRvrString("2000", false);
 	ASSERT_TRUE(d6.has_value());
 	EXPECT_TRUE(d6->isReported());
+
+	const auto d7 = metaf::Distance::makeDistant();
+	EXPECT_TRUE(d7.isReported());
+
+	const auto d8 = metaf::Distance::makeVicinity();
+	EXPECT_TRUE(d8.isReported());
+
+	const auto d9 = metaf::Distance::fromKmString("4KM");
+	ASSERT_TRUE(d9.has_value());
+	EXPECT_TRUE(d9->isReported());
 }
 
 TEST(Distance, isReportedFalse) {
@@ -676,6 +722,60 @@ TEST(Distance, isReportedFalse) {
 	const auto d4 = metaf::Distance::fromRvrString("////", false);
 	ASSERT_TRUE(d4.has_value());
 	EXPECT_FALSE(d4->isReported());
+}
+
+TEST(Distance, isValueTrue) {
+	const auto d1 = metaf::Distance::fromMileString("3SM");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_TRUE(d1->isValue());
+
+	const auto d2 = metaf::Distance::fromMileString("1/2SM");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_TRUE(d2->isValue());
+
+	const auto d3 = metaf::Distance::fromMileString("11/2SM");
+	ASSERT_TRUE(d3.has_value());
+	EXPECT_TRUE(d3->isValue());
+
+	const auto d4 = metaf::Distance::fromMeterString("2000");
+	ASSERT_TRUE(d4.has_value());
+	EXPECT_TRUE(d4->isValue());
+
+	const auto d5 = metaf::Distance::fromHeightString("030");
+	ASSERT_TRUE(d5.has_value());
+	EXPECT_TRUE(d5->isValue());
+
+	const auto d6 = metaf::Distance::fromRvrString("2000", false);
+	ASSERT_TRUE(d6.has_value());
+	EXPECT_TRUE(d6->isValue());
+
+	const auto d7 = metaf::Distance::fromKmString("4KM");
+	ASSERT_TRUE(d7.has_value());
+	EXPECT_TRUE(d7->isValue());
+}
+
+TEST(Distance, isValueFalse) {
+	const auto d1 = metaf::Distance::fromMileString("////SM");
+	ASSERT_TRUE(d1.has_value());
+	EXPECT_FALSE(d1->isValue());
+
+	const auto d2 = metaf::Distance::fromMeterString("////");
+	ASSERT_TRUE(d2.has_value());
+	EXPECT_FALSE(d2->isValue());
+
+	const auto d3 = metaf::Distance::fromHeightString("///");
+	ASSERT_TRUE(d3.has_value());
+	EXPECT_FALSE(d3->isValue());
+
+	const auto d4 = metaf::Distance::fromRvrString("////", false);
+	ASSERT_TRUE(d4.has_value());
+	EXPECT_FALSE(d4->isValue());
+
+	const auto d5 = metaf::Distance::makeDistant();
+	EXPECT_FALSE(d5.isValue());
+
+	const auto d6 = metaf::Distance::makeVicinity();
+	EXPECT_FALSE(d6.isValue());
 }
 
 TEST(Distance, isValidTrueMeters) {
@@ -947,40 +1047,3 @@ TEST(Distance, hasFractionFalse) {
 	EXPECT_FALSE(d6->hasInteger());
 }
 
-TEST(Distance, cavokVisibilityMeters) {
-	const auto d = metaf::Distance::cavokVisibility();
-	ASSERT_TRUE(d.integer().has_value());
-	EXPECT_EQ(d.integer().value(), 10000u);
-	EXPECT_FALSE(d.numerator().has_value());
-	EXPECT_FALSE(d.denominator().has_value());
-	EXPECT_EQ(d.unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
-}
-
-TEST(Distance, cavokVisibilityMiles) {
-	const auto d = metaf::Distance::cavokVisibility(true);
-	ASSERT_TRUE(d.integer().has_value());
-	EXPECT_EQ(d.integer().value(), 6u);
-	EXPECT_FALSE(d.numerator().has_value());
-	EXPECT_FALSE(d.denominator().has_value());
-	EXPECT_EQ(d.unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::MORE_THAN);
-}
-
-TEST(Distance, makeDistant) {
-	const auto d = metaf::Distance::makeDistant();
-	EXPECT_FALSE(d.integer().has_value());
-	EXPECT_FALSE(d.numerator().has_value());
-	EXPECT_FALSE(d.denominator().has_value());
-	EXPECT_FALSE(d.isReported());
-	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::DISTANT);
-}
-
-TEST(Distance, makeVicinity) {
-	const auto d = metaf::Distance::makeVicinity();
-	EXPECT_FALSE(d.integer().has_value());
-	EXPECT_FALSE(d.numerator().has_value());
-	EXPECT_FALSE(d.denominator().has_value());
-	EXPECT_FALSE(d.isReported());
-	EXPECT_EQ(d.modifier(), metaf::Distance::Modifier::VICINITY);
-}

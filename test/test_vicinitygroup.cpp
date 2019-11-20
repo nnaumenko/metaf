@@ -358,7 +358,7 @@ TEST(VicinityGroup, parseCB_DSNT) {
 	
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
-	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_FALSE(vg->distance().isValue());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 0u);
 }
@@ -372,7 +372,7 @@ TEST(VicinityGroup, parseCB_DSNT_N_SE) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
-	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_FALSE(vg->distance().isValue());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
 	EXPECT_EQ(vg->directions().size(), 4u);
 	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
@@ -411,7 +411,7 @@ TEST(VicinityGroup, parseCB_DSNT_E_SE_MOV_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
-	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_FALSE(vg->distance().isValue());
 	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::E);
 	EXPECT_EQ(vg->directions().size(), 2u);
 	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::E);

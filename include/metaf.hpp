@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase2";
+	inline static const char tag [] = "phase3";
 };
 
 class FixedGroup;
@@ -266,9 +266,14 @@ public:
 		return (!integer().has_value() &&
 			numerator().has_value() && denominator().has_value());
 	}
-	bool isReported() const {
+	bool isValue() const {
 		return (integer().has_value() ||
 				(numerator().has_value() && denominator().has_value()));
+	}
+	bool isReported() const {
+		return (isValue() || 
+			modifier() == Modifier::DISTANT || 
+			modifier() == Modifier::VICINITY);
 	}
 	bool hasInteger() const { return integer().has_value(); }
 	bool hasFraction() const { 
@@ -5862,6 +5867,7 @@ bool Parser::appendToLastResultGroup(ParseResult & result,
 	// Fallback group is for case 'when everything else fails' and must be
 	// used only if all parse attempts by other groups failed
 	if (std::holds_alternative<FallbackGroup>(result.groups.back().group)) return false;
+
 	GroupInfo & lastGroupInfo = result.groups.back();
 	Group lastGroup = lastGroupInfo.group;
 
@@ -5881,12 +5887,13 @@ bool Parser::appendToLastResultGroup(ParseResult & result,
 		return false;
 
 		case AppendResult::GROUP_INVALIDATED:
-		result.groups.pop_back();
-		addGroupToResult(result,
-			FallbackGroup(),
-			result.groups.back().reportPart,
-			std::move(result.groups.back().rawString));
-		return false;
+		{
+			std::string prevStr = std::move(result.groups.back().rawString);
+			const auto prevRp = result.groups.back().reportPart; 
+			result.groups.pop_back();
+			addGroupToResult(result, FallbackGroup(), prevRp, std::move(prevStr));
+			return false;
+		}
 	}
 }
 

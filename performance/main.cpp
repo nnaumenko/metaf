@@ -422,6 +422,7 @@ void printDataSize(){
 	printSize("Precipitation", sizeof(metaf::Precipitation));
 	printSize("SurfaceFriction", sizeof(metaf::SurfaceFriction));
 	printSize("WaveHeight", sizeof(metaf::WaveHeight));
+	printSize("WeatherPhenomena", sizeof(metaf::WeatherPhenomena));
 	cout << endl;
 	printSize("Group", sizeof(metaf::Group));
 	cout << endl;
