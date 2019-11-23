@@ -11,44 +11,69 @@
 static const auto margin = 0.01/2;
 
 TEST(PressureGroup, parseObservedInHg) {
-	const auto pg = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
-	ASSERT_TRUE(pg.has_value());
-	ASSERT_TRUE(pg->atmosphericPressure().pressure().has_value());
-	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
-	EXPECT_NEAR(pg->atmosphericPressure().pressure().value(), 27.24, margin);
-	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+	const auto pg1 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+	ASSERT_TRUE(pg1->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg1->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
+	EXPECT_NEAR(pg1->atmosphericPressure().pressure().value(), 27.24, margin);
+	EXPECT_EQ(pg1->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+
+	const auto pg2 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	ASSERT_TRUE(pg2->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg2->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
+	EXPECT_NEAR(pg2->atmosphericPressure().pressure().value(), 27.24, margin);
+	EXPECT_EQ(pg2->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
 }
 
 TEST(PressureGroup, parseObservedInHgNotReported) {
-	const auto pg = metaf::PressureGroup::parse("A////", metaf::ReportPart::METAR);
-	ASSERT_TRUE(pg.has_value());
-	EXPECT_FALSE(pg->atmosphericPressure().pressure().has_value());
-	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
-	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+	const auto pg1 = metaf::PressureGroup::parse("A////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_FALSE(pg1->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg1->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
+	EXPECT_EQ(pg1->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+
+	const auto pg2 = metaf::PressureGroup::parse("A////", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_FALSE(pg2->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg2->atmosphericPressure().unit(), metaf::Pressure::Unit::INCHES_HG);
+	EXPECT_EQ(pg2->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
 }
 
 TEST(PressureGroup, parseObservedHectopascal) {
-	const auto pg = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
-	ASSERT_TRUE(pg.has_value());
-	ASSERT_TRUE(pg->atmosphericPressure().pressure().has_value());
-	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
-	EXPECT_NEAR(pg->atmosphericPressure().pressure().value(), 1033, margin);
-	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+	const auto pg1 = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+	ASSERT_TRUE(pg1->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg1->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	EXPECT_NEAR(pg1->atmosphericPressure().pressure().value(), 1033, margin);
+	EXPECT_EQ(pg1->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+
+	const auto pg2 = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	ASSERT_TRUE(pg2->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg2->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	EXPECT_NEAR(pg2->atmosphericPressure().pressure().value(), 1033, margin);
+	EXPECT_EQ(pg2->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
 }
 
 TEST(PressureGroup, parseObservedHectopascalNotReported) {
-	const auto pg = metaf::PressureGroup::parse("Q////", metaf::ReportPart::METAR);
-	ASSERT_TRUE(pg.has_value());
-	EXPECT_FALSE(pg->atmosphericPressure().pressure().has_value());
-	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
-	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+	const auto pg1 = metaf::PressureGroup::parse("Q////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_FALSE(pg1->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg1->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	EXPECT_EQ(pg1->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+
+	const auto pg2 = metaf::PressureGroup::parse("Q////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_FALSE(pg2->atmosphericPressure().pressure().has_value());
+	EXPECT_EQ(pg2->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
+	EXPECT_EQ(pg2->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
 }
 
 TEST(PressureGroup, parseObservedWrongReportPart) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("Q1033", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("Q1033", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("Q1033", metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::PressureGroup::parse("Q1033", metaf::ReportPart::RMK).has_value());
 }
 
 TEST(PressureGroup, parseObservedWrongFormat) {

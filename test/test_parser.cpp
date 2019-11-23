@@ -306,7 +306,7 @@ TEST(ParserSyntaxMalformedReports, metarReportTooLarge) {
 		" RMK AO2 SLP195 T03110233 "
 	);
 	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
-	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::GROUP_LIMIT_EXCEEDED);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::REPORT_TOO_LARGE);
 }
 
 TEST(ParserSyntaxMalformedReports, tafReportTooLarge) {
@@ -337,38 +337,7 @@ TEST(ParserSyntaxMalformedReports, tafReportTooLarge) {
 		" TEMPO 1016/1018 24016G26KT"
 	);
 	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
-	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::GROUP_LIMIT_EXCEEDED);
-}
-
-TEST(ParserSyntaxMalformedReports, incompleteGroupAtTheEndOfReport) {
-	const auto result = metaf::Parser::parse(
-		"METAR LGRP 232250Z 13011G25KT 040V210 9999 FEW010 FEW018TCU "
-		"BKN020 15/12 Q1003 WS ALL"); //Correct group is WS ALL RWY
-	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
-	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
-	EXPECT_EQ(result.groups.size(), 11u);
-	EXPECT_TRUE(isMetar(result.groups.at(0).group));
-	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
-	EXPECT_TRUE(isLocation(result.groups.at(1).group));
-	EXPECT_EQ(result.groups.at(1).rawString, "LGRP");
-	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
-	EXPECT_EQ(result.groups.at(2).rawString, "232250Z");
-	EXPECT_TRUE(isWind(result.groups.at(3).group));
-	EXPECT_EQ(result.groups.at(3).rawString, "13011G25KT 040V210");
-	EXPECT_TRUE(isVisibility(result.groups.at(4).group));
-	EXPECT_EQ(result.groups.at(4).rawString, "9999");
-	EXPECT_TRUE(isCloud(result.groups.at(5).group));
-	EXPECT_EQ(result.groups.at(5).rawString, "FEW010");
-	EXPECT_TRUE(isCloud(result.groups.at(6).group));
-	EXPECT_EQ(result.groups.at(6).rawString, "FEW018TCU");
-	EXPECT_TRUE(isCloud(result.groups.at(7).group));
-	EXPECT_EQ(result.groups.at(7).rawString, "BKN020");
-	EXPECT_TRUE(isTemperature(result.groups.at(8).group));
-	EXPECT_EQ(result.groups.at(8).rawString, "15/12");
-	EXPECT_TRUE(isPressure(result.groups.at(9).group));
-	EXPECT_EQ(result.groups.at(9).rawString, "Q1003");
-	EXPECT_TRUE(isUnknown(result.groups.at(10).group));
-	EXPECT_EQ(result.groups.at(10).rawString, "WS ALL");
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::REPORT_TOO_LARGE);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1719,3 +1688,115 @@ TEST(ParserResultReportPartAndRawString, appendedRemarksWithInvalidatedGroups) {
 	EXPECT_EQ(result.groups.at(10).rawString, "TS/LTNG TO NE");
 	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::RMK);
 }
+
+TEST(ParserResultReportPartAndRawString, incompleteGroupAtTheEndOfReport) {
+	const auto result = metaf::Parser::parse(
+		"METAR LGRP 232250Z 13011G25KT 040V210 9999 FEW010 FEW018TCU "
+		"BKN020 15/12 Q1003 WS ALL"); //Correct group is WS ALL RWY
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+	EXPECT_EQ(result.groups.size(), 11u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group));
+	EXPECT_EQ(result.groups.at(1).rawString, "LGRP");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "232250Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isWind(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "13011G25KT 040V210");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isVisibility(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "9999");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "FEW010");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(result.groups.at(6).group));
+	EXPECT_EQ(result.groups.at(6).rawString, "FEW018TCU");
+	EXPECT_EQ(result.groups.at(6).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(result.groups.at(7).group));
+	EXPECT_EQ(result.groups.at(7).rawString, "BKN020");
+	EXPECT_EQ(result.groups.at(7).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isTemperature(result.groups.at(8).group));
+	EXPECT_EQ(result.groups.at(8).rawString, "15/12");
+	EXPECT_EQ(result.groups.at(8).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isPressure(result.groups.at(9).group));
+	EXPECT_EQ(result.groups.at(9).rawString, "Q1003");
+	EXPECT_EQ(result.groups.at(9).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isUnknown(result.groups.at(10).group));
+	EXPECT_EQ(result.groups.at(10).rawString, "WS ALL");
+	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::METAR);
+}
+
+TEST(ParserResultReportPartAndRawString, invalidatedGroupsFollowedByValidGroup) {
+	const auto result = metaf::Parser::parse(
+		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK TS/LTNG T00560028");
+	// TS/LTNG is recognised as the part of TS/LTNG TEMPO UNAVBL but then 
+	// reinterpreted as UnknownGroup when followed by valid temperature
+	// group T00560028 instead of TEMPO
+
+	EXPECT_EQ(result.groups.size(), 12u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "LMML");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "092045Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isWind(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "14004KT");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isVisibility(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "9999");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "FEW020");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isTemperature(result.groups.at(6).group));
+	EXPECT_EQ(result.groups.at(6).rawString, "25/21");
+	EXPECT_EQ(result.groups.at(6).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isPressure(result.groups.at(7).group));
+	EXPECT_EQ(result.groups.at(7).rawString, "Q1020");
+	EXPECT_EQ(result.groups.at(7).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isTrend(result.groups.at(8).group));
+	EXPECT_EQ(result.groups.at(8).rawString, "NOSIG");
+	EXPECT_EQ(result.groups.at(8).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isRmk(result.groups.at(9).group));
+	EXPECT_EQ(result.groups.at(9).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(9).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isUnknown(result.groups.at(10).group));
+	EXPECT_EQ(result.groups.at(10).rawString, "TS/LTNG");
+	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isTemperature(result.groups.at(11).group));
+	EXPECT_EQ(result.groups.at(11).rawString, "T00560028");
+	EXPECT_EQ(result.groups.at(11).reportPart, metaf::ReportPart::RMK);
+}
+

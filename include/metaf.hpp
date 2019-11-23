@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase3";
+	inline static const char tag [] = "phase4";
 };
 
 class FixedGroup;
@@ -629,6 +629,13 @@ public:
 	inline std::vector<Weather> weather() const;
 	Event event() const { return ev; }
 	std::optional<MetafTime> time() const { return tm; }
+	bool isOmmitted() const { 
+		return (w[0] == Weather::OMMITTED && 
+			qualifier() == Qualifier::NONE && 
+			descriptor() == Descriptor::NONE && 
+			event() == Event::NONE &&
+			!tm.has_value());
+	}
 	inline bool isValid() const;
 
 	WeatherPhenomena() = default;
@@ -648,7 +655,7 @@ public:
 private:
 	Qualifier q = Qualifier::NONE;
 	Descriptor d = Descriptor::NONE;
-	static const inline size_t wSize = 5;
+	static const inline size_t wSize = 3;
 	Weather w[wSize] = { Weather::OMMITTED };
 	Event ev = Event::NONE;
 	std::optional<MetafTime> tm;
@@ -705,7 +712,7 @@ enum class ReportError {
 	AMD_ALLOWED_IN_TAF_ONLY,
 	CNL_ALLOWED_IN_TAF_ONLY,
 	MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY,
-	GROUP_LIMIT_EXCEEDED
+	REPORT_TOO_LARGE
 };
 
 struct ReportMetadata {
@@ -1049,7 +1056,6 @@ public:
 	};
 	Amount amount() const { return amnt; }
 	Type type() const { return tp; }
-	WeatherPhenomena::Weather obscuration() const { return WeatherPhenomena::Weather::OMMITTED; }
 	inline Distance height() const;
 	inline Distance minHeight() const { return Distance(); }
 	inline Distance maxHeight() const { return Distance(); }
@@ -1070,7 +1076,6 @@ public:
 				amount() == Amount::BROKEN || 
 				amount() == Amount::OVERCAST);
 	}
-	bool isObscuration() const { return false; }
 	bool isValid() const { return heightOrVertVis.isValid(); }
 
 	CloudGroup () = default;
@@ -1094,18 +1099,12 @@ private:
 
 class WeatherGroup {
 public:
-	enum class Qualifier {
-		NONE,
-		RECENT,
-		VICINITY,
-		LIGHT,
-		MODERATE,
-		HEAVY
-	};
-	std::vector<WeatherPhenomena> weatherPhenomena() const { 
-		return std::vector<WeatherPhenomena>({w}); 
+	inline std::vector<WeatherPhenomena> weatherPhenomena() const;
+	bool isValid() const { 
+		for (auto i=0u; i < wSize; i++) 
+			if (!w[i].isOmmitted() && !w[i].isValid()) return false;
+		return true;
 	}
-	bool isValid() const { return w.isValid(); }
 
 	WeatherGroup() = default;
 	static inline std::optional<WeatherGroup> parse(
@@ -1119,7 +1118,8 @@ public:
 private:
 	inline bool isModerateQualifier() const;
 
-	WeatherPhenomena w;
+	static const inline size_t wSize = 10;
+	WeatherPhenomena w[wSize];
 
 	static inline WeatherGroup notReported();
 	static inline WeatherGroup notReportedRecent();
@@ -1601,9 +1601,23 @@ public:
 		//High clouds
 		CIRRUS,
 		CIRROSTRATUS,
-		CIRROCUMULUS
+		CIRROCUMULUS,
+		//Obscurations
+		BLOWING_SNOW,
+		BLOWING_DUST,
+		BLOWING_SAND,
+		ICE_CRYSTALS,
+		RAIN,
+		DRIZZLE,
+		SNOW,
+		ICE_PELLETS,
+		SMOKE,
+		FOG,
+		MIST,
+		HAZE
 	};
 	inline std::vector<std::pair<Type, unsigned int>> toVector() const;
+	Distance baseHeight() const { return bh; }
 	bool isValid() const { return true; }
 
 	CloudTypesGroup() = default;
@@ -1618,6 +1632,7 @@ private:
 	size_t cloudTypesSize = 0;
 	inline static const size_t cloudTypesMaxSize = 8;
 	std::pair<Type, unsigned int> cloudTypes[cloudTypesMaxSize];
+	Distance bh;
 
 	static inline std::optional<Type> typeFromString(std::string s);
 };
@@ -2972,10 +2987,10 @@ std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 	if (status() == Status::OMMITTED ||
 		status() == Status::NOT_REPORTED ||
-		status() == Status::VARIABLE) return metaf::Direction::Cardinal::NONE;
-	if (status() == Status::NDV) return metaf::Direction::Cardinal::NDV;
-	if (status() == Status::OVERHEAD) return metaf::Direction::Cardinal::OHD;
-	if (status() == Status::ALQDS) return metaf::Direction::Cardinal::ALQDS;
+		status() == Status::VARIABLE) return Direction::Cardinal::NONE;
+	if (status() == Status::NDV) return Direction::Cardinal::NDV;
+	if (status() == Status::OVERHEAD) return Direction::Cardinal::OHD;
+	if (status() == Status::ALQDS) return Direction::Cardinal::ALQDS;
 	if (trueDirections) {
 		if (dirDegrees == degreesTrueNorth) return Cardinal::TRUE_N;
 		if (dirDegrees == degreesTrueSouth) return Cardinal::TRUE_S;
@@ -4448,31 +4463,28 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 	// Not reported weather or recent weather is only allowed in METAR
 	if (reportPart == ReportPart::METAR) {
 		if (group == "RE//") {
-			result.w = WeatherPhenomena::notReported(true);
+			result.w[0] = WeatherPhenomena::notReported(true);
 			return result;
 		}
 		if (group == "//") {
-			result.w = WeatherPhenomena::notReported(false);
+			result.w[0] = WeatherPhenomena::notReported(false);
 			return result;
 		}
 	}
 
 	const auto wp = WeatherPhenomena::fromString(group, true);
-	if (!wp.has_value()) return notRecognised;
+	if (wp.has_value()) {
+		// RECENT and VICINITY qualifiers are not allowed in TAF
+		if (reportPart == ReportPart::TAF && 
+			wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) return notRecognised;
+		if (reportPart == ReportPart::TAF && 
+			wp->qualifier() == WeatherPhenomena::Qualifier::VICINITY) return notRecognised;
+		result.w[0] = wp.value();
+		return result;
+	}
+
+	return notRecognised;
 	
-	// RECENT and VICINITY qualifiers are not allowed in TAF
-	if (reportPart == ReportPart::TAF) {
-		switch (wp->qualifier()) {
-			case WeatherPhenomena::Qualifier::RECENT:
-			case WeatherPhenomena::Qualifier::VICINITY:
-			return notRecognised;
-
-			default: break;
-		}
-	} 
-
-	result.w = wp.value();
-	return result;
 }
 
 AppendResult WeatherGroup::append(const std::string & group,
@@ -4482,6 +4494,15 @@ AppendResult WeatherGroup::append(const std::string & group,
 	(void)reportMetadata; (void)group; (void)reportPart;
 	return AppendResult::NOT_APPENDED;
 }
+
+inline std::vector<WeatherPhenomena> WeatherGroup::weatherPhenomena() const {
+	std::vector<WeatherPhenomena> result;
+	for (auto i=0u; i < wSize; i++) {
+		if (!w[i].isOmmitted()) result.push_back(w[i]);
+	}
+	return result;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -4560,9 +4581,9 @@ std::optional<TemperatureForecastGroup> TemperatureForecastGroup::parse(
 	if (!std::regex_match(group, match, rgx)) return notRecognised;
 	auto point = pointFromString(match.str(matchPoint));
 	if (!point.has_value()) return notRecognised;
-	auto temp = metaf::Temperature::fromString(match.str(matchTemperature));
+	auto temp = Temperature::fromString(match.str(matchTemperature));
 	if (!temp.has_value()) return notRecognised;
-	auto time = metaf::MetafTime::fromStringDDHH(match.str(matchTime));
+	auto time = MetafTime::fromStringDDHH(match.str(matchTime));
 	if (!time.has_value()) return notRecognised;
 	TemperatureForecastGroup result;
 	result.p = point.value();
@@ -4587,30 +4608,32 @@ std::optional<PressureGroup> PressureGroup::parse(const std::string & group,
 {
 	(void)reportMetadata;
 	static const std::optional<PressureGroup> notRecognised;
-	if (reportPart == metaf::ReportPart::METAR) {
-		const auto pressure = metaf::Pressure::fromString(group);
-		if (!pressure.has_value()) return notRecognised;
-		PressureGroup result;
-		result.p = pressure.value();
-		result.t = Type::OBSERVED_QNH;
-		return result;
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::RMK) {
+		const auto pressure = Pressure::fromString(group);
+		if (pressure.has_value()) {
+			PressureGroup result;
+			result.p = pressure.value();
+			result.t = Type::OBSERVED_QNH;
+			return result;			
+		}
+		if (reportPart == ReportPart::METAR) return notRecognised;
 	}
-	if (reportPart == metaf::ReportPart::TAF) {
-		const auto pressure = metaf::Pressure::fromForecastString(group);
+	if (reportPart == ReportPart::TAF) {
+		const auto pressure = Pressure::fromForecastString(group);
 		if (!pressure.has_value()) return notRecognised;
 		PressureGroup result;
 		result.p = pressure.value();
 		result.t = Type::FORECAST_LOWEST_QNH;
 		return result;
 	}
-	if (reportPart == metaf::ReportPart::RMK) {
-		if (const auto pr = metaf::Pressure::fromSlpString(group); pr.has_value()) {
+	if (reportPart == ReportPart::RMK) {
+		if (const auto pr = Pressure::fromSlpString(group); pr.has_value()) {
 			PressureGroup result;
 			result.p = pr.value();
 			result.t = Type::OBSERVED_QNH;
 			return result;
 		}
-		if (const auto pr = metaf::Pressure::fromQfeString(group); pr.has_value()) {
+		if (const auto pr = Pressure::fromQfeString(group); pr.has_value()) {
 			PressureGroup result;
 			result.p = pr.value();
 			result.t = Type::OBSERVED_QFE;
@@ -4861,11 +4884,11 @@ std::optional<RainfallGroup> RainfallGroup::parse(const std::string & group,
 	static const auto matchLast10Minutes = 1, matchSince9AM = 2, matchLast60Minutes = 3;
 	std::smatch match;
 	if (!std::regex_match(group, match, rgx)) return notRecognised;
-	const auto last10min = metaf::Precipitation::fromRainfallString(match.str(matchLast10Minutes));
+	const auto last10min = Precipitation::fromRainfallString(match.str(matchLast10Minutes));
 	if (!last10min.has_value()) return notRecognised;
-	const auto since9AM = metaf::Precipitation::fromRainfallString(match.str(matchSince9AM));
+	const auto since9AM = Precipitation::fromRainfallString(match.str(matchSince9AM));
 	if (!since9AM.has_value()) return notRecognised;
-	const auto last60min = metaf::Precipitation::fromRainfallString(match.str(matchLast60Minutes));
+	const auto last60min = Precipitation::fromRainfallString(match.str(matchLast60Minutes));
 	if (!last60min.has_value()) return notRecognised;
 	RainfallGroup result;
 	result.last10m = last10min.value();
@@ -4890,14 +4913,14 @@ std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 {
 	(void)reportMetadata;
 	static const std::optional<SeaSurfaceGroup> notRecognised;
-	if (reportPart != metaf::ReportPart::METAR) return notRecognised;
+	if (reportPart != ReportPart::METAR) return notRecognised;
 	static const std::regex rgx ("W(\\d\\d|//)/([HS](?:\\d\\d?\\d?|///|/))");
 	static const auto matchTemp = 1, matchWaveHeight = 2;
 	std::smatch match;
 	if (!std::regex_match(group, match, rgx)) return notRecognised;
-	const auto temp = metaf::Temperature::fromString(match.str(matchTemp));
+	const auto temp = Temperature::fromString(match.str(matchTemp));
 	if (!temp.has_value()) return notRecognised;
-	const auto waveHeight = metaf::WaveHeight::fromString(match.str(matchWaveHeight));
+	const auto waveHeight = WaveHeight::fromString(match.str(matchWaveHeight));
 	if (!waveHeight.has_value()) return notRecognised;
 	SeaSurfaceGroup result;
 	result.t = temp.value();
@@ -5305,9 +5328,9 @@ std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 {
 	(void)reportMetadata;
 	std::optional<CloudTypesGroup> notRecognised;
-	//"(CB|TCU|CU|CF|SC|NS|ST|SF|AS|AC|ACC|CI|CS|CC|FU)(\\d)"
-	static const std::regex matchRgx("(?:[ACNST][BCFISTU][CU]?[1-8])+");
-	static const std::regex searchRgx("([ACNST][BCFISTU][CU]?)([1-8])");
+	//"(CB|TCU|CU|CF|SC|NS|ST|SF|AS|AC|ACC|CI|CS|CC|BLSN|BLDU|BLSA|IC|)(\\d)"
+	static const std::regex matchRgx("(?:(?:[A-Z]{2,4})[1-8])+");
+	static const std::regex searchRgx("([A-Z]{2,4})([1-8])");
 	static const auto matchType = 1, matchOkta = 2;
 
 	if (reportPart != ReportPart::RMK) return notRecognised;
@@ -5337,20 +5360,32 @@ AppendResult CloudTypesGroup::append(const std::string & group,
 }
 
 std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
-	if (s == "CB")  return Type::CUMULONIMBUS;
-	if (s == "TCU") return Type::TOWERING_CUMULUS;
-	if (s == "CU")  return Type::CUMULUS;
-	if (s == "CF")  return Type::CUMULUS_FRACTUS;
-	if (s == "SC")  return Type::STRATOCUMULUS;
-	if (s == "NS")  return Type::NIMBOSTRATUS;
-	if (s == "ST")  return Type::STRATUS;
-	if (s == "SF")  return Type::STRATUS_FRACTUS;
-	if (s == "AS")  return Type::ALTOSTRATUS;
-	if (s == "AC")  return Type::ALTOCUMULUS;
-	if (s == "ACC") return Type::ALTOCUMULUS_CASTELLANUS;
-	if (s == "CI")  return Type::CIRRUS;
-	if (s == "CS")  return Type::CIRROSTRATUS;
-	if (s == "CC")  return Type::CIRROCUMULUS;
+	if (s == "CB")    return Type::CUMULONIMBUS;
+	if (s == "TCU")   return Type::TOWERING_CUMULUS;
+	if (s == "CU")    return Type::CUMULUS;
+	if (s == "CF")    return Type::CUMULUS_FRACTUS;
+	if (s == "SC")    return Type::STRATOCUMULUS;
+	if (s == "NS")    return Type::NIMBOSTRATUS;
+	if (s == "ST")    return Type::STRATUS;
+	if (s == "SF")    return Type::STRATUS_FRACTUS;
+	if (s == "AS")    return Type::ALTOSTRATUS;
+	if (s == "AC")    return Type::ALTOCUMULUS;
+	if (s == "ACC")   return Type::ALTOCUMULUS_CASTELLANUS;
+	if (s == "CI")    return Type::CIRRUS;
+	if (s == "CS")    return Type::CIRROSTRATUS;
+	if (s == "CC")    return Type::CIRROCUMULUS;
+	if (s == "BLSN")  return Type::BLOWING_SNOW;
+	if (s == "BLDU")  return Type::BLOWING_DUST;
+	if (s == "BLSA")  return Type::BLOWING_SAND;
+	if (s == "IC")    return Type::ICE_CRYSTALS;
+	if (s == "RA")    return Type::RAIN;
+	if (s == "DZ")    return Type::DRIZZLE;
+	if (s == "SN")    return Type::SNOW;
+	if (s == "PL")    return Type::ICE_PELLETS;
+	if (s == "FU")    return Type::SMOKE;
+	if (s == "FG")    return Type::FOG;
+	if (s == "BR")    return Type::MIST;
+	if (s == "HZ")    return Type::HAZE;
 	return std::optional<CloudTypesGroup::Type>();
 }
 
@@ -5823,7 +5858,7 @@ ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
 					group = GroupParser::parse(groupStr, reportPart, reportMetadata);
 					status.transition(getSyntaxGroup(group));
 					groupCount++;
-					if (groupCount >= groupLimit) status.setError(ReportError::GROUP_LIMIT_EXCEEDED);
+					if (groupCount >= groupLimit) status.setError(ReportError::REPORT_TOO_LARGE);
 				} while(status.isReparseRequired()  && !status.isError());
 				// Update report metadata, e.g. set global report release time which can 
 				// be used by other groups (for example by PK WND group if hour is not specified)
@@ -5836,7 +5871,7 @@ ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
 			} else {
 				// Raw string was appended to the group, just increase group count
 				groupCount++;
-				if (groupCount >= groupLimit) status.setError(ReportError::GROUP_LIMIT_EXCEEDED);
+				if (groupCount >= groupLimit) status.setError(ReportError::REPORT_TOO_LARGE);
 			}
 		}
 		

@@ -923,7 +923,7 @@ std::string VisitorExplain::visitCloudTypesGroup(
 	const auto clouds = group.toVector();
 	for (auto i = 0u; i < clouds.size(); i++) {
 		if (i == 0u) {
-			result << "Lowest cloud layer: ";
+			result << "Lowest cloud layer or obscuration: ";
 		} else {
 			result << "Next cloud layer: ";
 		}
@@ -1188,19 +1188,19 @@ std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportEr
 
 		case metaf::ReportError::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 		return "unexpected NIL or CNL in report body";
-				
+
 		case metaf::ReportError::AMD_ALLOWED_IN_TAF_ONLY:
 		return "AMD is allowed only in TAF reports";
-				
+
 		case metaf::ReportError::CNL_ALLOWED_IN_TAF_ONLY:
 		return "CNL is allowed only in TAF reports";
-				
+
 		case metaf::ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
 		return "Maintenance indicator is allowed only in METAR reports";
-				
-		case metaf::ReportError::GROUP_LIMIT_EXCEEDED:
+
+		case metaf::ReportError::REPORT_TOO_LARGE:
 		return "Report has too many groups";
-				
+
 		default: 
 		return "unknown error";
 	}
@@ -2312,9 +2312,42 @@ std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type 
 		case metaf::CloudTypesGroup::Type::CIRROSTRATUS:
 		return "cirrostratus";
 		
-		case metaf::CloudTypesGroup::Type::CIRROCUMULUS:
-		return "cirrocumulus";
-		
+		case metaf::CloudTypesGroup::Type::BLOWING_SNOW:
+		return "blowing snow";
+
+		case metaf::CloudTypesGroup::Type::BLOWING_DUST:
+		return "blowing dust";
+
+		case metaf::CloudTypesGroup::Type::BLOWING_SAND:
+		return "blowing sand";
+
+		case metaf::CloudTypesGroup::Type::ICE_CRYSTALS:
+		return "ice crystals";
+
+		case metaf::CloudTypesGroup::Type::RAIN:
+		return "rain";
+
+		case metaf::CloudTypesGroup::Type::DRIZZLE:
+		return "drizzle";
+
+		case metaf::CloudTypesGroup::Type::SNOW:
+		return "snow";
+
+		case metaf::CloudTypesGroup::Type::ICE_PELLETS:
+		return "ice pellets";
+
+		case metaf::CloudTypesGroup::Type::SMOKE:
+		return "smoke";
+
+		case metaf::CloudTypesGroup::Type::FOG:
+		return "fog";
+
+		case metaf::CloudTypesGroup::Type::MIST:
+		return "mist";
+
+		case metaf::CloudTypesGroup::Type::HAZE:
+		return "haze";
+
 		default:
 		return "[unknown cloud type]";
 	}

@@ -975,7 +975,7 @@ WeatherPhenomena
 
 		.. cpp:enumerator:: BLOWING
 
-			When dust, sand, snow, and/or spray is raised by the wind to a height of 6 feet or more, "blowing" shall be used to further describe the weather phenomenon.
+			When dust, sand, snow, or spray is raised by the wind to a height of 6 feet or more, "blowing" shall be used to further describe the weather phenomenon.
 
 		.. cpp:enumerator:: SHOWERS
 
@@ -1143,6 +1143,13 @@ WeatherPhenomena
 	.. cpp:function:: std::optional<MetafTime> time() const
 
 		:returns: Time of the event or empty ``std::optional`` if no event time was specified.
+
+	**Miscellaneous**
+
+		.. cpp:function:: bool isOmmitted() const
+
+			:returns: ``true`` if no qualifier, no descriptor, no weather phenomena, no event and no event time is stored in this instance, ``false`` if any of these conditions is not met.
+
 
 	**Validating**
 
@@ -1836,10 +1843,6 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: Significant convective type of cloud layer.
 
-		Weather obscuration() const
-
-			:returns: :cpp:enumerator:`Weather::OMMITTED` if this groups stores information on the cloud layer, vertical visibility or clear sky condition; obscuration type from :cpp:enum:`Weather` if this group reports a cloud-like obscuration (mist, fog, smoke, etc.).
-
 		.. cpp:function:: Distance height() const
 
 			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
@@ -1870,10 +1873,6 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
 
-		.. cpp:function:: bool isObscuration() const
-
-			:returns: ``true`` if this group contains an information on cloud-like obscuration, and ``false`` otherwise.
-
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
@@ -1899,8 +1898,6 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 		.. cpp:function:: std::vector<WeatherPhenomena> weatherPhenomena() const
 
 			:returns: The vector or weather phenomena; each :cpp:class:`metaf::WeatherPhenomena` includes qualifier, descriptor and weather phenomena reported in this group.
-
-			.. note:: Currently this method always returns a vector of a single element only.
 
 	**Validating**
 
@@ -2828,7 +2825,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: cloudtypesgroup.svg
 
-Example of the raw report data is ``AC1CI1``, and ``SC1SC1SC3AC2``.
+Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3`` and ``SC1SC1SC3AC2``.
 
 .. cpp:class:: CloudTypesGroup
 
@@ -2836,7 +2833,9 @@ Example of the raw report data is ``AC1CI1``, and ``SC1SC1SC3AC2``.
 
 	.. cpp:enum-class:: Type
 
-		Type of clouds:
+		Type of clouds.
+
+		.. note:: Weather phenomena causing obscuration such as rain, fog, blowing snow, etc. used in Canada in addition to clouds.
 
 		.. cpp:enumerator:: CUMULONIMBUS
 
@@ -2894,13 +2893,65 @@ Example of the raw report data is ``AC1CI1``, and ``SC1SC1SC3AC2``.
 
 			Cirrostratus clouds.
 
+		.. cpp:enumerator:: BLOWING_SNOW
+
+			Blowing snow (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_DUST
+
+			Blowing dust (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_SAND
+
+			Blowing sand (used only in Canada).
+
+		.. cpp:enumerator:: ICE_CRYSTALS
+
+			Ice crystals (used only in Canada).
+
+		.. cpp:enumerator:: RAIN
+
+			Rain (used only in Canada).
+
+		.. cpp:enumerator:: DRIZZLE
+
+			Drizzle (used only in Canada).
+
+		.. cpp:enumerator:: SNOW
+
+			Snow falling from the clouds (used only in Canada).
+
+		.. cpp:enumerator:: ICE_PELLETS
+
+			Ice pellets (used only in Canada).
+
+		.. cpp:enumerator:: SMOKE
+
+			Smoke (used only in Canada).
+
+		.. cpp:enumerator:: FOG
+
+			Fog (used only in Canada).
+
+		.. cpp:enumerator:: MIST
+
+			Mist (used only in Canada).
+
+		.. cpp:enumerator:: HAZE
+
+			Haze (used only in Canada).
+
 	**Acquiring group data**
 
 		.. cpp:function:: std::vector<std::pair<Type, unsigned int>> toVector() const
 
 			:returns: A vector of pairs Type/okta, i.e. types of clouds forming cloud layers and associated sky coverage for each layer. Sky coverage is reported in oktas or 1/8s, e.g. 1 okta means that cloud layer covers 1/8 of sky and 8 okta means that cloud layer covers entire sky (8/8 of sky).
 
-		.. note:: Sum of oktas for all layers may exceed 8 octa if higher cloud layer is observed through the gaps in the lower cloud layer.
+			.. note:: Sum of oktas for all layers may exceed 8 octa if higher cloud layer is observed through the gaps in the lower cloud layer.
+
+		.. cpp:function:: Distance baseHeight() const
+
+			:returns: Height of the base of the cloud layer, if a single cloud layer along with its base height is reported. In current version always returns a non-reported value.
 
 	**Validating**
 

@@ -71,6 +71,9 @@ std::string errorMessage(ReportError error) {
 
 		case ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
 		return "Maintenance indicator is allowed only in METAR reports";
+
+		case ReportError::REPORT_TOO_LARGE:
+		return "Report has too many groups and may be corrupted";
 	}
 }
 
