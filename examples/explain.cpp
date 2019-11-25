@@ -561,6 +561,19 @@ std::string VisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group,
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	switch (group.type()) {
+		case metaf::WeatherGroup::Type::CURRENT: 
+		result << "Weather phenomena:";
+		break;
+		
+		case metaf::WeatherGroup::Type::RECENT: 
+		result << "Recent weather:"; break;
+		
+		case metaf::WeatherGroup::Type::EVENT: 
+		result << "Precipitation beginning/ending time:"; break;
+	}
+	result << lineBreak;
+
 	const auto phenomena = group.weatherPhenomena();
 	for (const auto p : phenomena) {
 		result << explainWeatherPhenomena(p) << lineBreak;
@@ -1518,11 +1531,6 @@ std::string VisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeig
 
 std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomena & wp) {
 	std::ostringstream result;
-	if (wp.qualifier() != metaf::WeatherPhenomena::Qualifier::RECENT) {
-		result << "Weather phenomena: ";
-	} else {
-		result << "Recent weather: ";
-	}
 
 	if (const auto weatherStr = specialWeatherPhenomenaToString(wp); 
 		!weatherStr.empty()) {
@@ -1562,6 +1570,25 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 		result << "thunderstorm ";
 	}
 	if (vicinity) result << "in vicinity (5 to 10 miles away)";
+
+	const auto time = wp.time();
+	switch (wp.event()){
+		case metaf::WeatherPhenomena::Event::BEGINNING:
+		if (!time.has_value()) break;
+		result << " began: ";
+		result << explainMetafTime(wp.time().value());
+		break;
+
+		case metaf::WeatherPhenomena::Event::ENDING:
+		if (!time.has_value()) break;
+		result << " ended: ";
+		result << explainMetafTime(wp.time().value());
+		break;
+
+		case metaf::WeatherPhenomena::Event::NONE:
+		break;
+	}
+
 	return result.str();
 }
 

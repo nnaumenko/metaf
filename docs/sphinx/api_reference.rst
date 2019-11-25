@@ -1887,17 +1887,39 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: weathergroup.svg
 
-Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, etc.
+Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, ``RAB12``, ``RAB1153E1158DZB04``, ``RAE31SNB04PLB04E15`` etc.
 
 .. cpp:class:: WeatherGroup
 
 	Stores information about recent or current weather phenomena.
 
+	.. cpp:enum-class:: Type
+
+		What kind weather information this group represents.
+
+		.. cpp:enumerator::	CURRENT
+
+			Current weather information is stored in this group.
+
+		.. cpp:enumerator:: RECENT
+
+			Recent weather information is stored in this group.
+
+		.. cpp:enumerator:: EVENT
+
+			Time of beginning or ending of weather phenomena is stored in this group.
+
+
 	**Acquiring group data**
+
+		.. cpp:function:: Type type() const;
+
+			:returns: What kind of weather information stored in this group; current weather, recent weather, weather event (beginning and ending times of weather phenomena).
 
 		.. cpp:function:: std::vector<WeatherPhenomena> weatherPhenomena() const
 
 			:returns: The vector or weather phenomena; each :cpp:class:`metaf::WeatherPhenomena` includes qualifier, descriptor and weather phenomena reported in this group.
+
 
 	**Validating**
 

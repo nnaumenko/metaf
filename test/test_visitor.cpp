@@ -284,7 +284,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 13);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 14);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 28);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 11);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 8);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureGroup>()]), 13);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureForecastGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 16);

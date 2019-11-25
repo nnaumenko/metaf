@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase4";
+	inline static const char tag [] = "phase5";
 };
 
 class FixedGroup;
@@ -1099,6 +1099,12 @@ private:
 
 class WeatherGroup {
 public:
+	enum class Type {
+		CURRENT,
+		RECENT,
+		EVENT,
+	};
+	Type type() const { return t; }
 	inline std::vector<WeatherPhenomena> weatherPhenomena() const;
 	bool isValid() const { 
 		for (auto i=0u; i < wSize; i++) 
@@ -1116,13 +1122,21 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
-	inline bool isModerateQualifier() const;
+	inline bool addWeatherPhenomena(const WeatherPhenomena & wp);
 
+	Type t = Type::CURRENT;
 	static const inline size_t wSize = 10;
 	WeatherPhenomena w[wSize];
 
 	static inline WeatherGroup notReported();
 	static inline WeatherGroup notReportedRecent();
+
+	static inline std::optional<WeatherPhenomena> parseWeatherWithoutEvent(
+		const std::string & group, 
+		ReportPart reportPart);
+	static inline std::optional<WeatherGroup> parseWeatherEvent(
+		const std::string & group, 
+		const MetafTime & reportTime);
 };
 
 class TemperatureGroup {
@@ -3656,7 +3670,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 	WeatherPhenomena result;
 
 	if (const auto phstr = match.str(matchPhenomena); !phstr.empty()) {
-		const auto ph = WeatherPhenomena::fromString(phstr);
+		const auto ph = fromString(phstr);
 		if (!ph.has_value()) return error;
 		result = ph.value();
 	} else {
@@ -4454,44 +4468,40 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata;
 	std::optional<WeatherGroup> notRecognised;
-	if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return notRecognised;
-
-	WeatherGroup result;
-
-	// Not reported weather or recent weather is only allowed in METAR
-	if (reportPart == ReportPart::METAR) {
-		if (group == "RE//") {
-			result.w[0] = WeatherPhenomena::notReported(true);
-			return result;
-		}
-		if (group == "//") {
-			result.w[0] = WeatherPhenomena::notReported(false);
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
+		if (const auto wp = parseWeatherWithoutEvent(group, reportPart); wp.has_value()) {
+			WeatherGroup result;
+			result.w[0] = wp.value();
+			if (wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) result.t = Type::RECENT;
 			return result;
 		}
 	}
-
-	const auto wp = WeatherPhenomena::fromString(group, true);
-	if (wp.has_value()) {
-		// RECENT and VICINITY qualifiers are not allowed in TAF
-		if (reportPart == ReportPart::TAF && 
-			wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) return notRecognised;
-		if (reportPart == ReportPart::TAF && 
-			wp->qualifier() == WeatherPhenomena::Qualifier::VICINITY) return notRecognised;
-		result.w[0] = wp.value();
-		return result;
+	if (reportPart == ReportPart::RMK) {
+		if (!reportMetadata.reportTime.has_value()) return notRecognised;
+		return parseWeatherEvent(group, reportMetadata.reportTime.value());
 	}
-
 	return notRecognised;
-	
 }
 
 AppendResult WeatherGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)group; (void)reportPart;
+	(void)reportMetadata;
+	if (type() == Type::EVENT) return AppendResult::NOT_APPENDED;
+
+	const auto wp = parseWeatherWithoutEvent(group, reportPart);
+	if (wp.has_value()) {
+		// Recent weather cannot be appended to current weather and vice versa
+		if (type() == Type::CURRENT && 
+			wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) return AppendResult::NOT_APPENDED;
+		if (type() == Type::RECENT && 
+			wp->qualifier() != WeatherPhenomena::Qualifier::RECENT) return AppendResult::NOT_APPENDED;
+
+		if (!addWeatherPhenomena(wp.value())) return AppendResult::NOT_APPENDED;
+		return AppendResult::APPENDED;
+	}
 	return AppendResult::NOT_APPENDED;
 }
 
@@ -4503,6 +4513,68 @@ inline std::vector<WeatherPhenomena> WeatherGroup::weatherPhenomena() const {
 	return result;
 }
 
+std::optional<WeatherPhenomena> WeatherGroup::parseWeatherWithoutEvent(
+	const std::string & group, 
+	ReportPart reportPart)
+{
+	std::optional<WeatherPhenomena> notRecognised;
+	if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return notRecognised;
+	// Not reported weather or recent weather is only allowed in METAR
+	if (reportPart == ReportPart::METAR) {
+		if (group == "RE//") return WeatherPhenomena::notReported(true);
+		if (group == "//") return WeatherPhenomena::notReported(false);
+	}
+	const auto wp = WeatherPhenomena::fromString(group, true);
+	if (!wp.has_value()) return notRecognised;
+	// RECENT and VICINITY qualifiers are not allowed in TAF
+	if (reportPart == ReportPart::TAF &&
+		(wp->qualifier() == WeatherPhenomena::Qualifier::RECENT || 
+		 wp->qualifier() == WeatherPhenomena::Qualifier::VICINITY)) return notRecognised; 
+	return wp;
+}
+
+std::optional<WeatherGroup> WeatherGroup::parseWeatherEvent(const std::string & group, 
+	const MetafTime & reportTime) 
+{
+	std::optional<WeatherGroup> notRecognised;
+	int eventStartPos = 0;
+	bool lastDigit = false;
+	WeatherPhenomena previousWeather;
+	WeatherGroup result;
+	result.t = Type::EVENT;
+	for (auto i = 0u; i < group.length(); i++) {
+		// Split group into weather event strings
+		// Assuming that weather event always has digits at the end
+		const bool currDigit = (group[i] >= '0' && group[i] <= '9');
+		if (!currDigit && lastDigit) {
+			// i is the position after the last digit from eventStartPos
+			const auto eventLen = i - eventStartPos;
+			if (const auto minEventLen = 5; eventLen < minEventLen) return notRecognised;
+			const std::string s = group.substr(eventStartPos, eventLen);
+			const auto w = 
+				WeatherPhenomena::fromWeatherBeginEndString(s, reportTime, previousWeather);
+			if (!w.has_value()) return notRecognised;
+			result.addWeatherPhenomena(w.value());
+			eventStartPos = i;
+			previousWeather = w.value();
+		}
+		lastDigit = currDigit;
+	}
+	// Last weather event in the string ends with a digit is not be detected in the loop  
+	const std::string s = group.substr(eventStartPos);
+	const auto w = 
+		WeatherPhenomena::fromWeatherBeginEndString(s, reportTime, previousWeather);
+	if (!w.has_value()) return notRecognised;
+	result.addWeatherPhenomena(w.value());
+	return result;	
+}
+
+
+bool WeatherGroup::addWeatherPhenomena(const WeatherPhenomena & wp) {
+	for (auto i = 0u; i < wSize; i++)
+		if (w[i].isOmmitted()) { w[i] = wp; return true; }
+	return false;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 

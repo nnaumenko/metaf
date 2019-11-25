@@ -432,8 +432,6 @@ std::vector<int> weatherFromWeatherPhenomena(
 {
 	std::vector<int> result;
 
-	if (qualifier == metaf::WeatherPhenomena::Qualifier::RECENT) return result;
-
 	if (qualifier == metaf::WeatherPhenomena::Qualifier::VICINITY) {
 		const auto w = 
 			weather.empty() ? metaf::WeatherPhenomena::Weather::NOT_REPORTED : weather[0];
@@ -521,7 +519,9 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 			}
 		}
 
-		if (const auto gr = std::get_if<metaf::WeatherGroup>(&metarGroup); gr) {
+		if (const auto gr = std::get_if<metaf::WeatherGroup>(&metarGroup); 
+			gr && gr->type() == metaf::WeatherGroup::Type::CURRENT)
+		{
 			const auto weatherPhenomenaVector = gr->weatherPhenomena();
 			for (const auto wp : weatherPhenomenaVector) {
 				const auto weather = weatherFromWeatherPhenomena(
