@@ -729,23 +729,31 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
-		case metaf::SecondaryLocationGroup::Type::INCOMPLETE:
-		result << "These groups were recognised by parser as ";
-		result << "an information about secondary location but ";
-		result << "some of the text appears missing.";
-		break;
-
 		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
 		result << "Wind shear significant to aircraft operations ";
 		result << "is present along the take-off path or approach path ";
 		result << "between runway level and 500 metres (1 600 ft)";
-		if (const auto rw = group.runway(); rw.has_value()) {
-			result << " at " << explainRunway(rw.value());
-		}
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::CEILING:
+		result << "Ceiling height " << explainDistance(group.height());
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING:
+		result << "Ceiling height is variable between ";
+		result << explainDistance(group.minHeight());
+		result << " and ";
+		result << explainDistance(group.maxHeight());
 		break;
 
 		default:
 		result << "[unknown secondary location info]";
+	}
+	if (const auto rw = group.runway(); rw.has_value()) {
+		result << " at " << explainRunway(rw.value());
+	}
+	if (const auto d = group.direction(); d.has_value()) {
+		result << " towards " << explainDirection(d.value());
 	}
 	return result.str();
 }
@@ -1769,6 +1777,15 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 
 		case metaf::CloudGroup::Amount::OBSCURED:
 		return "Sky obscured";
+
+		case metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED:
+		return "Sky cover variable between few and scattered clouds (sky coverage variable between 1/8 and 4/8)";
+
+		case metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN:
+		return "Sky cover variable between scattered and broken clouds (sky coverage variable between 3/8 and 7/8)";
+
+		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
+		return "Sky cover variable between broken clouds and overcast (sky coverage variable between 5/8 and 8/8)";
 
 		default: 
 		return "Unknown cloud amound";

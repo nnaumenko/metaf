@@ -1813,6 +1813,19 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			Sky obscured; vertical visibility reported instead.
 
+		.. cpp:enumerator:: VARIABLE_FEW_SCATTERED
+
+			Cloud cover is variable between :cpp:enumerator:`FEW` and  :cpp:enumerator:`SCATTERED`.
+
+		.. cpp:enumerator:: VARIABLE_SCATTERED_BROKEN
+
+			Cloud cover is variable between :cpp:enumerator:`SCATTERED` and  :cpp:enumerator:`BROKEN`.
+
+		.. cpp:enumerator:: VARIABLE_BROKEN_OVERCAST
+
+			Cloud cover is variable between :cpp:enumerator:`BROKEN` and  :cpp:enumerator:`OVERCAST`.
+
+
 	.. cpp:enum-class:: Type
 
 		Significant convective type of the cloud.
@@ -1846,14 +1859,6 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 		.. cpp:function:: Distance height() const
 
 			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
-
-		.. cpp:function:: Distance minHeight() const
-
-			:returns: Minimum cloud base height if cloud base height is variable. Currently always returns a non-reported value.
-
-		.. cpp:function:: Distance maxHeight() const
-
-			:returns: Maximum cloud base height if cloud base height is variable. Currently always returns a non-reported value.
 
 		.. cpp:function:: Distance verticalVisibility() const
 
@@ -2307,7 +2312,7 @@ The following syntax corresponds to this group in METAR reports.
 
 .. image:: secondarylocationgroup.svg
 
-Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
+Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``CIG 025 RWY05``, and ``CIG 006V012``.
 
 .. cpp:class:: SecondaryLocationGroup
 
@@ -2317,13 +2322,18 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
 		Type of information actually stored. 
 
-		.. cpp:enumerator:: INCOMPLETE
-
-			One or more groups have been recognised by the parser but the end of the report was reached unexpectedly.
-
 		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
 
 			This group indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways.
+
+		.. cpp:enumerator:: CEILING
+
+			This group indicates the ceiling height. Use :cpp:func:``height()`` to get ceiling height.
+
+		.. cpp:enumerator:: VARIABLE_CEILING
+
+			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed.
+
 
 	**Acquiring group data**
 
@@ -2335,9 +2345,21 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, and ``WS ALL RWY``.
 
 		:returns: Direction data if this secondary location is a cardinal direction, and empty ``std::optional`` otherwise.
 
-	.. cpp:function:: std::string incompleteText() const
+	.. cpp:function:: Distance height() const
 
-		:returns: Raw string of groups partially recognised by parser as a secondary location group, or empty string if the group is not an incomplete one (i.e. return value of :cpp:func:`type()` is other than :cpp:enumerator:`Type::INCOMPLETE`).
+		:returns: Height (e.g. ceiling height for a runway or aerodrome). Currently always returns a non-reported value.
+
+	.. cpp:function:: Distance minHeight() const
+
+		:returns: Minimum height (e.g. minimum ceiling height for a variable ceiling). Currently always returns a non-reported value.
+
+	.. cpp:function:: Distance maxHeight() const
+
+		:returns: Maximum height (e.g. maximum ceiling height for a variable ceiling). Currently always returns a non-reported value.
+
+	.. cpp:function:: Distance visibility() const
+
+		:returns: Currently always return a non-reported Distance value.
 
 	**Validating**
 

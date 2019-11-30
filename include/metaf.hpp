@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase5";
+	inline static const char tag [] = "phase6";
 };
 
 class FixedGroup;
@@ -1046,7 +1046,10 @@ public:
 		SCATTERED,
 		BROKEN,
 		OVERCAST,
-		OBSCURED
+		OBSCURED,
+		VARIABLE_FEW_SCATTERED,
+		VARIABLE_SCATTERED_BROKEN,
+		VARIABLE_BROKEN_OVERCAST
 	};
 	enum class Type {
 		NOT_REPORTED,
@@ -1057,8 +1060,6 @@ public:
 	Amount amount() const { return amnt; }
 	Type type() const { return tp; }
 	inline Distance height() const;
-	inline Distance minHeight() const { return Distance(); }
-	inline Distance maxHeight() const { return Distance(); }
 	Distance verticalVisibility() const {
 		if (amount() != Amount::OBSCURED) return heightNotReported;
 		return heightOrVertVis;
@@ -1070,12 +1071,7 @@ public:
 				amount() == Amount::NCD || 
 				amount() == Amount::NSC);
 	}
-	bool isCloudLayer() const {
-		return (amount() == Amount::FEW || 
-				amount() == Amount::SCATTERED ||
-				amount() == Amount::BROKEN || 
-				amount() == Amount::OVERCAST);
-	}
+	inline bool isCloudLayer() const;
 	bool isValid() const { return heightOrVertVis.isValid(); }
 
 	CloudGroup () = default;
@@ -1092,9 +1088,20 @@ private:
 	Type tp = Type::NONE;
 	static const inline auto heightNotReported = Distance(Distance::Unit::FEET);
 
+	enum class IncompleteType {
+		NONE,
+		EXPECT_V,
+		EXPECT_SECOND_AMOUNT
+	};
+	IncompleteType incompleteType = IncompleteType::NONE;
+
 	CloudGroup(Amount a) : amnt(a) {}
+	static inline std::optional<CloudGroup> parseCloudLayer(const std::string & s);
+	static inline std::optional<CloudGroup> parseVariableCloudLayer(const std::string & s);
 	static inline std::optional<Amount> amountFromString(const std::string & s);
 	static inline std::optional<Type> typeFromString(const std::string & s);
+
+	static inline std::optional<Amount> variableAmount(Amount first, Amount second);
 };
 
 class WeatherGroup {
@@ -1342,12 +1349,17 @@ private:
 class SecondaryLocationGroup {
 public:
 	enum class Type {
-		INCOMPLETE,
-		WIND_SHEAR_IN_LOWER_LAYERS
+		WIND_SHEAR_IN_LOWER_LAYERS,
+		CEILING,
+		VARIABLE_CEILING
 	};
 	Type type() const { return t; }
 	std::optional<Runway> runway() const { return rw; }
 	std::optional<Direction> direction() const { return dir; }
+	Distance height() const { return h; }
+	Distance minHeight() const { return minH; }
+	Distance maxHeight() const { return maxH; }
+	Distance visibility() const { return vis; }
 	inline bool isValid() const;
 
 	SecondaryLocationGroup() = default;
@@ -1361,14 +1373,21 @@ public:
 private:
 
 	enum class IncompleteText {
+		NONE,
 		WS,
 		WS_ALL,
+		CIG,
+		CIG_NUM,
 	};
 	IncompleteText incompleteText;
 
 	Type t;
 	std::optional<Runway> rw;
 	std::optional<Direction> dir;
+	Distance h;
+	Distance minH;
+	Distance maxH;
+	Distance vis;
 };
 
 class RainfallGroup {
@@ -4389,21 +4408,68 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
+	if (reportPart == ReportPart::METAR || 
+		reportPart == ReportPart::TAF) return parseCloudLayer(group); 
+	if (reportPart == ReportPart::RMK) return parseVariableCloudLayer(group); 
+	return std::optional<CloudGroup>();
+}
+
+AppendResult CloudGroup::append(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void)reportMetadata; (void)reportPart;
+
+	switch (incompleteType) {
+		case IncompleteType::NONE:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteType::EXPECT_V:
+		if (group == "V") { 
+			incompleteType = IncompleteType::EXPECT_SECOND_AMOUNT;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::EXPECT_SECOND_AMOUNT:
+		if (const auto newAmount = amountFromString(group); newAmount.has_value()) {
+			if (newAmount.value() == CloudGroup::Amount::OBSCURED ||
+				newAmount.value() == CloudGroup::Amount::NOT_REPORTED) return AppendResult::GROUP_INVALIDATED; 
+			const auto varAmount = variableAmount(amount(), newAmount.value());
+			if (!varAmount.has_value()) return AppendResult::GROUP_INVALIDATED;
+			amnt = varAmount.value();
+			incompleteType = IncompleteType::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;		
+	}
+}
+
+std::optional<CloudGroup::Amount> CloudGroup::variableAmount(Amount first, Amount second) {
+	if (first == Amount::FEW && second == Amount::SCATTERED) 
+		return Amount::VARIABLE_FEW_SCATTERED;
+	if (first == Amount::SCATTERED && second == Amount::BROKEN) 
+		return Amount::VARIABLE_SCATTERED_BROKEN;
+	if (first == Amount::BROKEN && second == Amount::OVERCAST) 
+		return Amount::VARIABLE_BROKEN_OVERCAST;
+	return std::optional<Amount>();
+}
+
+
+std::optional<CloudGroup> CloudGroup::parseCloudLayer(const std::string & s) {
 	static const std::optional<CloudGroup> notRecognised;
-	if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return notRecognised;
 	// Attempt to parse fixed groups
-	if (group == "NCD") return CloudGroup(Amount::NCD);
-	if (group == "NSC") return CloudGroup(Amount::NSC);
-	if (group == "CLR") return CloudGroup(Amount::NONE_CLR);
-	if (group == "SKC") return CloudGroup(Amount::NONE_SKC);
-	if (group == "NCD") return CloudGroup(Amount::NCD);
-	// Attempt to parse vertical visibility (format VVxxx)
+	if (s == "NCD") return CloudGroup(Amount::NCD);
+	if (s == "NSC") return CloudGroup(Amount::NSC);
+	if (s == "CLR") return CloudGroup(Amount::NONE_CLR);
+	if (s == "SKC") return CloudGroup(Amount::NONE_SKC);
+	if (s == "NCD") return CloudGroup(Amount::NCD);
+	//Attempt to parse cloud layer or vertical visibility
 	std::smatch match;
-	// Attempt to parse
 	static const std::regex rgx(
-		"([BFOSV][CEKV][CNTW]?|///)(\\d\\d\\d|///)([CT][BC][U]?|///)?");
+		"([A-Z][A-Z][A-Z]?|///)(\\d\\d\\d|///)([CT][BC][U]?|///)?");
 	static const auto matchAmount = 1, matchHeight = 2, matchType = 3;
-	if (!std::regex_match(group, match, rgx)) return notRecognised;
+	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	if (!amount.has_value()) return notRecognised;
@@ -4422,12 +4488,30 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 	return result;
 }
 
-AppendResult CloudGroup::append(const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
+std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string & s) {
+	static const std::optional<CloudGroup> notRecognised;
+
+	std::smatch match;
+	static const std::regex rgx(
+		"([A-Z][A-Z][A-Z])(\\d\\d\\d)?");
+	static const auto matchAmount = 1, matchHeight = 2;
+	if (!std::regex_match(s, match, rgx)) return notRecognised;
+
+	CloudGroup result;
+	result.incompleteType = IncompleteType::EXPECT_V;
+
+	const auto amount = amountFromString(match.str(matchAmount));
+	// Not checking for VV here because 3-char amount length guaranteed by regex
+	if (!amount.has_value()) return notRecognised;
+	result.amnt = amount.value();
+
+	if (const std::string heightStr = match.str(matchHeight); !heightStr.empty()) {
+		const auto height = Distance::fromHeightString(heightStr);
+		if (!height.has_value()) return notRecognised;
+		result.heightOrVertVis = height.value();
+	}
+
+	return result;
 }
 
 std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string & s) {
@@ -4447,6 +4531,9 @@ Distance CloudGroup::height() const {
 		case Amount::SCATTERED:
 		case Amount::BROKEN:
 		case Amount::OVERCAST:
+		case Amount::VARIABLE_FEW_SCATTERED:
+		case Amount::VARIABLE_SCATTERED_BROKEN:
+		case Amount::VARIABLE_BROKEN_OVERCAST:
 		return heightOrVertVis;
 
 		default:
@@ -4461,6 +4548,22 @@ std::optional<CloudGroup::Type> CloudGroup::typeFromString(const std::string & s
 	if (s == "///") return Type::NOT_REPORTED;
 	return std::optional<Type>();
 }
+
+bool CloudGroup::isCloudLayer() const {
+	switch (amount()) {
+		case Amount::FEW:
+		case Amount::SCATTERED:
+		case Amount::BROKEN:
+		case Amount::OVERCAST:
+		case Amount::VARIABLE_FEW_SCATTERED:
+		case Amount::VARIABLE_SCATTERED_BROKEN:
+		case Amount::VARIABLE_BROKEN_OVERCAST:
+		return true;
+
+		default: return false;
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -4896,8 +4999,16 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 	if (reportPart == ReportPart::METAR) {
 		if (group == "WS") {
 			SecondaryLocationGroup result;
-			result.t = Type::INCOMPLETE;
+			result.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
 			result.incompleteText = IncompleteText::WS;
+			return result;
+		}
+	}
+	if (reportPart == ReportPart::RMK) {
+		if (group == "CIG") {
+			SecondaryLocationGroup result;
+			result.t = Type::CEILING;
+			result.incompleteText = IncompleteText::CIG;
 			return result;
 		}
 	}
@@ -4910,33 +5021,70 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 {
 	(void)reportMetadata; (void)reportPart;
 
-	if (type() != Type::INCOMPLETE) return AppendResult::NOT_APPENDED;
-
 	switch (incompleteText) {
+		case IncompleteText::NONE:
+		return AppendResult::NOT_APPENDED;
+
+		// WS: expecting either ALL or valid runway, otherwise group not valid
 		case IncompleteText::WS:
 		if (group == "ALL") {
 			incompleteText = IncompleteText::WS_ALL;
 			return AppendResult::APPENDED;
 		}
 		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
-			t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+			incompleteText = IncompleteText::NONE;
 			rw = runway.value();
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
 
+		// WS ALL: expecting RWY, otherwise group not valid
 		case IncompleteText::WS_ALL:
 		if (group == "RWY") {
-			t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
+			incompleteText = IncompleteText::NONE;
 			rw = Runway::makeAllRunways();
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
+
+		// CIG: expecting ceiling xxx or variable ceiling xxxVxxx, otherwise group 
+		// not valid
+		case IncompleteText::CIG:
+		if (const auto d = Distance::fromHeightString(group); d.has_value()) {
+			if (!d->isReported()) return AppendResult::GROUP_INVALIDATED;
+			h = d.value();
+			incompleteText = IncompleteText::CIG_NUM;
+			return AppendResult::APPENDED;
+		}
+		{
+			static const std::regex rgx ("(\\d\\d\\d)V(\\d\\d\\d)");
+			static const auto matchMinHeight = 1, matchMaxHeight = 2;
+			std::smatch match;
+			if (!std::regex_match(group, match, rgx)) return AppendResult::GROUP_INVALIDATED;
+			const auto minHt = Distance::fromHeightString(match.str(matchMinHeight));
+			if (!minHt.has_value()) return AppendResult::GROUP_INVALIDATED;
+			const auto maxHt = Distance::fromHeightString(match.str(matchMaxHeight));
+			if (!maxHt.has_value()) return AppendResult::GROUP_INVALIDATED;
+			minH = minHt.value();
+			maxH = maxHt.value();
+			t = Type::VARIABLE_CEILING;
+			incompleteText = IncompleteText::CIG_NUM;
+			return AppendResult::APPENDED;
+		}
+
+		//CIG xxx or CIG xxxVxxx: expecting optional runway; otherwise group not appended
+		case IncompleteText::CIG_NUM:
+		incompleteText = IncompleteText::NONE;
+		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+			rw = runway.value();
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::NOT_APPENDED;
+
 	}
 }
 
 bool SecondaryLocationGroup::isValid() const {
-		if (type() == Type::INCOMPLETE) return false;
 		if (rw.has_value() && !rw->isValid()) return false;
 		if (dir.has_value() && !dir->isValid()) return false;
 		return true;
