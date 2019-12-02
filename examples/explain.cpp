@@ -181,11 +181,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
-		case metaf::FixedGroup::Type::INCOMPLETE:
-		result << "One or more groups were recognised by parser as ";
-		result << "a fixed group but some of the text appears missing.";
-		break;
-
 		case metaf::FixedGroup::Type::METAR:
 		result << "Report type: METAR (weather observation report)";
 		break;
@@ -433,11 +428,6 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
-		case metaf::WindGroup::Type::INCOMPLETE:
-		result << "One or more groups were recognised by parser as ";
-		result << "a wind group but some of the text appears missing.";
-		break;
-
 		case metaf::WindGroup::Type::SURFACE_WIND_CALM:
 		result << "No wind";
 		return result.str();

@@ -1698,6 +1698,18 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 			Additional directional visibility information is stored. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
 
+		.. cpp:enumerator:: PREVAILING_VARIABLE
+
+			Placeholder for compatibility; not yet used in this version.
+
+		.. cpp:enumerator:: SURFACE_VISIBILITY
+
+			Placeholder for compatibility; not yet used in this version.
+
+		.. cpp:enumerator:: TOWER_VISIBILITY
+
+			Placeholder for compatibility; not yet used in this version.
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -1864,6 +1876,10 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.
 
+		.. cpp::function:: WeatherPhenomena obscuration() const
+
+			:returns: Currently always returns an empty value.
+
 	**Miscellaneous**
 
 		.. cpp:function:: bool isVerticalVisibility() const
@@ -1877,6 +1893,10 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 		.. cpp:function:: bool isCloudLayer() const
 
 			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
+
+		.. cpp::function:: bool isObscuration() const
+
+			:returns: Currently always returns ``false``.
 
 	**Validating**
 
@@ -1896,7 +1916,9 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 .. cpp:class:: WeatherGroup
 
-	Stores information about recent or current weather phenomena.
+	Stores information about recent or current weather phenomena, or on the beginning or ending time of weather phenomena.
+
+	.. note:: If more than 10 beginning/ending times are specified in the group, only first 10 are stored.
 
 	.. cpp:enum-class:: Type
 
@@ -1917,7 +1939,7 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 	**Acquiring group data**
 
-		.. cpp:function:: Type type() const;
+		.. cpp:function:: Type type() const
 
 			:returns: What kind of weather information stored in this group; current weather, recent weather, weather event (beginning and ending times of weather phenomena).
 
@@ -3370,6 +3392,15 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 		.. cpp:enumerator:: CORRECTED_WEATHER_OBSERVATION
 
 			This group designates a corrected weather observation; value reports the sequential number of correction, e.g. 1st, 2nd, 3rd, etc; this group is only used in Canada.
+
+		.. cpp:enumerator:: DENSITY_ALTITUDE
+
+			Placeholder for compatibility; not yet used in this version.
+
+		.. cpp:enumerator:: HAILSTONE_SIZE
+
+			Placeholder for compatibility; not yet used in this version.
+
 
 	**Acquiring group data**
 

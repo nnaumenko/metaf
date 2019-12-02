@@ -444,8 +444,6 @@ TEST(FixedGroup, parseCldMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -481,7 +479,6 @@ TEST(FixedGroup, parseIcgMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
 
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
@@ -518,8 +515,6 @@ TEST(FixedGroup, parsePcpnMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -555,8 +550,6 @@ TEST(FixedGroup, parsePresMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -592,8 +585,6 @@ TEST(FixedGroup, parseRvrMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -629,8 +620,6 @@ TEST(FixedGroup, parseTMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -666,8 +655,6 @@ TEST(FixedGroup, parseTdMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -703,8 +690,6 @@ TEST(FixedGroup, parseVisMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -740,8 +725,6 @@ TEST(FixedGroup, parseWndMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -777,8 +760,6 @@ TEST(FixedGroup, parseWxMisg) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
-
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(fg->type(), type);
@@ -813,7 +794,6 @@ TEST(FixedGroup, parseTsLtng) {
 
 	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
 
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::FixedGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
@@ -829,11 +809,9 @@ TEST(FixedGroup, parseTsLtngTempo) {
 
 	auto fg = metaf::FixedGroup::parse(gs1, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
 
 	EXPECT_EQ(fg->append(gs2, metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(fg->type(), metaf::FixedGroup::Type::INCOMPLETE);
 
 	EXPECT_EQ(fg->append(gs3, metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
@@ -897,7 +875,7 @@ TEST(FixedGroup, parseOther) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("MMETAR", metaf::ReportPart::HEADER).has_value());
 }
 
-TEST(FixedGroup, isValid) {
+TEST(FixedGroup, isValidTrue) {
 	const auto fg1 = metaf::FixedGroup::parse("METAR", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(fg1.has_value());
 	EXPECT_TRUE(fg1->isValid());
@@ -989,4 +967,55 @@ TEST(FixedGroup, isValid) {
 	const auto fg25 = metaf::FixedGroup::parse("FROIN", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg25.has_value());
 	EXPECT_TRUE(fg25->isValid());
+}
+
+TEST(FixedGroup, isValidFalse) {
+	const auto fg1 = metaf::FixedGroup::parse("CLD", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg1.has_value());
+	EXPECT_FALSE(fg1->isValid());
+	
+	const auto fg2 = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg2.has_value());
+	EXPECT_FALSE(fg2->isValid());
+	
+	const auto fg3 = metaf::FixedGroup::parse("PCPN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg3.has_value());
+	EXPECT_FALSE(fg3->isValid());
+
+	const auto fg4 = metaf::FixedGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg4.has_value());
+	EXPECT_FALSE(fg4->isValid());
+
+	const auto fg5 = metaf::FixedGroup::parse("RVR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg5.has_value());
+	EXPECT_FALSE(fg5->isValid());
+
+	const auto fg6 = metaf::FixedGroup::parse("T", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg6.has_value());
+	EXPECT_FALSE(fg6->isValid());
+
+	const auto fg7 = metaf::FixedGroup::parse("TD", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg7.has_value());
+	EXPECT_FALSE(fg7->isValid());
+	
+	const auto fg8 = metaf::FixedGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg8.has_value());
+	EXPECT_FALSE(fg8->isValid());
+	
+	const auto fg9 = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg9.has_value());
+	EXPECT_FALSE(fg9->isValid());
+
+	const auto fg10 = metaf::FixedGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg10.has_value());
+	EXPECT_FALSE(fg10->isValid());
+
+	const auto fg11 = metaf::FixedGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg11.has_value());
+	EXPECT_FALSE(fg11->isValid());
+
+	auto fg12 = metaf::FixedGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	EXPECT_EQ(fg12->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(fg12.has_value());
+	EXPECT_FALSE(fg12->isValid());
 }

@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase6";
+	inline static const char tag [] = "RC1";
 };
 
 class FixedGroup;
@@ -773,7 +773,6 @@ using FallbackGroup = UnknownGroup;
 class FixedGroup {
 public:
 	enum class Type {
-		INCOMPLETE,
 		METAR,
 		SPECI,
 		TAF,
@@ -813,7 +812,7 @@ public:
 		TS_LTNG_TEMPO_UNAVBL
 	};
 	Type type() const { return t; }
-	bool isValid() const { return (type() != Type::INCOMPLETE); }
+	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
 
 	FixedGroup() = default;
 	static inline std::optional<FixedGroup> parse(const std::string & group,
@@ -827,6 +826,7 @@ private:
 	Type t;
 
 	enum class IncompleteText {
+		NONE,
 		CLD,
 		ICG,
 		PCPN,
@@ -840,10 +840,12 @@ private:
 		TS_LTNG,
 		TS_LTNG_TEMPO
 	};
-	IncompleteText incompleteText;
+	IncompleteText incompleteText = IncompleteText::NONE;
 
 	FixedGroup(Type type) :t (type) {}
-	FixedGroup(IncompleteText pt) :t (Type::INCOMPLETE), incompleteText(pt) {}
+	FixedGroup(IncompleteText it, Type t) :t (t), incompleteText(it) {}
+
+	static inline Type typeFromIncomplete(IncompleteText it);
 };
 
 class LocationGroup {
@@ -950,7 +952,6 @@ private:
 class WindGroup {
 public:
 	enum class Type {
-		INCOMPLETE,
 		SURFACE_WIND,
 		SURFACE_WIND_CALM,
 		VARIABLE_WIND_SECTOR,
@@ -980,6 +981,7 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 private:
 	enum class IncompleteText {
+		NONE,
 		PK,
 		PK_WND
 	};
@@ -994,7 +996,7 @@ private:
 	Direction vsecBegin;
 	Direction vsecEnd;
 	std::optional<MetafTime> evTime;
-	IncompleteText incompleteText;
+	IncompleteText incompleteText = IncompleteText::NONE;
 };
 
 class VisibilityGroup {
@@ -1002,7 +1004,10 @@ public:
 	enum class Type {
 		PREVAILING,
 		PREVAILING_NDV,
-		DIRECTIONAL
+		DIRECTIONAL,
+		PREVAILING_VARIABLE,
+		SURFACE_VISIBILITY,
+		TOWER_VISIBILITY
 	};
 	Type type() const { return visType; }
 	Distance visibility() const { return vis; }
@@ -1064,6 +1069,7 @@ public:
 		if (amount() != Amount::OBSCURED) return heightNotReported;
 		return heightOrVertVis;
 	}
+	WeatherPhenomena obscuration() const { return w; }
 	bool isVerticalVisibility() const { return (amount() == Amount::OBSCURED); }
 	bool isNoClouds() const {
 		return (amount() == Amount::NONE_CLR || 
@@ -1072,6 +1078,7 @@ public:
 				amount() == Amount::NSC);
 	}
 	inline bool isCloudLayer() const;
+	inline bool isObscuration() const { return !w.isOmmitted(); }
 	bool isValid() const { return heightOrVertVis.isValid(); }
 
 	CloudGroup () = default;
@@ -1086,6 +1093,7 @@ private:
 	Amount amnt = Amount::NOT_REPORTED;
 	Distance heightOrVertVis;
 	Type tp = Type::NONE;
+	WeatherPhenomena w;
 	static const inline auto heightNotReported = Distance(Distance::Unit::FEET);
 
 	enum class IncompleteType {
@@ -1351,7 +1359,10 @@ public:
 	enum class Type {
 		WIND_SHEAR_IN_LOWER_LAYERS,
 		CEILING,
-		VARIABLE_CEILING
+		VARIABLE_CEILING,
+		VISIBILITY,
+		VISNO,
+		CHINO
 	};
 	Type type() const { return t; }
 	std::optional<Runway> runway() const { return rw; }
@@ -1867,7 +1878,9 @@ class MiscGroup {
 public:
 	enum class Type {
 		SUNSHINE_DURATION_MINUTES,
-		CORRECTED_WEATHER_OBSERVATION
+		CORRECTED_WEATHER_OBSERVATION,
+		DENSITY_ALTITUDE,
+		HAILSTONE_SIZE
 	};
 	Type type() const { return groupType; }
 	std::optional<float> value() const { return groupValue; }
@@ -3782,17 +3795,17 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		if (group == "TSNO") return FixedGroup(Type::TSNO);
 		if (group == "SLPNO") return FixedGroup(Type::SLPNO);
 		if (group == "FROIN") return FixedGroup(Type::FROIN);
-		if (group == "CLD") return FixedGroup(IncompleteText::CLD);
-		if (group == "ICG") return FixedGroup(IncompleteText::ICG);
-		if (group == "PCPN") return FixedGroup(IncompleteText::PCPN);
-		if (group == "PRES") return FixedGroup(IncompleteText::PRES);
-		if (group == "RVR") return FixedGroup(IncompleteText::RVR);
-		if (group == "T") return FixedGroup(IncompleteText::T);
-		if (group == "TD") return FixedGroup(IncompleteText::TD);
-		if (group == "VIS") return FixedGroup(IncompleteText::VIS);
-		if (group == "WND") return FixedGroup(IncompleteText::WND);
-		if (group == "WX") return FixedGroup(IncompleteText::WX);
-		if (group == "TS/LTNG") return FixedGroup(IncompleteText::TS_LTNG);
+		if (group == "CLD") return FixedGroup(IncompleteText::CLD, Type::CLD_MISG);
+		if (group == "ICG") return FixedGroup(IncompleteText::ICG, Type::ICG_MISG);
+		if (group == "PCPN") return FixedGroup(IncompleteText::PCPN, Type::PCPN_MISG);
+		if (group == "PRES") return FixedGroup(IncompleteText::PRES, Type::PRES_MISG);
+		if (group == "RVR") return FixedGroup(IncompleteText::RVR, Type::RVR_MISG);
+		if (group == "T") return FixedGroup(IncompleteText::T, Type::T_MISG);
+		if (group == "TD") return FixedGroup(IncompleteText::TD, Type::TD_MISG);
+		if (group == "VIS") return FixedGroup(IncompleteText::VIS, Type::VIS_MISG);
+		if (group == "WND") return FixedGroup(IncompleteText::WND, Type::WND_MISG);
+		if (group == "WX") return FixedGroup(IncompleteText::WX, Type::WX_MISG);
+		if (group == "TS/LTNG") return FixedGroup(IncompleteText::TS_LTNG, Type::TS_LTNG_TEMPO_UNAVBL);
 	}
 	if (group == "$") return FixedGroup(Type::MAINTENANCE_INDICATOR);
 	return std::optional<FixedGroup>();
@@ -3804,53 +3817,27 @@ AppendResult FixedGroup::append(const std::string & group,
 {
 	(void)reportMetadata; (void)reportPart;
 
-	if (type() != Type::INCOMPLETE) return AppendResult::NOT_APPENDED;
-
 	switch (incompleteText) {
+		case IncompleteText::NONE:
+		return AppendResult::NOT_APPENDED;
+
 		case IncompleteText::CLD:
-		if (group == "MISG") {t = Type::CLD_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::ICG:
-		if (group == "MISG") {t = Type::ICG_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::PCPN:
-		if (group == "MISG") {t = Type::PCPN_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::PRES:
-		if (group == "MISG") {t = Type::PRES_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::RVR:
-		if (group == "MISG") {t = Type::RVR_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::T:
-		if (group == "MISG") {t = Type::T_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::TD:
-		if (group == "MISG") {t = Type::TD_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::VIS:
-		if (group == "MISG") {t = Type::VIS_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::WND:
-		if (group == "MISG") {t = Type::WND_MISG; return AppendResult::APPENDED; }
-		break;
-
 		case IncompleteText::WX:
-		if (group == "MISG") {t = Type::WX_MISG; return AppendResult::APPENDED; }
+		if (group == "MISG") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED; 
+		}
 		break;
 
 		case IncompleteText::TS_LTNG:
-		// Here assuming that trend group parsing ignores comments,
-		// since group TEMPO may be part of trend group, see also
-		// TrendGroup::parse() and TrendGroup::apppend().
 		if (group == "TEMPO") {
 			incompleteText = IncompleteText::TS_LTNG_TEMPO;
 			return AppendResult::APPENDED;
@@ -3860,6 +3847,7 @@ AppendResult FixedGroup::append(const std::string & group,
 		case IncompleteText::TS_LTNG_TEMPO:
 		if (group == "UNAVBL") {
 			t = Type::TS_LTNG_TEMPO_UNAVBL;
+			incompleteText = IncompleteText::NONE; 
 			return AppendResult::APPENDED;
 		}
 		break;
@@ -4156,7 +4144,7 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 		// PK WND group
 		if (group == "PK") {
 			WindGroup result;
-			result.windType = Type::INCOMPLETE;
+			result.windType = Type::PEAK_WIND;
 			result.incompleteText = IncompleteText::PK;
 			return result;
 		}
@@ -4232,9 +4220,12 @@ AppendResult WindGroup::append(const std::string & group,
 	}
 
 	//PK WND groups
-	if (type() == Type::INCOMPLETE)
+	if (type() == Type::PEAK_WIND)
 	{
 		switch (incompleteText) {
+			case IncompleteText::NONE:
+			return AppendResult::NOT_APPENDED;
+
 			case IncompleteText::PK:
 			if (group == "WND") {
 				incompleteText = IncompleteText::PK_WND;
@@ -4310,13 +4301,14 @@ AppendResult WindGroup::parsePeakWind(const std::string & group,
 		reportMetadata.reportTime->hour() : stoi(match.str(matchHour));
 	const auto minute = stoi(match.str(matchMinute));
 	evTime = MetafTime(hour, minute);
+	incompleteText = IncompleteText::NONE;
 
 	return AppendResult::APPENDED;
 }
 
 bool WindGroup::isValid() const {
 	// Incomplete group is treated as non-valid
-	if (type() == Type::INCOMPLETE) return false;
+	if (incompleteText != IncompleteText::NONE) return false;
 	// If both wind and gust speed reported, wind speed cannot be greater
 	// than gust speed
 	if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) {
@@ -4550,7 +4542,8 @@ std::optional<CloudGroup::Type> CloudGroup::typeFromString(const std::string & s
 }
 
 bool CloudGroup::isCloudLayer() const {
-	switch (amount()) {
+	if (isObscuration()) return false;
+ 	switch (amount()) {
 		case Amount::FEW:
 		case Amount::SCATTERED:
 		case Amount::BROKEN:

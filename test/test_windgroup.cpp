@@ -386,6 +386,22 @@ TEST(WindGroup, isValidFalseVariableWindSector) {
 	EXPECT_FALSE(wg2->isValid());
 }
 
+TEST(WindGroup, isValidTruePeakWind) {
+	//TODO
+}
+
+TEST(WindGroup, isValidFalsePeakWind) {
+	//TODO
+}
+
+TEST(WindGroup, isValidTrueWindShift) {
+	//TODO
+}
+
+TEST(WindGroup, isValidFalseWindShift) {
+	//TODO
+}
+
 TEST(WindGroup, appendWindGroupAndWindSectorGroup) {
 	auto wg = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
@@ -711,7 +727,6 @@ TEST(WindGroup, appendWshftAndOther) {
 TEST(WindGroup, parsePk) {
 	const auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::INCOMPLETE);
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
@@ -733,8 +748,6 @@ TEST(WindGroup, appendPkAndWnd) {
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
-
-	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::INCOMPLETE);
 
 	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());

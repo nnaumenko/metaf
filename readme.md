@@ -53,6 +53,10 @@ Since this project focuses on metaf library usage with Webassembly, [Emscripten]
 
 Old TAF format, used before November 2008 employs different format for time spans and trends (time without date); the current version does not decode this old format.
 
+## License
+
+This project is available under MIT license.
+
 ## METAR and TAF
 
 ### What is METAR?
@@ -87,9 +91,11 @@ Example of a TAF report is as follows:
 * Wind shear, peak wind and wind shift information
 * Prevailing or directional visibility in meters or statute miles
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
+* Cloud cover of variable density and variable ceiling height
 * Indicator of no significant cloud and good visibility CAVOK
-* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach)
+* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach, ceiling, etc).
 * Current and recent weather information, and indicator or weather phenomena end NSW
+* Beginning and ending time of recent weather phenomena
 * Temperature and dew point, including more precise values given in remarks
 * Temperature forecast from TAF reports
 * 6-hourly and 24-hourly minimum and maximum temperature
@@ -110,11 +116,22 @@ Example of a TAF report is as follows:
 * Recent precipitation beginning and ending time
 * Lightning data such as strike type and frequency
 * Groups reporting various phenomena in vicinity of the station (thunderstorm, towering cumulus, altocumulus castellanus, cumulonimbus, mammatus, lenticular and rotor clouds, virga, etc.)
-* Miscellaneous rare groups (e.g. sunshine duration)
+* Sunshine duration
 
-## License
+## Roadmap
 
-This project is available under MIT license.
+Recognition of the following groups is planned for implementing (not in this particular order):
+
+* VISNO indicator (no visiblity data)
+* CHINO indicator (no ceiling data)
+* Directional and variable visibility included in remarks, e.g. VIS NE 2 1/2 or VIS 1/2V2
+* Additional visibility value for runway, e.g. VIS 2 1/2 RWY11
+* VC indicator for lightning and other phenomena, e.g. FRQ LTG VC or VIRGA VC ALQDS
+* Surface and tower visibility SFC VIS and TWR VIS
+* Ground-based or aloft obscurations with octa, e.g. FG SCT000 or FU BKN020
+* Density altitude included in remarks
+* Cloud type format used in Asia-Pacific region, e.g. 3CU012
+* Hailstone size included in remarks
 
 ## Acknowledgements
 
