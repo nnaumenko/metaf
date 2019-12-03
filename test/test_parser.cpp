@@ -1263,7 +1263,6 @@ TEST(ParserSyntaxMaintenanceIndicator,
 	EXPECT_TRUE(isMaintenanceIndicator(result.groups.back().group));
 }
 
-
 TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtTheEndOfTaf) {
 	const auto result = metaf::Parser::parse(
 		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035 $");
@@ -1287,8 +1286,7 @@ TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfMetar) {
 		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR $ 02/00 A2954"
 		" RMK AO2 SLP989 T00150003 58001 PNO TSNO");
 	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
-	EXPECT_EQ(result.reportMetadata.error, 
-		metaf::ReportError::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
 }
 
 TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfMetarRemark) {
@@ -1296,8 +1294,7 @@ TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfMetarRem
 		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
 		" RMK AO2 SLP989 T00150003 $ 58001 PNO TSNO");
 	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
-	EXPECT_EQ(result.reportMetadata.error, 
-		metaf::ReportError::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
 }
 
 TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorInTheMiddleOfTaf) {

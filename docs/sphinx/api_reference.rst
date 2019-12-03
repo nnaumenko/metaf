@@ -1200,10 +1200,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 		Designates the fixed text which is represented by this group.
 
-		.. cpp:enumerator:: INCOMPLETE
-
-			One or more groups have been recognised by the parser as fixed group(s) but the end of the report was reached unexpectedly.
-
 		.. cpp:enumerator:: METAR
 
 			Specifies that the report type is METAR (weather observation) and this is a scheduled report.
@@ -3546,11 +3542,6 @@ ReportError
 		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::FixedGroup::CNL`).
 
 		.. note: CNL means canceled report, thus including groups in report body are not allowed.
-
-
-	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR
-
-		This error occurs if any group is encountered after maintenance indicator '$'. (see :cpp:enumerator:`metaf::FixedGroup::MAINTENANCE_INDICATOR`).
 
 
 	.. cpp:enumerator:: UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY

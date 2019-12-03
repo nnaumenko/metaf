@@ -57,9 +57,6 @@ std::string errorMessage(ReportError error) {
 		case ReportError::UNEXPECTED_GROUP_AFTER_CNL:
 		return "unexpected group after CNL";
 
-		case ReportError::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR:
-		return "unexpected group after maintenance indicator";
-
 		case ReportError::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
 		return "unexpected NIL or CNL in report body";
 

@@ -61,7 +61,7 @@ Time contains day-of-month and time when the report was released or issued. See 
 
 .. index:: single: Group; Maintenance indicator
 
-Maintenance indicator '$' may be included at the end of the report to indicated that automated station requires maintenance. Metaf does not require maintenance indicator to be located in remark section, however an error is reported if maintenance indicator is not the last group in report.
+Maintenance indicator '$' may be included at the end of the report to indicated that automated station requires maintenance. Typically the maintenance indicator is the last group of the report but in practice additional groups may be included after maintenance indicator.
 
 .. index:: single: METAR; Report body format
 

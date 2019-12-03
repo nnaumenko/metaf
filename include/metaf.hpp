@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "RC1";
+	inline static const char tag [] = "RC2";
 };
 
 class FixedGroup;
@@ -707,7 +707,6 @@ enum class ReportError {
 	UNEXPECTED_REPORT_END,
 	UNEXPECTED_GROUP_AFTER_NIL,
 	UNEXPECTED_GROUP_AFTER_CNL,
-	UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR,
 	UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY,
 	AMD_ALLOWED_IN_TAF_ONLY,
 	CNL_ALLOWED_IN_TAF_ONLY,
@@ -2031,7 +2030,6 @@ private:
 			REPORT_BODY_TAF,
 			REMARK_METAR,
 			REMARK_TAF,
-			MAINTENANCE_INDICATOR,
 			NIL,
 			CNL,
 			ERROR
@@ -6199,7 +6197,6 @@ ReportPart Parser::Status::getReportPart() {
 		case State::REMARK_TAF:
 		return ReportPart::RMK;
 
-		case State::MAINTENANCE_INDICATOR:
 		case State::NIL:
 		case State::CNL:
 		case State::ERROR:
@@ -6248,19 +6245,12 @@ void Parser::Status::transition(SyntaxGroup group) {
 		break;
 
 		case State::REMARK_METAR:
-		if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
-			setState(State::MAINTENANCE_INDICATOR);
-		}
 		break;
 
 		case State::REMARK_TAF:
 		if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
 			setError(ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
 		}
-		break;
-
-		case State::MAINTENANCE_INDICATOR:
-		setError(ReportError::UNEXPECTED_GROUP_AFTER_MAINTENANCE_INDICATOR);
 		break;
 
 		case State::NIL:
@@ -6385,10 +6375,6 @@ void Parser::Status::transitionFromReportBodyBeginMetar(SyntaxGroup group) {
 		setState(State::REMARK_METAR);
 		break;
 
-		case SyntaxGroup::MAINTENANCE_INDICATOR:
-		setState(State::MAINTENANCE_INDICATOR);
-		break;
-
 		default:
 		setState(State::REPORT_BODY_METAR);
 		break;
@@ -6399,10 +6385,6 @@ void Parser::Status::transitionFromReportBodyMetar(SyntaxGroup group) {
 	switch(group) {
 		case SyntaxGroup::RMK:
 		setState(State::REMARK_METAR);
-		break;
-
-		case SyntaxGroup::MAINTENANCE_INDICATOR:
-		setState(State::MAINTENANCE_INDICATOR);
 		break;
 
 		case SyntaxGroup::NIL:
@@ -6465,7 +6447,6 @@ void Parser::Status::finalTransition() {
 		case State::REPORT_BODY_TAF:
 		case State::REMARK_METAR:
 		case State::REMARK_TAF:
-		case State::MAINTENANCE_INDICATOR:
 		case State::NIL:
 		case State::CNL:
 		case State::ERROR:
