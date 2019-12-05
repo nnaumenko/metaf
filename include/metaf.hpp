@@ -32,8 +32,8 @@ namespace metaf {
 struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 0;
-	inline static const int patch = 0;
-	inline static const char tag [] = "RC2";
+	inline static const int patch = 1;
+	inline static const char tag [] = "";
 };
 
 class FixedGroup;
@@ -4643,7 +4643,7 @@ std::optional<WeatherGroup> WeatherGroup::parseWeatherEvent(const std::string & 
 		if (!currDigit && lastDigit) {
 			// i is the position after the last digit from eventStartPos
 			const auto eventLen = i - eventStartPos;
-			if (const auto minEventLen = 5; eventLen < minEventLen) return notRecognised;
+			if (const auto minEventLen = 3; eventLen < minEventLen) return notRecognised;
 			const std::string s = group.substr(eventStartPos, eventLen);
 			const auto w = 
 				WeatherPhenomena::fromWeatherBeginEndString(s, reportTime, previousWeather);
@@ -4660,7 +4660,7 @@ std::optional<WeatherGroup> WeatherGroup::parseWeatherEvent(const std::string & 
 		WeatherPhenomena::fromWeatherBeginEndString(s, reportTime, previousWeather);
 	if (!w.has_value()) return notRecognised;
 	result.addWeatherPhenomena(w.value());
-	return result;	
+	return result;
 }
 
 

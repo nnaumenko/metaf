@@ -214,6 +214,54 @@ TEST(WeatherGroup, parseRecentWeatherEventMultiple) {
 	EXPECT_EQ(wp4.time()->minute(), 15u);
 }
 
+TEST(WeatherGroup, parseRecentWeatherEventMultipleShortGroupInTheMiddle) {
+	// Make sure that E22 is parsed correctly when it is not the last event in group
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("262356");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	const auto wg = metaf::WeatherGroup::parse("DZB16E22RAB37", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_TRUE(wg->isValid());
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::EVENT);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 3u);
+
+	const auto wp1 = wg->weatherPhenomena().at(0);
+	EXPECT_EQ(wp1.qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp1.descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp1.weather().size(), 1u);
+	EXPECT_EQ(wp1.weather().at(0), metaf::WeatherPhenomena::Weather::DRIZZLE);
+	EXPECT_EQ(wp1.event(), metaf::WeatherPhenomena::Event::BEGINNING);
+	ASSERT_TRUE(wp1.time().has_value());
+	EXPECT_FALSE(wp1.time()->day().has_value());
+	EXPECT_EQ(wp1.time()->hour(), 23u);
+	EXPECT_EQ(wp1.time()->minute(), 16u);
+
+	const auto wp2 = wg->weatherPhenomena().at(1);
+	EXPECT_EQ(wp2.qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp2.descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp2.weather().size(), 1u);
+	EXPECT_EQ(wp2.weather().at(0), metaf::WeatherPhenomena::Weather::DRIZZLE);
+	EXPECT_EQ(wp2.event(), metaf::WeatherPhenomena::Event::ENDING);
+	ASSERT_TRUE(wp2.time().has_value());
+	EXPECT_FALSE(wp2.time()->day().has_value());
+	EXPECT_EQ(wp2.time()->hour(), 23u);
+	EXPECT_EQ(wp2.time()->minute(), 22u);
+
+	const auto wp3 = wg->weatherPhenomena().at(2);
+	EXPECT_EQ(wp3.qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp3.descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp3.weather().size(), 1u);
+	EXPECT_EQ(wp3.weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp3.event(), metaf::WeatherPhenomena::Event::BEGINNING);
+	ASSERT_TRUE(wp3.time().has_value());
+	EXPECT_FALSE(wp3.time()->day().has_value());
+	EXPECT_EQ(wp3.time()->hour(), 23u);
+	EXPECT_EQ(wp3.time()->minute(), 37u);
+}
+
 TEST(WeatherGroup, parseWrongReportPart) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RA", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RA", metaf::ReportPart::HEADER).has_value());
