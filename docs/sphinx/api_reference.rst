@@ -1359,8 +1359,10 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 			Dew point data is missing.
 
 		.. cpp:enumerator:: VIS_MISG
+   
+   			.. deprecated:: 4.1.0
 
-			Visibility data is missing.
+   				Not used anymore since version 4.1.0 and exists for compatibility only. :cpp:enumerator:`metaf::VisibilityGroup::Type::DATA_MISSING` is used instead.
 
 		.. cpp:enumerator:: WND_MISG
 
@@ -1668,9 +1670,11 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: visibilitygroup.svg
 
+.. image:: visibilitygroup_rmk.svg
+
 .. note:: Spaces between sequential groups in METAR/TAF report are not shown.
 
-Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, ``1100W``, ``3SM``, ``25SM``, ``1/4SM``, ``2 1/4SM``, ``M1/4SM``, ``P6SM``, ``////SM``.
+Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, ``1100W``, ``3SM``, ``25SM``, ``1/4SM``, ``2 1/4SM``, ``M1/4SM``, ``P6SM``, ``////SM``, ``VIS 1V3``, ``VIS W 1/4``, ``SFC VIS 3``, ``TWR VIS 2 1/2``.
 
 .. cpp:class:: VisibilityGroup
 
@@ -1696,15 +1700,23 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:enumerator:: PREVAILING_VARIABLE
 
-			Placeholder for compatibility; not yet used in this version.
+			Variable prevailing visibility information is stored. Use :cpp:func:`minVisibility()` and :cpp:func:`maxVisibility()`. This information may be included in remarks in North America.
 
 		.. cpp:enumerator:: SURFACE_VISIBILITY
 
-			Placeholder for compatibility; not yet used in this version.
+			Visibility at surface level is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
 
 		.. cpp:enumerator:: TOWER_VISIBILITY
 
-			Placeholder for compatibility; not yet used in this version.
+			Visibility from aerodrome's air traffic control tower is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
+
+		.. cpp:enumerator:: DIRECTIONAL_VARIABLE
+
+			Variable directional visibility information is stored. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`. This information may be included in remarks in North America.
+
+		.. cpp:enumerator:: DATA_MISSING
+
+			Visibility data is missing (coded ``VIS MISG`` in the remarks), all data methods will return non-reported values.
 
 	**Acquiring group data**
 
@@ -1718,11 +1730,11 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:function:: Distance minVisibility() const
 
-			:returns: Minimum visibility value if the visibility is variable. Currently always returns a non-reported value.
+			:returns: Minimum visibility value if variable visibility is reported.
 
 		.. cpp:function:: Distance maxVisibility() const
 
-			:returns: Maximum visibility value if the visibility is variable. Currently always returns a non-reported value.
+			:returns: Maximum visibility value if variable visibility is reported.
 
 		.. cpp:function:: Direction direction() const
 

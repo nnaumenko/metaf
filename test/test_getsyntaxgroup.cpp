@@ -239,14 +239,6 @@ TEST(getSyntaxGroup, TD_MISG) {
 	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, VIS_MISG) {
-	auto fg = metaf::FixedGroup::parse("VIS", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, WND_MISG) {
 	auto fg = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());

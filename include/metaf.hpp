@@ -23,7 +23,6 @@
 #include <variant>
 #include <optional>
 #include <regex>
-#include <cctype>
 #include <cmath>
 
 namespace metaf {
@@ -31,8 +30,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 4;
-	inline static const int minor = 0;
-	inline static const int patch = 1;
+	inline static const int minor = 1;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -288,6 +287,9 @@ public:
 
 	Distance() = default;
 	Distance(int d, Unit u) : distValueInt(d), distUnit(u) {} //Init distance without fraction
+	Distance(unsigned int numerator, unsigned int denominator) : //Init fractional distance in miles 
+		distValueNum(numerator), distValueDen(denominator), 
+		distUnit(Unit::STATUTE_MILES) {} 
 	Distance(Unit u) : distUnit(u) {} // Init non-reported distance
 	static inline std::optional<Distance> fromIntegerAndFraction(const Distance & integer,
 		const Distance & fraction);
@@ -805,7 +807,7 @@ public:
 		RVR_MISG,
 		T_MISG,
 		TD_MISG,
-		VIS_MISG,
+		VIS_MISG, //Deprecated and not used anymore, use VisibilityGroup::Type:VIS_MISG
 		WND_MISG,
 		WX_MISG,
 		TS_LTNG_TEMPO_UNAVBL
@@ -833,7 +835,6 @@ private:
 		RVR,
 		T,
 		TD,
-		VIS,
 		WND,
 		WX,
 		TS_LTNG,
@@ -1006,22 +1007,38 @@ public:
 		DIRECTIONAL,
 		PREVAILING_VARIABLE,
 		SURFACE_VISIBILITY,
-		TOWER_VISIBILITY
+		TOWER_VISIBILITY,
+		DIRECTIONAL_VARIABLE,
+		DATA_MISSING
 	};
 	Type type() const { return visType; }
-	Distance visibility() const { return vis; }
-	Distance minVisibility() const { return Distance(); }
-	Distance maxVisibility() const { return Distance(); }
+	Distance visibility() const { 
+		if (type() == Type::PREVAILING_VARIABLE || type() == Type::DIRECTIONAL_VARIABLE) 
+			return Distance();
+		return vis;
+	}
+	Distance minVisibility() const { 
+		if (type() != Type::PREVAILING_VARIABLE && type() != Type::DIRECTIONAL_VARIABLE) 
+			return Distance(); 
+		return vis;
+	}
+	Distance maxVisibility() const {
+		if (type() != Type::PREVAILING_VARIABLE && type() != Type::DIRECTIONAL_VARIABLE) 
+			return Distance();
+		return visMax;
+	}
 	Direction direction() const { return dir; }
 	Direction sectorBegin() const { return Direction(); }
 	Direction sectorEnd() const { return Direction(); }
 	bool isPrevailing() const {
-		return (type() == Type::PREVAILING || type() == Type::PREVAILING_NDV);
+		return (type() == Type::PREVAILING || 
+			type() == Type::PREVAILING_NDV || 
+			type() == Type::PREVAILING_VARIABLE);
 	}
-	bool isDirectional() const { return (type() == Type::DIRECTIONAL); }
-	bool isValid() const {
-		return (!incompleteInteger && vis.isValid() && dir.isValid());
+	bool isDirectional() const {
+		return (type() == Type::DIRECTIONAL || type() == Type::DIRECTIONAL_VARIABLE);
 	}
+	inline bool isValid() const;
 
 	VisibilityGroup() = default;
 	inline static std::optional<VisibilityGroup> parse(
@@ -1032,10 +1049,35 @@ public:
 		ReportPart reportPart = ReportPart::UNKNOWN,
 		const ReportMetadata & reportMetadata = missingMetadata);
 private:
+	enum class IncompleteType {
+		NONE,
+		NON_RMK_INTEGER,
+		RMK_VIS,
+		RMK_VIS_DIR,
+		RMK_VIS_INTEGER,
+		RMK_VIS_DIR_INTEGER,
+		RMK_SFC_OR_TWR,
+		RMK_SFC_OR_TWR_VIS,
+		RMK_SFC_OR_TWR_VIS_INTEGER
+	};
+
+	inline static VisibilityGroup rmkVisIncomplete();
+	inline static VisibilityGroup rmkSfcVisIncomplete();
+	inline static VisibilityGroup rmkTwrVisIncomplete();
+
+	static inline std::optional<VisibilityGroup> fromIncompleteInteger(const std::string & group);
+	static inline std::optional<VisibilityGroup> fromMeters(const std::string & group);
+
+	inline bool appendDirection(const std::string & group);
+	inline bool appendInteger(const std::string & group);
+	inline bool appendFraction(const std::string & group);
+	inline bool appendVariable(const std::string & group);
+
 	Type visType = Type::PREVAILING;
 	Distance vis;
+	Distance visMax;
 	Direction dir;
-	bool incompleteInteger = false;
+	IncompleteType incompleteType = IncompleteType::NONE;
 };
 
 class CloudGroup {
@@ -2360,11 +2402,11 @@ inline void Visitor<void>::visit(const GroupInfo & groupInfo) {
 ///////////////////////////////////////////////////////////////////////////////
 
 inline std::optional<unsigned int> strToUint(const std::string & str,
-std::size_t startPos,
-std::size_t digits);
+	std::size_t startPos,
+	std::size_t digits);
 
-inline std::optional<std::pair<unsigned int, unsigned int> >
-fractionStrToUint(const std::string & str,
+inline std::optional<std::pair<unsigned int, unsigned int> > fractionStrToUint(
+	const std::string & str,
 	std::size_t startPos,
 	std::size_t length);
 
@@ -3800,7 +3842,6 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		if (group == "RVR") return FixedGroup(IncompleteText::RVR, Type::RVR_MISG);
 		if (group == "T") return FixedGroup(IncompleteText::T, Type::T_MISG);
 		if (group == "TD") return FixedGroup(IncompleteText::TD, Type::TD_MISG);
-		if (group == "VIS") return FixedGroup(IncompleteText::VIS, Type::VIS_MISG);
 		if (group == "WND") return FixedGroup(IncompleteText::WND, Type::WND_MISG);
 		if (group == "WX") return FixedGroup(IncompleteText::WX, Type::WX_MISG);
 		if (group == "TS/LTNG") return FixedGroup(IncompleteText::TS_LTNG, Type::TS_LTNG_TEMPO_UNAVBL);
@@ -3826,7 +3867,6 @@ AppendResult FixedGroup::append(const std::string & group,
 		case IncompleteText::RVR:
 		case IncompleteText::T:
 		case IncompleteText::TD:
-		case IncompleteText::VIS:
 		case IncompleteText::WND:
 		case IncompleteText::WX:
 		if (group == "MISG") {
@@ -4330,19 +4370,111 @@ std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	static const std::optional<VisibilityGroup> notRecognised;
-	if (reportPart != ReportPart::METAR && reportPart != ReportPart::TAF) return notRecognised;
-	// Attempt to parse string as incomplete integer value
-	if (auto incompleteLength = 1u; group.length() == incompleteLength &&
-		std::isdigit(group.front()))
-	{
-		VisibilityGroup result;
-		auto v = group.front() - '0';
-		result.vis = Distance(v, Distance::Unit::STATUTE_MILES);
-		result.incompleteInteger = true;
-		return result;
+	if (reportPart == ReportPart::RMK) {
+		if (group == "VIS") return rmkVisIncomplete();
+		if (group == "SFC") return rmkSfcVisIncomplete();
+		if (group == "TWR") return rmkTwrVisIncomplete();
 	}
-	// Attempt to parse string as visibility in meters
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
+		if (const auto v = fromIncompleteInteger(group); v.has_value()) return v;
+		if (const auto v = fromMeters(group); v.has_value()) return v;
+		if (const auto v = Distance::fromMileString(group); v.has_value()) {
+			VisibilityGroup result;
+			result.vis = v.value();
+			return result;
+		}
+	}
+	return std::optional<VisibilityGroup>();
+}
+
+AppendResult VisibilityGroup::append(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata)
+{
+	(void)reportMetadata;
+
+	switch (incompleteType) {
+		case IncompleteType::NONE:
+		// Appending Rxx or RWYxx to VIS group in remarks is not allowed
+		// because these groups are interpreted as SecondaryLocationGroup
+		if (reportPart != ReportPart::RMK) return AppendResult::NOT_APPENDED;
+		if (type() != Type::PREVAILING_VARIABLE && 
+			type() != Type::DIRECTIONAL &&
+			type() != Type::DIRECTIONAL_VARIABLE) return AppendResult::NOT_APPENDED;
+		if (const auto r = Runway::fromString(group, true); r.has_value()) 
+			return AppendResult::GROUP_INVALIDATED;
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteType::NON_RMK_INTEGER:
+		if (const auto v = Distance::fromMileString(group); v.has_value()) {
+			if (!v->isFraction()) return AppendResult::GROUP_INVALIDATED;
+			const auto vAppended = 
+				Distance::fromIntegerAndFraction(visibility(), v.value());
+			if (!vAppended.has_value()) return AppendResult::GROUP_INVALIDATED;
+			vis = vAppended.value();
+			incompleteType = IncompleteType::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+		
+		case IncompleteType::RMK_VIS:
+		if (group == "MISG") {
+			visType = Type::DATA_MISSING;
+			incompleteType = IncompleteType::NONE;
+			return AppendResult::APPENDED; 
+		}
+		if (appendDirection(group)) return AppendResult::APPENDED;
+		if (appendInteger(group)) return AppendResult::APPENDED;
+		if (appendVariable(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::RMK_VIS_INTEGER:
+		if (appendVariable(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::RMK_VIS_DIR:
+		if (appendInteger(group)) return AppendResult::APPENDED;
+		if (appendFraction(group)) return AppendResult::APPENDED;		
+		if (appendVariable(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::RMK_VIS_DIR_INTEGER:
+		if (appendFraction(group)) return AppendResult::APPENDED;
+		if (appendVariable(group)) return AppendResult::APPENDED;
+		incompleteType = IncompleteType::NONE;
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteType::RMK_SFC_OR_TWR:
+		if (group == "VIS") {
+			incompleteType = IncompleteType::RMK_SFC_OR_TWR_VIS;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::RMK_SFC_OR_TWR_VIS:
+		if (appendInteger(group)) return AppendResult::APPENDED;
+		if (appendFraction(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::RMK_SFC_OR_TWR_VIS_INTEGER:
+		if (appendFraction(group)) return AppendResult::APPENDED;
+		incompleteType = IncompleteType::NONE;
+		return AppendResult::NOT_APPENDED;
+	}
+}
+
+std::optional<VisibilityGroup> VisibilityGroup::fromIncompleteInteger(
+	const std::string & group)
+{
+	VisibilityGroup	result;
+	if (!result.appendInteger(group)) return std::optional<VisibilityGroup>();
+	return result;
+}
+
+std::optional<VisibilityGroup> VisibilityGroup::fromMeters(
+	const std::string & group)
+{
+	static const std::optional<VisibilityGroup> notRecognised;
 	static const std::regex rgx("(\\d\\d\\d\\d|////)([NSWE][WED]?[V]?)?");
 	static const auto matchVis = 1, matchDir = 2;
 	std::smatch match;
@@ -4360,36 +4492,151 @@ std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group,
 		}
 		return result;
 	}
-	// Attempt to parse as visibility in miles
-	const auto v = Distance::fromMileString(group);
-	if (!v.has_value()) return notRecognised;
+	return notRecognised;
+}
+
+VisibilityGroup VisibilityGroup::rmkVisIncomplete() {
 	VisibilityGroup result;
-	result.vis = v.value();
+	result.visType = Type::PREVAILING_VARIABLE;
+	result.incompleteType = IncompleteType::RMK_VIS;
 	return result;
 }
 
-AppendResult VisibilityGroup::append(const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata;
-
-	if (!incompleteInteger || visibility().unit() != Distance::Unit::STATUTE_MILES) {
-		return AppendResult::NOT_APPENDED;
-	}
-
-	const auto nextGroup = parse(group, reportPart, reportMetadata);
-	if (!nextGroup) return AppendResult::GROUP_INVALIDATED;
-	if (nextGroup->visibility().unit() != Distance::Unit::STATUTE_MILES &&
-		nextGroup->visibility().isFraction()) return AppendResult::GROUP_INVALIDATED;
-
-	auto v = Distance::fromIntegerAndFraction(visibility(), nextGroup->visibility());
-	if (!v.has_value()) return AppendResult::GROUP_INVALIDATED;
-
-	vis = v.value();
-	incompleteInteger = false;
-	return AppendResult::APPENDED;
+VisibilityGroup VisibilityGroup::rmkSfcVisIncomplete() {
+	VisibilityGroup result;
+	result.visType = Type::SURFACE_VISIBILITY;
+	result.incompleteType = IncompleteType::RMK_SFC_OR_TWR;
+	return result;
 }
+
+VisibilityGroup VisibilityGroup::rmkTwrVisIncomplete() {
+	VisibilityGroup result;
+	result.visType = Type::TOWER_VISIBILITY;
+	result.incompleteType = IncompleteType::RMK_SFC_OR_TWR;
+	return result;
+}
+
+bool VisibilityGroup::appendDirection(const std::string & group)
+{
+	if (direction().status() != Direction::Status::OMMITTED) return false;
+	if (incompleteType != IncompleteType::RMK_VIS) return false;
+	if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
+		dir = d.value();
+		visType = Type::DIRECTIONAL;
+		incompleteType = IncompleteType::RMK_VIS_DIR;
+		return true;
+	}
+	return false;
+}
+
+bool VisibilityGroup::appendInteger(const std::string & group)
+{
+	if (vis.hasInteger()) return false;
+	if (group.empty() || group.length() > 2) return false;
+	const auto val = strToUint(group, 0, group.length());
+	if (!val.has_value()) return false;
+
+	switch (incompleteType) {
+		case IncompleteType::NONE: 
+		incompleteType = IncompleteType::NON_RMK_INTEGER; break;
+
+		case IncompleteType::RMK_VIS:
+		incompleteType = IncompleteType::RMK_VIS_INTEGER; break;
+
+		case IncompleteType::RMK_VIS_DIR:
+		incompleteType = IncompleteType::RMK_VIS_DIR_INTEGER; break;
+
+		case IncompleteType::RMK_SFC_OR_TWR_VIS:
+		incompleteType = IncompleteType::RMK_SFC_OR_TWR_VIS_INTEGER; break;
+
+		default: return false;
+
+	}
+	vis = Distance(val.value(), Distance::Unit::STATUTE_MILES);
+	return true;		
+}
+
+bool VisibilityGroup::appendFraction(const std::string & group) {
+	if (vis.hasFraction()) return false;
+
+	const auto fraction = fractionStrToUint(group, 0, group.length());
+	if (!fraction.has_value()) return false;
+	const auto numerator = std::get<0>(fraction.value());
+	const auto denominator = std::get<1>(fraction.value());
+	
+	auto v = Distance(numerator, denominator);
+	if (vis.isInteger()) {
+		const auto t = Distance::fromIntegerAndFraction(vis, v);
+		if (!t.has_value()) return false;
+		v = t.value();
+	}
+	vis = v;
+	incompleteType = IncompleteType::NONE;
+	return true;
+}
+
+bool VisibilityGroup::appendVariable(const std::string & group) {
+	if (vis.hasFraction() || visMax.isReported()) return false;
+
+	static const std::regex rgx(
+		"(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))V(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))");
+	static const auto matchFractionMin = 1, matchIntegerMin = 2;
+	static const auto matchFractionMax = 3, matchIntegerMax = 4;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return false;
+
+	Distance minDistance = vis, maxDistance = visMax;
+
+	if (match.length(matchFractionMin)) {
+ 		const auto fraction = fractionStrToUint(match.str(matchFractionMin), 0, 
+ 			match.length(matchFractionMin));
+		if (!fraction.has_value()) return false;
+		const auto numerator = std::get<0>(fraction.value());
+		const auto denominator = std::get<1>(fraction.value());
+		auto d = Distance(numerator, denominator);
+		if (minDistance.isInteger()) {
+			const auto t = Distance::fromIntegerAndFraction(minDistance, d);
+			if (!t.has_value()) return false;
+			d = t.value();
+		}
+		minDistance = d;
+	}
+	if (match.length(matchIntegerMin)) {
+		if (minDistance.hasInteger()) return false;
+		minDistance = Distance(std::stoi(match.str(matchIntegerMin)), Distance::Unit::STATUTE_MILES);
+	}
+	if (!minDistance.isValid()) return false;
+	
+	if (match.length(matchFractionMax)) {
+ 		const auto fraction = fractionStrToUint(match.str(matchFractionMax), 0, 
+ 			match.length(matchFractionMax));
+		if (!fraction.has_value()) return false;
+		const auto numerator = std::get<0>(fraction.value());
+		const auto denominator = std::get<1>(fraction.value());
+		maxDistance = Distance(numerator, denominator);
+	}
+	if (match.length(matchIntegerMax)) {
+		maxDistance = Distance(std::stoi(match.str(matchIntegerMax)), Distance::Unit::STATUTE_MILES);
+	}
+	if (!maxDistance.isValid()) return false;
+
+	if (direction().status() != Direction::Status::OMMITTED) visType = Type::DIRECTIONAL_VARIABLE;
+	vis = std::move(minDistance);
+	visMax = std::move(maxDistance);
+	incompleteType = IncompleteType::NONE;
+	return true;
+}
+
+bool VisibilityGroup::isValid() const {
+	if (const auto max = visMax.toUnit(vis.unit()); max.has_value()) {
+		const auto min = vis.toUnit(vis.unit());
+		if (!min.has_value()) return false;
+		if (min.value() > max.value()) return false;
+	}
+	if (incompleteType != IncompleteType::NONE) return false;
+	return (vis.isValid() && dir.isValid() && visMax.isValid());
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 

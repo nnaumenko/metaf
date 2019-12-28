@@ -1344,7 +1344,7 @@ TEST(ParserAppended, appendedGroups) {
 	EXPECT_TRUE(isPressure(result.groups.at(9).group));
 	EXPECT_TRUE(isRmk(result.groups.at(10).group));
 	EXPECT_TRUE(isFixedGroup(result.groups.at(11).group));
-	EXPECT_TRUE(isUnknown(result.groups.at(12).group));
+	EXPECT_TRUE(isVisibility(result.groups.at(12).group));
 	EXPECT_TRUE(isPressure(result.groups.at(13).group));
 	EXPECT_TRUE(isTemperature(result.groups.at(14).group));
 }

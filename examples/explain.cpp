@@ -503,19 +503,40 @@ std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & 
 	switch (group.type()) {
 		case metaf::VisibilityGroup::Type::PREVAILING:
 		case metaf::VisibilityGroup::Type::PREVAILING_NDV:
+		case metaf::VisibilityGroup::Type::PREVAILING_VARIABLE:
 		result << "prevailing";
 		break;
 
 		case metaf::VisibilityGroup::Type::DIRECTIONAL:
+		case metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE:
 		result << explainDirection(group.direction());
 		break;
+
+		case metaf::VisibilityGroup::Type::SURFACE_VISIBILITY:
+		result << "at surface level";
+		break;
+
+		case metaf::VisibilityGroup::Type::TOWER_VISIBILITY:
+		result << "from air traffic control tower";
+		break;
+
+		case metaf::VisibilityGroup::Type::DATA_MISSING:
+		return "Visibility data missing";
 
 		default:
 		result << "[unknown visibility group]:";
 		break;
 	}
 	result << ") ";
-	result << explainDistance(group.visibility());
+	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_VARIABLE ||
+		group.type() == metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE)
+	{
+		result << "is variable" << lineBreak;
+		result << "from " << explainDistance(group.minVisibility()) << lineBreak;
+		result << "to " << explainDistance(group.maxVisibility()) << lineBreak;
+	} else {
+		result << explainDistance(group.visibility());
+	}
 	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_NDV) {
 		result << lineBreak;
 		result << "This station does not distinguish directional variation of visibility";
