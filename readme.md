@@ -4,7 +4,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/785c3536264b4a90bd8d94e1a799d275)](https://www.codacy.com/manual/nnaumenko/metaf?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nnaumenko/metaf&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://codecov.io/gl/nnaumenko/metaf/branch/master/graph/badge.svg)](https://codecov.io/gl/nnaumenko/metaf)
 [![MIT license](https://img.shields.io/github/license/nnaumenko/metaf)](LICENSE.md)
-[![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/heETM4sD6jutovGJ)
+[![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/NqVskzKVpZaQHasP)
 
 
 ## Introduction
@@ -89,11 +89,12 @@ Example of a TAF report is as follows:
 * Report issue time
 * Wind direction, speed and gust speed
 * Wind shear, peak wind and wind shift information
-* Prevailing or directional visibility (including variable visibility groups) in meters or statute miles; surface or tower visibility.
+* Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles
+* Surface visibility and visibility from air traffic control tower.
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
 * Cloud cover of variable density and variable ceiling height
 * Indicator of no significant cloud and good visibility CAVOK
-* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach, ceiling, etc).
+* Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach, ceiling, etc), and indicators for missing visibility or ceiling data. 
 * Current and recent weather information, and indicator or weather phenomena end NSW
 * Beginning and ending time of recent weather phenomena
 * Temperature and dew point, including more precise values given in remarks
@@ -117,20 +118,18 @@ Example of a TAF report is as follows:
 * Lightning data such as strike type and frequency
 * Groups reporting various phenomena in vicinity of the station (thunderstorm, towering cumulus, altocumulus castellanus, cumulonimbus, mammatus, lenticular and rotor clouds, virga, etc.)
 * Sunshine duration
+* Density altitude
+* Largest hailstone size
 
 ## Roadmap
 
 Recognition of the following groups is planned for implementing (not in this particular order):
 
-* VISNO indicator (no visiblity data)
-* CHINO indicator (no ceiling data)
 * Additional visibility value for runway, e.g. VIS 2 1/2 RWY11
 * VC indicator for lightning and other phenomena, e.g. FRQ LTG VC or VIRGA VC ALQDS
 * Ground-based or aloft obscurations with octa, e.g. FG SCT000 or FU BKN020
-* Density altitude included in remarks
 * Cloud type format used in Asia-Pacific region, e.g. 3CU012
-* Hailstone size included in remarks
-* Variable visibility in meters specified in remarks, e.g. VIS 1400V9999
+* Recent precipitation group used in South America, e.g. PP000 
 
 ## Acknowledgements
 

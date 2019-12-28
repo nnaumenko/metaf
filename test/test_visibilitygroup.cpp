@@ -925,6 +925,51 @@ TEST(VisibilityGroup, parseRmkVisVariableSecondFractionTwoDigit) {
 	EXPECT_TRUE(vg->isValid());
 }
 
+// Variable visibility in meters
+
+TEST(VisibilityGroup, parseRmkVisVariableMeters) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("1500V3000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+
+	EXPECT_FALSE(vg->visibility().isReported());
+
+	EXPECT_TRUE(vg->minVisibility().isInteger());
+	ASSERT_TRUE(vg->minVisibility().integer().has_value());
+	EXPECT_EQ(vg->minVisibility().integer().value(), 1500u);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_TRUE(vg->maxVisibility().isInteger());
+	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
+	EXPECT_EQ(vg->maxVisibility().integer().value(), 3000u);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisVariableMetersIncorrectNotReported) {
+	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("////V3000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("1200V////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
 // Incorrect visibility groups
 
 TEST(VisibilityGroup, incompleteRmkVis){
@@ -1032,8 +1077,12 @@ TEST(VisibilityGroup, parseRmkAppendOtherToVisInteger) {
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
+TEST(VisibilityGroup, parseRmkVisIncorrectMeters) {
+	//TODO
+}
+
 // Prevailing non-variable visibility not allowed in remarks, e.g. VIS 1/2 
-// (it is specified in report body or trend instead, e.g. 1/2SM)
+// or VIS 1500 (it is specified in report body or trend instead, e.g. 1/2SM or 1500)
 
 TEST(VisibilityGroup, parseRmkVisIncorrectNotVariable) {
 	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
@@ -1049,6 +1098,10 @@ TEST(VisibilityGroup, parseRmkVisIncorrectNotVariable) {
 	ASSERT_TRUE(vg3.has_value());
 	EXPECT_EQ(vg3->append("2", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg3->append("1/2", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkVisIncorrectNonVariableMeters) {
+	//TODO
 }
 
 // Appending runway is not allowed since this is SecondaryLocationGroup rather
@@ -1068,6 +1121,10 @@ TEST(VisibilityGroup, parseRmkVisAppendRunway) {
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg2->append("RWY18", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkVisMetersAppendRunway) {
+	//TODO
 }
 
 // Directional variable visibility
@@ -1218,6 +1275,39 @@ TEST(VisibilityGroup, parseRmkVisDirectionalIntegerVariableFractionInteger) {
 	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
 
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalVariableMeters) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1200V9999", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::W);
+
+	EXPECT_TRUE(vg->minVisibility().isInteger());
+	ASSERT_TRUE(vg->minVisibility().integer().has_value());
+	EXPECT_EQ(vg->minVisibility().integer().value(), 1200u);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_TRUE(vg->maxVisibility().isInteger());
+	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
+	EXPECT_EQ(vg->maxVisibility().integer().value(), 10000u);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -1437,6 +1527,13 @@ TEST(VisibilityGroup, parseRmkAppendOtherToVisDirectionInteger) {
 	EXPECT_EQ(vg6->append("1", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg6->append("2", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+}
+
+// Non-variable directional visibility in meters is not allowed (e.g. VIS W 1500),
+// it is specified in the report body or trend instead (e.g 1500W)
+
+TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableMeters) {
+	//TODO
 }
 
 // Surface visibility

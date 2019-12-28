@@ -2342,7 +2342,7 @@ The following syntax corresponds to this group in METAR reports.
 
 .. image:: secondarylocationgroup.svg
 
-Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``CIG 025 RWY05``, and ``CIG 006V012``.
+Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO RWY05``, ``CHINO RWY05``, and ``CHINO E``.
 
 .. cpp:class:: SecondaryLocationGroup
 
@@ -2358,11 +2358,19 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``C
 
 		.. cpp:enumerator:: CEILING
 
-			This group indicates the ceiling height. Use :cpp:func:``height()`` to get ceiling height.
+			This group indicates the ceiling height. Use :cpp:func:``height()`` to get ceiling height and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
 
 		.. cpp:enumerator:: VARIABLE_CEILING
 
-			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed.
+			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed, and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
+
+		.. cpp:enumerator:: CHINO
+
+			This group indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
+
+		.. cpp:enumerator:: VISNO
+
+			This group indicates the that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
 
 
 	**Acquiring group data**
@@ -3403,11 +3411,11 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 
 		.. cpp:enumerator:: DENSITY_ALTITUDE
 
-			Placeholder for compatibility; not yet used in this version.
+			Density altitude (in feet) reported in remarks. Non-reported value indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
 
 		.. cpp:enumerator:: HAILSTONE_SIZE
 
-			Placeholder for compatibility; not yet used in this version.
+			Largest hailstone size in inches with increments of 1/4 inch.
 
 
 	**Acquiring group data**

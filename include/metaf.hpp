@@ -30,7 +30,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 4;
-	inline static const int minor = 1;
+	inline static const int minor = 2;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -1072,6 +1072,7 @@ private:
 	inline bool appendInteger(const std::string & group);
 	inline bool appendFraction(const std::string & group);
 	inline bool appendVariable(const std::string & group);
+	inline bool appendVariableMeters(const std::string & group);
 
 	Type visType = Type::PREVAILING;
 	Distance vis;
@@ -1430,6 +1431,8 @@ private:
 		WS_ALL,
 		CIG,
 		CIG_NUM,
+		CHINO,
+		VISNO
 	};
 	IncompleteText incompleteText;
 
@@ -1936,8 +1939,20 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
+	enum class IncompleteType {
+		NONE,
+		DENSITY,
+		DENSITY_ALT,
+		GR,
+		GR_INT
+	};
+
 	Type groupType;
 	std::optional<float> groupValue;
+	IncompleteType incompleteType = IncompleteType::NONE;
+
+	inline bool appendHailstoneFraction (const std::string & group);
+	inline bool appendDensityAltitude (const std::string & group);
 };
 
 class UnknownGroup {
@@ -4426,6 +4441,7 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		if (appendDirection(group)) return AppendResult::APPENDED;
 		if (appendInteger(group)) return AppendResult::APPENDED;
 		if (appendVariable(group)) return AppendResult::APPENDED;
+		if (appendVariableMeters(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteType::RMK_VIS_INTEGER:
@@ -4436,6 +4452,7 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		if (appendInteger(group)) return AppendResult::APPENDED;
 		if (appendFraction(group)) return AppendResult::APPENDED;		
 		if (appendVariable(group)) return AppendResult::APPENDED;
+		if (appendVariableMeters(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteType::RMK_VIS_DIR_INTEGER:
@@ -4623,6 +4640,23 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 	if (direction().status() != Direction::Status::OMMITTED) visType = Type::DIRECTIONAL_VARIABLE;
 	vis = std::move(minDistance);
 	visMax = std::move(maxDistance);
+	incompleteType = IncompleteType::NONE;
+	return true;
+}
+
+bool VisibilityGroup::appendVariableMeters(const std::string & group) {
+	static const std::regex rgx("(\\d\\d\\d\\d)V(\\d\\d\\d\\d)");
+	static const auto matchMin = 1, matchMax = 2;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return false;
+	const auto min = Distance::fromMeterString(match.str(matchMin));
+	if (!min.has_value()) return false;
+	const auto max = Distance::fromMeterString(match.str(matchMax));
+	if (!max.has_value()) return false;
+	if (!min->isReported() || !max->isReported()) return false;
+	vis = min.value();
+	visMax = max.value();
+	if (direction().status() != Direction::Status::OMMITTED) visType = Type::DIRECTIONAL_VARIABLE;
 	incompleteType = IncompleteType::NONE;
 	return true;
 }
@@ -5234,9 +5268,9 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 {
 	(void)reportMetadata;
 	static const std::optional<SecondaryLocationGroup> notRecognised;
+	SecondaryLocationGroup result;
 	if (reportPart == ReportPart::METAR) {
 		if (group == "WS") {
-			SecondaryLocationGroup result;
 			result.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
 			result.incompleteText = IncompleteText::WS;
 			return result;
@@ -5244,9 +5278,18 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 	}
 	if (reportPart == ReportPart::RMK) {
 		if (group == "CIG") {
-			SecondaryLocationGroup result;
 			result.t = Type::CEILING;
 			result.incompleteText = IncompleteText::CIG;
+			return result;
+		}
+		if (group == "CHINO") {
+			result.t = Type::CHINO;
+			result.incompleteText = IncompleteText::CHINO;
+			return result;
+		}
+		if (group == "VISNO") {
+			result.t = Type::VISNO;
+			result.incompleteText = IncompleteText::VISNO;
 			return result;
 		}
 	}
@@ -5271,7 +5314,7 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 		}
 		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
 			incompleteText = IncompleteText::NONE;
-			rw = runway.value();
+			rw = runway;
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
@@ -5314,7 +5357,20 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 		case IncompleteText::CIG_NUM:
 		incompleteText = IncompleteText::NONE;
 		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
-			rw = runway.value();
+			rw = runway;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::CHINO:
+		case IncompleteText::VISNO:
+		incompleteText = IncompleteText::NONE;
+		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+			rw = runway;
+			return AppendResult::APPENDED;
+		}
+		if (const auto d = Direction::fromCardinalString(group, true); d.has_value() && d->isValue()) {
+			dir = d;
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::NOT_APPENDED;
@@ -5325,6 +5381,7 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 bool SecondaryLocationGroup::isValid() const {
 		if (rw.has_value() && !rw->isValid()) return false;
 		if (dir.has_value() && !dir->isValid()) return false;
+		if (incompleteText != IncompleteText::NONE) return false;
 		return true;
 	}
 
@@ -6190,16 +6247,15 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	std::optional<MiscGroup> notRecognised;
 	static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");
 	static const std::regex rgxCorrectionObservation("CC([A-Z])");
 	static const auto matchValue = 1;
 
 	std::smatch match;
+	MiscGroup result;
 
 	if (reportPart == ReportPart::METAR) {
 		if (std::regex_match(group, match, rgxCorrectionObservation)) {
-			MiscGroup result;
 			result.groupType = Type::CORRECTED_WEATHER_OBSERVATION;
 			result.groupValue = match.str(matchValue)[0] - 'A' + 1;
 			return result;
@@ -6207,36 +6263,94 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	}
 
 	if (reportPart == ReportPart::RMK) {
+		if (group == "GR") {
+			result.groupType = Type::HAILSTONE_SIZE;
+			result.incompleteType = IncompleteType::GR;
+			return result;
+		}
+		if (group == "DENSITY") {
+			result.groupType = Type::DENSITY_ALTITUDE;
+			result.incompleteType = IncompleteType::DENSITY;
+			return result;
+		}
 		if (std::regex_match(group, match, rgxSunshineDuration)) {
-			MiscGroup result;
 			result.groupType = Type::SUNSHINE_DURATION_MINUTES;
 			result.groupValue = std::stoi(match.str(matchValue));
 			return result;
 		}
 	}
 
-	return notRecognised;
+	return std::optional<MiscGroup>();
 }
 
 AppendResult MiscGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
+	(void)reportMetadata; (void)reportPart;
+	switch(incompleteType){
+		case IncompleteType::NONE:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteType::DENSITY:
+		if (group == "ALT") {
+			incompleteType = IncompleteType::DENSITY_ALT;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::DENSITY_ALT:
+		if (group == "MISG") {
+			incompleteType = IncompleteType::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (appendDensityAltitude(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::GR:
+		if (group.length() == 1 && group[0] >= '1' && group[0] <= '9') {
+			groupValue = group[0] - '0';
+			incompleteType = IncompleteType::GR_INT;
+			return AppendResult::APPENDED;
+		}
+		if (appendHailstoneFraction(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::GR_INT:
+		if (appendHailstoneFraction(group)) return AppendResult::APPENDED;
+		return AppendResult::GROUP_INVALIDATED;
+
+	}
+}
+
+bool MiscGroup::appendHailstoneFraction(const std::string & group) {
+	// Fraction specified with increment of 1/4
+	bool appended = false;
+	auto value = groupValue.value_or(0.0);
+	if (group == "1/4") { value += 0.25; appended = true; }
+	if (group == "1/2" || group == "2/4") { value += 0.5; appended = true; }
+	if (group == "3/4") { value += 0.75; appended = true; }
+	if (!appended) return false; 
+	groupValue = value;
+	incompleteType = IncompleteType::NONE;
+	return true;
+}
+
+bool MiscGroup::appendDensityAltitude(const std::string & group) {
+	static const std::string unitStr ("FT");
+	static const auto unitLen = unitStr.length();
+	if (group.length() < unitLen + 1) return false; //require at least 1 digit and FT
+	const auto groupUnitStr = group.substr(group.length() - unitLen);
+	if (groupUnitStr != unitStr) return false;
+	const auto val = strToUint(group, 0, group.length() - unitLen);
+	if (!val.has_value()) return false;
+	groupValue = val.value();
+	incompleteType = IncompleteType::NONE;
+	return true;
 }
 
 bool MiscGroup::isValid() const {
-	switch(type()) {
-		case Type::SUNSHINE_DURATION_MINUTES:
-		return true;
-
-		case Type::CORRECTED_WEATHER_OBSERVATION:
-		return true;
-
-		default:
-		return false;
-	}
+	return (incompleteType == IncompleteType::NONE);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

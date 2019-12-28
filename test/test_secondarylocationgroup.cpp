@@ -237,6 +237,8 @@ TEST(SecondaryLocationGroup, parceCeiling) {
 	auto slg1 = metaf::SecondaryLocationGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(slg1.has_value());
 	EXPECT_EQ(slg1->append("025", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->type(), metaf::SecondaryLocationGroup::Type::CEILING);
 	EXPECT_FALSE(slg1->runway().has_value());
 	EXPECT_FALSE(slg1->direction().has_value());
 	ASSERT_TRUE(slg1->height().isInteger());
@@ -247,6 +249,7 @@ TEST(SecondaryLocationGroup, parceCeiling) {
 
 	auto slg2 = metaf::SecondaryLocationGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(slg2.has_value());
+	EXPECT_EQ(slg2->type(), metaf::SecondaryLocationGroup::Type::CEILING);
 	EXPECT_EQ(slg2->append("025", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(slg2->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	ASSERT_TRUE(slg2->runway().has_value());
@@ -261,6 +264,7 @@ TEST(SecondaryLocationGroup, parceCeiling) {
 
 	auto slg3 = metaf::SecondaryLocationGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(slg3.has_value());
+	EXPECT_EQ(slg3->type(), metaf::SecondaryLocationGroup::Type::CEILING);
 	EXPECT_EQ(slg3->append("017", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(slg3->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	ASSERT_TRUE(slg3->runway().has_value());
@@ -278,6 +282,8 @@ TEST(SecondaryLocationGroup, parceVariableCeiling) {
 	auto slg1 = metaf::SecondaryLocationGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(slg1.has_value());
 	EXPECT_EQ(slg1->append("008V014", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->type(), metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING);
 	EXPECT_FALSE(slg1->runway().has_value());
 	EXPECT_FALSE(slg1->direction().has_value());
 	EXPECT_FALSE(slg1->height().isReported());
@@ -292,6 +298,7 @@ TEST(SecondaryLocationGroup, parceVariableCeiling) {
 	ASSERT_TRUE(slg2.has_value());
 	EXPECT_EQ(slg2->append("008V014", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(slg2->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg2->type(), metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING);
 	ASSERT_TRUE(slg2->runway().has_value());
 	EXPECT_EQ(slg2->runway()->number(), 18u);
 	EXPECT_EQ(slg2->runway()->designator(), metaf::Runway::Designator::NONE);
@@ -308,6 +315,7 @@ TEST(SecondaryLocationGroup, parceVariableCeiling) {
 	ASSERT_TRUE(slg3.has_value());
 	EXPECT_EQ(slg3->append("002V006", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(slg3->append("RWY24R", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(slg3->type(), metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING);
 	ASSERT_TRUE(slg3->runway().has_value());
 	EXPECT_EQ(slg3->runway()->number(), 24u);
 	EXPECT_EQ(slg3->runway()->designator(), metaf::Runway::Designator::RIGHT);
@@ -448,6 +456,122 @@ TEST(SecondaryLocationGroup, isValidCeilingNoRunway) {
 	EXPECT_EQ(slg2->append("012V014", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(slg2->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 	EXPECT_TRUE(slg2->isValid());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CHINO and VISNO
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(SecondaryLocationGroup, parseChino) {
+	auto slg1 = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg1.has_value());
+	EXPECT_EQ(slg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->type(), metaf::SecondaryLocationGroup::Type::CHINO);
+	EXPECT_FALSE(slg1->runway().has_value());
+	EXPECT_FALSE(slg1->direction().has_value());
+	EXPECT_FALSE(slg1->height().isReported());
+	EXPECT_FALSE(slg1->minHeight().isReported());
+	EXPECT_FALSE(slg1->maxHeight().isReported());
+
+	auto slg2 = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg2.has_value());
+	EXPECT_EQ(slg2->type(), metaf::SecondaryLocationGroup::Type::CHINO);
+	EXPECT_EQ(slg2->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(slg2->runway().has_value());
+	EXPECT_EQ(slg2->runway()->number(), 18u);
+	EXPECT_EQ(slg2->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_FALSE(slg2->direction().has_value());
+	EXPECT_FALSE(slg2->height().isReported());
+	EXPECT_FALSE(slg2->minHeight().isReported());
+	EXPECT_FALSE(slg2->maxHeight().isReported());
+
+	auto slg3 = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg3.has_value());
+	EXPECT_EQ(slg3->type(), metaf::SecondaryLocationGroup::Type::CHINO);
+	EXPECT_EQ(slg3->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(slg3->runway().has_value());
+	EXPECT_EQ(slg3->runway()->number(), 24u);
+	EXPECT_EQ(slg3->runway()->designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_FALSE(slg3->direction().has_value());
+	EXPECT_FALSE(slg3->height().isReported());
+	EXPECT_FALSE(slg3->minHeight().isReported());
+	EXPECT_FALSE(slg3->maxHeight().isReported());
+
+	auto slg4 = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg4.has_value());
+	EXPECT_EQ(slg4->type(), metaf::SecondaryLocationGroup::Type::CHINO);
+	EXPECT_EQ(slg4->append("SW", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(slg4->runway().has_value());
+	ASSERT_TRUE(slg4->direction().has_value());
+	EXPECT_EQ(slg4->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(slg4->direction()->cardinal(), metaf::Direction::Cardinal::SW);
+	EXPECT_FALSE(slg4->height().isReported());
+	EXPECT_FALSE(slg4->minHeight().isReported());
+	EXPECT_FALSE(slg4->maxHeight().isReported());
+}
+
+TEST(SecondaryLocationGroup, parseVisno) {
+	auto slg1 = metaf::SecondaryLocationGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg1.has_value());
+	EXPECT_EQ(slg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(slg1->type(), metaf::SecondaryLocationGroup::Type::VISNO);
+	EXPECT_FALSE(slg1->runway().has_value());
+	EXPECT_FALSE(slg1->direction().has_value());
+	EXPECT_FALSE(slg1->height().isReported());
+	EXPECT_FALSE(slg1->minHeight().isReported());
+	EXPECT_FALSE(slg1->maxHeight().isReported());
+
+	auto slg2 = metaf::SecondaryLocationGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg2.has_value());
+	EXPECT_EQ(slg2->type(), metaf::SecondaryLocationGroup::Type::VISNO);
+	EXPECT_EQ(slg2->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(slg2->runway().has_value());
+	EXPECT_EQ(slg2->runway()->number(), 18u);
+	EXPECT_EQ(slg2->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_FALSE(slg2->direction().has_value());
+	EXPECT_FALSE(slg2->height().isReported());
+	EXPECT_FALSE(slg2->minHeight().isReported());
+	EXPECT_FALSE(slg2->maxHeight().isReported());
+
+	auto slg3 = metaf::SecondaryLocationGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg3.has_value());
+	EXPECT_EQ(slg3->type(), metaf::SecondaryLocationGroup::Type::VISNO);
+	EXPECT_EQ(slg3->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(slg3->runway().has_value());
+	EXPECT_EQ(slg3->runway()->number(), 24u);
+	EXPECT_EQ(slg3->runway()->designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_FALSE(slg3->direction().has_value());
+	EXPECT_FALSE(slg3->height().isReported());
+	EXPECT_FALSE(slg3->minHeight().isReported());
+	EXPECT_FALSE(slg3->maxHeight().isReported());
+
+	auto slg4 = metaf::SecondaryLocationGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(slg4.has_value());
+	EXPECT_EQ(slg4->type(), metaf::SecondaryLocationGroup::Type::VISNO);
+	EXPECT_EQ(slg4->append("SW", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(slg4->runway().has_value());
+	ASSERT_TRUE(slg4->direction().has_value());
+	EXPECT_EQ(slg4->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(slg4->direction()->cardinal(), metaf::Direction::Cardinal::SW);
+	EXPECT_FALSE(slg4->height().isReported());
+	EXPECT_FALSE(slg4->minHeight().isReported());
+	EXPECT_FALSE(slg4->maxHeight().isReported());
+}
+
+TEST(SecondaryLocationGroup, isValidChinoValidRunway) {
+	//TODO
+}
+
+TEST(SecondaryLocationGroup, isValidChinoWrongRunway) {
+	//TODO
+}
+
+TEST(SecondaryLocationGroup, isValidChinoNoRunway) {
+	//TODO
+}
+
+TEST(SecondaryLocationGroup, isValidChinoDirection) {
+	//TODO
 }
 
 ///////////////////////////////////////////////////////////////////////////////

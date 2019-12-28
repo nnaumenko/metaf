@@ -757,6 +757,14 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 		result << explainDistance(group.maxHeight());
 		break;
 
+		case metaf::SecondaryLocationGroup::Type::VISNO:
+		result << "Visibility data not awailable";
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::CHINO:
+		result << "Ceiling data not awailable";
+		break;
+
 		default:
 		result << "[unknown secondary location info]";
 	}
@@ -1157,6 +1165,18 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 			result << "correction number is " << static_cast<int>(correctionNo.value());
 		}
 		break;
+
+		case metaf::MiscGroup::Type::DENSITY_ALTITUDE:
+			result << "Density altitude ";
+			if (!group.value().has_value()) { result << "data missing"; break; }
+			result << " is " << group.value().value() << " feet";
+			break;
+
+		case metaf::MiscGroup::Type::HAILSTONE_SIZE:
+			result << "Largest hailstone size ";
+			if (!group.value().has_value()) { result << "data missing"; break; }
+			result << " is " << group.value().value() << " inches";
+			break;
 
 		default:
 		result << "[unknown miscellaneous group type]";
