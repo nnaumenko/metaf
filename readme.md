@@ -126,9 +126,7 @@ Example of a TAF report is as follows:
 Recognition of the following groups is planned for implementing (not in this particular order):
 
 * Additional visibility value for runway, e.g. VIS 2 1/2 RWY11
-* VC indicator for lightning and other phenomena, e.g. FRQ LTG VC or VIRGA VC ALQDS
 * Ground-based or aloft obscurations with octa, e.g. FG SCT000 or FU BKN020
-* Cloud type format used in Asia-Pacific region, e.g. 3CU012
 * Recent precipitation group used in South America, e.g. PP000 
 
 ## Acknowledgements

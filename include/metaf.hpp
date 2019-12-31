@@ -30,8 +30,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 4;
-	inline static const int minor = 2;
-	inline static const int patch = 1;
+	inline static const int minor = 3;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -1722,6 +1722,7 @@ private:
 	std::pair<Type, unsigned int> cloudTypes[cloudTypesMaxSize];
 	Distance bh;
 
+	static inline std::optional<Type> cloudTypeFromString(std::string s);
 	static inline std::optional<Type> typeFromString(std::string s);
 };
 
@@ -5836,7 +5837,6 @@ CloudTypesGroup::toVector() const
 	return result;
 }
 
-
 std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
@@ -5847,23 +5847,40 @@ std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 	static const std::regex matchRgx("(?:(?:[A-Z]{2,4})[1-8])+");
 	static const std::regex searchRgx("([A-Z]{2,4})([1-8])");
 	static const auto matchType = 1, matchOkta = 2;
+	static const std::regex altFormatRgx("([1-8])([A-Z][A-Z][A-Z]?)(\\d\\d\\d)");
+	static const auto altMatchOkta = 1, altMatchType = 2, altMatchHeight = 3;
 
 	if (reportPart != ReportPart::RMK) return notRecognised;
 	std::smatch match;
-	if (!std::regex_match(group, match, matchRgx)) return notRecognised;
-
-	CloudTypesGroup result;
-	auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
-	while (iter != std::sregex_iterator()) {
-		match = *iter++;
-		const auto type = typeFromString(match.str(matchType));
+	if (std::regex_match(group, match, altFormatRgx)) {
+		//Assuming okta is a number in range 1..8, guaranteed by regex
+		const auto okta = static_cast<unsigned int>(stoi(match.str(altMatchOkta)));
+		const auto type = cloudTypeFromString(match.str(altMatchType));
 		if (!type.has_value()) return notRecognised;
-		const auto okta = static_cast<unsigned int>(stoi(match.str(matchOkta)));
-		//Assuming okta is from 1 to 8, guaranteed by regex
-		if (result.cloudTypesSize >= result.cloudTypesMaxSize) return result;
-		result.cloudTypes[result.cloudTypesSize++] = std::pair(type.value(), okta);
+		const auto ht = Distance::fromHeightString(match.str(altMatchHeight));
+		if (!ht.has_value()) return notRecognised;
+		CloudTypesGroup result;
+		result.bh = ht.value();
+		result.cloudTypesSize = 1;
+		result.cloudTypes[0] = std::pair(type.value(), okta);
+		return result;
 	}
-	return result;
+	if (std::regex_match(group, match, matchRgx)) {
+		CloudTypesGroup result;
+		auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
+		while (iter != std::sregex_iterator()) {
+			match = *iter++;
+			const auto type = typeFromString(match.str(matchType));
+			if (!type.has_value()) return notRecognised;
+			const auto okta = static_cast<unsigned int>(stoi(match.str(matchOkta)));
+			//Assuming okta is from 1 to 8, guaranteed by regex
+			if (result.cloudTypesSize >= result.cloudTypesMaxSize) return result;
+			result.cloudTypes[result.cloudTypesSize++] = std::pair(type.value(), okta);
+		}
+		return result;
+	}
+	return notRecognised;
+
 }
 
 AppendResult CloudTypesGroup::append(const std::string & group,
@@ -5874,7 +5891,7 @@ AppendResult CloudTypesGroup::append(const std::string & group,
 	return AppendResult::NOT_APPENDED;
 }
 
-std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
+std::optional<CloudTypesGroup::Type> CloudTypesGroup::cloudTypeFromString(std::string s) {
 	if (s == "CB")    return Type::CUMULONIMBUS;
 	if (s == "TCU")   return Type::TOWERING_CUMULUS;
 	if (s == "CU")    return Type::CUMULUS;
@@ -5889,6 +5906,11 @@ std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string
 	if (s == "CI")    return Type::CIRRUS;
 	if (s == "CS")    return Type::CIRROSTRATUS;
 	if (s == "CC")    return Type::CIRROCUMULUS;
+	return std::optional<CloudTypesGroup::Type>();
+}
+
+std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
+	if (const auto t = cloudTypeFromString(s); t.has_value()) return t;
 	if (s == "BLSN")  return Type::BLOWING_SNOW;
 	if (s == "BLDU")  return Type::BLOWING_DUST;
 	if (s == "BLSA")  return Type::BLOWING_SAND;

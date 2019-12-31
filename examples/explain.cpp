@@ -971,6 +971,10 @@ std::string VisitorExplain::visitCloudTypesGroup(
 		result << ", covering " << std::get<unsigned int>(clouds.at(i)) << "/8 of sky";
 		result << lineBreak;
 	}
+	if (group.baseHeight().isReported()) {
+		result << "Base height is ";
+		result << explainDistance(group.baseHeight());
+	}
 	return result.str();
 }
 

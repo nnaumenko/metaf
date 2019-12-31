@@ -2907,7 +2907,7 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: cloudtypesgroup.svg
 
-Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3`` and ``SC1SC1SC3AC2``.
+Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3``, ``SC1SC1SC3AC2``, and ``3CU010``.
 
 .. cpp:class:: CloudTypesGroup
 
@@ -3033,7 +3033,7 @@ Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3`` and ``SC1SC1SC3AC2
 
 		.. cpp:function:: Distance baseHeight() const
 
-			:returns: Height of the base of the cloud layer, if a single cloud layer along with its base height is reported. In current version always returns a non-reported value.
+			:returns: Height of the base of the cloud layer, if a single cloud layer along with its base height is reported.
 
 	**Validating**
 
