@@ -31,7 +31,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 2;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -6054,6 +6054,7 @@ AppendResult LightningGroup::append(const std::string & group,
 
 	// No direction sector was previously appended to group
 	if (group == "DSNT") { dist = Distance::makeDistant(); return AppendResult::APPENDED; }
+	if (group == "VC") { dist = Distance::makeVicinity(); return AppendResult::APPENDED; }
 	if (const auto dir = Direction::fromCardinalString(group, true); dir.has_value()) {
 		//Single direction is specified
 		dir1from = dir.value();
@@ -6218,6 +6219,7 @@ bool VicinityGroup::appendDir2(const std::string & str) {
 
 bool VicinityGroup::appendDistance(const std::string & str) {
 	if (str == "DSNT") { dist = Distance::makeDistant(); return true; }
+	if (str == "VC") { dist = Distance::makeVicinity(); return true; }
 	const auto d = Distance::fromKmString(str);
 	if (!d.has_value()) return false;
 	dist = d.value();

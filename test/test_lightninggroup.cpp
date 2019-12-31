@@ -38,6 +38,58 @@ TEST(LightningGroup, parseLtgDsnt) {
 	EXPECT_EQ(lg->directions().size(), 0u);
 }
 
+TEST(LightningGroup, parseLtgDsntAlqds) {
+	auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(lg.has_value());
+
+	EXPECT_EQ(lg->append("DSNT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(lg->append("ALQDS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::DISTANT);
+	EXPECT_FALSE(lg->isCloudGround());
+	EXPECT_FALSE(lg->isInCloud());
+	EXPECT_FALSE(lg->isCloudCloud());
+	EXPECT_FALSE(lg->isCloudAir());
+	EXPECT_FALSE(lg->isUnknownType());
+	EXPECT_EQ(lg->directions().size(), 1u);
+	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::ALQDS);
+}
+
+TEST(LightningGroup, parseLtgVc) {
+	auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(lg.has_value());
+
+	EXPECT_EQ(lg->append("VC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::VICINITY);
+	EXPECT_FALSE(lg->isCloudGround());
+	EXPECT_FALSE(lg->isInCloud());
+	EXPECT_FALSE(lg->isCloudCloud());
+	EXPECT_FALSE(lg->isCloudAir());
+	EXPECT_FALSE(lg->isUnknownType());
+	EXPECT_EQ(lg->directions().size(), 0u);
+}
+
+TEST(LightningGroup, parseLtgVcAlqds) {
+	auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(lg.has_value());
+
+	EXPECT_EQ(lg->append("VC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(lg->append("ALQDS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::NONE);
+	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::VICINITY);
+	EXPECT_FALSE(lg->isCloudGround());
+	EXPECT_FALSE(lg->isInCloud());
+	EXPECT_FALSE(lg->isCloudCloud());
+	EXPECT_FALSE(lg->isCloudAir());
+	EXPECT_FALSE(lg->isUnknownType());
+	EXPECT_EQ(lg->directions().size(), 1u);
+	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::ALQDS);
+}
+
 TEST(LightningGroup, parseOcnlLtg) {
 	auto lg = metaf::LightningGroup::parse("OCNL", metaf::ReportPart::RMK);
 	ASSERT_TRUE(lg.has_value());

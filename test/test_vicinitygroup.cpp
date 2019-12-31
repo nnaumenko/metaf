@@ -381,6 +381,37 @@ TEST(VicinityGroup, parseCB_DSNT_N_SE) {
 	EXPECT_EQ(vg->directions().at(3), metaf::Direction::Cardinal::SE);
 }
 
+TEST(VicinityGroup, parseCB_VC) {
+	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::VICINITY);
+	EXPECT_FALSE(vg->distance().isValue());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 0u);
+}
+
+TEST(VicinityGroup, parseCB_VC_N_SE) {
+	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("N-SE", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::VICINITY);
+	EXPECT_FALSE(vg->distance().isValue());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 4u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(vg->directions().at(1), metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(vg->directions().at(2), metaf::Direction::Cardinal::E);
+	EXPECT_EQ(vg->directions().at(3), metaf::Direction::Cardinal::SE);
+}
+
 TEST(VicinityGroup, parseCB_15KM_E) {
 	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
