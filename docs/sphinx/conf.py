@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Metaf'
-copyright = '2018-2019, Nick Naumenko'
+copyright = '2018-2020, Nick Naumenko'
 author = 'Nick Naumenko'
 
 # The short X.Y version
