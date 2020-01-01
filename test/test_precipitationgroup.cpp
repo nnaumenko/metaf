@@ -104,6 +104,14 @@ TEST(PrecipitationGroup, parse3digitGroup) {
 	ASSERT_TRUE(pg6->amount().precipitation().has_value());
 	EXPECT_NEAR(pg6->amount().precipitation().value(), 0.22, margin);
 	EXPECT_FALSE(pg6->tendency().isReported());	
+
+	const auto pg7 = metaf::PrecipitationGroup::parse("PP134", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg7.has_value());
+	EXPECT_EQ(pg7->type(), metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT);
+	EXPECT_EQ(pg7->amount().unit(), metaf::Precipitation::Unit::MM);
+	ASSERT_TRUE(pg7->amount().precipitation().has_value());
+	EXPECT_NEAR(pg7->amount().precipitation().value(), 13.4, margin);
+	EXPECT_FALSE(pg7->tendency().isReported());	
 }
 
 TEST(PrecipitationGroup, parse3digitGroupNotReported) {
@@ -143,6 +151,11 @@ TEST(PrecipitationGroup, parse3digitGroupNotReported) {
 	EXPECT_FALSE(pg6->amount().isReported());
 	EXPECT_FALSE(pg6->tendency().isReported());	
 
+	const auto pg7 = metaf::PrecipitationGroup::parse("PP///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg7.has_value());
+	EXPECT_EQ(pg7->type(), metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT);
+	EXPECT_FALSE(pg7->amount().isReported());
+	EXPECT_FALSE(pg7->tendency().isReported());	
 }
 
 TEST(PrecipitationGroup, parseSnincrGroup) {
@@ -259,6 +272,15 @@ TEST(PrecipitationGroup, parseWrongReportPart) {
 		metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(
 		metaf::PrecipitationGroup::parse("SNINCR", metaf::ReportPart::TAF).has_value());
+
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP000", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP000", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP000", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP000", metaf::ReportPart::TAF).has_value());
 }
 
 TEST(PrecipitationGroup, parseWrongFormat4digitGroup) {
@@ -406,6 +428,27 @@ TEST(PrecipitationGroup, parseWrongFormat93Group) {
 		metaf::PrecipitationGroup::parse("933////", metaf::ReportPart::RMK).has_value());
 }
 
+TEST(PrecipitationGroup, parseWrongFormatPPGroup) {
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PA000", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("ZZ000", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PPA00", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP0A0", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP00A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP00", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP0000", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP//", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(
+		metaf::PrecipitationGroup::parse("PP////", metaf::ReportPart::RMK).has_value());
+}
+
 TEST(PrecipitationGroup, parse3hourly) {
 	const auto time3hourly = metaf::MetafTime::fromStringDDHHMM("310300");
 	ASSERT_TRUE(time3hourly.has_value());
@@ -513,9 +556,17 @@ TEST(PrecipitationGroup, isValid3digit) {
 	ASSERT_TRUE(pg11.has_value());
 	EXPECT_TRUE(pg11->isValid());
 
-	const auto pg13 = metaf::PrecipitationGroup::parse("933///", metaf::ReportPart::RMK);
+	const auto pg12 = metaf::PrecipitationGroup::parse("933///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg12.has_value());
+	EXPECT_TRUE(pg12->isValid());
+
+	const auto pg13 = metaf::PrecipitationGroup::parse("PP012", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg13.has_value());
 	EXPECT_TRUE(pg13->isValid());
+
+	const auto pg14 = metaf::PrecipitationGroup::parse("PP///", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg14.has_value());
+	EXPECT_TRUE(pg14->isValid());
 }
 
 TEST(PrecipitationGroup, isValidSnincr) {

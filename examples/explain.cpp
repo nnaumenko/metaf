@@ -1115,6 +1115,31 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 
 		case metaf::VicinityGroup::Type::PRECIPITATION_IN_VICINITY:
 		result << "Precipitation"; break;
+
+		case metaf::VicinityGroup::Type::FOG:
+		result << "Fog"; break;
+
+		case metaf::VicinityGroup::Type::FOG_SHALLOW:
+		result << "Shallow fog"; break;
+
+		case metaf::VicinityGroup::Type::FOG_PATCHES:
+		result << "Patches of fog"; break;
+
+		case metaf::VicinityGroup::Type::HAZE:
+		result << "Haze"; break;
+
+		case metaf::VicinityGroup::Type::SMOKE:
+		result << "Smoke"; break;
+
+		case metaf::VicinityGroup::Type::BLOWING_SNOW:
+		result << "Blowing snow"; break;
+
+		case metaf::VicinityGroup::Type::BLOWING_SAND:
+		result << "Blowing sand"; break;
+
+		case metaf::VicinityGroup::Type::BLOWING_DUST:
+		result << "Blowing dust"; break;
+
 	}
 	result << " observed";
 	if (group.distance().isReported())
@@ -1467,8 +1492,11 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 		case metaf::Direction::Status::ALQDS:
 		return "all quadrants (all directions)";
 
+		case metaf::Direction::Status::UNKNOWN:
+		return "unknown direction";
+
 		default:
-		return "unknown direction status";
+		return "[unknown direction status]";
 	}
 	return result.str();
 }
@@ -2207,6 +2235,9 @@ std::string_view VisitorExplain::precipitationGroupTypeToString(
 
 		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
 		return "ice accretion for the last 6 hours";
+
+		case metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
+		return "precipitation accumulation since last report";
 
 		default:
 		return "[unknown precipitation type]";

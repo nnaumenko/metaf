@@ -96,6 +96,15 @@ TEST(Direction, fromCardinalStringAlqds) {
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("ALQDS").has_value());
 }
 
+TEST(Direction, fromCardinalStringUnknown) {
+	const auto d = metaf::Direction::fromCardinalString("UNKNOWN", false, true);
+	ASSERT_TRUE(d.has_value());
+	EXPECT_FALSE(d->degrees().has_value());
+	EXPECT_EQ(d->status(), metaf::Direction::Status::UNKNOWN);
+
+	EXPECT_FALSE(metaf::Direction::fromCardinalString("UNKNOWN", false, false).has_value());
+}
+
 TEST(Direction, fromCardinalStringSpecialOther) {
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("///").has_value());
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("VRB").has_value());

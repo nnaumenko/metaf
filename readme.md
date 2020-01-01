@@ -107,7 +107,7 @@ Example of a TAF report is as follows:
 * Groups indicating that runway or airport is closed due to snow accumulation
 * Groups indicating that deposits on runway were cleared or ceased to exist
 * Rainfall groups used in Australia
-* Various precipitation, snowfall, and ice buildup groups reported in remarks section in North America
+* Various precipitation, snowfall, and ice buildup groups reported in remarks section in North and South America
 * Temperature and state of sea surface or wave height
 * Colour codes used by NATO militaries to quickly assess visibility and cloud conditions
 * Trend groups NOSIG, BECMG, TEMPO, INTER, FMxxxxxx and various time span groups
@@ -127,7 +127,10 @@ Recognition of the following groups is planned for implementing (not in this par
 
 * Additional visibility value for runway, e.g. VIS 2 1/2 RWY11
 * Ground-based or aloft obscurations with octa, e.g. FG SCT000 or FU BKN020
-* Recent precipitation group used in South America, e.g. PP000 
+
+After these groups are implemented the plan is to improve test coverage, documentation, as well as optimise, refactor and bugfix the code itself where necessary.
+
+No further additions to parser are planned, however if your region uses some groups and/or formats which you think should be recognised by Metaf, please feel free to open an issue.
 
 ## Acknowledgements
 

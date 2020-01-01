@@ -510,6 +510,10 @@ Direction
 
 			All quadrants (i.e. all directions).
 
+		.. cpp:enumerator:: UNKNOWN
+
+			Unknown direction.
+
 
 	.. cpp:enum-class:: Status
 
@@ -547,6 +551,9 @@ Direction
 
 			Direction is reported as all quadrants (i.e. in all directions).
 
+		.. cpp:enumerator:: UNKNOWN
+
+			Direction is explicitly reported as unknown (e.g. when direction of movement of phenomena in vicinity is unknown).
 
 	**Acquiring the data**
 
@@ -2641,6 +2648,11 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 			Indicates that snow is increasing rapidly; use :cpp:func:`amount()` for total snowfall, and :cpp:func:`tendency()` for snow increase during last hour.
 
+		.. cpp:enumerator:: PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT
+
+			Accumulation of precipitation since previous released weather report.
+
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -3358,6 +3370,31 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 		.. cpp:enumerator:: PRECIPITATION_IN_VICINITY
 
 			Precipitation.
+
+		.. cpp:enumerator:: FOG
+
+			Fog.
+
+		.. cpp:enumerator:: HAZE
+
+			Haze.
+
+		.. cpp:enumerator:: SMOKE
+
+			Smoke.
+
+		.. cpp:enumerator:: BLOWING_SNOW
+
+			Blowing snow.
+
+		.. cpp:enumerator:: BLOWING_SAND
+
+			Blowing sand.
+
+		.. cpp:enumerator:: BLOWING_DUST
+
+			Blowing dust.
+
 
 	**Acquiring group data**
 

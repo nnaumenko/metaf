@@ -148,6 +148,128 @@ TEST(VicinityGroup, parseVCSH_N) {
 	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
 }
 
+TEST(VicinityGroup, parseFOG_N) {
+	auto vg1 = metaf::VicinityGroup::parse("FOG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+
+	EXPECT_EQ(vg1->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg1->type(), metaf::VicinityGroup::Type::FOG);
+	EXPECT_EQ(vg1->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg1->distance().isReported());
+	EXPECT_EQ(vg1->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg1->directions().size(), 1u);
+	EXPECT_EQ(vg1->directions().at(0), metaf::Direction::Cardinal::N);
+
+	auto vg2 = metaf::VicinityGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+
+	EXPECT_EQ(vg2->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg2->type(), metaf::VicinityGroup::Type::FOG);
+	EXPECT_EQ(vg2->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg2->distance().isReported());
+	EXPECT_EQ(vg2->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg2->directions().size(), 1u);
+	EXPECT_EQ(vg2->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseMIFG_N) {
+	auto vg = metaf::VicinityGroup::parse("MIFG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::FOG_SHALLOW);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseBCFG_N) {
+	auto vg = metaf::VicinityGroup::parse("BCFG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::FOG_PATCHES);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseHAZE_N) {
+	auto vg1 = metaf::VicinityGroup::parse("HAZE", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+
+	EXPECT_EQ(vg1->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg1->type(), metaf::VicinityGroup::Type::HAZE);
+	EXPECT_EQ(vg1->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg1->distance().isReported());
+	EXPECT_EQ(vg1->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg1->directions().size(), 1u);
+	EXPECT_EQ(vg1->directions().at(0), metaf::Direction::Cardinal::N);
+
+	auto vg2 = metaf::VicinityGroup::parse("HZ", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+
+	EXPECT_EQ(vg2->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg2->type(), metaf::VicinityGroup::Type::HAZE);
+	EXPECT_EQ(vg2->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg2->distance().isReported());
+	EXPECT_EQ(vg2->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg2->directions().size(), 1u);
+	EXPECT_EQ(vg2->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseBLSN_N) {
+	auto vg = metaf::VicinityGroup::parse("BLSN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::BLOWING_SNOW);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseBLSA_N) {
+	auto vg = metaf::VicinityGroup::parse("BLSA", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::BLOWING_SAND);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
+TEST(VicinityGroup, parseBLDU_N) {
+	auto vg = metaf::VicinityGroup::parse("BLDU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::BLOWING_DUST);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::NONE);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::N);
+}
+
 TEST(VicinityGroup, parseROTOR_CLD_N) {
 	auto vg = metaf::VicinityGroup::parse("ROTOR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
@@ -189,6 +311,10 @@ TEST(VicinityGroup, parseCB_other) {
 	auto vg3 = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg3.has_value());
 	EXPECT_EQ(vg3->append("TEST", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg4 = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("UNKNOWN", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 }
 
 TEST(VicinityGroup, parseCB_N_SE) {
@@ -292,6 +418,12 @@ TEST(VicinityGroup, parseCB_N_AND_other) {
 	EXPECT_EQ(vg3->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg3->append("AND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg3->append("TEST", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto vg4 = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg4->append("AND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg4->append("UNKNOWN", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(VicinityGroup, parseCB_N_SE_MOV_N) {
@@ -471,4 +603,25 @@ TEST(VicinityGroup, parseCB_5KM_E_AND_OHD_MOV_E) {
 	EXPECT_EQ(vg->directions().size(), 2u);
 	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::E);
 	EXPECT_EQ(vg->directions().at(1), metaf::Direction::Cardinal::OHD);
+}
+
+TEST(VicinityGroup, parseCB_40KM_E_MOV_UNKNOWN) {
+	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("40KM", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("E", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("MOV", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("UNKNOWN", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
+	ASSERT_TRUE(vg->distance().integer().has_value());
+	EXPECT_EQ(vg->distance().integer(), 40000u);
+	EXPECT_FALSE(vg->distance().numerator().has_value());
+	EXPECT_FALSE(vg->distance().denominator().has_value());
+	EXPECT_EQ(vg->movingDirection(), metaf::Direction::Cardinal::UNKNOWN);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0), metaf::Direction::Cardinal::E);
 }

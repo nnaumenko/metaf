@@ -1353,7 +1353,7 @@ TEST(ParserAppended, appendedGroups) {
 
 TEST(ParserResultReportPartAndRawString, metar) {
 	const auto result = metaf::Parser::parse(
-		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK SMOKE");
+		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG RMK LAST");
 
 	EXPECT_EQ(result.groups.size(), 11u);
 
@@ -1398,7 +1398,7 @@ TEST(ParserResultReportPartAndRawString, metar) {
 	EXPECT_EQ(result.groups.at(9).reportPart, metaf::ReportPart::METAR);
 
 	EXPECT_TRUE(isUnknown(result.groups.at(10).group));
-	EXPECT_EQ(result.groups.at(10).rawString, "SMOKE");
+	EXPECT_EQ(result.groups.at(10).rawString, "LAST");
 	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::RMK);
 }
 

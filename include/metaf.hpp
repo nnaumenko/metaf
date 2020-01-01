@@ -30,7 +30,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 4;
-	inline static const int minor = 3;
+	inline static const int minor = 4;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -342,7 +342,8 @@ public:
 		TRUE_S,
 		TRUE_E,
 		OHD,	// Overhead
-		ALQDS	// All quadrants
+		ALQDS,	// All quadrants
+		UNKNOWN // Unknown
 	};
 	enum class Status {
 		OMMITTED, 		// Direction is ommitted (not specified at all)
@@ -352,7 +353,8 @@ public:
 		VALUE_DEGREES, 	// Direction is reported as value in degrees
 		VALUE_CARDINAL,	// Direction is reported as cardinal value
 		OVERHEAD,		// Phenomena occurring directly over the location
-		ALQDS			// Direction is reported as all quadrants (in all directions)  
+		ALQDS,			// Direction is reported as all quadrants (in all directions)
+		UNKNOWN 		// Direction is reported as unknown explicitly
 	};
 	Status status() const { return dirStatus; }
 	inline Cardinal cardinal(bool trueDirections = false) const;
@@ -375,7 +377,8 @@ public:
 
 	Direction() = default;
 	static inline std::optional<Direction> fromCardinalString(const std::string & s,
-		bool enableOhdAlqds = false);
+		bool enableOhdAlqds = false,
+		bool enableUnknown = false);
 	static inline std::optional<Direction> fromDegreesString(const std::string & s);
 	static inline std::optional<std::pair<Direction, Direction>> fromSectorString(
 		const std::string & s);
@@ -438,7 +441,8 @@ public:
 	static inline std::optional<Precipitation> fromRainfallString(const std::string & s);
 	static inline std::optional<Precipitation> fromRunwayDeposits(const std::string & s);
 	static inline std::optional<Precipitation> fromRemarkString(const std::string & s,
-		float factorInches,
+		float factor = 1,
+		Unit unit = Unit::INCHES, 
 		bool allowNotReported = false);
 	static inline std::optional<std::pair<Precipitation, Precipitation> >
 		fromSnincrString(const std::string & s);
@@ -1554,7 +1558,8 @@ public:
 		ICE_ACCRETION_FOR_LAST_HOUR,
 		ICE_ACCRETION_FOR_LAST_3_HOURS,
 		ICE_ACCRETION_FOR_LAST_6_HOURS,
-		SNOW_INCREASING_RAPIDLY
+		SNOW_INCREASING_RAPIDLY,
+		PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT,
 	};
 	Type type() const { return precType; }
 	Precipitation amount() const { return precAmount; }
@@ -1577,6 +1582,7 @@ private:
 		bool is3hourly,
 		bool is6hourly);
 	static inline float factorFromType(Type type);
+	static inline Precipitation::Unit unitFromType(Type type);
 };
 
 class LayerForecastGroup {
@@ -1860,7 +1866,15 @@ public:
 		CIRROCUMULUS_STANDING_LENTICULAR,
 		ROTOR_CLOUD,
 		VIRGA,
-		PRECIPITATION_IN_VICINITY
+		PRECIPITATION_IN_VICINITY,
+		FOG,
+		FOG_SHALLOW,
+		FOG_PATCHES,
+		HAZE,
+		SMOKE,
+		BLOWING_SNOW,
+		BLOWING_SAND,
+		BLOWING_DUST
 	};
 	Type type() const { return t; }
 	Distance distance() const { return dist; }
@@ -3020,7 +3034,8 @@ Distance Distance::makeVicinity() {
 
 std::optional<Direction> Direction::fromCardinalString(
 	const std::string & s, 
-	bool enableOhdAlqds)
+	bool enableOhdAlqds,
+	bool enableUnknown)
 {
 	if (s.empty()) {
 		Direction dir;
@@ -3032,19 +3047,21 @@ std::optional<Direction> Direction::fromCardinalString(
 		dir.dirStatus = Status::NDV;
 		return dir;
 	}
-	if (enableOhdAlqds)
-	{
-		if (s == "OHD") {
-			Direction dir;
-			dir.dirStatus = Status::OVERHEAD;
-			return dir;
-		}
-		if (s == "ALQDS") {
-			Direction dir;
-			dir.dirStatus = Status::ALQDS;
-			return dir;
-		}	
+	if (enableOhdAlqds && s == "OHD") {
+		Direction dir;
+		dir.dirStatus = Status::OVERHEAD;
+		return dir;
 	}
+	if (enableOhdAlqds && s == "ALQDS") {
+		Direction dir;
+		dir.dirStatus = Status::ALQDS;
+		return dir;
+	}	
+	if (enableUnknown && s == "UNKNOWN") {
+		Direction dir;
+		dir.dirStatus = Status::UNKNOWN;
+		return dir;
+	}	
 	int cardinalDegrees = 0;
 	if (s == "N") cardinalDegrees = degreesTrueNorth;
 	if (s == "W") cardinalDegrees = degreesTrueWest;
@@ -3087,12 +3104,22 @@ std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 }
 
 Direction::Cardinal Direction::cardinal(bool trueDirections) const {
-	if (status() == Status::OMMITTED ||
-		status() == Status::NOT_REPORTED ||
-		status() == Status::VARIABLE) return Direction::Cardinal::NONE;
-	if (status() == Status::NDV) return Direction::Cardinal::NDV;
-	if (status() == Status::OVERHEAD) return Direction::Cardinal::OHD;
-	if (status() == Status::ALQDS) return Direction::Cardinal::ALQDS;
+	switch (status()) {
+		case Status::OMMITTED:
+		case Status::NOT_REPORTED:
+		case Status::VARIABLE:
+		return Cardinal::NONE;
+
+		case Status::NDV: return Cardinal::NDV;
+		case Status::OVERHEAD: return Cardinal::OHD;
+		case Status::ALQDS: return Cardinal::ALQDS;
+		case Status::UNKNOWN: return Cardinal::UNKNOWN;
+		
+		case Status::VALUE_DEGREES:
+		case Status::VALUE_CARDINAL:
+		break;
+	}
+
 	if (trueDirections) {
 		if (dirDegrees == degreesTrueNorth) return Cardinal::TRUE_N;
 		if (dirDegrees == degreesTrueSouth) return Cardinal::TRUE_S;
@@ -3356,13 +3383,14 @@ std::optional<Precipitation> Precipitation::fromRunwayDeposits(const std::string
 }
 
 std::optional<Precipitation> Precipitation::fromRemarkString(const std::string & s,
-		float factorInches,
+		float factor,
+		Precipitation::Unit unit,
 		bool allowNotReported)
 {
 	//static const std::regex rgx("\\d\\d\\d\\d?");
 	std::optional<Precipitation> error;
 	Precipitation precipitation;
-	precipitation.precipUnit = Precipitation::Unit::INCHES;
+	precipitation.precipUnit = unit;
 	if (s.length() != 3 && s.length() != 4) return error;
 	if (s == "///" || s == "////") {
 		if (!allowNotReported) return error;
@@ -3370,7 +3398,7 @@ std::optional<Precipitation> Precipitation::fromRemarkString(const std::string &
 	}
 	const auto pr = strToUint(s, 0, s.length());
 	if (!pr.has_value()) return error;
-	precipitation.precipValue = pr.value() * factorInches;
+	precipitation.precipValue = pr.value() * factor;
 	return precipitation;
 }
 
@@ -5566,7 +5594,7 @@ std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & 
 {
 	std::optional<PrecipitationGroup> notRecognised;
 	static const std::regex rgx(
-		"([P67])(\\d\\d\\d\\d|////)|(4/|93[13]|I[136])(\\d\\d\\d|///)");
+		"([P67])(\\d\\d\\d\\d|////)|(4/|93[13]|I[136]|PP)(\\d\\d\\d|///)");
 	static const auto matchType1 = 1, matchType2 = 3;
 	static const auto matchValue1 = 2, matchValue2 = 4;
 
@@ -5602,6 +5630,7 @@ std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & 
 	// allowed for this type
 	const auto amount = Precipitation::fromRemarkString(valueStr,
 			factorFromType(type),
+			unitFromType(type),
 			true);
 	if (!amount.has_value()) return notRecognised;
 
@@ -5645,7 +5674,18 @@ std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
 	if (s == "I1") return Type::ICE_ACCRETION_FOR_LAST_HOUR;
 	if (s == "I3") return Type::ICE_ACCRETION_FOR_LAST_3_HOURS;
 	if (s == "I6") return Type::ICE_ACCRETION_FOR_LAST_6_HOURS;
+	if (s == "PP") return Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT;
 	return std::optional<PrecipitationGroup::Type>();
+}
+
+Precipitation::Unit PrecipitationGroup::unitFromType(Type type) {
+	switch(type) {
+		case Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
+		return Precipitation::Unit::MM;
+
+		default:
+		return Precipitation::Unit::INCHES;		
+	}	
 }
 
 float PrecipitationGroup::factorFromType(Type type) {
@@ -5656,6 +5696,7 @@ float PrecipitationGroup::factorFromType(Type type) {
 
 		case Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
 		case Type::SNOW_6_HOURLY:
+		case Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
 		return 0.1;
 
 		case Type::TOTAL_PRECIPITATION_HOURLY:
@@ -6158,6 +6199,14 @@ std::optional<VicinityGroup> VicinityGroup::parse(
 	if (group == "ROTOR") return VicinityGroup(Type::ROTOR_CLOUD);
 	if (group == "VIRGA") return VicinityGroup(Type::VIRGA);
 	if (group == "VCSH") return VicinityGroup(Type::PRECIPITATION_IN_VICINITY);
+	if (group == "FOG" || group == "FG") return VicinityGroup(Type::FOG);
+	if (group == "HAZE" || group == "HZ") return VicinityGroup(Type::HAZE);
+	if (group == "SMOKE" || group == "FU") return VicinityGroup(Type::SMOKE);
+	if (group == "BLSN") return VicinityGroup(Type::BLOWING_SNOW);
+	if (group == "BLDU") return VicinityGroup(Type::BLOWING_DUST);
+	if (group == "BLSA") return VicinityGroup(Type::BLOWING_SAND);
+	if (group == "MIFG") return VicinityGroup(Type::FOG_SHALLOW);
+	if (group == "BCFG") return VicinityGroup(Type::FOG_PATCHES);
 	return notRecognised;
 }
 
@@ -6199,7 +6248,7 @@ AppendResult VicinityGroup::append(const std::string & group,
 		return rejectGroup();
 
 		case IncompleteType::EXPECT_MOVDIR:
-		if (const auto dir = Direction::fromCardinalString(group); 
+		if (const auto dir = Direction::fromCardinalString(group, false, true);
 			dir.has_value()) 
 		{
 			movDir = dir->cardinal();
