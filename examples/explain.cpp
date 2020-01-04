@@ -765,6 +765,17 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 		result << "Ceiling data not awailable";
 		break;
 
+		case metaf::SecondaryLocationGroup::Type::VISIBILITY:
+		result << "Visibility " << explainDistance(group.visibility());
+		break;
+
+		case metaf::SecondaryLocationGroup::Type::VARIABLE_VISIBILITY:
+		result << "Variable visibility from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
 		default:
 		result << "[unknown secondary location info]";
 	}

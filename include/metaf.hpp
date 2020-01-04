@@ -31,7 +31,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 4;
 	inline static const int minor = 4;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -752,7 +752,7 @@ enum class AppendResult {
 	// string "AO2" follows, it means that the original group "PK" is not
 	// valid and must be converted to raw string, whereas "AO2" may still
 	// represent a valid group and must be parsed separately.
-	GROUP_INVALIDATED,
+	GROUP_INVALIDATED
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1408,7 +1408,8 @@ public:
 		VARIABLE_CEILING,
 		VISIBILITY,
 		VISNO,
-		CHINO
+		CHINO,
+		VARIABLE_VISIBILITY
 	};
 	Type type() const { return t; }
 	std::optional<Runway> runway() const { return rw; }
@@ -1417,6 +1418,8 @@ public:
 	Distance minHeight() const { return minH; }
 	Distance maxHeight() const { return maxH; }
 	Distance visibility() const { return vis; }
+	Distance minVisibility() const { return minVis; }
+	Distance maxVisibility() const { return maxVis; }
 	inline bool isValid() const;
 
 	SecondaryLocationGroup() = default;
@@ -1436,7 +1439,10 @@ private:
 		CIG,
 		CIG_NUM,
 		CHINO,
-		VISNO
+		VISNO,
+		VIS,
+		VIS_INTEGER,
+		VIS_EXPECT_RUNWAY,
 	};
 	IncompleteText incompleteText;
 
@@ -1447,6 +1453,10 @@ private:
 	Distance minH;
 	Distance maxH;
 	Distance vis;
+	Distance minVis;
+	Distance maxVis;
+
+	inline bool appendVisibility(const std::string & group);
 };
 
 class RainfallGroup {
@@ -4475,6 +4485,8 @@ AppendResult VisibilityGroup::append(const std::string & group,
 
 		case IncompleteType::RMK_VIS_INTEGER:
 		if (appendVariable(group)) return AppendResult::APPENDED;
+		if (const auto r = Runway::fromString(group, true); r.has_value()) 
+			return AppendResult::GROUP_INVALIDATED;
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteType::RMK_VIS_DIR:
@@ -4488,6 +4500,8 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		if (appendFraction(group)) return AppendResult::APPENDED;
 		if (appendVariable(group)) return AppendResult::APPENDED;
 		incompleteType = IncompleteType::NONE;
+		if (const auto r = Runway::fromString(group, true); r.has_value()) 
+			return AppendResult::GROUP_INVALIDATED;
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteType::RMK_SFC_OR_TWR:
@@ -4763,7 +4777,6 @@ std::optional<CloudGroup> CloudGroup::parseCloudLayer(const std::string & s) {
 	if (s == "NSC") return CloudGroup(Amount::NSC);
 	if (s == "CLR") return CloudGroup(Amount::NONE_CLR);
 	if (s == "SKC") return CloudGroup(Amount::NONE_SKC);
-	if (s == "NCD") return CloudGroup(Amount::NCD);
 	//Attempt to parse cloud layer or vertical visibility
 	std::smatch match;
 	static const std::regex rgx(
@@ -5321,6 +5334,11 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 			result.incompleteText = IncompleteText::VISNO;
 			return result;
 		}
+		if (group == "VIS") {
+			result.t = Type::VISIBILITY;
+			result.incompleteText = IncompleteText::VIS;
+			return result;
+		}
 	}
 	return notRecognised;
 }
@@ -5404,15 +5422,128 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 		}
 		return AppendResult::NOT_APPENDED;
 
+		case IncompleteText::VIS:
+		if (group.length() == 1 && group[0] >= '1' && group[0] <= '9') {
+			vis = Distance(group[0] - '0', Distance::Unit::STATUTE_MILES);
+			incompleteText = IncompleteText::VIS_INTEGER;
+			return AppendResult::APPENDED;
+		}
+		if (appendVisibility(group)) {
+			incompleteText = IncompleteText::VIS_EXPECT_RUNWAY;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_INTEGER:
+		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+			rw = runway;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (appendVisibility(group)) {
+			incompleteText = IncompleteText::VIS_EXPECT_RUNWAY;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_EXPECT_RUNWAY:
+		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+			rw = runway;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
 	}
 }
 
-bool SecondaryLocationGroup::isValid() const {
-		if (rw.has_value() && !rw->isValid()) return false;
-		if (dir.has_value() && !dir->isValid()) return false;
-		if (incompleteText != IncompleteText::NONE) return false;
+bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
+	static const auto maxIntegerLength = 2; // Note: fraction string is 
+	// minimum 3 chars long (e.g. 1/2) and can't be 2 chars long
+
+	if (vis.hasFraction() || minVis.isReported() || maxVis.isReported()) return false;
+	if (group.empty()) return false;
+
+	const auto vPos = group.find("V");
+	if (!vPos || vPos == group.length()) return false;
+	if (vPos == std::string::npos) {
+		// Not a variable visibility: either two-digit integer or fraction
+		// Note: one-digit integer is handled in SecondaryLocationGroup::append()
+		if (group.length() == maxIntegerLength) { 
+			const auto integer = strToUint(group, 0, maxIntegerLength);
+			if (!integer.has_value() || vis.isReported()) return false;
+			vis = Distance(integer.value(), Distance::Unit::STATUTE_MILES);
+			return true;
+		}
+		// Integer value is ruled out, checking for fraction
+ 		const auto fraction = fractionStrToUint(group, 0, group.length());
+		if (!fraction.has_value()) return false;
+		const auto numerator = std::get<0>(fraction.value());
+		const auto denominator = std::get<1>(fraction.value());
+		auto d = Distance(numerator, denominator);
+		if (vis.isInteger()) {
+			const auto t = Distance::fromIntegerAndFraction(vis, std::move(d));
+			if (!t.has_value()) return false;
+			d = std::move(t.value());
+		}
+		vis = std::move(d);
 		return true;
 	}
+
+	// Variable visibility
+	// consider refactoring as per DRY
+
+	const auto minStr = group.substr(0, vPos);
+	const auto maxStr = group.substr(vPos + 1);
+	// Note: both strings are non-empty, see vPos check above
+	Distance v = vis, minv, maxv; 
+
+	if (minStr.length() <= maxIntegerLength) { 
+		const auto integer = strToUint(minStr, 0, minStr.length());
+		if (!integer.has_value() || v.isReported()) return false;
+		minv = Distance(integer.value(), Distance::Unit::STATUTE_MILES);
+	} else {
+		const auto fraction = fractionStrToUint(minStr, 0, minStr.length());
+		if (!fraction.has_value()) return false;
+		const auto numerator = std::get<0>(fraction.value());
+		const auto denominator = std::get<1>(fraction.value());
+		minv = Distance(numerator, denominator);
+		if (v.isInteger()) {
+			const auto t = Distance::fromIntegerAndFraction(v, minv);
+			if (!t.has_value()) return false;
+			minv = t.value();
+			v = Distance();
+		}
+	}
+
+	if (maxStr.length() <= maxIntegerLength) { 
+		const auto integer = strToUint(maxStr, 0, maxStr.length());
+		if (!integer.has_value()) return false;
+		maxv = Distance(integer.value(), Distance::Unit::STATUTE_MILES);
+	} else {
+		const auto fraction = fractionStrToUint(maxStr, 0, maxStr.length());
+		if (!fraction.has_value()) return false;
+		const auto numerator = std::get<0>(fraction.value());
+		const auto denominator = std::get<1>(fraction.value());
+		maxv = Distance(numerator, denominator);
+	}
+	vis = std::move(v); minVis = std::move(minv); maxVis = std::move(maxv);
+	t = Type::VARIABLE_VISIBILITY;
+	return (true);
+}
+
+bool SecondaryLocationGroup::isValid() const {
+	if (rw.has_value() && !rw->isValid()) return false;
+	if (dir.has_value() && !dir->isValid()) return false;
+	if (incompleteText != IncompleteText::NONE) return false;
+	if (type() == Type::VARIABLE_VISIBILITY) {
+		const auto min = minVis.toUnit(minVis.unit());
+		const auto max = maxVis.toUnit(minVis.unit());
+		if (!min.has_value() || !max.has_value()) return false;
+		if (min.value() >= max.value()) return false;
+	}
+	return (vis.isValid() && minVis.isValid() && maxVis.isValid() &&
+		h.isValid() && minH.isValid() && maxH.isValid());
+}
 
 ///////////////////////////////////////////////////////////////////////////
 

@@ -1117,9 +1117,16 @@ TEST(VisibilityGroup, parseRmkVisAppendRunway) {
 
 	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg2.has_value());
-	EXPECT_EQ(vg2->append("1V3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(vg2->append("1/2V3", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg2->append("RWY18", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->append("RWY18", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
@@ -1427,7 +1434,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableAppendRunway) {
 	ASSERT_TRUE(vg2.has_value());
 	EXPECT_EQ(vg2->append("SE", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(vg2->append("1V3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(vg2->append("1/2V3", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg2->append("RWY18", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
@@ -1447,7 +1454,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableAppendRunway) {
 	ASSERT_TRUE(vg2.has_value());
 	EXPECT_EQ(vg2->append("SE", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(vg2->append("1/2", metaf::ReportPart::RMK), 
+	EXPECT_EQ(vg2->append("3", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg2->append("RWY18", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
