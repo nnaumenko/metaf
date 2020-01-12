@@ -123,14 +123,47 @@ Example of a TAF report is as follows:
 
 ## Roadmap
 
-Recognition of the following groups is planned for implementing (not in this particular order):
+### Transition to version 5.0.0
 
-* Additional visibility value for runway, e.g. VIS 2 1/2 RWY11
-* Ground-based or aloft obscurations with octa, e.g. FG SCT000 or FU BKN020
+As the project progressed, the changes accumulated and backward compatibility was favoured heavly, so API kept growing and grew to the point where it is somewhat confusing and cumbersome.
 
-After these groups are implemented the plan is to improve test coverage, documentation, as well as optimise, refactor and bugfix the code itself where necessary.
+#### FixedGroup
 
-No further additions to parser are planned, however if your region uses some groups and/or formats which you think should be recognised by Metaf, please feel free to open an issue.
+FixedGroup::Type apparently grew beyond being meaningful.
+
+MISG and xxxxxNO groups are to be moved to the groups where they belong, e.g. WSCONDS and WND MISG groups should semantically belong to WindGroup.
+
+There may be other types of FixedGroup which really belong to other groups. 
+
+#### SecondaryLocationGroup
+
+SecondaryLocationGroup represents a very different data because it represents generally 'any data for secondary locations such as runways or cardinal directions'. SecondaryLocationGroup may store the following data: 
+
+* Wind shear at lower layers: there is WindGroup for wind and wind shear.
+* Runway visibility data and missing runway visibility data: there is a VisibilityGroup for visibility.
+* Ceiling data and missing ceiling data: there is a CloudGroup for sky condition.
+
+SecondaryLocationGroup is to be deleted and its functionality is to go to groups listed above.
+
+#### RunwayVisualRangeGroup
+
+RunwayVisualRangeGroup is very similar to VisibilityGroup. Its functionality is to be integrated into VisibilityGroup and RunwayVisualRangeGroup is to be removed.
+
+#### RainfallGroup and TemperatureForecastGroup
+
+Both groups were created in early version, but since then their more generalised counterparts were introduced.
+
+TemperatureForecastGroup reports minimum and maximum temperature, but MinMaxTemperatureGroup also does.
+
+RainfallGroup is reporting precipitation but PrecipitationGroup does pretty much the same thing.
+
+#### ColourCodeGroup
+
+This group is relatively rare and represents a very small amount of data; there is MiscGroup for this. ColourCodeGroup is to be integrated into MiscGroup.
+
+### After transition to vesion 5.0.0
+
+After version 5.0.0 the project is pretty much complete. Only bugfixes, test coverage improvements, and 'under the hood' optimisations will be introduced. No further groups to parser are planned, however if your region uses some group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
 
 ## Acknowledgements
 
