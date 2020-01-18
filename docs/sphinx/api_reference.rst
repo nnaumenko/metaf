@@ -519,7 +519,7 @@ Direction
 
 		The status of the direction value reported. If the status is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
 
-		.. cpp:enumerator:: OMMITTED
+		.. cpp:enumerator:: OMITTED
 
 			Direction is omitted (i.e. no direction specified at all).
 
@@ -567,7 +567,7 @@ Direction
 
 			:returns: Cardinal direction corresponding to the stored direction value.
 
-				- If the status of the stored value is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, then :cpp:enumerator:`Cardinal::NONE` is returned. 
+				- If the status of the stored value is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, then :cpp:enumerator:`Cardinal::NONE` is returned. 
 
 				- If the status is :cpp:enumerator:`Status::NDV` then :cpp:enumerator:`Cardinal::NDV` is returned.
 
@@ -590,7 +590,7 @@ Direction
 				Northwest          315
 				================== ==============
 
-				If the status of the stored value is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`, then an empty ``std::optional`` is returned.
+				If the status of the stored value is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`, then an empty ``std::optional`` is returned.
 
 
 	**Miscellaneous**
@@ -601,7 +601,7 @@ Direction
 
 				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Status::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Status::VALUE_DEGREES`) is stored.
 
-				- ``false`` is returned if the status is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`.
+				- ``false`` is returned if the status is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`.
 
 		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction &dir2)
 
@@ -1004,7 +1004,7 @@ WeatherPhenomena
 
 		Describes precipitation, obscuration and other weather phenomena.
 
-		.. cpp:enumerator:: OMMITTED
+		.. cpp:enumerator:: OMITTED
 
 			The weather information is omitted (i.e. not specified at all)..
 
@@ -1153,7 +1153,7 @@ WeatherPhenomena
 
 	**Miscellaneous**
 
-		.. cpp:function:: bool isOmmitted() const
+		.. cpp:function:: bool isOmitted() const
 
 			:returns: ``true`` if no qualifier, no descriptor, no weather phenomena, no event and no event time is stored in this instance, ``false`` if any of these conditions is not met.
 
@@ -1275,10 +1275,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			This group is only used in trends and indicates the end of a significant weather phenomena.
 
-		.. cpp:enumerator:: WSCONDS
-
-			This group indicates that potential wind shear conditions are present but there's not enough information to reliably forecast height, direction and speed of wind shear.
-
 		.. cpp:enumerator:: RMK
 
 			This group designates the beginning of the remarks.
@@ -1364,16 +1360,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 		.. cpp:enumerator:: TD_MISG
 
 			Dew point data is missing.
-
-		.. cpp:enumerator:: VIS_MISG
-   
-   			.. deprecated:: 4.1.0
-
-   				Not used anymore since version 4.1.0 and exists for compatibility only. :cpp:enumerator:`metaf::VisibilityGroup::Type::DATA_MISSING` is used instead.
-
-		.. cpp:enumerator:: WND_MISG
-
-			Wind data is missing.
 
 		.. cpp:enumerator:: WX_MISG
 
@@ -1570,55 +1556,61 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 WindGroup
 ^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
-
-.. image:: windgroup.svg
-
-The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
-
-.. image:: windgrouprmk.svg
-
-Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, ``WS020/05065KT``, ``WSHFT 1851``, ``WSHFT 30 FROPA``, and ``PK WND 29026/2204``.
+Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, ``WS020/05065KT``, ``WSHFT 1851``, ``WSHFT 30 FROPA``, ``PK WND 29026/2204``, ``WND MISG``, ``WSCONDS``, ``WS RWY22``, and ``WS ALL RWY``.
 
 .. cpp:class:: WindGroup
 
-	Stores information about surface wind (including variable wind direction sector if reported), wind shear, wind shift, and peak wind.
+	Stores information about surface wind (including variable wind direction sector if reported), wind shear, wind shift, and peak wind, and missing wind data.
 
 	.. cpp:enum-class:: Type
 
-		Group type which specifies what kind of data stored within this group.
+		Specifies what kind of information is stored within this group.
 
 		.. cpp:enumerator:: SURFACE_WIND
 
-			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`gustSpeed()`.
+			Surface wind information. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, and :cpp:func:`gustSpeed()` for gust speed.
 
 		.. cpp:enumerator:: SURFACE_WIND_CALM
 
-			Surface wind calm (i.e. no wind) information is stored. :cpp:func:`windSpeed()` is always zero.
+			Indicates surface wind calm (i.e. no wind). :cpp:func:`windSpeed()` is always zero.
 
 		.. cpp:enumerator:: VARIABLE_WIND_SECTOR
 
-			Only variable wind sector information is stored. Use :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+			Only variable wind direction sector information. Use :cpp:func:`varSectorBegin()` for beginning direction of the sector, and :cpp:func:`varSectorEnd()` for ending direction.
+
+			.. note::Wind direction sector is defined from beginning direction clockwise to the ending direction.
 
 		.. cpp:enumerator:: SURFACE_WIND_WITH_VARIABLE_SECTOR
 
-			Surface wind information with variable wind sector information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+			Surface wind with variable wind sector. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, :cpp:func:`varSectorBegin()` for beginning direction of the sector, and :cpp:func:`varSectorEnd()` for ending direction.
 
 		.. cpp:enumerator:: WIND_SHEAR
 
-			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
+			Wind shear at certain height. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, and :cpp:func:`height()` for the height where wind shear occurs.
+
+		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
+
+			Indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways. Use :cpp:func:`runway()` for runway for which wind shear in the lower layers is indicated; :cpp:func:`runway()` may also return 'all runways'.
 
 		.. cpp:enumerator:: WIND_SHIFT
 
-			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Use :cpp:func:`eventTime()`.
+			Wind shift; wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Use :cpp:func:`eventTime()` for the time when wind shift began.
 
 		.. cpp:enumerator:: WIND_SHIFT_FROPA
 
-			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Wind shift is associated with frontal passage. Use :cpp:func:`eventTime()`.
+			Same as :cpp:enumerator:`metaf::WindGroup::Type::WIND_SHIFT` but indicates that wind shift is associated with frontal passage. Use :cpp:func:`eventTime()` for the time when wind shift began.
 
 		.. cpp:enumerator:: PEAK_WIND
 
-			Information on peak wind since last METAR is stored in this group. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`eventTime()`.
+			Peak wind information since last METAR. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for peak wind speed, and :cpp:func:`eventTime()` for the time when peak wind was observed.
+
+		.. cpp:enumerator:: WSCONDS
+
+			Indicates that potential wind shear conditions are present but there's not enough information to reliably forecast height, direction and speed of wind shear.
+
+		.. cpp:enumerator:: WND_MISG
+
+			Indicates that wind data is missing.
 
 
 	**Acquiring group data**
@@ -1721,7 +1713,7 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 			Variable directional visibility information is stored. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`. This information may be included in remarks in North America.
 
-		.. cpp:enumerator:: DATA_MISSING
+		.. cpp:enumerator:: VIS_MISG
 
 			Visibility data is missing (coded ``VIS MISG`` in the remarks), all data methods will return non-reported values.
 
@@ -1749,11 +1741,11 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:function:: Direction sectorBegin() const
 
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
+			:returns: Cardinal direction if sector of directions is specified. Currently always returns an omitted value.
 
 		.. cpp:function:: Direction sectorEnd() const
 
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
+			:returns: Cardinal direction if sector of directions is specified. Currently always returns an omitted value.
 
 
 	**Miscellaneous**
@@ -2347,9 +2339,7 @@ SecondaryLocationGroup
 
 The following syntax corresponds to this group in METAR reports.
 
-.. image:: secondarylocationgroup.svg
-
-Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO RWY05``, ``CHINO RWY05``, and ``CHINO E``.
+Examples of the raw report data are ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO RWY05``, ``CHINO RWY05``, and ``CHINO E``.
 
 .. cpp:class:: SecondaryLocationGroup
 
@@ -2358,10 +2348,6 @@ Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``C
 	.. cpp:enum-class::  Type
 
 		Type of information actually stored. 
-
-		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
-
-			This group indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways.
 
 		.. cpp:enumerator:: CEILING
 

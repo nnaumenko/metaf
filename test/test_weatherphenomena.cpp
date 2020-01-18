@@ -2219,68 +2219,68 @@ TEST(WeatherPhenomena, isValidFalseEmpty) {
 	EXPECT_FALSE(metaf::WeatherPhenomena().isValid());
 }
 
-// Tests for isOmmitted()
+// Tests for isOmitted()
 
-TEST(WeatherPhenomena, isOmmittedTrueEmpty) {
-	EXPECT_TRUE(metaf::WeatherPhenomena().isOmmitted());
+TEST(WeatherPhenomena, isOmittedTrueEmpty) {
+	EXPECT_TRUE(metaf::WeatherPhenomena().isOmitted());
 }
 
-TEST(WeatherPhenomena, isOmmittedFalseFromString) {
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("MIFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PRFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BCFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLPY", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("IC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("HZ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PO", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SQ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DSSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SSDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+FC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DSSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SSDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSH", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCTS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCVA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCPO", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DZ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PL", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("UP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+TSRAGR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("-SHRAPL", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SHUP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TSUP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RERAPL", true)->isOmmitted());
+TEST(WeatherPhenomena, isOmittedFalseFromString) {
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("MIFG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PRFG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BCFG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRDU", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLDU", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DU", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSN", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSN", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLPY", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("IC", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BR", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FU", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("HZ", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PO", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SQ", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FC", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DSSS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SSDS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+FC", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DSSS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SSDS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSH", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCTS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCVA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFC", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCPO", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLDU", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSN", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCDS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RA", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SN", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DZ", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SG", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PL", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GR", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GS", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("UP", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+TSRAGR", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("-SHRAPL", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SHUP", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TSUP", true)->isOmitted());
+	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RERAPL", true)->isOmitted());
 }
 
 TEST(WeatherPhenomena, isOmmittedFalseFromBeginEndString) {
@@ -2292,33 +2292,33 @@ TEST(WeatherPhenomena, isOmmittedFalseFromBeginEndString) {
 		metaf::MetafTime(), 
 		metaf::WeatherPhenomena());
 	ASSERT_TRUE(wp1.has_value());
-	EXPECT_FALSE(wp1->isOmmitted());
+	EXPECT_FALSE(wp1->isOmitted());
 
 	const auto wp2 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
 		"SHRASNE0212", 
 		metaf::MetafTime(), 
 		metaf::WeatherPhenomena());
 	ASSERT_TRUE(wp2.has_value());
-	EXPECT_FALSE(wp2->isOmmitted());
+	EXPECT_FALSE(wp2->isOmitted());
 
 	const auto wp3 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
 		"TSB25", 
 		reportTime.value(), 
 		metaf::WeatherPhenomena());
 	ASSERT_TRUE(wp3.has_value());
-	EXPECT_FALSE(wp3->isOmmitted());
+	EXPECT_FALSE(wp3->isOmitted());
 
 	const auto wp4 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
 		"E0812",
 		metaf::MetafTime(), 
 		wp3.value());
 	ASSERT_TRUE(wp4.has_value());
-	EXPECT_FALSE(wp4->isOmmitted());
+	EXPECT_FALSE(wp4->isOmitted());
 
 	const auto wp5 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
 		"E12", 
 		reportTime.value(),
 		wp3.value());
 	ASSERT_TRUE(wp5.has_value());
-	EXPECT_FALSE(wp5->isOmmitted());
+	EXPECT_FALSE(wp5->isOmitted());
 }

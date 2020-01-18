@@ -281,7 +281,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 11);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 11);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TrendGroup>()]), 3);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 13);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 14);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 16);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 28);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 8);
@@ -290,7 +290,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 16);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayStateGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]), 0);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RainfallGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ColourCodeGroup>()]), 1);

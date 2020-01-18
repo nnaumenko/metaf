@@ -21,11 +21,11 @@ TEST(VisibilityGroup, parseMetersMetar) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -37,11 +37,11 @@ TEST(VisibilityGroup, parseMetersTaf) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -57,8 +57,8 @@ TEST(VisibilityGroup, parseMetersNDV) {
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::NDV);
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -68,8 +68,8 @@ TEST(VisibilityGroup, parseMetersDirectionNorth) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::N);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -79,8 +79,8 @@ TEST(VisibilityGroup, parseMetersDirectionSouth) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::S);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -90,8 +90,8 @@ TEST(VisibilityGroup, parseMetersDirectionWest) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::W);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -101,8 +101,8 @@ TEST(VisibilityGroup, parseMetersDirectionEast) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::E);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -112,8 +112,8 @@ TEST(VisibilityGroup, parseMetersDirectionNorthWest) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::NW);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -123,8 +123,8 @@ TEST(VisibilityGroup, parseMetersDirectionNorthEast) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::NE);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -134,8 +134,8 @@ TEST(VisibilityGroup, parseMetersDirectionSouthWest) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::SW);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -145,8 +145,8 @@ TEST(VisibilityGroup, parseMetersDirectionSouthEast) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction().cardinal(), metaf::Direction::Cardinal::SE);
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -157,11 +157,11 @@ TEST(VisibilityGroup, parseMetersNotReported) {
 	EXPECT_TRUE(!vg->visibility().isReported());
 	EXPECT_FALSE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -200,11 +200,11 @@ TEST(VisibilityGroup, appendMetersAndFraction) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1200u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -222,11 +222,11 @@ TEST(VisibilityGroup, appendMetersAndRunway) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -243,11 +243,11 @@ TEST(VisibilityGroup, parseMilesInteger) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 3u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -259,11 +259,11 @@ TEST(VisibilityGroup, parseMilesIntegerTwoDigit) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 15u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -276,11 +276,11 @@ TEST(VisibilityGroup, parseMilesIntegerWithModifier) {
 	EXPECT_EQ(vg->visibility().integer().value(), 6u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -294,11 +294,11 @@ TEST(VisibilityGroup, parseMilesFraction) {
 	ASSERT_TRUE(vg->visibility().denominator().has_value());
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -313,11 +313,11 @@ TEST(VisibilityGroup, parseMilesFractionWithModifier) {
 	ASSERT_TRUE(vg->visibility().denominator().has_value());
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -327,11 +327,11 @@ TEST(VisibilityGroup, parseMilesIntegerNotReported) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 }
 
 TEST(VisibilityGroup, parseMilesWrongFormat) {
@@ -354,11 +354,11 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 	EXPECT_EQ(vg1->visibility().integer().value(), 1u);
 	EXPECT_EQ(vg1->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg1->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg1->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg1->direction().isOmitted());
 	EXPECT_FALSE(vg1->minVisibility().isReported());
 	EXPECT_FALSE(vg1->maxVisibility().isReported());
-	EXPECT_EQ(vg1->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg1->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg1->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg1->sectorEnd().isOmitted());
 
 	const auto vg9 = metaf::VisibilityGroup::parse("9", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg9.has_value());
@@ -368,11 +368,11 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 	EXPECT_EQ(vg9->visibility().integer().value(), 9u);
 	EXPECT_EQ(vg9->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg9->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg9->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg9->direction().isOmitted());
 	EXPECT_FALSE(vg9->minVisibility().isReported());
 	EXPECT_FALSE(vg9->maxVisibility().isReported());
-	EXPECT_EQ(vg9->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg9->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg9->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg9->sectorEnd().isOmitted());
 
 	const auto vg10 = metaf::VisibilityGroup::parse("10", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg10.has_value());
@@ -382,11 +382,11 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 	EXPECT_EQ(vg10->visibility().integer().value(), 10u);
 	EXPECT_EQ(vg10->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg10->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg10->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg10->direction().isOmitted());
 	EXPECT_FALSE(vg10->minVisibility().isReported());
 	EXPECT_FALSE(vg10->maxVisibility().isReported());
-	EXPECT_EQ(vg10->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg10->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg10->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg10->sectorEnd().isOmitted());
 }
 
 TEST(VisibilityGroup, parseMilesIncompleteWrongFormat) {
@@ -409,11 +409,11 @@ TEST(VisibilityGroup, appendIncompleteAndFraction) {
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -440,11 +440,11 @@ TEST(VisibilityGroup, appendIncompleteAndOther) {
 	EXPECT_EQ(vg->visibility().integer().value(), 2u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 }
 
 TEST(VisibilityGroup, appendFractionAndIncomplete) {
@@ -466,11 +466,11 @@ TEST(VisibilityGroup, appendFractionAndIncomplete) {
 	ASSERT_TRUE(vg->visibility().denominator().has_value());
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -490,11 +490,11 @@ TEST(VisibilityGroup, appendFractionAndRunway) {
 	ASSERT_TRUE(vg->visibility().denominator().has_value());
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -515,11 +515,11 @@ TEST(VisibilityGroup, appendMilesIntegerAndFraction) {
 	ASSERT_TRUE(vg->visibility().integer().has_value());
 	EXPECT_EQ(vg->visibility().integer().value(), 1u);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -541,11 +541,11 @@ TEST(VisibilityGroup, appendIntegerMilesWithModifierAndFraction) {
 	EXPECT_EQ(vg->visibility().integer().value(), 2u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -598,11 +598,11 @@ TEST(VisibilityGroup, appendToCompleteIntegerFraction) {
 	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -633,13 +633,13 @@ TEST(VisibilityGroup, parseVisMisg) {
 	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DATA_MISSING);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VIS_MISG);
+	EXPECT_TRUE(vg->direction().isOmitted());
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -662,7 +662,7 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerInteger) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isInteger());
@@ -676,8 +676,8 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -693,7 +693,7 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionInteger) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isFraction());
@@ -709,8 +709,8 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -726,7 +726,7 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionFraction) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isFraction());
@@ -744,8 +744,8 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionFraction) {
 	EXPECT_EQ(vg->maxVisibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -763,7 +763,7 @@ TEST(VisibilityGroup, parseRmkVisIntegerVariableFractionInteger) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().hasInteger());
@@ -782,8 +782,8 @@ TEST(VisibilityGroup, parseRmkVisIntegerVariableFractionInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -799,7 +799,7 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerIntegerTwoDigit) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isInteger());
@@ -813,8 +813,8 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerIntegerTwoDigit) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 15u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -832,7 +832,7 @@ TEST(VisibilityGroup, parseRmkVisIntegerTwoDigitVariable) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().hasInteger());
@@ -851,8 +851,8 @@ TEST(VisibilityGroup, parseRmkVisIntegerTwoDigitVariable) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 11u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -868,7 +868,7 @@ TEST(VisibilityGroup, parseRmkVisVariableFirstFractionTwoDigit) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isFraction());
@@ -884,8 +884,8 @@ TEST(VisibilityGroup, parseRmkVisVariableFirstFractionTwoDigit) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 1u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -901,7 +901,7 @@ TEST(VisibilityGroup, parseRmkVisVariableSecondFractionTwoDigit) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_TRUE(vg->minVisibility().isFraction());
@@ -919,8 +919,8 @@ TEST(VisibilityGroup, parseRmkVisVariableSecondFractionTwoDigit) {
 	EXPECT_EQ(vg->maxVisibility().denominator().value(), 16u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -937,7 +937,7 @@ TEST(VisibilityGroup, parseRmkVisVariableMeters) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_VARIABLE);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_FALSE(vg->visibility().isReported());
 
@@ -953,8 +953,8 @@ TEST(VisibilityGroup, parseRmkVisVariableMeters) {
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -1164,8 +1164,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableIntegerInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1200,8 +1200,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1238,8 +1238,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionFraction) {
 	EXPECT_EQ(vg->maxVisibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1279,8 +1279,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalIntegerVariableFractionInteger) {
 	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1313,8 +1313,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableMeters) {
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
 
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -1349,8 +1349,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableIntegerFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1380,8 +1380,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableInteger) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1412,8 +1412,8 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1559,7 +1559,7 @@ TEST(VisibilityGroup, parseRmkSfcVisIntegerFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
@@ -1573,8 +1573,8 @@ TEST(VisibilityGroup, parseRmkSfcVisIntegerFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1591,7 +1591,7 @@ TEST(VisibilityGroup, parseRmkSfcVisInteger) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
@@ -1603,8 +1603,8 @@ TEST(VisibilityGroup, parseRmkSfcVisInteger) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1621,7 +1621,7 @@ TEST(VisibilityGroup, parseRmkSfcVisFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isFraction());
 	EXPECT_FALSE(vg->visibility().integer().has_value());
@@ -1634,8 +1634,8 @@ TEST(VisibilityGroup, parseRmkSfcVisFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }
@@ -1752,7 +1752,7 @@ TEST(VisibilityGroup, parseRmkTwrVisIntegerFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
@@ -1766,8 +1766,8 @@ TEST(VisibilityGroup, parseRmkTwrVisIntegerFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -1783,7 +1783,7 @@ TEST(VisibilityGroup, parseRmkTwrVisInteger) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isInteger());
 	ASSERT_TRUE(vg->visibility().integer().has_value());
@@ -1795,8 +1795,8 @@ TEST(VisibilityGroup, parseRmkTwrVisInteger) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 	EXPECT_TRUE(vg->isValid());
 }
 
@@ -1812,7 +1812,7 @@ TEST(VisibilityGroup, parseRmkTwrVisFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
-	EXPECT_EQ(vg->direction().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->direction().isOmitted());
 
 	EXPECT_TRUE(vg->visibility().isFraction());
 	EXPECT_FALSE(vg->visibility().integer().has_value());
@@ -1825,8 +1825,8 @@ TEST(VisibilityGroup, parseRmkTwrVisFraction) {
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
-	EXPECT_EQ(vg->sectorBegin().status(), metaf::Direction::Status::OMMITTED);
-	EXPECT_EQ(vg->sectorEnd().status(), metaf::Direction::Status::OMMITTED);
+	EXPECT_TRUE(vg->sectorBegin().isOmitted());
+	EXPECT_TRUE(vg->sectorEnd().isOmitted());
 
 	EXPECT_TRUE(vg->isValid());
 }

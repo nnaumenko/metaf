@@ -346,7 +346,7 @@ public:
 		UNKNOWN // Unknown
 	};
 	enum class Status {
-		OMMITTED, 		// Direction is ommitted (not specified at all)
+		OMITTED, 		// Direction is omitted (not specified at all)
 		NOT_REPORTED,	// Direction is specified as not reported
 		VARIABLE,		// Direction is reported as variable
 		NDV,			// Direction is reported as No Directional Variation
@@ -362,6 +362,7 @@ public:
 		if (!isValue())	return std::optional<unsigned int>();
 		return dirDegrees;
 	}
+	bool isOmitted() const { return(status() == Status::OMITTED); }
 	bool isValue() const {
 		return (dirStatus == Status::VALUE_DEGREES || 
 			dirStatus == Status::VALUE_CARDINAL);
@@ -385,7 +386,7 @@ public:
 
 private:
 	unsigned int dirDegrees = 0;
-	Status dirStatus = Status::OMMITTED;
+	Status dirStatus = Status::OMITTED;
 private:
 	static const inline unsigned int maxDegrees = 360;
 	static const inline unsigned int octantSize = 45u;
@@ -599,7 +600,7 @@ public:
 		FREEZING
 	};	
 	enum class Weather {
-		OMMITTED,
+		OMITTED,
 		NOT_REPORTED,
 		DRIZZLE,
 		RAIN,
@@ -635,8 +636,8 @@ public:
 	inline std::vector<Weather> weather() const;
 	Event event() const { return ev; }
 	std::optional<MetafTime> time() const { return tm; }
-	bool isOmmitted() const { 
-		return (w[0] == Weather::OMMITTED && 
+	bool isOmitted() const { 
+		return (w[0] == Weather::OMITTED && 
 			qualifier() == Qualifier::NONE && 
 			descriptor() == Descriptor::NONE && 
 			event() == Event::NONE &&
@@ -662,7 +663,7 @@ private:
 	Qualifier q = Qualifier::NONE;
 	Descriptor d = Descriptor::NONE;
 	static const inline size_t wSize = 3;
-	Weather w[wSize] = { Weather::OMMITTED };
+	Weather w[wSize] = { Weather::OMITTED };
 	Event ev = Event::NONE;
 	std::optional<MetafTime> tm;
 
@@ -672,14 +673,14 @@ private:
 		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)  
 	{
 		w[0] = wthr1; w[1] = wthr2;
-		w[2] = Weather::OMMITTED; 
+		w[2] = Weather::OMITTED; 
 	}
 
 	WeatherPhenomena(Weather wthr, 
 		Descriptor dscr = Descriptor::NONE, 
 		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)
 	{
-		w[0] = wthr; w[1] = Weather::OMMITTED;
+		w[0] = wthr; w[1] = Weather::OMITTED;
 	}
 
 	static inline bool isDescriptorShAllowed (Weather w);
@@ -790,7 +791,6 @@ public:
 		CAVOK,
 		NSW,
 		RMK,
-		WSCONDS,
 		MAINTENANCE_INDICATOR,
 		AO1,
 		AO2,
@@ -811,8 +811,6 @@ public:
 		RVR_MISG,
 		T_MISG,
 		TD_MISG,
-		VIS_MISG, //Deprecated and not used anymore, use VisibilityGroup::Type:VIS_MISG
-		WND_MISG,
 		WX_MISG,
 		TS_LTNG_TEMPO_UNAVBL
 	};
@@ -961,9 +959,12 @@ public:
 		VARIABLE_WIND_SECTOR,
 		SURFACE_WIND_WITH_VARIABLE_SECTOR,
 		WIND_SHEAR,
+		WIND_SHEAR_IN_LOWER_LAYERS,
 		WIND_SHIFT,
 		WIND_SHIFT_FROPA,
-		PEAK_WIND
+		PEAK_WIND,
+		WSCONDS,
+		WND_MISG
 	};
 	Type type() const { return windType; }
 	Direction direction() const { return windDir; }
@@ -973,6 +974,7 @@ public:
 	Direction varSectorBegin() const { return vsecBegin; }
 	Direction varSectorEnd() const { return vsecEnd; }
 	std::optional<MetafTime> eventTime() const { return evTime; }
+	std::optional<Runway> runway() const { return rw; }
 	inline bool isValid() const;
 
 	WindGroup() = default;
@@ -987,10 +989,20 @@ private:
 	enum class IncompleteText {
 		NONE,
 		PK,
-		PK_WND
+		PK_WND,
+		WND,
+		WS,
+		WS_ALL
 	};
-	inline AppendResult parsePeakWind(const std::string & group,
+	WindGroup(Type type, IncompleteText incomplete = IncompleteText::NONE) :
+		windType(type), incompleteText(incomplete) {}
+	static inline std::optional<WindGroup> parseVariableSector(
+		const std::string & group);
+	inline AppendResult appendPeakWind(const std::string & group,
 		const ReportMetadata & reportMetadata);
+	inline AppendResult appendWindShift(const std::string & group,
+		const ReportMetadata & reportMetadata);
+	inline AppendResult appendVariableSector(const std::string & group);
 
 	Type windType;
 	Direction windDir;
@@ -1000,7 +1012,10 @@ private:
 	Direction vsecBegin;
 	Direction vsecEnd;
 	std::optional<MetafTime> evTime;
+	std::optional<Runway> rw;
+
 	IncompleteText incompleteText = IncompleteText::NONE;
+
 };
 
 class VisibilityGroup {
@@ -1013,7 +1028,7 @@ public:
 		SURFACE_VISIBILITY,
 		TOWER_VISIBILITY,
 		DIRECTIONAL_VARIABLE,
-		DATA_MISSING
+		VIS_MISG
 	};
 	Type type() const { return visType; }
 	Distance visibility() const { 
@@ -1124,7 +1139,7 @@ public:
 				amount() == Amount::NSC);
 	}
 	inline bool isCloudLayer() const;
-	inline bool isObscuration() const { return !w.isOmmitted(); }
+	inline bool isObscuration() const { return !w.isOmitted(); }
 	bool isValid() const { return heightOrVertVis.isValid(); }
 
 	CloudGroup () = default;
@@ -1169,7 +1184,7 @@ public:
 	inline std::vector<WeatherPhenomena> weatherPhenomena() const;
 	bool isValid() const { 
 		for (auto i=0u; i < wSize; i++) 
-			if (!w[i].isOmmitted() && !w[i].isValid()) return false;
+			if (!w[i].isOmitted() && !w[i].isValid()) return false;
 		return true;
 	}
 
@@ -1403,7 +1418,6 @@ private:
 class SecondaryLocationGroup {
 public:
 	enum class Type {
-		WIND_SHEAR_IN_LOWER_LAYERS,
 		CEILING,
 		VARIABLE_CEILING,
 		VISIBILITY,
@@ -1852,14 +1866,8 @@ private:
 	}
 	static inline std::optional<LightningGroup> fromLtgGroup(
 		const std::string & group);
-	bool isOmmittedDir1() const {
-		return (dir1from.status() == Direction::Status::OMMITTED && 
-			dir1to.status() == Direction::Status::OMMITTED);
-	} 
-	bool isOmmittedDir2() const {
-		return (dir2from.status() == Direction::Status::OMMITTED && 
-			dir2to.status() == Direction::Status::OMMITTED);
-	}
+	bool isOmittedDir1() const { return (dir1from.isOmitted() && dir1to.isOmitted()); } 
+	bool isOmittedDir2() const { return (dir2from.isOmitted() && dir2to.isOmitted()); }
 };
 
 class VicinityGroup {
@@ -3049,7 +3057,7 @@ std::optional<Direction> Direction::fromCardinalString(
 {
 	if (s.empty()) {
 		Direction dir;
-		dir.dirStatus = Status::OMMITTED;
+		dir.dirStatus = Status::OMITTED;
 		return dir;
 	}
 	if (s == "NDV") {
@@ -3092,7 +3100,7 @@ std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 	std::optional<Direction> error;
 	Direction direction;
 	if (s.empty()) {
-		direction.dirStatus = Status::OMMITTED;
+		direction.dirStatus = Status::OMITTED;
 		return direction;
 	}
 	if (s.length() != 3) return error;
@@ -3115,7 +3123,7 @@ std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 
 Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 	switch (status()) {
-		case Status::OMMITTED:
+		case Status::OMITTED:
 		case Status::NOT_REPORTED:
 		case Status::VARIABLE:
 		return Cardinal::NONE;
@@ -3594,7 +3602,7 @@ std::vector<WeatherPhenomena::Weather> WeatherPhenomena::weather() const
 {
 	std::vector<Weather> result;
 	for (auto i=0u; i < wSize; i++) {
-		if (w[i] == Weather::OMMITTED) break;
+		if (w[i] == Weather::OMITTED) break;
 		result.push_back(w[i]);
 	}
 	return result;
@@ -3618,7 +3626,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	if (s == "BLSN") return WeatherPhenomena(Weather::SNOW, Descriptor::BLOWING);
 	if (s == "BLPY") return WeatherPhenomena(Weather::SPRAY, Descriptor::BLOWING);
 	// Descriptor TS is allowed alone (or with precipitation)
-	if (s == "TS") return WeatherPhenomena(Weather::OMMITTED, Descriptor::THUNDERSTORM);
+	if (s == "TS") return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM);
 	// Descriptor FZ is allowed only with FG (or with precipitation)
 	if (s == "FZFG") return WeatherPhenomena(Weather::FOG, Descriptor::FREEZING);
 	// Phenomena IC BR FG FU VA DU SA HZ PO SQ FC are allowed only when alone 
@@ -3643,11 +3651,11 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 		// Qualifier VC is allowed only with VCTS VCFG VCSH VCPO VCFC VCVA VCBLDU 
 		// VCBLSA VCBLSN VCDS VCSS
 		if (s == "VCTS") 
-			return WeatherPhenomena(Weather::OMMITTED, Descriptor::THUNDERSTORM, Qualifier::VICINITY);
+			return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM, Qualifier::VICINITY);
 		if (s == "VCFG") 
 			return WeatherPhenomena(Weather::FOG, Descriptor::NONE, Qualifier::VICINITY);
 		if (s == "VCSH") 
-			return WeatherPhenomena(Weather::OMMITTED, Descriptor::SHOWERS, Qualifier::VICINITY);
+			return WeatherPhenomena(Weather::OMITTED, Descriptor::SHOWERS, Qualifier::VICINITY);
 		if (s == "VCPO") 
 			return WeatherPhenomena(Weather::DUST_WHIRLS, Descriptor::NONE, Qualifier::VICINITY);
 		if (s == "VCVA") 
@@ -3679,7 +3687,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 				Descriptor::NONE, Qualifier::HEAVY);
 		// Qualifier RE is allowed with TS descriptor without any phenomena
 		if (s == "RETS") 
-			return WeatherPhenomena(Weather::OMMITTED, Descriptor::THUNDERSTORM, Qualifier::RECENT);
+			return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM, Qualifier::RECENT);
 	}
 	// Precipitation
 	WeatherPhenomena result;
@@ -3730,7 +3738,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	for (auto i = 0u; i < wSize; i++) {
 		if (precipStr.empty()) break; 
 		const auto ws = precipStr.substr(0,2);
-		Weather w = Weather::OMMITTED;
+		Weather w = Weather::OMITTED;
 		if (ws == "DZ") w = Weather::DRIZZLE;
 		if (ws == "RA") w = Weather::RAIN;
 		if (ws == "SN") w = Weather::SNOW;
@@ -3739,7 +3747,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 		if (ws == "GR") w = Weather::HAIL;
 		if (ws == "GS") w = Weather::SMALL_HAIL;
 		if (ws == "UP") w = Weather::UNDETERMINED;
-		if (w == Weather::OMMITTED) return error;
+		if (w == Weather::OMITTED) return error;
 		if (isDescriptorShAllowed(w)) allowShDecriptor = true;
 		if (isDescriptorFzAllowed(w)) allowFzDecriptor = true;
 		for (auto j = 0u; j < i ; j++)
@@ -3820,7 +3828,7 @@ bool WeatherPhenomena::isValid() const {
 	// Empty weather phenomena is not valid 
 	if (qualifier() == Qualifier::NONE && 
 		descriptor() == Descriptor::NONE &&
-		w[0] == Weather::OMMITTED) 
+		w[0] == Weather::OMITTED) 
 			return false;
 	// Event time must be valid if present
 	if (tm.has_value() && !tm->isValid()) return false;
@@ -3868,9 +3876,6 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		if (group == "SNOCLO") return FixedGroup(Type::R_SNOCLO);
 		if (group == "R/SNOCLO") return FixedGroup(Type::R_SNOCLO);
 	}
-	if (reportPart == ReportPart::TAF) {
-		if (group == "WSCONDS") return FixedGroup(Type::WSCONDS);
-	}
 	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
 		if (group == "CAVOK") return FixedGroup(Type::CAVOK);
 		if (group == "NSW") return FixedGroup(Type::NSW);
@@ -3896,7 +3901,6 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		if (group == "RVR") return FixedGroup(IncompleteText::RVR, Type::RVR_MISG);
 		if (group == "T") return FixedGroup(IncompleteText::T, Type::T_MISG);
 		if (group == "TD") return FixedGroup(IncompleteText::TD, Type::TD_MISG);
-		if (group == "WND") return FixedGroup(IncompleteText::WND, Type::WND_MISG);
 		if (group == "WX") return FixedGroup(IncompleteText::WX, Type::WX_MISG);
 		if (group == "TS/LTNG") return FixedGroup(IncompleteText::TS_LTNG, Type::TS_LTNG_TEMPO_UNAVBL);
 	}
@@ -4218,32 +4222,28 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 	(void)reportMetadata;
 	static const std::optional<WindGroup> notRecognised;
 
-	static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
-		"(\\d\\d0|VRB|///)([1-9]?\\d\\d|//)(?:G([1-9]?\\d\\d))?([KM][TMP][HS]?)");
-	static const auto matchWindShearHeight = 1, matchWindDir = 2;
-	static const auto matchWindSpeed = 3, matchWindGust = 4, matchWindUnit = 5;
-
-	static const std::regex varWindRgx("(\\d\\d0)V(\\d\\d0)");
-	static const auto matchVarWindBegin = 1, matchVarWindEnd = 2;
-
+	if (reportPart == ReportPart::METAR) {
+		if (group == "WS") return WindGroup(Type::WIND_SHEAR_IN_LOWER_LAYERS, IncompleteText::WS);
+	}
+	if (reportPart == ReportPart::TAF) {
+		if (group == "WSCONDS") return WindGroup(Type::WSCONDS);
+	}
 	if (reportPart == ReportPart::RMK) {
-		// WSHFT group
-		if (group == "WSHFT") {
-			WindGroup result;
-			result.windType = Type::WIND_SHIFT;
-			return result;
-		}
-		// PK WND group
-		if (group == "PK") {
-			WindGroup result;
-			result.windType = Type::PEAK_WIND;
-			result.incompleteText = IncompleteText::PK;
-			return result;
-		}
+		if (group == "WSHFT") return WindGroup(Type::WIND_SHIFT);
+		if (group == "PK") return WindGroup(Type::PEAK_WIND, IncompleteText::PK);
+		if (group == "WND") return WindGroup(Type::WND_MISG, IncompleteText::WND);
 	}
 
 	if (reportPart != ReportPart::METAR &&
 		reportPart != ReportPart::TAF) return notRecognised;
+
+	if (const auto result = parseVariableSector(group); result.has_value())
+		return result.value();
+
+	static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
+		"(\\d\\d0|VRB|///)([1-9]?\\d\\d|//)(?:G([1-9]?\\d\\d))?([KM][TMP][HS]?)");
+	static const auto matchWindShearHeight = 1, matchWindDir = 2;
+	static const auto matchWindSpeed = 3, matchWindGust = 4, matchWindUnit = 5;
 
 	// Surface wind or wind shear, e.g. dd0ssKT or dd0ssGggMPS or WShhhdd0ssGggKT
 	if (std::smatch match; std::regex_match(group, match, windRgx)) {
@@ -4280,18 +4280,6 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 		return result;
 	}
 
-	// Variable wind sector, e.g. xx0Vyy0
-	if (std::smatch match; std::regex_match(group, match, varWindRgx)) {
-		WindGroup result;
-		const auto begin = Direction::fromDegreesString(match.str(matchVarWindBegin));
-		if (!begin.has_value()) return notRecognised;
-		result.vsecBegin = begin.value();
-		const auto end = Direction::fromDegreesString(match.str(matchVarWindEnd));
-		if (!end.has_value()) return notRecognised;
-		result.vsecEnd = end.value();
-		result.windType = Type::VARIABLE_WIND_SECTOR;
-		return result;
-	}
 	return notRecognised;
 }
 
@@ -4299,76 +4287,81 @@ AppendResult WindGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
+	(void)reportPart; (void)reportMetadata;
 	//Append variable wind sector group to surface wind group
-	if (const auto nextGroup = parse(group, reportPart, reportMetadata);
-		nextGroup.has_value() &&
-		type() == Type::SURFACE_WIND &&
-		nextGroup->type() == Type::VARIABLE_WIND_SECTOR)
-	{
+	switch (incompleteText) {
+		case IncompleteText::NONE:
+		switch (type()) {
+			case Type::SURFACE_WIND: return appendVariableSector(group);
+			case Type::WIND_SHIFT: return appendWindShift(group, reportMetadata);
+			default: return AppendResult::NOT_APPENDED;
+		}
+		
+		case IncompleteText::PK:
+		if (group != "WND") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::PK_WND;
+		return AppendResult::APPENDED;		
+
+		case IncompleteText::PK_WND:
+		return appendPeakWind(group, reportMetadata);
+
+		case IncompleteText::WND:
+		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
+
+		case IncompleteText::WS_ALL:
+		if (group != "RWY") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		rw = Runway::makeAllRunways();
+		return AppendResult::APPENDED;
+
+		case IncompleteText::WS:
+		if (group == "ALL") {
+			incompleteText =  IncompleteText::WS_ALL;
+			return AppendResult::APPENDED;
+		}
+		if (const auto r = Runway::fromString(group, true); r.has_value()) {
+			incompleteText = IncompleteText::NONE;
+			rw = r;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+	}
+}
+
+std::optional<WindGroup> WindGroup::parseVariableSector(const std::string & group) {
+	static const std::optional<WindGroup> notRecognised;
+	static const std::regex varWindRgx("(\\d\\d0)V(\\d\\d0)");
+	static const auto matchVarWindBegin = 1, matchVarWindEnd = 2;
+
+	std::smatch match; 
+	if (!std::regex_match(group, match, varWindRgx)) return notRecognised; 
+	WindGroup result;
+	const auto begin = Direction::fromDegreesString(match.str(matchVarWindBegin));
+	if (!begin.has_value()) return notRecognised;
+	result.vsecBegin = begin.value();
+	const auto end = Direction::fromDegreesString(match.str(matchVarWindEnd));
+	if (!end.has_value()) return notRecognised;
+	result.vsecEnd = end.value();
+	result.windType = Type::VARIABLE_WIND_SECTOR;
+	return result;
+}
+
+AppendResult WindGroup::appendVariableSector(const std::string & group) {
+	if (const auto vs = parseVariableSector(group); vs.has_value()) {
 		windType = Type::SURFACE_WIND_WITH_VARIABLE_SECTOR;
-		vsecBegin = nextGroup->vsecBegin;
-		vsecEnd = nextGroup->vsecEnd;
+		vsecBegin = vs->vsecBegin;
+		vsecEnd = vs->vsecEnd;
 		return AppendResult::APPENDED;
 	}
-
-	//PK WND groups
-	if (type() == Type::PEAK_WIND)
-	{
-		switch (incompleteText) {
-			case IncompleteText::NONE:
-			return AppendResult::NOT_APPENDED;
-
-			case IncompleteText::PK:
-			if (group == "WND") {
-				incompleteText = IncompleteText::PK_WND;
-				return AppendResult::APPENDED;
-			}
-			return AppendResult::GROUP_INVALIDATED;
-
-			case IncompleteText::PK_WND:
-			return parsePeakWind(group, reportMetadata);
-		}
-	}
-
-	//Apped to WSHFT
-	if (type() == Type::WIND_SHIFT)
-	{
-		//Append FROPA to wind shift group with or without time
-		if (group == "FROPA") {
-			windType = Type::WIND_SHIFT_FROPA;
-			return AppendResult::APPENDED;
-		}
-		if (eventTime().has_value()) return AppendResult::NOT_APPENDED;
-		//Append 2-digit time to WSHFT
-		if (!eventTime().has_value() &&
-			reportMetadata.reportTime.has_value() &&
-			group.length() == 2)
-		{
-			const auto minuteVal = strToUint(group, 0, 2);
-			if (!minuteVal.has_value()) return AppendResult::NOT_APPENDED;
-			evTime = MetafTime(reportMetadata.reportTime->hour(), minuteVal.value());
-			return AppendResult::APPENDED;
-		}
-		//Append 4-digit time to WSHFT
-		if (!eventTime().has_value() && group.length() == 4)
-		{
-			const auto hourMinuteVal = strToUint(group, 0, 4);
-			if (!hourMinuteVal.has_value()) return AppendResult::NOT_APPENDED;
-			// hourMinuteVal.value() has 4 digits, format hhmm
-			const auto hour = hourMinuteVal.value() / 100;
-			const auto minute = hourMinuteVal.value() % 100;
-			evTime = MetafTime (hour, minute);
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::NOT_APPENDED;
-	}
-
 	return AppendResult::NOT_APPENDED;
 }
 
-AppendResult WindGroup::parsePeakWind(const std::string & group,
+AppendResult WindGroup::appendPeakWind(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
+
 	static const std::regex pkWndRgx("(\\d\\d0)([1-9]?\\d\\d)/(\\d\\d)?(\\d\\d)");
 	static const auto matchDir = 1, matchSpeed = 2;
 	static const auto matchHour = 3, matchMinute = 4;
@@ -4398,19 +4391,46 @@ AppendResult WindGroup::parsePeakWind(const std::string & group,
 	return AppendResult::APPENDED;
 }
 
-bool WindGroup::isValid() const {
-	// Incomplete group is treated as non-valid
-	if (incompleteText != IncompleteText::NONE) return false;
-	// If both wind and gust speed reported, wind speed cannot be greater
-	// than gust speed
-	if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) {
-		return false;
+AppendResult WindGroup::appendWindShift(const std::string & group,
+	const ReportMetadata & reportMetadata)
+{
+	//Append FROPA to wind shift group with or without time
+	if (group == "FROPA") {
+		windType = Type::WIND_SHIFT_FROPA;
+		return AppendResult::APPENDED;
 	}
-	// Gust speed cannot be zero if reported
+	if (eventTime().has_value()) return AppendResult::NOT_APPENDED;
+	//Append 2-digit time to WSHFT
+	if (!eventTime().has_value() &&
+		reportMetadata.reportTime.has_value() &&
+		group.length() == 2)
+	{
+		const auto minuteVal = strToUint(group, 0, 2);
+		if (!minuteVal.has_value()) return AppendResult::NOT_APPENDED;
+		evTime = MetafTime(reportMetadata.reportTime->hour(), minuteVal.value());
+		return AppendResult::APPENDED;
+	}
+	//Append 4-digit time to WSHFT
+	if (!eventTime().has_value() && group.length() == 4)
+	{
+		const auto hourMinuteVal = strToUint(group, 0, 4);
+		if (!hourMinuteVal.has_value()) return AppendResult::NOT_APPENDED;
+		// hourMinuteVal.value() has 4 digits, format hhmm
+		const auto hour = hourMinuteVal.value() / 100;
+		const auto minute = hourMinuteVal.value() % 100;
+		evTime = MetafTime (hour, minute);
+		return AppendResult::APPENDED;
+	}
+	return AppendResult::NOT_APPENDED;
+}
+
+bool WindGroup::isValid() const {
+	if (incompleteText != IncompleteText::NONE) return false;
 	if (!gustSpeed().speed().value_or(1)) return false;
-	// Wind shear height cannot be zero if reported
 	if (!height().integer().value_or(1)) return false;
-	// All data must be valid
+	if (runway().has_value() && !runway()->isValid()) return false;
+	if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) 
+		return false; // if wind speed cannot be greater than gust speed
 	return (direction().isValid() &&
 			height().isValid() &&
 			varSectorBegin().isValid() &&
@@ -4473,7 +4493,7 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		
 		case IncompleteType::RMK_VIS:
 		if (group == "MISG") {
-			visType = Type::DATA_MISSING;
+			visType = Type::VIS_MISG;
 			incompleteType = IncompleteType::NONE;
 			return AppendResult::APPENDED; 
 		}
@@ -4578,7 +4598,7 @@ VisibilityGroup VisibilityGroup::rmkTwrVisIncomplete() {
 
 bool VisibilityGroup::appendDirection(const std::string & group)
 {
-	if (direction().status() != Direction::Status::OMMITTED) return false;
+	if (!direction().isOmitted()) return false;
 	if (incompleteType != IncompleteType::RMK_VIS) return false;
 	if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
 		dir = d.value();
@@ -4680,7 +4700,7 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 	}
 	if (!maxDistance.isValid()) return false;
 
-	if (direction().status() != Direction::Status::OMMITTED) visType = Type::DIRECTIONAL_VARIABLE;
+	if (!direction().isOmitted()) visType = Type::DIRECTIONAL_VARIABLE;
 	vis = std::move(minDistance);
 	visMax = std::move(maxDistance);
 	incompleteType = IncompleteType::NONE;
@@ -4699,7 +4719,7 @@ bool VisibilityGroup::appendVariableMeters(const std::string & group) {
 	if (!min->isReported() || !max->isReported()) return false;
 	vis = min.value();
 	visMax = max.value();
-	if (direction().status() != Direction::Status::OMMITTED) visType = Type::DIRECTIONAL_VARIABLE;
+	if (!direction().isOmitted()) visType = Type::DIRECTIONAL_VARIABLE;
 	incompleteType = IncompleteType::NONE;
 	return true;
 }
@@ -4925,7 +4945,7 @@ AppendResult WeatherGroup::append(const std::string & group,
 inline std::vector<WeatherPhenomena> WeatherGroup::weatherPhenomena() const {
 	std::vector<WeatherPhenomena> result;
 	for (auto i=0u; i < wSize; i++) {
-		if (!w[i].isOmmitted()) result.push_back(w[i]);
+		if (!w[i].isOmitted()) result.push_back(w[i]);
 	}
 	return result;
 }
@@ -4989,7 +5009,7 @@ std::optional<WeatherGroup> WeatherGroup::parseWeatherEvent(const std::string & 
 
 bool WeatherGroup::addWeatherPhenomena(const WeatherPhenomena & wp) {
 	for (auto i = 0u; i < wSize; i++)
-		if (w[i].isOmmitted()) { w[i] = wp; return true; }
+		if (w[i].isOmitted()) { w[i] = wp; return true; }
 	return false;
 }
 
@@ -5311,13 +5331,6 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 	(void)reportMetadata;
 	static const std::optional<SecondaryLocationGroup> notRecognised;
 	SecondaryLocationGroup result;
-	if (reportPart == ReportPart::METAR) {
-		if (group == "WS") {
-			result.t = Type::WIND_SHEAR_IN_LOWER_LAYERS;
-			result.incompleteText = IncompleteText::WS;
-			return result;
-		}
-	}
 	if (reportPart == ReportPart::RMK) {
 		if (group == "CIG") {
 			result.t = Type::CEILING;
@@ -6227,8 +6240,8 @@ AppendResult LightningGroup::append(const std::string & group,
 		return AppendResult::GROUP_INVALIDATED;
 	}
 
-	if (!isOmmittedDir2()) return AppendResult::NOT_APPENDED;
-	if (!isOmmittedDir1()) {
+	if (!isOmittedDir2()) return AppendResult::NOT_APPENDED;
+	if (!isOmittedDir1()) {
 		// First direction sector is already appended, try to append second one 
 		if (group == "AND") return AppendResult::APPENDED;
 		if (const auto dir = Direction::fromCardinalString(group, true); dir.has_value()) {

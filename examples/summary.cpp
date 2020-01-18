@@ -269,7 +269,7 @@ Weather phenomenaFromWeatherGroup(
 	metaf::WeatherPhenomena::Weather weather) 
 {
 	switch (weather) {
-		case metaf::WeatherPhenomena::Weather::OMMITTED:
+		case metaf::WeatherPhenomena::Weather::OMITTED:
 		case metaf::WeatherPhenomena::Weather::NOT_REPORTED:
 		return Weather::NOT_SPECIFIED;
 

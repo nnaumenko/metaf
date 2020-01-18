@@ -233,12 +233,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "no significant weather phenomena";
 		break;
 
-		case metaf::FixedGroup::Type::WSCONDS:
-		result << "Potential wind shear conditions are present ";
-		result << "but there's not enough information to reliably forecast ";
-		result << "height, direction and speed of wind shear";
-		break;
-
 		case metaf::FixedGroup::Type::RMK:
 		result << "The remarks are as follows" << lineBreak;
 		break;
@@ -331,24 +325,12 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "Dew point data is missing";
 		break;
 
-		case metaf::FixedGroup::Type::VIS_MISG:
-		result << "Visibility data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::WND_MISG:
-		result << "Wind data is missing";
-		break;
-
 		case metaf::FixedGroup::Type::WX_MISG:
 		result << "Weather phenomena data is missing";
 		break;
 
 		case metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL:
 		result << "Thunderstorm / lightning data is missing";
-		break;
-
-		default:
-		result << "Unknown fixed group";
 		break;
 	}
 	return result.str();
@@ -403,10 +385,6 @@ std::string VisitorExplain::visitTrendGroup(const metaf::TrendGroup & group,
 			result << "Trend probability is 50 percent or more" << lineBreak;;
 		}
 		break;
-
-		default:
-		result << "[Unknown probability value]" << lineBreak;;
-		break;
 	}
 	if (const auto timeFrom = group.timeFrom(); timeFrom) {
 		result << "From " << explainMetafTime(*timeFrom) << lineBreak;
@@ -449,46 +427,60 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		result << "with sustained wind speed of 10 knots (5.1 m/s / 18.5 km/h / 11.5 mph)";
 		if (group.eventTime().has_value()) {
 			result << lineBreak << "Wind shift began at ";
-			result << explainMetafTime(group.eventTime().value());
+			result << explainMetafTime(*group.eventTime());
 		}
 		if (group.type() == metaf::WindGroup::Type::WIND_SHIFT_FROPA) {
-			result << lineBreak << "This wind shift is associated with weather front passage";
+			result << lineBreak;
+			result << "This wind shift is associated with weather front passage";
 		}
-		return result.str();
+		break;
 
 		case metaf::WindGroup::Type::PEAK_WIND:
-		result << "Peak wind: ";
+		result << "Peak wind ";
+		if (group.eventTime().has_value()) {
+			result << "was observed at ";
+			result << explainMetafTime(*group.eventTime());
+		}
 		break;
 
-		default:
-		result << "[unknown wind group]:";
+		case metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
+		result << "Wind shear significant to aircraft operations ";
+		result << "is present along the take-off path or approach path ";
+		result << "between runway level and 500 metres (1 600 ft)";
+		if (const auto rw = group.runway(); rw.has_value()) {
+		result << " at " << explainRunway(*rw);
+		}
+		break;
+
+		case metaf::WindGroup::Type::WSCONDS:
+		result << "Potential wind shear conditions are present ";
+		result << "but there's not enough information to reliably forecast ";
+		result << "height, direction and speed of wind shear";
+		break;
+
+		case metaf::WindGroup::Type::WND_MISG:
+		result << "Wind data is missing";
 		break;
 	}
+
 	result << lineBreak;
 
-	if (group.direction().status() != metaf::Direction::Status::OMMITTED || 
-		group.windSpeed().speed().has_value())
-	{
-		// General wind information present in this group
-		result << "Wind direction: " << explainDirection(group.direction(), true) << lineBreak;
+	if (!group.direction().isOmitted()) {
+		result << "Wind direction: " << explainDirection(group.direction(), true);
+		result << lineBreak;	
+	} 
+	if (group.windSpeed().speed().has_value()) {
 		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
 		if (group.gustSpeed().speed().has_value()) {
 			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
 		}
 	}
-	if (group.type() == metaf::WindGroup::Type::VARIABLE_WIND_SECTOR ||
-		group.type() == metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR) {
-			result << "Variable wind direction sector from ";
-			result << explainDirection(group.varSectorBegin()) << " clockwise to ";
-			result << explainDirection(group.varSectorEnd());
+	if (!group.varSectorBegin().isOmitted() && !group.varSectorEnd().isOmitted()) {
+		result << "Variable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin());
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd()) << lineBreak;
 	}
-	if (group.type() == metaf::WindGroup::Type::PEAK_WIND && 
-		group.eventTime().has_value()) 
-	{
-		result << "Peak wind was observed at ";
-		result << explainMetafTime(group.eventTime().value());
-	}
-
 	return result.str();
 }
 
@@ -520,12 +512,8 @@ std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & 
 		result << "from air traffic control tower";
 		break;
 
-		case metaf::VisibilityGroup::Type::DATA_MISSING:
+		case metaf::VisibilityGroup::Type::VIS_MISG:
 		return "Visibility data missing";
-
-		default:
-		result << "[unknown visibility group]:";
-		break;
 	}
 	result << ") ";
 	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_VARIABLE ||
@@ -634,10 +622,6 @@ std::string VisitorExplain::visitTemperatureForecastGroup(
 		case metaf::TemperatureForecastGroup::Point::MAXIMUM:
 		result << "Maximum temperature";
 		break;
-
-		default:
-		result << "[unknown temperature point]";
-		break;
 	}
 	result << " " << explainTemperature(group.airTemperature()) << ", ";
 	result << "expected on " << explainMetafTime(group.time());
@@ -662,10 +646,6 @@ std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & grou
 
 		case metaf::PressureGroup::Type::OBSERVED_QFE:
 		result << "Observed actual atmospheric pressure";
-		break;
-
-		default:
-		result << "Unknown pressure value";
 		break;
 	}
 	result << ": " << explainPressure(group.atmosphericPressure());
@@ -724,8 +704,8 @@ std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup 
 		result << "closed due to snow accumulation";
 		break;
 
-		default:
-		result << "[unknown runway status]";
+		case metaf::RunwayStateGroup::Status::RUNWAY_NOT_OPERATIONAL:
+		result << "runway is not operational";
 		break;
 	}
 	return result.str();
@@ -740,12 +720,6 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
-		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
-		result << "Wind shear significant to aircraft operations ";
-		result << "is present along the take-off path or approach path ";
-		result << "between runway level and 500 metres (1 600 ft)";
-		break;
-
 		case metaf::SecondaryLocationGroup::Type::CEILING:
 		result << "Ceiling height " << explainDistance(group.height());
 		break;
@@ -775,15 +749,12 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 		result << " to ";
 		result << explainDistance(group.maxVisibility());
 		break;
-
-		default:
-		result << "[unknown secondary location info]";
 	}
 	if (const auto rw = group.runway(); rw.has_value()) {
-		result << " at " << explainRunway(rw.value());
+		result << " at " << explainRunway(*rw);
 	}
 	if (const auto d = group.direction(); d.has_value()) {
-		result << " towards " << explainDirection(d.value());
+		result << " towards " << explainDirection(*d);
 	}
 	return result.str();
 }
@@ -862,10 +833,6 @@ std::string VisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTempe
 		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS24:
 		periodStr = "24-hourly";
 		break;
-
-		default:
-		periodStr = "Unknown period";
-		break; 
 	}
 	result << periodStr << " " << " minimum / maximum temperature";
 	if (!group.minimum().temperature().has_value() && 
@@ -902,7 +869,7 @@ std::string VisitorExplain::visitPrecipitationGroup(
 		return result.str();
 	};
 	if (group.amount().precipitation().has_value() && 
-		!group.amount().precipitation().value())
+		!(*group.amount().precipitation()))
 	{
 		result << "Trace amount of ";
 		result << precipitationGroupTypeToString(group.type());
@@ -1189,12 +1156,12 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 	switch (group.type()) {
 		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
 		if (const auto duration = group.value(); duration.has_value()) {
-			if (!duration.value()) {
+			if (! *duration) {
 				result << "No sunshine occurred the previous calendar day";
 			} else {
 				result << "Duration of sunshine ";
 				result << "that occurred the previous calendar day is ";
-				result << duration.value() << " minutes";
+				result << *duration << " minutes";
 			}
 		}
 		break;
@@ -1202,25 +1169,21 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		case metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION:
 		if (const auto correctionNo = group.value(); correctionNo.has_value()) {
 			result << "This report is the corrected weather observation, ";
-			result << "correction number is " << static_cast<int>(correctionNo.value());
+			result << "correction number is " << static_cast<int>(*correctionNo);
 		}
 		break;
 
 		case metaf::MiscGroup::Type::DENSITY_ALTITUDE:
 			result << "Density altitude ";
 			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << group.value().value() << " feet";
+			result << " is " << *group.value() << " feet";
 			break;
 
 		case metaf::MiscGroup::Type::HAILSTONE_SIZE:
 			result << "Largest hailstone size ";
 			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << group.value().value() << " inches";
+			result << " is " << *group.value() << " inches";
 			break;
-
-		default:
-		result << "[unknown miscellaneous group type]";
-		break;
 	}
 	return result.str();
 }
@@ -1242,7 +1205,6 @@ std::string_view VisitorExplain::reportTypeToString(metaf::ReportType reportType
 		case metaf::ReportType::UNKNOWN:	return "unable to detect";
 		case metaf::ReportType::METAR:		return "METAR (weather observation)";
 		case metaf::ReportType::TAF:		return "TAF (weather forecast)";
-		default: return "unknown report type";
 	}
 }
 
@@ -1289,9 +1251,6 @@ std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportEr
 
 		case metaf::ReportError::REPORT_TOO_LARGE:
 		return "Report has too many groups";
-
-		default: 
-		return "unknown error";
 	}
 }
 
@@ -1307,7 +1266,6 @@ std::string VisitorExplain::explainRunway(const metaf::Runway & runway) {
 		case metaf::Runway::Designator::LEFT: 	designatorStr = "LEFT"; break;
 		case metaf::Runway::Designator::CENTER:	designatorStr = "CENTER"; break;
 		case metaf::Runway::Designator::RIGHT:  designatorStr = "RIGHT"; break;
-		default: designatorStr = "(unknown runway designator)"; break;
 	}
 	if (!designatorStr.empty()) result << " " << designatorStr;
 	return result.str();
@@ -1329,7 +1287,7 @@ std::string VisitorExplain::explainMetafTime(const metaf::MetafTime & metafTime)
 std::string VisitorExplain::explainTemperature(const metaf::Temperature & temperature) {
 	if (!temperature.temperature().has_value()) return "not reported";
 	std::ostringstream result;
-	if (!temperature.temperature().value() && !temperature.isPrecise()) {
+	if (!(*temperature.temperature()) && !temperature.isPrecise()) {
 		if (temperature.isFreezing()) result << "slightly less than ";
 		if (!temperature.isFreezing()) result << "slightly more than ";
 	}
@@ -1418,10 +1376,6 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 		result << "5 to 10 nautical miles "; 
 		result << "(9 to 19 km, 6 to 12 statue miles)";
 		break;
-
-		default: 
-		result << "unknown modifier, "; 
-		break;
 	}
 	if (!distance.isValue()) return result.str();
 
@@ -1469,7 +1423,7 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 {
 	std::ostringstream result;
 	switch (direction.status()) {
-		case metaf::Direction::Status::OMMITTED:
+		case metaf::Direction::Status::OMITTED:
 		return std::string();
 
 		case metaf::Direction::Status::NOT_REPORTED:
@@ -1505,9 +1459,6 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 
 		case metaf::Direction::Status::UNKNOWN:
 		return "unknown direction";
-
-		default:
-		return "[unknown direction status]";
 	}
 	return result.str();
 }
@@ -1572,9 +1523,6 @@ std::string VisitorExplain::explainSurfaceFriction(
 
 		case metaf::SurfaceFriction::Status::UNRELIABLE:
 		return "unreliable or unmeasurable";
-
-		default:
-		return "[unknown surface friction status]";
 	}
 }
 
@@ -1602,9 +1550,6 @@ std::string VisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeig
 			return result.str();
 		}
 		return "wave height not reported";
-
-		default:
-		return "[unknown wave height status]";
 	}
 }
 
@@ -1655,13 +1600,13 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 		case metaf::WeatherPhenomena::Event::BEGINNING:
 		if (!time.has_value()) break;
 		result << " began: ";
-		result << explainMetafTime(wp.time().value());
+		result << explainMetafTime(*wp.time());
 		break;
 
 		case metaf::WeatherPhenomena::Event::ENDING:
 		if (!time.has_value()) break;
 		result << " ended: ";
-		result << explainMetafTime(wp.time().value());
+		result << explainMetafTime(*wp.time());
 		break;
 
 		case metaf::WeatherPhenomena::Event::NONE:
@@ -1677,7 +1622,6 @@ std::string_view VisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
 		case metaf::Speed::Unit::METERS_PER_SECOND:		return "m/s";
 		case metaf::Speed::Unit::KILOMETERS_PER_HOUR:	return "km/h";
 		case metaf::Speed::Unit::MILES_PER_HOUR:		return "mph";
-		default: 										return "[unknown speed unit]";
 	}
 }
 
@@ -1686,7 +1630,6 @@ std::string_view VisitorExplain::distanceUnitToString(metaf::Distance::Unit unit
 		case metaf::Distance::Unit::METERS:			return "meters";
 		case metaf::Distance::Unit::STATUTE_MILES:	return "statute miles";
 		case metaf::Distance::Unit::FEET:			return "feet";
-		default: 									return "[unknown distance unit]";
 	}
 }
 
@@ -1708,7 +1651,7 @@ std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Car
 		case metaf::Direction::Cardinal::NDV:		return "no directional variations";
 		case metaf::Direction::Cardinal::OHD:		return "overhead";
 		case metaf::Direction::Cardinal::ALQDS:		return "all quadrants (in all directions)";
-		default: 									return "[unknown cardinal direction]";
+		case metaf::Direction::Cardinal::UNKNOWN:	return "unknown direction";
 	}
 }
 
@@ -1733,9 +1676,6 @@ std::string_view VisitorExplain::brakingActionToString(
 
 		case metaf::SurfaceFriction::BrakingAction::GOOD:
 		return "good (friction coefficient 0.40 to 1.00)";
-
-		default:
-		return "unknown braking action";
 	}
 }
 
@@ -1775,9 +1715,6 @@ std::string_view VisitorExplain::stateOfSeaSurfaceToString(
 
 		case metaf::WaveHeight::StateOfSurface::PHENOMENAL:
 		return "phenomenal, wave height >14 meters / &gt;46 feet";
-
-		default:
-		return "unknown state of sea surface";
 	}
 }
 
@@ -1803,9 +1740,6 @@ std::string_view VisitorExplain::trendTypeToString(metaf::TrendGroup::Type type)
 
 		case metaf::TrendGroup::Type::TIME_SPAN:
 		return "The following weather condition are expected within time span";
-
-		default:
-		return "Unknown trend type";
 	}
 }
 
@@ -1857,9 +1791,6 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 
 		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
 		return "Sky cover variable between broken clouds and overcast (sky coverage variable between 5/8 and 8/8)";
-
-		default: 
-		return "Unknown cloud amound";
 	}
 }
 
@@ -1876,9 +1807,6 @@ std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::Type type)
 
 		case metaf::CloudGroup::Type::CUMULONIMBUS:
 		return "cumulonimbus";
-
-		default: 
-		return "undefined";
 	}
 }
 
@@ -1892,7 +1820,6 @@ std::string_view VisitorExplain::weatherPhenomenaQualifierToString(
 		case metaf::WeatherPhenomena::Qualifier::LIGHT: 	return "light";
 		case metaf::WeatherPhenomena::Qualifier::MODERATE:	return "moderate";
 		case metaf::WeatherPhenomena::Qualifier::HEAVY:		return "heavy";
-		default: return "[unknown intensity/proximity qualifier];";
 	}
 }
 
@@ -1909,7 +1836,6 @@ std::string_view VisitorExplain::weatherPhenomenaDescriptorToString(
 		case metaf::WeatherPhenomena::Descriptor::SHOWERS:		return std::string();
 		case metaf::WeatherPhenomena::Descriptor::THUNDERSTORM:	return std::string();
 		case metaf::WeatherPhenomena::Descriptor::FREEZING:		return "freezing";
-		default: return "[unknown weather descriptor];";
 	}
 }
 
@@ -1917,79 +1843,77 @@ std::string_view VisitorExplain::weatherPhenomenaWeatherToString(
 	metaf::WeatherPhenomena::Weather weather)
 {
 	switch (weather) {
-			case metaf::WeatherPhenomena::Weather::OMMITTED:
+			case metaf::WeatherPhenomena::Weather::OMITTED:
 			return "not specified";
-			
+
 			case metaf::WeatherPhenomena::Weather::NOT_REPORTED:
 			return "not reported";
-			
+
 			case metaf::WeatherPhenomena::Weather::DRIZZLE:
 			return "drizzle";
-			
+
 			case metaf::WeatherPhenomena::Weather::RAIN:
 			return "rain";
-			
+
 			case metaf::WeatherPhenomena::Weather::SNOW:
 			return "snow";
-			
+
 			case metaf::WeatherPhenomena::Weather::SNOW_GRAINS:
 			return "snow grains";
-			
+
 			case metaf::WeatherPhenomena::Weather::ICE_CRYSTALS:
 			return "ice crystals";
-			
+
 			case metaf::WeatherPhenomena::Weather::ICE_PELLETS:
 			return "ice pellets";
-			
+
 			case metaf::WeatherPhenomena::Weather::HAIL:
 			return "hail";
-			
+
 			case metaf::WeatherPhenomena::Weather::SMALL_HAIL:
 			return "small hail (graupel)";
-			
+
 			case metaf::WeatherPhenomena::Weather::UNDETERMINED:
 			return "undetermined precipitation";
-			
+
 			case metaf::WeatherPhenomena::Weather::MIST:
 			return "mist";
-			
+
 			case metaf::WeatherPhenomena::Weather::FOG:
 			return "fog";
-			
+
 			case metaf::WeatherPhenomena::Weather::SMOKE:
 			return "smoke";
-			
+
 			case metaf::WeatherPhenomena::Weather::VOLCANIC_ASH:
 			return "volcanic ash";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUST:
 			return "dust";
-			
+
 			case metaf::WeatherPhenomena::Weather::SAND:
 			return "sand";
-			
+
 			case metaf::WeatherPhenomena::Weather::HAZE:
 			return "haze";
-			
+
 			case metaf::WeatherPhenomena::Weather::SPRAY:
 			return "spray";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUST_WHIRLS:
 			return "dust or sand whirls";
-			
+
 			case metaf::WeatherPhenomena::Weather::SQUALLS:
 			return "squalls";
-			
+
 			case metaf::WeatherPhenomena::Weather::FUNNEL_CLOUD:
 			return "funnel cloud";
-			
+
 			case metaf::WeatherPhenomena::Weather::SANDSTORM:
 			return "sand storm";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUSTSTORM:
 			return "dust storm";
-			
-			default: return "[unknown weather phenomena]";
 	}
 }
 
@@ -2083,7 +2007,6 @@ std::string_view VisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeGroup:
 		case metaf::RunwayVisualRangeGroup::Trend::UPWARD:		return "upward";
 		case metaf::RunwayVisualRangeGroup::Trend::NEUTRAL:		return "neutral";
 		case metaf::RunwayVisualRangeGroup::Trend::DOWNWARD:	return "downward";
-		default: 												return "[unknown trend]";
 	}
 }
 
@@ -2123,9 +2046,6 @@ std::string_view VisitorExplain::runwayStateDepositsToString(
 
 		case metaf::RunwayStateGroup::Deposits::FROZEN_RUTS_OR_RIDGES:
 		return "frozen ruts or ridges";
-
-		default:
-		return "[unknown runway deposits]";
 	}
 }
 
@@ -2165,9 +2085,6 @@ std::string_view VisitorExplain::runwayStateExtentToString(
 
 		case metaf::RunwayStateGroup::Extent::RESERVED_8:
 		return "[reserved_extent_value 8]";
-
-		default:
-		return "[unknown extent value]";
 	}
 }
 
@@ -2180,7 +2097,6 @@ std::string_view VisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code
 		case metaf::ColourCodeGroup::Code::YELLOW2:		return "YELLOW2";
 		case metaf::ColourCodeGroup::Code::AMBER:		return "AMBER";
 		case metaf::ColourCodeGroup::Code::RED:			return "RED";
-		default:										return "[unknown colour code]";
 	}
 }
 
@@ -2193,7 +2109,6 @@ unsigned int VisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::Code c
 		case metaf::ColourCodeGroup::Code::YELLOW2:	return 1600;
 		case metaf::ColourCodeGroup::Code::AMBER:	return 800;
 		case metaf::ColourCodeGroup::Code::RED:		return 800;
-		default:									return 0;
 	}
 }
 
@@ -2206,7 +2121,6 @@ unsigned int VisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code code
 		case metaf::ColourCodeGroup::Code::YELLOW2:	return 300;
 		case metaf::ColourCodeGroup::Code::AMBER:	return 200;
 		case metaf::ColourCodeGroup::Code::RED:		return 200;
-		default:									return 0;
 	}
 }
 
@@ -2250,8 +2164,8 @@ std::string_view VisitorExplain::precipitationGroupTypeToString(
 		case metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
 		return "precipitation accumulation since last report";
 
-		default:
-		return "[unknown precipitation type]";
+		case metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY:
+		return "snow increasing rapidly";
 	}
 }
 
@@ -2264,66 +2178,63 @@ std::string_view VisitorExplain::layerForecastGroupTypeToString(
 
 		case metaf::LayerForecastGroup::Type::ICING_LIGHT_MIXED:
 		return "Light mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_LIGHT_RIME_IN_CLOUD:
 		return "Light rime icing in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_LIGHT_CLEAR_IN_PRECIPITATION:
 		return "Light clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_MODERATE_MIXED:
 		return "Moderate mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_MODERATE_RIME_IN_CLOUD:
 		return "Moderate rime icing in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_MODERATE_CLEAR_IN_PRECIPITATION:
 		return "Moderate clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_SEVERE_MIXED:
 		return "Severe mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_SEVERE_RIME_IN_CLOUD:
 		return "Severe rime icing in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION:
 		return "Severe clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_NONE:
 		return "No turbulence";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT:
 		return "Light turbulence";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL:
 		return "Occasional moderate turbulence in clear air";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent moderate turbulence in clear air";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL:
 		return "Occasional moderate turbulence in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
 		return "Frequent moderate turbulence in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL:
 		return "Occasional severe turbulence in clear air";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent severe turbulence in clear air";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL:
 		return "Occasional severe turbulence in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
 		return "Frequent severe turbulence in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME:
 		return "Extreme turbulence";
-		
-		default:
-		return "[unknown atmospheric layer type]";
 	}
 }
 
@@ -2334,7 +2245,7 @@ std::string_view VisitorExplain::pressureTendencyTypeToString(
 	switch(type) {
 		case metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING:
 		return "increasing, then decreasing";
-		
+
 		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_SLOWLY:
 		return "increasing, then steady, or increasing then increasing more slowly";
 
@@ -2343,32 +2254,40 @@ std::string_view VisitorExplain::pressureTendencyTypeToString(
 
 		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_RAPIDLY:
 		return "decreasing or steady, then increasing; or increasing then increasing more rapidly";
-		
+
 		case metaf::PressureTendencyGroup::Type::STEADY:
 		return "steady";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING_THEN_INCREASING:
 		return "decreasing, then increasing";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_SLOWLY:
 		return "decreasing then steady; or decreasing then decreasing more slowly";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING:
 		return "decreasing steadily or unsteadily";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
 		return "steady or increasing, then decreasing; or decreasing then decreasing more rapidly";
-		
-		default:
-		return "[unknown pressure tendency]";
-	}
 
+		case metaf::PressureTendencyGroup::Type::NOT_REPORTED:
+		return "not reported";
+
+		case metaf::PressureTendencyGroup::Type::RISING_RAPIDLY:
+		return "rising rapidly";
+
+		case metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY:
+		return "falling rapidly";
+	}
 }
 
 std::string_view VisitorExplain::pressureTendencyTrendToString(
 	metaf::PressureTendencyGroup::Trend trend)
 {
 	switch(trend) {
+		case metaf::PressureTendencyGroup::Trend::NOT_REPORTED:
+		return "not reported";
+
 		case metaf::PressureTendencyGroup::Trend::HIGHER:
 		return "higher than";
 
@@ -2383,9 +2302,6 @@ std::string_view VisitorExplain::pressureTendencyTrendToString(
 
 		case metaf::PressureTendencyGroup::Trend::LOWER:
 		return "lower than";
-
-		default:
-		return "[unknown pressure trend]";
 	}	
 }
 
@@ -2430,6 +2346,9 @@ std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type 
 		case metaf::CloudTypesGroup::Type::CIRROSTRATUS:
 		return "cirrostratus";
 		
+		case metaf::CloudTypesGroup::Type::CIRROCUMULUS:
+		return "cirrocumulus";
+		
 		case metaf::CloudTypesGroup::Type::BLOWING_SNOW:
 		return "blowing snow";
 
@@ -2465,9 +2384,6 @@ std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type 
 
 		case metaf::CloudTypesGroup::Type::HAZE:
 		return "haze";
-
-		default:
-		return "[unknown cloud type]";
 	}
 }
 
@@ -2519,9 +2435,6 @@ std::string_view VisitorExplain::cloudLowLayerToString(metaf::CloudLayersGroup::
 		case metaf::CloudLayersGroup::LowLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena";
-
-		default:
-		return "[unknown low-layer cloud type]";
 	}
 }
 
@@ -2577,9 +2490,6 @@ std::string_view VisitorExplain::cloudMidLayerToString(metaf::CloudLayersGroup::
 		case metaf::CloudLayersGroup::MidLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena or because of a continuous layer of lower clouds";
-
-		default:
-		return "[unknown mid-layer cloud type]";
 	}
 }
 
@@ -2639,9 +2549,6 @@ std::string_view VisitorExplain::cloudHighLayerToString(metaf::CloudLayersGroup:
 		case metaf::CloudLayersGroup::HighLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena or because of a continuous layer of lower clouds";
-
-		default:
-		return "[unknown high-layer cloud type]";
 	}
 }
 

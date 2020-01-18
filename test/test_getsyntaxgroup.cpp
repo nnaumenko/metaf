@@ -104,12 +104,6 @@ TEST(getSyntaxGroup, OTHER_NSW) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_WSCONDS) {
-	const auto g = metaf::FixedGroup::parse("WSCONDS", metaf::ReportPart::TAF);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_AO1) {
 	const auto g = metaf::FixedGroup::parse("AO1", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
@@ -233,14 +227,6 @@ TEST(getSyntaxGroup, T_MISG) {
 
 TEST(getSyntaxGroup, TD_MISG) {
 	auto fg = metaf::FixedGroup::parse("TD", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, WND_MISG) {
-	auto fg = metaf::FixedGroup::parse("WND", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
@@ -402,7 +388,7 @@ TEST(getSyntaxGroup, OTHER_RunwayStateGroup) {
 }
 
 TEST(getSyntaxGroup, OTHER_SecondaryLocationGroup) {
-	const auto g = metaf::SecondaryLocationGroup::parse("WS", metaf::ReportPart::METAR);
+	const auto g = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
