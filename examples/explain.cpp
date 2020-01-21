@@ -76,9 +76,6 @@ private:
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
 	virtual std::string visitMinMaxTemperatureGroup(
 		const metaf::MinMaxTemperatureGroup & group,
 		metaf::ReportPart reportPart,
@@ -142,7 +139,7 @@ private:
 		metaf::WaveHeight::StateOfSurface stateOfSurface);
 	static std::string_view trendTypeToString(metaf::TrendGroup::Type type);
 	static std::string_view cloudAmountToString(metaf::CloudGroup::Amount amount);
-	static std::string_view cloudTypeToString(metaf::CloudGroup::Type type);
+	static std::string_view cloudTypeToString(metaf::CloudGroup::CloudType type);
 	static std::string_view weatherPhenomenaQualifierToString(metaf::WeatherPhenomena::Qualifier qualifier);
 	static std::string_view weatherPhenomenaDescriptorToString(metaf::WeatherPhenomena::Descriptor descriptor);
 	static std::string_view weatherPhenomenaWeatherToString(metaf::WeatherPhenomena::Weather weather);
@@ -150,9 +147,8 @@ private:
 	static std::string_view rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
 	static std::string_view runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
 	static std::string_view runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
-	static std::string_view colourCodeToString(metaf::ColourCodeGroup::Code code);
-	static unsigned int colourCodeVisibility(metaf::ColourCodeGroup::Code code);
-	static unsigned int colourCodeCeiling(metaf::ColourCodeGroup::Code code);
+	static unsigned int colourCodeVisibility(metaf::MiscGroup::Type code);
+	static unsigned int colourCodeCeiling(metaf::MiscGroup::Type code);
 	static std::string_view precipitationGroupTypeToString(
 		metaf::PrecipitationGroup::Type type);
 	static std::string_view layerForecastGroupTypeToString(
@@ -297,10 +293,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
 		break;
 
-		case metaf::FixedGroup::Type::CLD_MISG:
-		result << "Sky condition data (cloud data) is missing";
-		break;
-
 		case metaf::FixedGroup::Type::ICG_MISG:
 		result << "Icing data is missing";
 		break;
@@ -378,12 +370,6 @@ std::string VisitorExplain::visitTrendGroup(const metaf::TrendGroup & group,
 		break;
 
 		case metaf::TrendGroup::Probability::NONE:
-		if (group.type() == metaf::TrendGroup::Type::BECMG ||
-			group.type() == metaf::TrendGroup::Type::TEMPO ||
-			group.type() == metaf::TrendGroup::Type::INTER)
-		{
-			result << "Trend probability is 50 percent or more" << lineBreak;;
-		}
 		break;
 	}
 	if (const auto timeFrom = group.timeFrom(); timeFrom) {
@@ -405,26 +391,58 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	
+	const auto varSectorEndStr = explainDirection(group.varSectorEnd());
+
 	switch (group.type()) {
 		case metaf::WindGroup::Type::SURFACE_WIND_CALM:
 		result << "No wind";
 		return result.str();
 
 		case metaf::WindGroup::Type::SURFACE_WIND:
+		result << "Surface wind:" << lineBreak;
+		result << "Wind direction: " << explainDirection(group.direction(), true);
+		result << lineBreak;
+		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
+		if (group.gustSpeed().isReported()) 
+			result << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
+		break;
+
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
+		result << "Variable wind sector:" << lineBreak;
+		result << "Variable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin()); 
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd());
+		break;
+
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
-		result << "Surface wind:";
+		result << "Surface wind:" << lineBreak;
+		result << "Wind direction: " << explainDirection(group.direction(), true);
+		result << lineBreak;
+		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
+		if (group.gustSpeed().isReported()) 
+			result << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
+		result << "Variable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin()); 
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd());
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHEAR:
 		result << "Wind shear at height ";
 		result << explainDistance(group.height()) << ':';
+		result << "Wind direction: " << explainDirection(group.direction(), true) << lineBreak;
+		result << "Wind speed: " << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) 
+			result  << lineBreak << "Gust speed: " << explainSpeed(group.gustSpeed());
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHIFT:		
 		case metaf::WindGroup::Type::WIND_SHIFT_FROPA:
 		result << "Wind direction changed 45&deg; or more in less than 15 minutes ";
-		result << "with sustained wind speed of 10 knots (5.1 m/s / 18.5 km/h / 11.5 mph)";
+		result << "with sustained wind speed of 10 knots";
+		result << " (5.1 m/s / 18.5 km/h / 11.5 mph)";
 		if (group.eventTime().has_value()) {
 			result << lineBreak << "Wind shift began at ";
 			result << explainMetafTime(*group.eventTime());
@@ -462,25 +480,6 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		result << "Wind data is missing";
 		break;
 	}
-
-	result << lineBreak;
-
-	if (!group.direction().isOmitted()) {
-		result << "Wind direction: " << explainDirection(group.direction(), true);
-		result << lineBreak;	
-	} 
-	if (group.windSpeed().speed().has_value()) {
-		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
-		if (group.gustSpeed().speed().has_value()) {
-			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
-		}
-	}
-	if (!group.varSectorBegin().isOmitted() && !group.varSectorEnd().isOmitted()) {
-		result << "Variable wind direction sector from ";
-		result << explainDirection(group.varSectorBegin());
-		result << " clockwise to ";
-		result << explainDirection(group.varSectorEnd()) << lineBreak;
-	}
 	return result.str();
 }
 
@@ -501,7 +500,7 @@ std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & 
 
 		case metaf::VisibilityGroup::Type::DIRECTIONAL:
 		case metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE:
-		result << explainDirection(group.direction());
+		if (group.direction().has_value()) result << explainDirection(*group.direction());
 		break;
 
 		case metaf::VisibilityGroup::Type::SURFACE_VISIBILITY:
@@ -539,17 +538,61 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << cloudAmountToString(group.amount());
-	if (const auto typeStr = cloudTypeToString(group.type()); !typeStr.empty()) {
-		result << ", type: " << typeStr;
+
+	switch (group.type()) {
+		case metaf::CloudGroup::Type::NO_CLOUDS:
+		result << cloudAmountToString(group.amount());
+		break;
+
+		case metaf::CloudGroup::Type::CLOUD_LAYER:
+		result << cloudAmountToString(group.amount()) << lineBreak;
+		if (group.cloudType() != metaf::CloudGroup::CloudType::NONE) {
+			result << "Convective type: " << cloudTypeToString(group.cloudType());
+			result << lineBreak;
+		}
+		result << "Base height " << explainDistance(group.height());
+		break;
+
+		case metaf::CloudGroup::Type::VERTICAL_VISIBILITY:
+		result << "Sky is obscured, vertical visibility ";
+		result << explainDistance(group.verticalVisibility());
+		break;
+
+		case metaf::CloudGroup::Type::CEILING:
+		result << "Ceiling height " << explainDistance(group.height());
+		break;
+
+		case metaf::CloudGroup::Type::VARIABLE_CEILING:
+		result << "Ceiling height is variable between ";
+		result << explainDistance(group.minHeight());
+		result << " and ";
+		result << explainDistance(group.maxHeight());
+		break;
+
+		case metaf::CloudGroup::Type::CHINO:
+		result << "Ceiling data not awailable";
+		break;
+
+		case metaf::CloudGroup::Type::CLD_MISG:
+		result << "Sky condition data (cloud data) is missing";
+		break;
 	}
-	result << lineBreak;
-	if (group.height().isValue()) {
-		result << "Base height " << explainDistance(group.height()) << lineBreak;
+
+	switch (group.type()) {
+		case metaf::CloudGroup::Type::CEILING:
+		case metaf::CloudGroup::Type::VARIABLE_CEILING:
+		case metaf::CloudGroup::Type::CHINO:
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
+
+		default: break;
 	}
-	if (group.verticalVisibility().isValue()) {
-		result << "Vertical visibility " << explainDistance(group.verticalVisibility()) << lineBreak;
-	}
+
 	return result.str();
 }
 
@@ -735,10 +778,6 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 		result << "Visibility data not awailable";
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::CHINO:
-		result << "Ceiling data not awailable";
-		break;
-
 		case metaf::SecondaryLocationGroup::Type::VISIBILITY:
 		result << "Visibility " << explainDistance(group.visibility());
 		break;
@@ -787,33 +826,6 @@ std::string VisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & 
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "Sea surface temperature " << explainTemperature(group.surfaceTemperature()) << ", ";
 	result << explainWaveHeight(group.waves());
-	return result.str();
-}
-
-std::string VisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.isCodeBlack()) {
-		result << "Colour code BLACK: ";
-		result << "aerodrome closed due to snow accumulation or non-weather reasons" << lineBreak;
-	}
-	result << "Colour code " << colourCodeToString(group.code()) << ": ";
-	if (const auto [vis, ceiling] = 
-			std::pair(colourCodeVisibility(group.code()), colourCodeCeiling(group.code()));
-		vis && ceiling)
-	{
-		if (group.code() == metaf::ColourCodeGroup::Code::RED) {
-			result << "either visibility &lt; " << vis;
-			result << " or lowest cloud base height &lt; " << ceiling;
-		} else {
-			result << "visibility &gt;" << vis;
-			result << " and lowest cloud base height &gt;" << ceiling;
-		}
-	}
 	return result.str();
 }
 
@@ -1046,7 +1058,7 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 		result << "Lightning strikes observed in the following directions: ";
 		for (auto i=0u; i<directions.size(); i++) {
 			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i]);
+			result << cardinalDirectionToString(directions[i].cardinal());
 		}
 		result << lineBreak;
 	}
@@ -1131,14 +1143,14 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 		result << "Observed in the following directions: ";
 		for (auto i=0u; i<directions.size(); i++) {
 			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i]);
+			result << cardinalDirectionToString(directions[i].cardinal());
 		}
 		result << lineBreak;
 	}
 
-	if (group.movingDirection() != metaf::Direction::Cardinal::NONE) {
+	if (group.movingDirection().isReported()) {
 		result << "Moving towards ";
-		result << cardinalDirectionToString(group.movingDirection());
+		result << cardinalDirectionToString(group.movingDirection().cardinal());
 		result << lineBreak;
 	}
 
@@ -1152,10 +1164,13 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
+	static const std::string colourCodeBlack = "Colour code BLACK: "
+		"aerodrome closed due to snow accumulation or non-weather reasons";
+
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
 		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
-		if (const auto duration = group.value(); duration.has_value()) {
+		if (const auto duration = group.data(); duration.has_value()) {
 			if (! *duration) {
 				result << "No sunshine occurred the previous calendar day";
 			} else {
@@ -1167,23 +1182,74 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		break;
 
 		case metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION:
-		if (const auto correctionNo = group.value(); correctionNo.has_value()) {
+		if (const auto correctionNo = group.data(); correctionNo.has_value()) {
 			result << "This report is the corrected weather observation, ";
 			result << "correction number is " << static_cast<int>(*correctionNo);
 		}
 		break;
 
 		case metaf::MiscGroup::Type::DENSITY_ALTITUDE:
-			result << "Density altitude ";
-			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << *group.value() << " feet";
-			break;
+		result << "Density altitude ";
+		if (!group.data().has_value()) { result << "data missing"; break; }
+		result << " is " << *group.data() << " feet";
+		break;
 
 		case metaf::MiscGroup::Type::HAILSTONE_SIZE:
-			result << "Largest hailstone size ";
-			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << *group.value() << " inches";
-			break;
+		result << "Largest hailstone size ";
+		if (!group.data().has_value()) { result << "data missing"; break; }
+		result << " is " << *group.data() << " inches";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE:
+		result << "Colour code BLUE: ";
+		result << "visibility &gt;8000 m and lowest cloud base height &gt;2500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKWHITE:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_WHITE:
+		result << "Colour code WHITE: ";
+		result << "visibility &gt;5000 m and lowest cloud base height &gt;1500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKGREEN:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_GREEN:
+		result << "Colour code GREEN: ";
+		result << "visibility &gt;3700 m and lowest cloud base height &gt;700 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW1:
+		result << "Colour code YELLOW 1: ";
+		result << "visibility &gt;2500 m and lowest cloud base height &gt;500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW2:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW2:
+		result << "Colour code YELLOW 2: ";
+		result << "visibility &gt;1600 m and lowest cloud base height &gt;300 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKAMBER:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_AMBER:
+		result << "Colour code AMBER: ";
+		result << "visibility &gt;800 m and lowest cloud base height &gt;200 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKRED:
+		result << colourCodeBlack << lineBreak;
+		case metaf::MiscGroup::Type::COLOUR_CODE_RED:
+		result << "Colour code RED: ";
+		result << "either visibility &lt;800 m or ";
+		result << "lowest cloud base height &lt;200 ft ";
+		result << "or both";
+		break;
 	}
 	return result.str();
 }
@@ -1423,9 +1489,6 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 {
 	std::ostringstream result;
 	switch (direction.status()) {
-		case metaf::Direction::Status::OMITTED:
-		return std::string();
-
 		case metaf::Direction::Status::NOT_REPORTED:
 		return "not reported";
 
@@ -1635,7 +1698,7 @@ std::string_view VisitorExplain::distanceUnitToString(metaf::Distance::Unit unit
 
 std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Cardinal cardinal) {
 	switch(cardinal) {
-		case metaf::Direction::Cardinal::NONE:		return std::string();
+		case metaf::Direction::Cardinal::NOT_REPORTED:	return "not reported";
 		case metaf::Direction::Cardinal::N:			return "north";
 		case metaf::Direction::Cardinal::S: 		return "south";
 		case metaf::Direction::Cardinal::W: 		return "west";
@@ -1649,6 +1712,7 @@ std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Car
 		case metaf::Direction::Cardinal::TRUE_S: 	return "true south";
 		case metaf::Direction::Cardinal::TRUE_E: 	return "true east";
 		case metaf::Direction::Cardinal::NDV:		return "no directional variations";
+		case metaf::Direction::Cardinal::VRB:		return "variable";
 		case metaf::Direction::Cardinal::OHD:		return "overhead";
 		case metaf::Direction::Cardinal::ALQDS:		return "all quadrants (in all directions)";
 		case metaf::Direction::Cardinal::UNKNOWN:	return "unknown direction";
@@ -1794,18 +1858,18 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 	}
 }
 
-std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::Type type) {
+std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::CloudType type) {
 	switch (type) {
-		case metaf::CloudGroup::Type::NONE:
+		case metaf::CloudGroup::CloudType::NONE:
 		return std::string_view();
 
-		case metaf::CloudGroup::Type::NOT_REPORTED:
+		case metaf::CloudGroup::CloudType::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::CloudGroup::Type::TOWERING_CUMULUS:
+		case metaf::CloudGroup::CloudType::TOWERING_CUMULUS:
 		return "towering cumulus";
 
-		case metaf::CloudGroup::Type::CUMULONIMBUS:
+		case metaf::CloudGroup::CloudType::CUMULONIMBUS:
 		return "cumulonimbus";
 	}
 }
@@ -2085,42 +2149,6 @@ std::string_view VisitorExplain::runwayStateExtentToString(
 
 		case metaf::RunwayStateGroup::Extent::RESERVED_8:
 		return "[reserved_extent_value 8]";
-	}
-}
-
-std::string_view VisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:		return "BLUE";
-		case metaf::ColourCodeGroup::Code::WHITE:		return "WHITE";
-		case metaf::ColourCodeGroup::Code::GREEN:		return "GREEN";
-		case metaf::ColourCodeGroup::Code::YELLOW1:		return "YELLOW1";
-		case metaf::ColourCodeGroup::Code::YELLOW2:		return "YELLOW2";
-		case metaf::ColourCodeGroup::Code::AMBER:		return "AMBER";
-		case metaf::ColourCodeGroup::Code::RED:			return "RED";
-	}
-}
-
-unsigned int VisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:	return 8000;
-		case metaf::ColourCodeGroup::Code::WHITE:	return 5000;
-		case metaf::ColourCodeGroup::Code::GREEN:	return 3700;
-		case metaf::ColourCodeGroup::Code::YELLOW1: return 2500;
-		case metaf::ColourCodeGroup::Code::YELLOW2:	return 1600;
-		case metaf::ColourCodeGroup::Code::AMBER:	return 800;
-		case metaf::ColourCodeGroup::Code::RED:		return 800;
-	}
-}
-
-unsigned int VisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:	return 2500;
-		case metaf::ColourCodeGroup::Code::WHITE:	return 1500;
-		case metaf::ColourCodeGroup::Code::GREEN:	return 700;
-		case metaf::ColourCodeGroup::Code::YELLOW1:	return 500;
-		case metaf::ColourCodeGroup::Code::YELLOW2:	return 300;
-		case metaf::ColourCodeGroup::Code::AMBER:	return 200;
-		case metaf::ColourCodeGroup::Code::RED:		return 200;
 	}
 }
 

@@ -424,41 +424,6 @@ TEST(FixedGroup, parseUnavbl) {
 	EXPECT_FALSE(metaf::FixedGroup::parse("UNAVBL", metaf::ReportPart::RMK).has_value());
 }
 
-TEST(FixedGroup, parseCldMisg) {
-	static const char gs[] = "CLD";
-	static const auto type = metaf::FixedGroup::Type::CLD_MISG;
-
-	auto fg = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(fg->type(), type);
-}
-
-TEST(FixedGroup, parseCldAndOther) {
-	static const char gs[] = "CLD";
-
-	auto fg1 = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg1.has_value());
-	EXPECT_EQ(fg1->append("MSSG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-
-	auto fg2 = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg2.has_value());
-	EXPECT_EQ(fg2->append("4000", metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-
-	auto fg3 = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg3.has_value());
-	EXPECT_EQ(fg3->append("////", metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-
-	auto fg4 = metaf::FixedGroup::parse(gs, metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg4.has_value());
-	EXPECT_EQ(fg4->append(gs, metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-}
-
 TEST(FixedGroup, parseIcgMisg) {
 	static const char gs[] = "ICG";
 	static const auto type = metaf::FixedGroup::Type::ICG_MISG;
@@ -881,11 +846,7 @@ TEST(FixedGroup, isValidTrue) {
 	EXPECT_TRUE(fg22->isValid());
 }
 
-TEST(FixedGroup, isValidFalse) {
-	const auto fg1 = metaf::FixedGroup::parse("CLD", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg1.has_value());
-	EXPECT_FALSE(fg1->isValid());
-	
+TEST(FixedGroup, isValidFalse) {	
 	const auto fg2 = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg2.has_value());
 	EXPECT_FALSE(fg2->isValid());

@@ -147,13 +147,6 @@ protected:
 		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]++;
 	}
-	virtual void visitColourCodeGroup(const metaf::ColourCodeGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart; (void)rawString;
-		count[variant_index<metaf::Group, metaf::ColourCodeGroup>()]++;
-	}
 	virtual void visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -293,7 +286,6 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]), 0);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RainfallGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ColourCodeGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]), 2);
@@ -302,6 +294,6 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 3);
 }

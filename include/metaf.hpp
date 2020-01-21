@@ -29,9 +29,9 @@ namespace metaf {
 
 // Metaf library version
 struct Version {
-	inline static const int major = 4;
-	inline static const int minor = 4;
-	inline static const int patch = 1;
+	inline static const int major = 5;
+	inline static const int minor = 0;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -51,7 +51,6 @@ class RunwayStateGroup;
 class SecondaryLocationGroup;
 class RainfallGroup;
 class SeaSurfaceGroup;
-class ColourCodeGroup;
 class MinMaxTemperatureGroup;
 class PrecipitationGroup;
 class LayerForecastGroup;
@@ -80,7 +79,6 @@ using Group = std::variant<
 	SecondaryLocationGroup,
 	RainfallGroup,
 	SeaSurfaceGroup,
-	ColourCodeGroup,
 	MinMaxTemperatureGroup,
 	PrecipitationGroup,
 	LayerForecastGroup,
@@ -326,8 +324,19 @@ private:
 
 class Direction {
 public:
+	enum class Status {
+		NOT_REPORTED,	// Direction is specified as not reported
+		VARIABLE,		// Direction is reported as variable
+		NDV,			// Direction is reported as No Directional Variation
+		VALUE_DEGREES, 	// Direction is reported as value in degrees
+		VALUE_CARDINAL,	// Direction is reported as cardinal value
+		OVERHEAD,		// Phenomena occurring directly over the location
+		ALQDS,			// Direction is reported as all quadrants (in all directions)
+		UNKNOWN 		// Direction is reported as unknown explicitly
+	};
 	enum class Cardinal {
-		NONE,	// Not reported or no corresponding cardinal direction
+		NOT_REPORTED, // Not reported or no corresponding cardinal direction
+		VRB,	// Direction is variable
 		NDV,	// No Directional Variation
 		N,
 		S,
@@ -345,31 +354,22 @@ public:
 		ALQDS,	// All quadrants
 		UNKNOWN // Unknown
 	};
-	enum class Status {
-		OMITTED, 		// Direction is omitted (not specified at all)
-		NOT_REPORTED,	// Direction is specified as not reported
-		VARIABLE,		// Direction is reported as variable
-		NDV,			// Direction is reported as No Directional Variation
-		VALUE_DEGREES, 	// Direction is reported as value in degrees
-		VALUE_CARDINAL,	// Direction is reported as cardinal value
-		OVERHEAD,		// Phenomena occurring directly over the location
-		ALQDS,			// Direction is reported as all quadrants (in all directions)
-		UNKNOWN 		// Direction is reported as unknown explicitly
-	};
 	Status status() const { return dirStatus; }
 	inline Cardinal cardinal(bool trueDirections = false) const;
 	std::optional<unsigned int> degrees() const {
 		if (!isValue())	return std::optional<unsigned int>();
 		return dirDegrees;
 	}
-	bool isOmitted() const { return(status() == Status::OMITTED); }
 	bool isValue() const {
 		return (dirStatus == Status::VALUE_DEGREES || 
 			dirStatus == Status::VALUE_CARDINAL);
 	}
-	static inline std::vector<Cardinal> sectorCardinalDirToVector(
-		const Direction & dir1from, 
-		const Direction & dir1to);
+	bool isReported() const {
+		return (dirStatus != Status::NOT_REPORTED);
+	}
+	static inline std::vector<Direction> sectorCardinalDirToVector(
+		const Direction & dirFrom, 
+		const Direction & dirTo);
 	bool isValid() const {
 		if (isValue() && dirDegrees > maxDegrees) return false;
 		return true;
@@ -386,7 +386,7 @@ public:
 
 private:
 	unsigned int dirDegrees = 0;
-	Status dirStatus = Status::OMITTED;
+	Status dirStatus = Status::NOT_REPORTED;
 private:
 	static const inline unsigned int maxDegrees = 360;
 	static const inline unsigned int octantSize = 45u;
@@ -398,6 +398,8 @@ private:
 	static const inline unsigned int degreesNorthEast = 45;
 	static const inline unsigned int degreesSouthWest = 225;
 	static const inline unsigned int degreesSouthEast = 135;
+
+	inline Direction(Cardinal c);
 };
 
 class Pressure {
@@ -804,7 +806,6 @@ public:
 		TSNO,
 		SLPNO,
 		FROIN,
-		CLD_MISG,
 		ICG_MISG,
 		PCPN_MISG,
 		PRES_MISG,
@@ -1046,16 +1047,9 @@ public:
 			return Distance();
 		return visMax;
 	}
-	Direction direction() const { return dir; }
-	Direction sectorBegin() const { return Direction(); }
-	Direction sectorEnd() const { return Direction(); }
-	bool isPrevailing() const {
-		return (type() == Type::PREVAILING || 
-			type() == Type::PREVAILING_NDV || 
-			type() == Type::PREVAILING_VARIABLE);
-	}
-	bool isDirectional() const {
-		return (type() == Type::DIRECTIONAL || type() == Type::DIRECTIONAL_VARIABLE);
+	std::optional<Direction> direction() const { return dir; }
+	std::vector<Direction> sectorDirections() const {
+		return std::vector<Direction>();
 	}
 	inline bool isValid() const;
 
@@ -1096,12 +1090,21 @@ private:
 	Type visType = Type::PREVAILING;
 	Distance vis;
 	Distance visMax;
-	Direction dir;
+	std::optional<Direction> dir;
 	IncompleteType incompleteType = IncompleteType::NONE;
 };
 
 class CloudGroup {
 public:
+	enum class Type {
+		NO_CLOUDS,
+		CLOUD_LAYER,
+		VERTICAL_VISIBILITY,
+		CEILING,
+		VARIABLE_CEILING,
+		CHINO,
+		CLD_MISG
+	};
 	enum class Amount {
 		NOT_REPORTED,
 		NCD,
@@ -1117,30 +1120,40 @@ public:
 		VARIABLE_SCATTERED_BROKEN,
 		VARIABLE_BROKEN_OVERCAST
 	};
-	enum class Type {
-		NOT_REPORTED,
+	enum class CloudType {
 		NONE,
+		NOT_REPORTED,
 		TOWERING_CUMULUS,
 		CUMULONIMBUS
 	};
-	Amount amount() const { return amnt; }
 	Type type() const { return tp; }
-	inline Distance height() const;
+	Amount amount() const { return amnt; }
+	CloudType cloudType() const { return ctp; }
+	inline Distance height() const {
+		if (type() != Type::CLOUD_LAYER && type() != Type::CEILING) 
+			return heightNotReported;
+		return heightOrVertVis;
+	}
+	inline Distance minHeight() const {
+		if (type() != Type::VARIABLE_CEILING) return heightNotReported;
+		return heightOrVertVis;
+	}
+	inline Distance maxHeight() const {
+		if (type() != Type::VARIABLE_CEILING) return heightNotReported;
+		return maxHt;
+	}
 	Distance verticalVisibility() const {
-		if (amount() != Amount::OBSCURED) return heightNotReported;
+		if (type() != Type::VERTICAL_VISIBILITY) return heightNotReported;
 		return heightOrVertVis;
 	}
 	WeatherPhenomena obscuration() const { return w; }
-	bool isVerticalVisibility() const { return (amount() == Amount::OBSCURED); }
-	bool isNoClouds() const {
-		return (amount() == Amount::NONE_CLR || 
-				amount() == Amount::NONE_SKC ||
-				amount() == Amount::NCD || 
-				amount() == Amount::NSC);
+	std::optional<Runway> runway() const { return rw; }
+	std::optional<Direction> direction() const { return dir; }
+	bool isValid() const { 
+		if (rw.has_value() && !rw->isValid()) return false;
+		if (dir.has_value() && !dir->isValid()) return false;
+		return (heightOrVertVis.isValid() && maxHt.isValid());
 	}
-	inline bool isCloudLayer() const;
-	inline bool isObscuration() const { return !w.isOmitted(); }
-	bool isValid() const { return heightOrVertVis.isValid(); }
 
 	CloudGroup () = default;
 	static inline std::optional<CloudGroup> parse(
@@ -1151,26 +1164,36 @@ public:
 		ReportPart reportPart = ReportPart::UNKNOWN,
 		const ReportMetadata & reportMetadata = missingMetadata);
 private:
+	Type tp = Type::CLOUD_LAYER;
 	Amount amnt = Amount::NOT_REPORTED;
 	Distance heightOrVertVis;
-	Type tp = Type::NONE;
+	Distance maxHt;
+	CloudType ctp = CloudType::NONE;
 	WeatherPhenomena w;
+	std::optional<Runway> rw;
+	std::optional<Direction> dir;
 	static const inline auto heightNotReported = Distance(Distance::Unit::FEET);
 
-	enum class IncompleteType {
+	enum class IncompleteText {
 		NONE,
-		EXPECT_V,
-		EXPECT_SECOND_AMOUNT
+		RMK_AMOUNT,
+		RMK_AMOUNT_V,
+		CIG,
+		CIG_NUM,
+		CHINO,
+		CLD
 	};
-	IncompleteType incompleteType = IncompleteType::NONE;
+	IncompleteText incompleteText = IncompleteText::NONE;
 
-	CloudGroup(Amount a) : amnt(a) {}
-	static inline std::optional<CloudGroup> parseCloudLayer(const std::string & s);
+	CloudGroup(Type t, IncompleteText it) : tp(t), incompleteText(it) {}
+	CloudGroup(Type t, Amount a = Amount::NOT_REPORTED) : tp(t), amnt(a) {}
+	static inline std::optional<CloudGroup> parseCloudLayerOrVertVis(const std::string & s);
 	static inline std::optional<CloudGroup> parseVariableCloudLayer(const std::string & s);
 	static inline std::optional<Amount> amountFromString(const std::string & s);
-	static inline std::optional<Type> typeFromString(const std::string & s);
-
-	static inline std::optional<Amount> variableAmount(Amount first, Amount second);
+	static inline std::optional<CloudType> cloudTypeFromString(const std::string & s);
+	inline AppendResult appendVariableCloudAmount(const std::string & group);
+	inline AppendResult appendCeiling(const std::string & group);
+	inline AppendResult appendRunwayOrCardinalDirection(const std::string & group);
 };
 
 class WeatherGroup {
@@ -1422,7 +1445,6 @@ public:
 		VARIABLE_CEILING,
 		VISIBILITY,
 		VISNO,
-		CHINO,
 		VARIABLE_VISIBILITY
 	};
 	Type type() const { return t; }
@@ -1448,11 +1470,6 @@ private:
 
 	enum class IncompleteText {
 		NONE,
-		WS,
-		WS_ALL,
-		CIG,
-		CIG_NUM,
-		CHINO,
 		VISNO,
 		VIS,
 		VIS_INTEGER,
@@ -1513,34 +1530,6 @@ public:
 private:
 	Temperature t;
 	WaveHeight wh;
-};
-
-class ColourCodeGroup {
-public:
-	enum class Code {
-		BLUE ,	// Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
-		WHITE ,	// Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
-		GREEN,	// Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
-		YELLOW1,// Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
-		YELLOW2,// Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
-		AMBER,	// Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
-		RED		// Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
-	};
-	Code code() const { return c; }
-	bool isCodeBlack() const { return cBlack; }
-	bool isValid() const { return true; }
-
-	ColourCodeGroup() = default;
-	static inline std::optional<ColourCodeGroup> parse(
-		const std::string & group,
-		ReportPart reportPart,
-		const ReportMetadata & reportMetadata = missingMetadata);
-	AppendResult inline append(const std::string & group,
-		ReportPart reportPart = ReportPart::UNKNOWN,
-		const ReportMetadata & reportMetadata = missingMetadata);
-private:
-	Code c = Code::BLUE;
-	bool cBlack = false; //Is colour code BLACK reported along with main code
 };
 
 class MinMaxTemperatureGroup {
@@ -1835,7 +1824,7 @@ public:
 	bool isCloudCloud() const { return typeCloudCloud; }
 	bool isCloudAir() const { return typeCloudAir; }
 	bool isUnknownType() const { return typeUnknown; }
-	inline std::vector<Direction::Cardinal> directions() const;
+	inline std::vector<Direction> directions() const;
 	inline bool isValid() const { return !typeUnknown; }
 
 	LightningGroup() = default;
@@ -1854,10 +1843,10 @@ private:
 	bool typeCloudCloud = false;
 	bool typeCloudAir = false;
 	bool typeUnknown = false;
-	Direction dir1from;
-	Direction dir1to;
-	Direction dir2from;
-	Direction dir2to;
+	std::optional<Direction> dir1from;
+	std::optional<Direction> dir1to;
+	std::optional<Direction> dir2from;
+	std::optional<Direction> dir2to;
 	bool incomplete = false;
 
 	LightningGroup(Frequency frequency) {
@@ -1866,8 +1855,8 @@ private:
 	}
 	static inline std::optional<LightningGroup> fromLtgGroup(
 		const std::string & group);
-	bool isOmittedDir1() const { return (dir1from.isOmitted() && dir1to.isOmitted()); } 
-	bool isOmittedDir2() const { return (dir2from.isOmitted() && dir2to.isOmitted()); }
+	bool isOmittedDir1() const { return (!dir1from.has_value() && !dir1to.has_value()); } 
+	bool isOmittedDir2() const { return (!dir2from.has_value() && !dir2to.has_value()); }
 };
 
 class VicinityGroup {
@@ -1896,8 +1885,8 @@ public:
 	};
 	Type type() const { return t; }
 	Distance distance() const { return dist; }
-	inline std::vector<Direction::Cardinal> directions() const;
-	inline Direction::Cardinal movingDirection() const { return movDir; }
+	inline std::vector<Direction> directions() const;
+	inline Direction movingDirection() const { return movDir; }
 	inline bool isValid() const {
 		return (incompleteType == IncompleteType::NONE);
 	}
@@ -1912,11 +1901,11 @@ public:
 private:
 	Type t;
 	Distance dist;
-	Direction dir1from;
-	Direction dir1to;
-	Direction dir2from;
-	Direction dir2to;
-	Direction::Cardinal movDir = Direction::Cardinal::NONE;
+	std::optional<Direction> dir1from;
+	std::optional<Direction> dir1to;
+	std::optional<Direction> dir2from;
+	std::optional<Direction> dir2to;
+	Direction movDir;
 
 	enum class IncompleteType {
 		NONE,				// Group complete
@@ -1957,10 +1946,24 @@ public:
 		SUNSHINE_DURATION_MINUTES,
 		CORRECTED_WEATHER_OBSERVATION,
 		DENSITY_ALTITUDE,
-		HAILSTONE_SIZE
+		HAILSTONE_SIZE,
+		COLOUR_CODE_BLUE,
+		COLOUR_CODE_WHITE,
+		COLOUR_CODE_GREEN,
+		COLOUR_CODE_YELLOW1,
+		COLOUR_CODE_YELLOW2,
+		COLOUR_CODE_AMBER,
+		COLOUR_CODE_RED,
+		COLOUR_CODE_BLACKBLUE,
+		COLOUR_CODE_BLACKWHITE,
+		COLOUR_CODE_BLACKGREEN,
+		COLOUR_CODE_BLACKYELLOW1,
+		COLOUR_CODE_BLACKYELLOW2,
+		COLOUR_CODE_BLACKAMBER,
+		COLOUR_CODE_BLACKRED
 	};
 	Type type() const { return groupType; }
-	std::optional<float> value() const { return groupValue; }
+	std::optional<float> data() const { return groupData; }
 	inline bool isValid() const;
 
 	MiscGroup() = default;
@@ -1981,9 +1984,10 @@ private:
 	};
 
 	Type groupType;
-	std::optional<float> groupValue;
+	std::optional<float> groupData;
 	IncompleteType incompleteType = IncompleteType::NONE;
 
+	inline static std::optional<Type> parseColourCode(const std::string & group);
 	inline bool appendHailstoneFraction (const std::string & group);
 	inline bool appendDensityAltitude (const std::string & group);
 };
@@ -2203,9 +2207,6 @@ protected:
 	virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
-	virtual T visitColourCodeGroup(const ColourCodeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString) = 0;
 	virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
@@ -2290,9 +2291,6 @@ inline T Visitor<T>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<SeaSurfaceGroup>(&group); gr) {
 		return this->visitSeaSurfaceGroup(*gr, reportPart, rawString);
-	}
-	if (const auto gr = std::get_if<ColourCodeGroup>(&group); gr) {
-		return this->visitColourCodeGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<MinMaxTemperatureGroup>(&group); gr) {
 		return this->visitMinMaxTemperatureGroup(*gr, reportPart, rawString);
@@ -2394,10 +2392,6 @@ inline void Visitor<void>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<SeaSurfaceGroup>(&group); gr) {
 		this->visitSeaSurfaceGroup(*gr, reportPart, rawString);
-		return;
-	}
-	if (const auto gr = std::get_if<ColourCodeGroup>(&group); gr) {
-		this->visitColourCodeGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<MinMaxTemperatureGroup>(&group); gr) {
@@ -3055,11 +3049,8 @@ std::optional<Direction> Direction::fromCardinalString(
 	bool enableOhdAlqds,
 	bool enableUnknown)
 {
-	if (s.empty()) {
-		Direction dir;
-		dir.dirStatus = Status::OMITTED;
-		return dir;
-	}
+	std::optional<Direction> error;
+	if (s.empty()) return error;
 	if (s == "NDV") {
 		Direction dir;
 		dir.dirStatus = Status::NDV;
@@ -3089,7 +3080,7 @@ std::optional<Direction> Direction::fromCardinalString(
 	if (s == "NE") cardinalDegrees = degreesNorthEast;
 	if (s == "SW") cardinalDegrees = degreesSouthWest;
 	if (s == "SE") cardinalDegrees = degreesSouthEast;
-	if (!cardinalDegrees) return std::optional<Direction>();
+	if (!cardinalDegrees) return error;
 	Direction dir;
 	dir.dirStatus = Status::VALUE_CARDINAL;
 	dir.dirDegrees = cardinalDegrees;
@@ -3099,10 +3090,6 @@ std::optional<Direction> Direction::fromCardinalString(
 std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 	std::optional<Direction> error;
 	Direction direction;
-	if (s.empty()) {
-		direction.dirStatus = Status::OMITTED;
-		return direction;
-	}
 	if (s.length() != 3) return error;
 	if (s == "///") {
 		direction.dirStatus = Status::NOT_REPORTED;
@@ -3123,21 +3110,15 @@ std::optional<Direction> Direction::fromDegreesString(const std::string & s) {
 
 Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 	switch (status()) {
-		case Status::OMITTED:
-		case Status::NOT_REPORTED:
-		case Status::VARIABLE:
-		return Cardinal::NONE;
-
+		case Status::NOT_REPORTED: return Cardinal::NOT_REPORTED;
+		case Status::VARIABLE: return Cardinal::VRB;
 		case Status::NDV: return Cardinal::NDV;
 		case Status::OVERHEAD: return Cardinal::OHD;
 		case Status::ALQDS: return Cardinal::ALQDS;
 		case Status::UNKNOWN: return Cardinal::UNKNOWN;
-		
-		case Status::VALUE_DEGREES:
-		case Status::VALUE_CARDINAL:
-		break;
+		case Status::VALUE_DEGREES: break;
+		case Status::VALUE_CARDINAL: break;
 	}
-
 	if (trueDirections) {
 		if (dirDegrees == degreesTrueNorth) return Cardinal::TRUE_N;
 		if (dirDegrees == degreesTrueSouth) return Cardinal::TRUE_S;
@@ -3154,7 +3135,7 @@ Direction::Cardinal Direction::cardinal(bool trueDirections) const {
 	if (dirDegrees <= (degreesTrueWest + octantSize/2))		return Cardinal::W;
 	if (dirDegrees <= (degreesNorthWest + octantSize/2)) 	return Cardinal::NW;
 	if (dirDegrees <= maxDegrees) 							return Cardinal::N;
-	return Cardinal::NONE;
+	return Cardinal::NOT_REPORTED;
 }
 
 std::optional<std::pair<Direction, Direction>> Direction::fromSectorString(
@@ -3173,26 +3154,28 @@ std::optional<std::pair<Direction, Direction>> Direction::fromSectorString(
 	return std::pair(dirBegin.value(), dirEnd.value());
 }
 
-std::vector<Direction::Cardinal> Direction::sectorCardinalDirToVector(
+std::vector<Direction> Direction::sectorCardinalDirToVector(
 	const Direction & dirFrom, 
 	const Direction & dirTo)
 {
-	std::vector<Cardinal> result;
+	std::vector<Direction> result;
 	const auto cardinalFrom = dirFrom.cardinal();
 	const auto cardinalTo = dirTo.cardinal();
-	if (cardinalFrom == Cardinal::NONE || 
+	if (cardinalFrom == Cardinal::NOT_REPORTED ||
+		cardinalFrom == Cardinal::VRB || 
 		cardinalFrom == Cardinal::NDV ||
 		cardinalFrom == Cardinal::OHD ||
 		cardinalFrom == Cardinal::ALQDS ||
-		cardinalTo == Cardinal::NONE || 
+		cardinalTo == Cardinal::NOT_REPORTED || 
+		cardinalTo == Cardinal::VRB || 
 		cardinalTo == Cardinal::NDV || 
 		cardinalTo == Cardinal::OHD ||
 		cardinalTo == Cardinal::ALQDS)
 	{
 		// Not a valid direction sector, one or both begin and end directions are 
 		// not cardinal directions
-		if (cardinalFrom != Cardinal::NONE) result.push_back(cardinalFrom);
-		if (cardinalTo != Cardinal::NONE) result.push_back(cardinalTo);
+		if (cardinalFrom != Cardinal::NOT_REPORTED) result.push_back(cardinalFrom);
+		if (cardinalTo != Cardinal::NOT_REPORTED) result.push_back(cardinalTo);
 		return result;
 	}
 	// Both sector begin and end are cardinal directions
@@ -3208,29 +3191,46 @@ std::vector<Direction::Cardinal> Direction::sectorCardinalDirToVector(
 
 Direction::Cardinal Direction::rotateOctantClockwise(Cardinal cardinal) {
 	switch(cardinal) {
-		case Cardinal::TRUE_N:
-		case Cardinal::N: 
-		return Cardinal::NE;
-
-		case Cardinal::TRUE_E:
-		case Cardinal::E:
-		return Cardinal::SE;
-		
-		case Cardinal::TRUE_S:
-		case Cardinal::S:
-		return Cardinal::SW;
-
-		case Cardinal::TRUE_W:
-		case Cardinal::W:
-		return Cardinal::NW;
-
-		case Cardinal::NE: 	return Cardinal::E;
-		case Cardinal::SE: 	return Cardinal::S;
-		case Cardinal::SW: 	return Cardinal::W;
-		case Cardinal::NW: 	return Cardinal::N;
-		default: 			return Cardinal::NONE;
+		case Cardinal::TRUE_N:	return Cardinal::NE;
+		case Cardinal::TRUE_E:	return Cardinal::SE;
+		case Cardinal::TRUE_S:	return Cardinal::SW;
+		case Cardinal::TRUE_W:	return Cardinal::NW;
+		case Cardinal::N: 		return Cardinal::NE;
+		case Cardinal::NE: 		return Cardinal::E;
+		case Cardinal::E:		return Cardinal::SE;
+		case Cardinal::SE: 		return Cardinal::S;
+		case Cardinal::S:		return Cardinal::SW;
+		case Cardinal::SW: 		return Cardinal::W;
+		case Cardinal::W:		return Cardinal::NW;
+		case Cardinal::NW: 		return Cardinal::N;
+		default: 				return Cardinal::NOT_REPORTED;
 	}
 }
+
+Direction::Direction(Cardinal c) {
+	dirStatus = Status::VALUE_CARDINAL;
+	switch (c) {
+		case Cardinal::NOT_REPORTED: 	dirStatus = Status::NOT_REPORTED; break;
+		case Cardinal::VRB:				dirStatus = Status::VARIABLE; break;
+		case Cardinal::NDV:				dirStatus = Status::NDV; break;
+		case Cardinal::N:				dirDegrees = degreesTrueNorth; break;			
+		case Cardinal::S:				dirDegrees = degreesTrueSouth; break;
+		case Cardinal::W:				dirDegrees = degreesTrueWest; break;
+		case Cardinal::E:				dirDegrees = degreesTrueEast; break;
+		case Cardinal::NW:				dirDegrees = degreesNorthWest; break;
+		case Cardinal::NE:				dirDegrees = degreesNorthEast; break;
+		case Cardinal::SW:				dirDegrees = degreesSouthWest; break;
+		case Cardinal::SE:				dirDegrees = degreesSouthEast; break;
+		case Cardinal::TRUE_N:			dirDegrees = degreesTrueNorth; break;
+		case Cardinal::TRUE_W:			dirDegrees = degreesTrueSouth; break;
+		case Cardinal::TRUE_S:			dirDegrees = degreesTrueWest; break;
+		case Cardinal::TRUE_E:			dirDegrees = degreesTrueEast; break;
+		case Cardinal::OHD:				dirStatus = Status::OVERHEAD; break;
+		case Cardinal::ALQDS:			dirStatus = Status::ALQDS; break;
+		case Cardinal::UNKNOWN:			dirStatus = Status::UNKNOWN; break;
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3894,7 +3894,6 @@ std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
 		if (group == "TSNO") return FixedGroup(Type::TSNO);
 		if (group == "SLPNO") return FixedGroup(Type::SLPNO);
 		if (group == "FROIN") return FixedGroup(Type::FROIN);
-		if (group == "CLD") return FixedGroup(IncompleteText::CLD, Type::CLD_MISG);
 		if (group == "ICG") return FixedGroup(IncompleteText::ICG, Type::ICG_MISG);
 		if (group == "PCPN") return FixedGroup(IncompleteText::PCPN, Type::PCPN_MISG);
 		if (group == "PRES") return FixedGroup(IncompleteText::PRES, Type::PRES_MISG);
@@ -4562,13 +4561,12 @@ std::optional<VisibilityGroup> VisibilityGroup::fromMeters(
 		const auto v = Distance::fromMeterString(match.str(matchVis));
 		if (!v.has_value()) return notRecognised;
 		const auto d = Direction::fromCardinalString(match.str(matchDir));
-		if (!d.has_value()) return notRecognised;
 		VisibilityGroup result;
 		result.vis = v.value();
-		result.dir = d.value();
-		if (result.dir.isValue()) result.visType = Type::DIRECTIONAL;
-		if (result.dir.status() == Direction::Status::NDV) {
-			result.visType = Type::PREVAILING_NDV;
+		result.dir = d;
+		if (result.dir.has_value()) {
+			if (result.dir->isValue()) result.visType = Type::DIRECTIONAL;
+			if (result.dir->status() == Direction::Status::NDV) result.visType = Type::PREVAILING_NDV;
 		}
 		return result;
 	}
@@ -4598,7 +4596,7 @@ VisibilityGroup VisibilityGroup::rmkTwrVisIncomplete() {
 
 bool VisibilityGroup::appendDirection(const std::string & group)
 {
-	if (!direction().isOmitted()) return false;
+	if (direction().has_value()) return false;
 	if (incompleteType != IncompleteType::RMK_VIS) return false;
 	if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
 		dir = d.value();
@@ -4700,7 +4698,7 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 	}
 	if (!maxDistance.isValid()) return false;
 
-	if (!direction().isOmitted()) visType = Type::DIRECTIONAL_VARIABLE;
+	if (direction().has_value()) visType = Type::DIRECTIONAL_VARIABLE;
 	vis = std::move(minDistance);
 	visMax = std::move(maxDistance);
 	incompleteType = IncompleteType::NONE;
@@ -4719,7 +4717,7 @@ bool VisibilityGroup::appendVariableMeters(const std::string & group) {
 	if (!min->isReported() || !max->isReported()) return false;
 	vis = min.value();
 	visMax = max.value();
-	if (!direction().isOmitted()) visType = Type::DIRECTIONAL_VARIABLE;
+	if (direction().has_value()) visType = Type::DIRECTIONAL_VARIABLE;
 	incompleteType = IncompleteType::NONE;
 	return true;
 }
@@ -4731,7 +4729,8 @@ bool VisibilityGroup::isValid() const {
 		if (min.value() > max.value()) return false;
 	}
 	if (incompleteType != IncompleteType::NONE) return false;
-	return (vis.isValid() && dir.isValid() && visMax.isValid());
+	if (dir.has_value() && !dir->isValid()) return false;
+	return (vis.isValid() && visMax.isValid());
 }
 
 
@@ -4742,9 +4741,15 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	if (reportPart == ReportPart::METAR || 
-		reportPart == ReportPart::TAF) return parseCloudLayer(group); 
-	if (reportPart == ReportPart::RMK) return parseVariableCloudLayer(group); 
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF)
+		return parseCloudLayerOrVertVis(group);
+
+	if (reportPart == ReportPart::RMK) {
+		if (group == "CLD") return CloudGroup(Type::CLD_MISG, IncompleteText::CLD);
+		if (group == "CIG") return CloudGroup(Type::CEILING, IncompleteText::CIG);
+		if (group == "CHINO") return CloudGroup(Type::CHINO, IncompleteText::CHINO);
+		return parseVariableCloudLayer(group); 
+	}
 	return std::optional<CloudGroup>();
 }
 
@@ -4754,70 +4759,63 @@ AppendResult CloudGroup::append(const std::string & group,
 {
 	(void)reportMetadata; (void)reportPart;
 
-	switch (incompleteType) {
-		case IncompleteType::NONE:
+	switch (incompleteText) {
+		case IncompleteText::NONE:
 		return AppendResult::NOT_APPENDED;
 
-		case IncompleteType::EXPECT_V:
-		if (group == "V") { 
-			incompleteType = IncompleteType::EXPECT_SECOND_AMOUNT;
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;
+		case IncompleteText::RMK_AMOUNT:
+		if (group != "V") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::RMK_AMOUNT_V;
+		return AppendResult::APPENDED;
 
-		case IncompleteType::EXPECT_SECOND_AMOUNT:
-		if (const auto newAmount = amountFromString(group); newAmount.has_value()) {
-			if (newAmount.value() == CloudGroup::Amount::OBSCURED ||
-				newAmount.value() == CloudGroup::Amount::NOT_REPORTED) return AppendResult::GROUP_INVALIDATED; 
-			const auto varAmount = variableAmount(amount(), newAmount.value());
-			if (!varAmount.has_value()) return AppendResult::GROUP_INVALIDATED;
-			amnt = varAmount.value();
-			incompleteType = IncompleteType::NONE;
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;		
+		case IncompleteText::RMK_AMOUNT_V:
+		return appendVariableCloudAmount(group);
+
+		case IncompleteText::CIG:
+		return appendCeiling(group);
+
+		case IncompleteText::CIG_NUM:
+		case IncompleteText::CHINO:
+		return appendRunwayOrCardinalDirection(group);
+		
+		case IncompleteText::CLD:
+		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
 	}
 }
 
-std::optional<CloudGroup::Amount> CloudGroup::variableAmount(Amount first, Amount second) {
-	if (first == Amount::FEW && second == Amount::SCATTERED) 
-		return Amount::VARIABLE_FEW_SCATTERED;
-	if (first == Amount::SCATTERED && second == Amount::BROKEN) 
-		return Amount::VARIABLE_SCATTERED_BROKEN;
-	if (first == Amount::BROKEN && second == Amount::OVERCAST) 
-		return Amount::VARIABLE_BROKEN_OVERCAST;
-	return std::optional<Amount>();
-}
-
-
-std::optional<CloudGroup> CloudGroup::parseCloudLayer(const std::string & s) {
+std::optional<CloudGroup> CloudGroup::parseCloudLayerOrVertVis(const std::string & s) {
 	static const std::optional<CloudGroup> notRecognised;
 	// Attempt to parse fixed groups
-	if (s == "NCD") return CloudGroup(Amount::NCD);
-	if (s == "NSC") return CloudGroup(Amount::NSC);
-	if (s == "CLR") return CloudGroup(Amount::NONE_CLR);
-	if (s == "SKC") return CloudGroup(Amount::NONE_SKC);
+	if (s == "NCD") return CloudGroup(Type::NO_CLOUDS, Amount::NCD);
+	if (s == "NSC") return CloudGroup(Type::NO_CLOUDS, Amount::NSC);
+	if (s == "CLR") return CloudGroup(Type::NO_CLOUDS, Amount::NONE_CLR);
+	if (s == "SKC") return CloudGroup(Type::NO_CLOUDS, Amount::NONE_SKC);
 	//Attempt to parse cloud layer or vertical visibility
 	std::smatch match;
 	static const std::regex rgx(
 		"([A-Z][A-Z][A-Z]?|///)(\\d\\d\\d|///)([CT][BC][U]?|///)?");
-	static const auto matchAmount = 1, matchHeight = 2, matchType = 3;
+	static const auto matchAmount = 1, matchHeight = 2, matchCldType = 3;
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	if (!amount.has_value()) return notRecognised;
 	const auto height = Distance::fromHeightString(match.str(matchHeight));
 	if (!height.has_value()) return notRecognised;
-	const auto type = typeFromString(match.str(matchType));
-	if (!type.has_value()) return notRecognised;
+	const auto ctype = cloudTypeFromString(match.str(matchCldType));
+	if (!ctype.has_value()) return notRecognised;
 
 	// If vertical visibility is given, convective cloud type must not be specified
-	if (amount.value() == Amount::OBSCURED && type.value() != Type::NONE) return notRecognised;
+	if (amount.value() == Amount::OBSCURED && ctype.value() != CloudType::NONE) 
+		return notRecognised;
 
 	CloudGroup result;
+	result.tp = Type::CLOUD_LAYER;
+	if (amount == Amount::OBSCURED) result.tp = Type::VERTICAL_VISIBILITY;
 	result.amnt = amount.value();
 	result.heightOrVertVis = height.value();
-	result.tp = type.value();
+	result.ctp = ctype.value();
 	return result;
 }
 
@@ -4831,7 +4829,8 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	CloudGroup result;
-	result.incompleteType = IncompleteType::EXPECT_V;
+	result.tp = Type::CLOUD_LAYER;
+	result.incompleteText = IncompleteText::RMK_AMOUNT;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	// Not checking for VV here because 3-char amount length guaranteed by regex
@@ -4857,47 +4856,61 @@ std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string
 	return std::optional<Amount>();
 }
 
-Distance CloudGroup::height() const {
-	switch(amount()) {
-		case Amount::NOT_REPORTED:
-		case Amount::FEW:
-		case Amount::SCATTERED:
-		case Amount::BROKEN:
-		case Amount::OVERCAST:
-		case Amount::VARIABLE_FEW_SCATTERED:
-		case Amount::VARIABLE_SCATTERED_BROKEN:
-		case Amount::VARIABLE_BROKEN_OVERCAST:
-		return heightOrVertVis;
+std::optional<CloudGroup::CloudType> CloudGroup::cloudTypeFromString(
+	const std::string & s)
+{
+	if (s.empty()) return CloudType::NONE;
+	if (s == "TCU") return CloudType::TOWERING_CUMULUS;
+	if (s == "CB") return CloudType::CUMULONIMBUS;
+	if (s == "///") return CloudType::NOT_REPORTED;
+	return std::optional<CloudType>();
+}
 
-		default:
-		return heightNotReported;
+AppendResult CloudGroup::appendVariableCloudAmount(const std::string & group) {
+	const auto newAmount = amountFromString(group); 
+	if (!newAmount.has_value()) return AppendResult::GROUP_INVALIDATED;
+	const auto a1 = amount();
+	const auto a2 = newAmount.value();
+	auto result = Amount::NOT_REPORTED;
+	if (a1 == Amount::FEW && a2 == Amount::SCATTERED) result = Amount::VARIABLE_FEW_SCATTERED;
+	if (a1 == Amount::SCATTERED && a2 == Amount::BROKEN) result = Amount::VARIABLE_SCATTERED_BROKEN;
+	if (a1 == Amount::BROKEN && a2 == Amount::OVERCAST) result = Amount::VARIABLE_BROKEN_OVERCAST;
+	if (result == Amount::NOT_REPORTED) return AppendResult::GROUP_INVALIDATED;
+	amnt = result;
+	incompleteText = IncompleteText::NONE;
+	return AppendResult::APPENDED;
+}
+
+AppendResult CloudGroup::appendCeiling(const std::string & group) {
+	if (const auto d = Distance::fromHeightString(group); d.has_value()) {
+		if (!d->isReported()) return AppendResult::GROUP_INVALIDATED;
+		heightOrVertVis = d.value();
+		incompleteText = IncompleteText::CIG_NUM;
+		return AppendResult::APPENDED;
 	}
+	static const std::regex rgx ("(\\d\\d\\d)V(\\d\\d\\d)");
+	static const auto matchMinHeight = 1, matchMaxHeight = 2;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return AppendResult::GROUP_INVALIDATED;
+	const auto minH = Distance::fromHeightString(match.str(matchMinHeight));
+	if (!minH.has_value()) return AppendResult::GROUP_INVALIDATED;
+	const auto maxH = Distance::fromHeightString(match.str(matchMaxHeight));
+	if (!maxH.has_value()) return AppendResult::GROUP_INVALIDATED;
+	heightOrVertVis = minH.value();
+	maxHt = maxH.value();
+	tp = Type::VARIABLE_CEILING;
+	incompleteText = IncompleteText::CIG_NUM;
+	return AppendResult::APPENDED;
 }
 
-std::optional<CloudGroup::Type> CloudGroup::typeFromString(const std::string & s){
-	if (s.empty()) return Type::NONE;
-	if (s == "TCU") return Type::TOWERING_CUMULUS;
-	if (s == "CB") return Type::CUMULONIMBUS;
-	if (s == "///") return Type::NOT_REPORTED;
-	return std::optional<Type>();
+AppendResult CloudGroup::appendRunwayOrCardinalDirection(const std::string & group) {
+	incompleteText = IncompleteText::NONE;
+	rw = Runway::fromString(group, true);
+	if (rw.has_value()) return AppendResult::APPENDED;
+	dir = Direction::fromCardinalString(group);
+	if (dir.has_value()) return AppendResult::APPENDED;
+	return AppendResult::NOT_APPENDED;
 }
-
-bool CloudGroup::isCloudLayer() const {
-	if (isObscuration()) return false;
- 	switch (amount()) {
-		case Amount::FEW:
-		case Amount::SCATTERED:
-		case Amount::BROKEN:
-		case Amount::OVERCAST:
-		case Amount::VARIABLE_FEW_SCATTERED:
-		case Amount::VARIABLE_SCATTERED_BROKEN:
-		case Amount::VARIABLE_BROKEN_OVERCAST:
-		return true;
-
-		default: return false;
-	}
-}
-
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -5332,16 +5345,6 @@ std::optional<SecondaryLocationGroup> SecondaryLocationGroup::parse(
 	static const std::optional<SecondaryLocationGroup> notRecognised;
 	SecondaryLocationGroup result;
 	if (reportPart == ReportPart::RMK) {
-		if (group == "CIG") {
-			result.t = Type::CEILING;
-			result.incompleteText = IncompleteText::CIG;
-			return result;
-		}
-		if (group == "CHINO") {
-			result.t = Type::CHINO;
-			result.incompleteText = IncompleteText::CHINO;
-			return result;
-		}
 		if (group == "VISNO") {
 			result.t = Type::VISNO;
 			result.incompleteText = IncompleteText::VISNO;
@@ -5364,75 +5367,6 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 
 	switch (incompleteText) {
 		case IncompleteText::NONE:
-		return AppendResult::NOT_APPENDED;
-
-		// WS: expecting either ALL or valid runway, otherwise group not valid
-		case IncompleteText::WS:
-		if (group == "ALL") {
-			incompleteText = IncompleteText::WS_ALL;
-			return AppendResult::APPENDED;
-		}
-		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
-			incompleteText = IncompleteText::NONE;
-			rw = runway;
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;
-
-		// WS ALL: expecting RWY, otherwise group not valid
-		case IncompleteText::WS_ALL:
-		if (group == "RWY") {
-			incompleteText = IncompleteText::NONE;
-			rw = Runway::makeAllRunways();
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;
-
-		// CIG: expecting ceiling xxx or variable ceiling xxxVxxx, otherwise group 
-		// not valid
-		case IncompleteText::CIG:
-		if (const auto d = Distance::fromHeightString(group); d.has_value()) {
-			if (!d->isReported()) return AppendResult::GROUP_INVALIDATED;
-			h = d.value();
-			incompleteText = IncompleteText::CIG_NUM;
-			return AppendResult::APPENDED;
-		}
-		{
-			static const std::regex rgx ("(\\d\\d\\d)V(\\d\\d\\d)");
-			static const auto matchMinHeight = 1, matchMaxHeight = 2;
-			std::smatch match;
-			if (!std::regex_match(group, match, rgx)) return AppendResult::GROUP_INVALIDATED;
-			const auto minHt = Distance::fromHeightString(match.str(matchMinHeight));
-			if (!minHt.has_value()) return AppendResult::GROUP_INVALIDATED;
-			const auto maxHt = Distance::fromHeightString(match.str(matchMaxHeight));
-			if (!maxHt.has_value()) return AppendResult::GROUP_INVALIDATED;
-			minH = minHt.value();
-			maxH = maxHt.value();
-			t = Type::VARIABLE_CEILING;
-			incompleteText = IncompleteText::CIG_NUM;
-			return AppendResult::APPENDED;
-		}
-
-		//CIG xxx or CIG xxxVxxx: expecting optional runway; otherwise group not appended
-		case IncompleteText::CIG_NUM:
-		incompleteText = IncompleteText::NONE;
-		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
-			rw = runway;
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::NOT_APPENDED;
-
-		case IncompleteText::CHINO:
-		case IncompleteText::VISNO:
-		incompleteText = IncompleteText::NONE;
-		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
-			rw = runway;
-			return AppendResult::APPENDED;
-		}
-		if (const auto d = Direction::fromCardinalString(group, true); d.has_value() && d->isValue()) {
-			dir = d;
-			return AppendResult::APPENDED;
-		}
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::VIS:
@@ -5466,7 +5400,21 @@ AppendResult SecondaryLocationGroup::append(const std::string & group,
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VISNO:
+		incompleteText = IncompleteText::NONE;
+		if (const auto runway = Runway::fromString(group, true); runway.has_value()) {
+			rw = runway;
+			return AppendResult::APPENDED;
+		}
+		if (const auto d = Direction::fromCardinalString(group, true); d.has_value() && d->isValue()) {
+			dir = d;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::NOT_APPENDED;
 	}
+
+
 }
 
 bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
@@ -5617,39 +5565,6 @@ std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 }
 
 AppendResult SeaSurfaceGroup::append(const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-std::optional<ColourCodeGroup> ColourCodeGroup::parse(const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata;
-	std::optional<ColourCodeGroup> notRecognised;
-	if (reportPart!=ReportPart::METAR) return notRecognised;
-	ColourCodeGroup result;
-	std::string colourCodeStr(group);
-	if (std::string codeBlack("BLACK"); !group.find(codeBlack)) {
-		result.cBlack = true;
-		colourCodeStr = group.substr(codeBlack.length());
-	}
-	if (colourCodeStr == "BLU") { result.c = Code::BLUE; return result; }
-	if (colourCodeStr == "WHT") { result.c = Code::WHITE; return result; }
-	if (colourCodeStr == "GRN") { result.c = Code::GREEN; return result; }
-	if (colourCodeStr == "YLO1") { result.c = Code::YELLOW1; return result; }
-	if (colourCodeStr == "YLO2") { result.c = Code::YELLOW2; return result; }
-	if (colourCodeStr == "AMB") { result.c = Code::AMBER; return result; }
-	if (colourCodeStr == "RED") { result.c = Code::RED; return result; }
-	return notRecognised;
-}
-
-AppendResult ColourCodeGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
@@ -6305,17 +6220,20 @@ std::optional<LightningGroup> LightningGroup::fromLtgGroup(const std::string & g
 	return result;
 }
 
-std::vector<Direction::Cardinal> LightningGroup::directions() const {
+std::vector<Direction> LightningGroup::directions() const {
 	// The result vector is max 10 elements possible, typically up to 
 	// 5 elements which does not justify using std::set and std::find
-	std::vector<Direction::Cardinal> result = 
-		Direction::sectorCardinalDirToVector(dir1from, dir1to);
-	const auto result2 = Direction::sectorCardinalDirToVector(dir2from, dir2to);
+	auto result = Direction::sectorCardinalDirToVector(
+		dir1from.value_or(Direction()), 
+		dir1to.value_or(Direction()));
+	const auto result2 = Direction::sectorCardinalDirToVector(
+		dir2from.value_or(Direction()), 
+		dir2to.value_or(Direction()));
 	for (const auto r2 : result2) {
 		// Check if r2 is already present in result
 		bool r2_alreadyPresent = false;
 		for (const auto r : result) {
-			if (r == r2) { r2_alreadyPresent = true; break;}
+			if (r.cardinal() == r2.cardinal()) { r2_alreadyPresent = true; break;}
 		}
 		if (!r2_alreadyPresent) result.push_back(r2);
 	}
@@ -6395,7 +6313,7 @@ AppendResult VicinityGroup::append(const std::string & group,
 		if (const auto dir = Direction::fromCardinalString(group, false, true);
 			dir.has_value()) 
 		{
-			movDir = dir->cardinal();
+			movDir = dir.value();
 			return finalise();
 		}
 		return rejectGroup();
@@ -6441,16 +6359,19 @@ bool VicinityGroup::appendDistance(const std::string & str) {
 	return true;
 }
 
-std::vector<Direction::Cardinal> VicinityGroup::directions() const {
+std::vector<Direction> VicinityGroup::directions() const {
 	// Copy of LightningGroup::directions
-	std::vector<Direction::Cardinal> result = 
-		Direction::sectorCardinalDirToVector(dir1from, dir1to);
-	const auto result2 = Direction::sectorCardinalDirToVector(dir2from, dir2to);
+	auto result = Direction::sectorCardinalDirToVector(
+		dir1from.value_or(Direction()), 
+		dir1to.value_or(Direction()));
+	const auto result2 = Direction::sectorCardinalDirToVector(
+		dir2from.value_or(Direction()), 
+		dir2to.value_or(Direction()));
 	for (const auto r2 : result2) {
 		// Check if r2 is already present in result
 		bool r2_alreadyPresent = false;
 		for (const auto r : result) {
-			if (r == r2) { r2_alreadyPresent = true; break;}
+			if (r.cardinal() == r2.cardinal()) { r2_alreadyPresent = true; break;}
 		}
 		if (!r2_alreadyPresent) result.push_back(r2);
 	}
@@ -6472,9 +6393,14 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	MiscGroup result;
 
 	if (reportPart == ReportPart::METAR) {
+		if (const auto c = parseColourCode(group); c.has_value()) {
+			result.groupType = c.value();
+			return result;
+		}
+
 		if (std::regex_match(group, match, rgxCorrectionObservation)) {
 			result.groupType = Type::CORRECTED_WEATHER_OBSERVATION;
-			result.groupValue = match.str(matchValue)[0] - 'A' + 1;
+			result.groupData = match.str(matchValue)[0] - 'A' + 1;
 			return result;
 		}
 	}
@@ -6492,7 +6418,7 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 		}
 		if (std::regex_match(group, match, rgxSunshineDuration)) {
 			result.groupType = Type::SUNSHINE_DURATION_MINUTES;
-			result.groupValue = std::stoi(match.str(matchValue));
+			result.groupData = std::stoi(match.str(matchValue));
 			return result;
 		}
 	}
@@ -6526,7 +6452,7 @@ AppendResult MiscGroup::append(const std::string & group,
 
 		case IncompleteType::GR:
 		if (group.length() == 1 && group[0] >= '1' && group[0] <= '9') {
-			groupValue = group[0] - '0';
+			groupData = group[0] - '0';
 			incompleteType = IncompleteType::GR_INT;
 			return AppendResult::APPENDED;
 		}
@@ -6540,15 +6466,33 @@ AppendResult MiscGroup::append(const std::string & group,
 	}
 }
 
+std::optional<MiscGroup::Type> MiscGroup::parseColourCode(const std::string & group) {
+	if (group == "BLU") return Type::COLOUR_CODE_BLUE;
+	if (group == "WHT") return Type::COLOUR_CODE_WHITE;
+	if (group == "GRN") return Type::COLOUR_CODE_GREEN;
+	if (group == "YLO1") return Type::COLOUR_CODE_YELLOW1;
+	if (group == "YLO2") return Type::COLOUR_CODE_YELLOW2;
+	if (group == "AMB") return Type::COLOUR_CODE_AMBER;
+	if (group == "RED") return Type::COLOUR_CODE_RED;
+	if (group == "BLACKBLU") return Type::COLOUR_CODE_BLACKBLUE;
+	if (group == "BLACKWHT") return Type::COLOUR_CODE_BLACKWHITE;
+	if (group == "BLACKGRN") return Type::COLOUR_CODE_BLACKGREEN;
+	if (group == "BLACKYLO1") return Type::COLOUR_CODE_BLACKYELLOW1;
+	if (group == "BLACKYLO2") return Type::COLOUR_CODE_BLACKYELLOW2;
+	if (group == "BLACKAMB") return Type::COLOUR_CODE_BLACKAMBER;
+	if (group == "BLACKRED") return Type::COLOUR_CODE_BLACKRED;
+	return std::optional<Type>();
+}
+
 bool MiscGroup::appendHailstoneFraction(const std::string & group) {
 	// Fraction specified with increment of 1/4
 	bool appended = false;
-	auto value = groupValue.value_or(0.0);
+	auto value = groupData.value_or(0.0);
 	if (group == "1/4") { value += 0.25; appended = true; }
 	if (group == "1/2" || group == "2/4") { value += 0.5; appended = true; }
 	if (group == "3/4") { value += 0.75; appended = true; }
 	if (!appended) return false; 
-	groupValue = value;
+	groupData = value;
 	incompleteType = IncompleteType::NONE;
 	return true;
 }
@@ -6561,7 +6505,7 @@ bool MiscGroup::appendDensityAltitude(const std::string & group) {
 	if (groupUnitStr != unitStr) return false;
 	const auto val = strToUint(group, 0, group.length() - unitLen);
 	if (!val.has_value()) return false;
-	groupValue = val.value();
+	groupData = val.value();
 	incompleteType = IncompleteType::NONE;
 	return true;
 }

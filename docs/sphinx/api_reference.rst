@@ -5,8 +5,6 @@ API Reference
 
 This section describes the APIs related to parsing METAR or TAF report and reading the data from parsed results.
 
-See Extending Metaf Functionality section for APIs related to adding additional features and new groups.
-
 Data Types
 ----------
 
@@ -446,9 +444,13 @@ Direction
 		
 		Specifies a cardinal or intercardinal direction. No secondary intercardinal directions can be specified. Alternatively may specify No Directional Variation or No Value.
 
-		.. cpp:enumerator:: NONE
+		.. cpp:enumerator:: NOT_REPORTED
 
-			No value or no corresponding cardinal direction can be found.
+			The direction is not reported or not specified.
+
+		.. cpp:enumerator:: VRB
+
+			Direction is Variable.
 
 		.. cpp:enumerator:: NDV
 
@@ -519,13 +521,9 @@ Direction
 
 		The status of the direction value reported. If the status is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
 
-		.. cpp:enumerator:: OMITTED
-
-			Direction is omitted (i.e. no direction specified at all).
-
 		.. cpp:enumerator:: NOT_REPORTED
 
-			Direction is specified as 'not reported'.
+			Direction is specified as 'not reported' or not specified.
 
 		.. cpp:enumerator:: VARIABLE
 
@@ -595,18 +593,23 @@ Direction
 
 	**Miscellaneous**
 
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if any directional value is stored in this group (i.e. NDV, VRB, OHD, ALQDS, UNKNOWN or value in degrees or cardinal direction); or ``false`` if non-reported direction is stored in this group.
+
 		.. cpp:function:: bool isValue() const
 
 			:returns: ``true`` if the stored direction contains a value, and ``false`` if the stored direction does not contain a concrete value.
 
 				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Status::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Status::VALUE_DEGREES`) is stored.
 
-				- ``false`` is returned if the status is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`.
+				- ``false`` is returned if the status is :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, :cpp:enumerator:`Status::NDV`, :cpp:enumerator:`Status::OVERHEAD`, :cpp:enumerator:`Status::ALQDS`, or :cpp:enumerator:`Status::UNKNOWN`.
 
-		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction &dir2)
+		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction & dir2)
 
-			:returns: ``std::vector`` if the stored
+			:returns: ``std::vector`` of the all directions included in the direction sector.
 
+				.. note:: Direction sector is defined clockwise from dir1 to dir2.
 
 
 	**Validating**
@@ -1174,7 +1177,7 @@ WeatherPhenomena
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1332,10 +1335,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 		.. cpp:enumerator:: FROIN
 
 			Frost on the instrument (e.g. due to fog depositing rime).
-
-		.. cpp:enumerator:: CLD_MISG
-
-			Sky condition data (cloud data) is missing.
 
 		.. cpp:enumerator:: ICG_MISG
 
@@ -1610,7 +1609,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:enumerator:: WND_MISG
 
-			Indicates that wind data is missing.
+			Indicates that wind data is missing. No further details are provided.
 
 
 	**Acquiring group data**
@@ -1621,7 +1620,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:function:: Direction direction() const
 
-			:returns: Wind direction; typicaly a direction value in degrees but also can be variable or non-reported.
+			:returns: Mean wind direction.
 
 		.. cpp:function:: Speed windSpeed() const
 		
@@ -1735,28 +1734,13 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 			:returns: Maximum visibility value if variable visibility is reported.
 
-		.. cpp:function:: Direction direction() const
+		.. cpp:function:: std::optional<Direction> direction() const
 
-			:returns:  Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+			:returns:  Cardinal direction if directional visibility is specified or empty ``std::optional`` if no directional visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
 
-		.. cpp:function:: Direction sectorBegin() const
+		.. cpp:function:: std::vector<Direction> sectorDirections() const
 
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an omitted value.
-
-		.. cpp:function:: Direction sectorEnd() const
-
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an omitted value.
-
-
-	**Miscellaneous**
-
-		.. cpp:function:: bool isPrevailing() const
-
-			:returns: ``true`` if the group contains prevailing visibility.
-
-		.. cpp:function:: bool isDirectional() const
-
-			:returns: ``true`` if the group contains directional visibility.
+			:returns: Cardinal direction vector if sector of directions is specified. Currently always returns an empty ``std::vector<Direction>``.
 
 	**Validating**
 
@@ -1772,15 +1756,47 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 CloudGroup
 ^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudgroup.svg
-
 Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250``, ``FEW019TCU``, ``FEW013///``, ``//////CB``, ``//////``, ``CLR``, ``SKC``, ``NCD``, ``NSC``, ``VV002``, and ``VV///``.
 
 .. cpp:class:: CloudGroup
 
 	Stores information about a single cloud layer, cloud-like obscuration, lack of cloud cover or vertical visibility.
+
+	.. cpp:enum-class:: Type
+
+		Specifies what kind of information is stored within this group.
+
+		.. cpp:enumerator::	NO_CLOUDS
+
+			Clear sky condition, no clouds detected, or no significant clouds. Use :cpp:func:`amount()` for exact condition; the possible values are :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, or :cpp:enumerator:`Amount::NSC`.
+
+		.. cpp:enumerator:: CLOUD_LAYER
+
+			Cloud layer specified in METAR report, trend or remarks.
+
+			Use :cpp:func:`amount()` for cloud amount, :cpp:func:`height()` for base height, and :cpp:func:`cloudType()` for significant convective type.
+
+		.. cpp:enumerator:: VERTICAL_VISIBILITY
+
+			Sky is obscured and vertical visibility is indicated instead of cloud data. Use :cpp:func:`verticalVisibility()` for vertical visibility value. :cpp:func:`amount()` will return  :cpp:enumerator:`Amount::OBSCURED`.
+
+		.. cpp:enumerator:: CEILING
+
+			Ceiling height. Use :cpp:func:`height()` for ceiling height value. Use :cpp:func:`runway()` and :cpp:func:`direction()` for the location where ceiling is reported.
+
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+
+		.. cpp:enumerator:: VARIABLE_CEILING
+
+			Ceiling height is variable. Use :cpp:func:`minHeight()` and :cpp:func:`maxHeight()` for ceiling height range. Use :cpp:func:`runway()` or :cpp:func:`direction()` for the location where ceiling is reported.
+
+		.. cpp:enumerator:: CHINO
+
+			Indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``.
+
+		.. cpp:enumerator:: CLD_MISG
+
+			Indicates the that cloud data are missing. No further details are provided.
 
 	.. cpp:enum-class:: Amount
 
@@ -1790,7 +1806,7 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 		.. cpp:enumerator::	NOT_REPORTED
 
-			Cloud cover (amount of cloud) is not reported.
+			Amount of cloud (cloud cover) is not reported or not applicable for this type of group.
 
 		.. cpp:enumerator:: NCD
 
@@ -1845,25 +1861,25 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 			Cloud cover is variable between :cpp:enumerator:`BROKEN` and  :cpp:enumerator:`OVERCAST`.
 
 
-	.. cpp:enum-class:: Type
+	.. cpp:enum-class:: CloudType
 
-		Significant convective type of the cloud.
+		Type of the cloud in the layer.
+
+		.. cpp:enumerator::NONE
+
+			No cloud type specified or not applicable.
 
 		.. cpp:enumerator::NOT_REPORTED
 
 			Convective cloud type is not reported.
 
-		.. cpp:enumerator::NONE
-
-			No significant convective cloud type.
-
 		.. cpp:enumerator::TOWERING_CUMULUS
 
-			Towering cumulus clouds.
+			Convective cloud: towering cumulus.
 
 		.. cpp:enumerator::CUMULONIMBUS
 
-			Cumulonimbus clouds.
+			Convective cloud: cumulonimbus.
 
 	**Acquiring group data**
 
@@ -1871,39 +1887,37 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: Amount (cover) of clouds in layer or clear sky conditions.
 
-		Type type() const
+		.. cpp:function:: CloudType type() const
 
-			:returns: Significant convective type of cloud layer.
+			:returns: Type of the cloud in the layer.
 
 		.. cpp:function:: Distance height() const
 
-			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
+			:returns: Cloud base or ceiling height or non-reported value if height is not applicable for this group.
+
+			.. note:: When the sky is obscured use :cpp:func:`verticalVisibility()`.
+
+			.. note:: When variable ceiling height is reported use :cpp:func:`minHeight()` or :cpp:func:`maxHeight()`.
 
 		.. cpp:function:: Distance verticalVisibility() const
 
-			:returns: When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.
+			:returns: Vertical visibility or value if sky is obscured; non-reported value otherwise.
+
+		.. cpp:function:: Distance minHeight() const
+
+			:returns: Minimum ceiling height if variable ceiling height is reported; non-reported value otherwise.
+
+		.. cpp:function:: Distance maxHeight() const
+
+			:returns: Maximum ceiling height if variable ceiling height is reported; non-reported value otherwise.
 
 		.. cpp::function:: WeatherPhenomena obscuration() const
 
-			:returns: Currently always returns an empty value.
+			:returns: Type of obscuration if ground-based or aloft obscuration is reported in this group. Currently always returns an 'omitted' :cpp:class:`WeatherPhenomena`
 
-	**Miscellaneous**
+		.. cpp::function:: std::optional<Runway> runway() const
 
-		.. cpp:function:: bool isVerticalVisibility() const
-
-			:returns: ``true`` if this group contains a vertical visibility information (including non-reported vertical visibility value) rather than cloud layer information or 'no clouds' condition, and ``false`` otherwise.
-
-		.. cpp:function:: bool isNoClouds() const
-
-			:returns: ``true`` if this group contains an information related to 'no clouds' conditions, i.e. amount value is :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, :cpp:enumerator:`Amount::NSC`. For any other amount value returns ``false``.
-
-		.. cpp:function:: bool isCloudLayer() const
-
-			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
-
-		.. cpp::function:: bool isObscuration() const
-
-			:returns: Currently always returns ``false``.
+			:returns: For location-specific data such as ceiling, .
 
 	**Validating**
 
@@ -2357,10 +2371,6 @@ Examples of the raw report data are ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO 
 
 			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed, and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
 
-		.. cpp:enumerator:: CHINO
-
-			This group indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
-
 		.. cpp:enumerator:: VISNO
 
 			This group indicates the that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
@@ -2455,66 +2465,6 @@ Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6
 		.. cpp:function:: WaveHeight waves() const
 
 			:returns: Wave height or descriptive state of the sea surface or non-reported value.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: Always returns ``true``.
-
-
-ColourCodeGroup
-^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: colourcodegroup.svg
-
-Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2``, ``AMB``, ``RED``, ``BLACKBLU``, ``BLACKWHT``, ``BLACKGRN``, ``BLACKYLO1``, ``BLACKYLO2``, ``BLACKAMB``, and ``BLACKRED``. 
-
-.. cpp:class:: ColourCodeGroup
-
-	Stores colour code information which allows quick assess of visibility and ceiling conditions. This group is used by military aerodromes of NATO countries.
-
-	.. cpp:enum-class:: Code
-
-		.. cpp:enumerator:: BLUE
-
-			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
-
-		.. cpp:enumerator:: WHITE
-
-			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
-
-		.. cpp:enumerator:: GREEN
-
-			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
-
-		.. cpp:enumerator:: YELLOW1
-
-			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
-
-		.. cpp:enumerator:: YELLOW2
-
-			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
-
-		.. cpp:enumerator:: AMBER
-
-			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
-
-		.. cpp:enumerator:: RED
-
-			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Code code() const
-
-			:returns: Colour code.
-
-		.. cpp:function:: bool isCodeBlack() const
-
-			:returns: ``true`` if code BLACK (which means that aerodrome is closed e.g. due to snow accumulation) was specified additionally to main colour code, ``false`` otherwise.
 
 	**Validating**
 
@@ -3396,9 +3346,9 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 
 			:returns: Vector of directions where the phenomena was observed (may include Overhead direction).
 
-		.. cpp:function:: Direction::Cardinal movingDirection() const
+		.. cpp:function:: Direction movingDirection() const
 
-			:returns: Direction in which phenomena is moving or :cpp:enumerator:`Direction::Cardinal::NONE` if the phenomena is not moving or direction is not specified.
+			:returns: Direction in which phenomena is moving or non-reported direction if the phenomena is not moving or direction is not specified.
 
 	**Validating**
 
@@ -3412,17 +3362,15 @@ MiscGroup
 
 The following syntax corresponds to this group in METAR/TAF reports.
 
-.. image:: miscgroup.svg
-
-Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``. 
+Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, ``CCC``, ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2``, ``AMB``, ``RED``, ``BLACKBLU``, ``BLACKWHT``, ``BLACKGRN``, ``BLACKYLO1``, ``BLACKYLO2``, ``BLACKAMB``, and ``BLACKRED``. 
 
 .. cpp:class:: MiscGroup
 
-	Stores various values provided in METAR or TAF report.
+	Stores various data provided in METAR or TAF report.
 
 	.. cpp:enum-class:: Type
 
-		Indicates the type of the value reported in this group.
+		Indicates the type of the data reported in this group.
 
 		.. cpp:enumerator:: SUNSHINE_DURATION_MINUTES
 
@@ -3434,12 +3382,67 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 
 		.. cpp:enumerator:: DENSITY_ALTITUDE
 
-			Density altitude (in feet) reported in remarks. Non-reported value indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
+			Density altitude (in feet) reported in remarks. An empty ``std::optional`` indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
 
 		.. cpp:enumerator:: HAILSTONE_SIZE
 
 			Largest hailstone size in inches with increments of 1/4 inch.
 
+		.. cpp:enumerator:: COLOUR_CODE_BLUE
+
+			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet. 
+
+		.. cpp:enumerator:: COLOUR_CODE_WHITE
+
+			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_GREEN
+
+			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_YELLOW1
+
+			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_YELLOW2
+
+			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_AMBER
+
+			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_RED
+
+			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE
+
+			Same as :cpp:enumerator:`COLOUR_CODE_BLUE` but also indicates that aerodrome is closed e.g. due to snow accumulation.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKWHITE
+
+			Same as :cpp:enumerator:`COLOUR_CODE_WHITE` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKGREEN
+
+			Same as :cpp:enumerator:`COLOUR_CODE_GREEN` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW1
+
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW1` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW2
+
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW2` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKAMBER
+
+			Same as :cpp:enumerator:`COLOUR_CODE_AMBER` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKRED
+
+			Same as :cpp:enumerator:`COLOUR_CODE_RED` but also indicates that aerodrome is closed.
 
 	**Acquiring group data**
 
@@ -3447,19 +3450,18 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 
 			:returns: Type of value reported in this group.
 
-		.. cpp:function:: std::optional<float> value() const
+		.. cpp:function:: std::optional<float> data() const
 
 			:returns: The value reported in this group, or empty ``std::optional`` if the value is not reported.
+
+				.. note:: empty ``std::optional`` is always returned for colour codes (e.g. BLU or BLACKRED).
+
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: The following values are returned depending on type of the value:
-
-				* If sunshine duration value is reported, always returns ``true``.
-
-				* If number of corrected weather observation is reported, always returns ``true``.
+			:returns: Always returns ``true``.
 
 
 UnknownGroup
@@ -3804,8 +3806,6 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitColourCodeGroup(const ColourCodeGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 

@@ -25,8 +25,8 @@ TEST(WindGroup, parseSurfaceWindKnotsMetar) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 5u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -43,8 +43,8 @@ TEST(WindGroup, parseSurfaceWindKnotsTaf) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 5u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -95,8 +95,8 @@ TEST(WindGroup, parseGusts) {
 	EXPECT_EQ(wg->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_EQ(wg->gustSpeed().speed().value(), 10u);
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -113,8 +113,8 @@ TEST(WindGroup, parseSurfaceWindThreeDigits) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 102u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -133,8 +133,8 @@ TEST(WindGroup, parseSurfaceWindGustsThreeDigits) {
 	EXPECT_EQ(wg->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_EQ(wg->gustSpeed().speed().value(), 105u);
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -153,8 +153,8 @@ TEST(WindGroup, parseSurfaceWindWindAndGustsThreeDigits) {
 	EXPECT_EQ(wg->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_EQ(wg->gustSpeed().speed().value(), 105u);
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -169,8 +169,8 @@ TEST(WindGroup, parseSurfaceWindVariableDirection) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 5u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -184,8 +184,8 @@ TEST(WindGroup, parseSurfaceWindNotReported) {
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -223,7 +223,7 @@ TEST(WindGroup, parseVariableWindSectorMetar) {
 	const auto wg = metaf::WindGroup::parse("180V240", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::VARIABLE_WIND_SECTOR);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
@@ -241,7 +241,7 @@ TEST(WindGroup, parseVariableWindSectorTaf) {
 	const auto wg = metaf::WindGroup::parse("180V240", metaf::ReportPart::TAF);
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::VARIABLE_WIND_SECTOR);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
@@ -349,8 +349,8 @@ TEST(WindGroup, appendSurfaceWindAndOther) {
 	EXPECT_EQ(wg->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_EQ(wg->gustSpeed().speed().value(), 10u);
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -397,7 +397,7 @@ TEST(WindGroup, appendVariableWindSectorAndOther) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::VARIABLE_WIND_SECTOR);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().speed().has_value());
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
@@ -431,8 +431,8 @@ TEST(WindGroup, parseWindShear) {
 	ASSERT_TRUE(wg->height().integer().has_value());
 	EXPECT_EQ(wg->height().integer().value(), 2000u);
 	EXPECT_EQ(wg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -506,8 +506,8 @@ TEST(WindGroup, appendWindShearGroupAndOther) {
 	ASSERT_TRUE(wg->height().integer().has_value());
 	EXPECT_EQ(wg->height().integer().value(), 2000u);
 	EXPECT_EQ(wg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -520,14 +520,14 @@ TEST(WindGroup, calmWindKnots) {
 	const auto wg = metaf::WindGroup::parse("00000KT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
 	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -536,14 +536,14 @@ TEST(WindGroup, calmWindMps) {
 	const auto wg = metaf::WindGroup::parse("00000MPS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::METERS_PER_SECOND);
 	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -552,14 +552,14 @@ TEST(WindGroup, calmWindKmh) {
 	const auto wg = metaf::WindGroup::parse("00000KMH", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::SURFACE_WIND_CALM);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	ASSERT_TRUE(wg->windSpeed().speed().has_value());
 	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 	EXPECT_EQ(wg->windSpeed().speed().value(), 0u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -572,12 +572,12 @@ TEST(WindGroup, parseWsconds) {
 	auto wg = metaf::WindGroup::parse("WSCONDS", metaf::ReportPart::TAF);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WSCONDS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -631,12 +631,12 @@ TEST(WindGroup, appendWscondsAndOther) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WSCONDS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -685,12 +685,12 @@ TEST(WindGroup, parseWshft) {
 	const auto wg = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -722,12 +722,12 @@ TEST(WindGroup, appendWshftAndTimeMin) {
 		metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 
 	ASSERT_TRUE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->eventTime()->day().has_value());
@@ -754,12 +754,12 @@ TEST(WindGroup, appendWshftAndTimeHourMin) {
 	EXPECT_EQ(wg->append("0415", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 
 	ASSERT_TRUE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->eventTime()->day().has_value());
@@ -779,12 +779,12 @@ TEST(WindGroup, appendWshftAndTimeAndFropa) {
 		metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT_FROPA);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 
 	ASSERT_TRUE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->eventTime()->day().has_value());
@@ -802,12 +802,12 @@ TEST(WindGroup, appendWshftAndFropa) {
 		metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHIFT_FROPA);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 
 	EXPECT_FALSE(wg->runway().has_value());
@@ -869,12 +869,12 @@ TEST(WindGroup, appendWshftAndOther) {
 TEST(WindGroup, parsePk) {
 	const auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
 	ASSERT_TRUE(wg.has_value());
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -892,12 +892,12 @@ TEST(WindGroup, appendPkAndWnd) {
 	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
 
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -1202,8 +1202,8 @@ TEST(WindGroup, appendPkWndDirSpeedHourMinute) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 76u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 
 	ASSERT_TRUE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->eventTime()->day().has_value());
@@ -1237,8 +1237,8 @@ TEST(WindGroup, appendPkWndDirSpeedMinute) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 29u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 
 	ASSERT_TRUE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->eventTime()->day().has_value());
@@ -1268,12 +1268,12 @@ TEST(WindGroup, parseWs) {
 	const auto wg = metaf::WindGroup::parse("WS", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -1285,12 +1285,12 @@ TEST(WindGroup, parseWsAll) {
 	EXPECT_EQ(wg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	EXPECT_FALSE(wg->runway().has_value());
 }
@@ -1303,12 +1303,12 @@ TEST(WindGroup, parseWsAllRwy) {
 	EXPECT_EQ(wg->append("RWY", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	ASSERT_TRUE(wg->runway().has_value());
 	EXPECT_TRUE(wg->runway()->isAllRunways());
@@ -1609,12 +1609,12 @@ TEST(WindGroup, windShearAppendOtherToWsAll) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	ASSERT_TRUE(wg->runway().has_value());
 	EXPECT_TRUE(wg->runway()->isAllRunways());
@@ -1631,12 +1631,12 @@ TEST(WindGroup, parseWsR32) {
 	EXPECT_EQ(wg->append("R32", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 
 	ASSERT_TRUE(wg->runway().has_value());
@@ -1655,12 +1655,12 @@ TEST(WindGroup, parseWsR27C) {
 	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::CENTER);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	ASSERT_TRUE(wg->runway().has_value());
 	EXPECT_EQ(wg->runway()->number(), 27u);
@@ -1678,12 +1678,12 @@ TEST(WindGroup, parseWsRwy32) {
 	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::NONE);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	ASSERT_TRUE(wg->runway().has_value());
 	EXPECT_EQ(wg->runway()->number(), 32u);
@@ -1702,12 +1702,12 @@ TEST(WindGroup, parseWsRwy27C) {
 	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::CENTER);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 	ASSERT_TRUE(wg->runway().has_value());
 	EXPECT_EQ(wg->runway()->number(), 27u);
@@ -1773,12 +1773,12 @@ TEST(WindGroup, windShearAppendToWsRwy) {
 	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::NONE);
 
 	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS);
-	EXPECT_TRUE(wg->direction().isOmitted());
+	EXPECT_EQ(wg->direction().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->windSpeed().isReported());
 	EXPECT_FALSE(wg->gustSpeed().isReported());
 	EXPECT_FALSE(wg->height().isReported());
-	EXPECT_TRUE(wg->varSectorBegin().isOmitted());
-	EXPECT_TRUE(wg->varSectorEnd().isOmitted());
+	EXPECT_EQ(wg->varSectorBegin().status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().status(), metaf::Direction::Status::NOT_REPORTED);
 	EXPECT_FALSE(wg->eventTime().has_value());
 
 	ASSERT_TRUE(wg->runway().has_value());

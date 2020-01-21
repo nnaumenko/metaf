@@ -13,6 +13,8 @@ Metaf is a header-only, MIT-licensed, dependency-free modern c++ library for par
    basics
    getting_started
    api_reference
+   metar_taf_guide
+   internals
 
 Indices and tables
 ==================

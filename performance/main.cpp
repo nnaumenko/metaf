@@ -91,9 +91,6 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
 		return "SeaSurfaceGroup";
 
-		case variant_index<metaf::Group, metaf::ColourCodeGroup>():
-		return "ColourCodeGroup";
-
 		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
 		return "MinMaxTemperatureGroup";
 
@@ -446,6 +443,13 @@ void printDataSize(){
 	printSize(groupName(16), sizeof(variant_alternative_t<16, metaf::Group>));
 	printSize(groupName(17), sizeof(variant_alternative_t<17, metaf::Group>));
 	printSize(groupName(18), sizeof(variant_alternative_t<18, metaf::Group>));
+	printSize(groupName(19), sizeof(variant_alternative_t<17, metaf::Group>));
+	printSize(groupName(20), sizeof(variant_alternative_t<18, metaf::Group>));
+	printSize(groupName(21), sizeof(variant_alternative_t<17, metaf::Group>));
+	printSize(groupName(22), sizeof(variant_alternative_t<18, metaf::Group>));
+	printSize(groupName(23), sizeof(variant_alternative_t<17, metaf::Group>));
+	printSize(groupName(24), sizeof(variant_alternative_t<18, metaf::Group>));
+	printSize(groupName(25), sizeof(variant_alternative_t<17, metaf::Group>));
 	cout << endl;
 }
 

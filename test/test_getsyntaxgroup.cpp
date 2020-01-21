@@ -176,14 +176,6 @@ TEST(getSyntaxGroup, OTHER_FROIN) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, CLD_MISG) {
-	auto fg = metaf::FixedGroup::parse("CLD", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, ICG_MISG) {
 	auto fg = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
@@ -387,12 +379,6 @@ TEST(getSyntaxGroup, OTHER_RunwayStateGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_SecondaryLocationGroup) {
-	const auto g = metaf::SecondaryLocationGroup::parse("CHINO", metaf::ReportPart::RMK);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_RainfallGroup) {
 	const auto g = metaf::RainfallGroup::parse("RF00.0/000.0", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
@@ -401,12 +387,6 @@ TEST(getSyntaxGroup, OTHER_RainfallGroup) {
 
 TEST(getSyntaxGroup, OTHER_SeaSurfaceGroup) {
 	const auto g = metaf::SeaSurfaceGroup::parse("W15/S4", metaf::ReportPart::METAR);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, OTHER_ColourCodeGroup) {
-	const auto g = metaf::ColourCodeGroup::parse("AMB", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

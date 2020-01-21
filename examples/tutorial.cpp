@@ -219,15 +219,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Sea Surface: " + rawString);
 	}
 
-	virtual std::string visitColourCodeGroup(
-		const ColourCodeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Colour Code: " + rawString);
-	}
-
 	virtual std::string visitMinMaxTemperatureGroup(
 		const MinMaxTemperatureGroup & group,
 		ReportPart reportPart,

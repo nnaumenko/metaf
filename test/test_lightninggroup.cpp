@@ -53,7 +53,7 @@ TEST(LightningGroup, parseLtgDsntAlqds) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::ALQDS);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::ALQDS);
 }
 
 TEST(LightningGroup, parseLtgVc) {
@@ -87,7 +87,7 @@ TEST(LightningGroup, parseLtgVcAlqds) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::ALQDS);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::ALQDS);
 }
 
 TEST(LightningGroup, parseOcnlLtg) {
@@ -152,7 +152,7 @@ TEST(LightningGroup, parseLtgNE) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::NE);
 }
 
 TEST(LightningGroup, parseLtgNES) {
@@ -169,11 +169,11 @@ TEST(LightningGroup, parseLtgNES) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 5u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::N);
-	EXPECT_EQ(lg->directions().at(1), metaf::Direction::Cardinal::NE);
-	EXPECT_EQ(lg->directions().at(2), metaf::Direction::Cardinal::E);
-	EXPECT_EQ(lg->directions().at(3), metaf::Direction::Cardinal::SE);
-	EXPECT_EQ(lg->directions().at(4), metaf::Direction::Cardinal::S);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(lg->directions().at(1).cardinal(), metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(lg->directions().at(2).cardinal(), metaf::Direction::Cardinal::E);
+	EXPECT_EQ(lg->directions().at(3).cardinal(), metaf::Direction::Cardinal::SE);
+	EXPECT_EQ(lg->directions().at(4).cardinal(), metaf::Direction::Cardinal::S);
 }
 
 TEST(LightningGroup, parseLtgAlqds) {
@@ -190,7 +190,7 @@ TEST(LightningGroup, parseLtgAlqds) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::ALQDS);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::ALQDS);
 }
 
 TEST(LightningGroup, parseLtgNESandOHD) {
@@ -209,12 +209,12 @@ TEST(LightningGroup, parseLtgNESandOHD) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 6u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::N);
-	EXPECT_EQ(lg->directions().at(1), metaf::Direction::Cardinal::NE);
-	EXPECT_EQ(lg->directions().at(2), metaf::Direction::Cardinal::E);
-	EXPECT_EQ(lg->directions().at(3), metaf::Direction::Cardinal::SE);
-	EXPECT_EQ(lg->directions().at(4), metaf::Direction::Cardinal::S);
-	EXPECT_EQ(lg->directions().at(5), metaf::Direction::Cardinal::OHD);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(lg->directions().at(1).cardinal(), metaf::Direction::Cardinal::NE);
+	EXPECT_EQ(lg->directions().at(2).cardinal(), metaf::Direction::Cardinal::E);
+	EXPECT_EQ(lg->directions().at(3).cardinal(), metaf::Direction::Cardinal::SE);
+	EXPECT_EQ(lg->directions().at(4).cardinal(), metaf::Direction::Cardinal::S);
+	EXPECT_EQ(lg->directions().at(5).cardinal(), metaf::Direction::Cardinal::OHD);
 }
 
 TEST(LightningGroup, parseLtgSWNWandSES) {
@@ -233,11 +233,11 @@ TEST(LightningGroup, parseLtgSWNWandSES) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 5u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::SW);
-	EXPECT_EQ(lg->directions().at(1), metaf::Direction::Cardinal::W);
-	EXPECT_EQ(lg->directions().at(2), metaf::Direction::Cardinal::NW);
-	EXPECT_EQ(lg->directions().at(3), metaf::Direction::Cardinal::SE);
-	EXPECT_EQ(lg->directions().at(4), metaf::Direction::Cardinal::S);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(lg->directions().at(1).cardinal(), metaf::Direction::Cardinal::W);
+	EXPECT_EQ(lg->directions().at(2).cardinal(), metaf::Direction::Cardinal::NW);
+	EXPECT_EQ(lg->directions().at(3).cardinal(), metaf::Direction::Cardinal::SE);
+	EXPECT_EQ(lg->directions().at(4).cardinal(), metaf::Direction::Cardinal::S);
 }
 
 TEST(LightningGroup, parseLtgSWandE) {
@@ -256,8 +256,8 @@ TEST(LightningGroup, parseLtgSWandE) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 2u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::SW);
-	EXPECT_EQ(lg->directions().at(1), metaf::Direction::Cardinal::E);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(lg->directions().at(1).cardinal(), metaf::Direction::Cardinal::E);
 }
 
 TEST(LightningGroup, parseConsLtgOhdAndAlqds) {
@@ -277,8 +277,8 @@ TEST(LightningGroup, parseConsLtgOhdAndAlqds) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 2u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::OHD);
-	EXPECT_EQ(lg->directions().at(1), metaf::Direction::Cardinal::ALQDS);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::OHD);
+	EXPECT_EQ(lg->directions().at(1).cardinal(), metaf::Direction::Cardinal::ALQDS);
 }
 
 TEST(LightningGroup, parseLtgIcCcCgOhd) {
@@ -295,7 +295,7 @@ TEST(LightningGroup, parseLtgIcCcCgOhd) {
 	EXPECT_FALSE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::OHD);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::OHD);
 }
 
 TEST(LightningGroup, parseLtgCcCaOhd) {
@@ -312,7 +312,7 @@ TEST(LightningGroup, parseLtgCcCaOhd) {
 	EXPECT_TRUE(lg->isCloudAir());
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 1u);
-	EXPECT_EQ(lg->directions().at(0), metaf::Direction::Cardinal::OHD);
+	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::OHD);
 }
 
 TEST(LightningGroup, parseLtgCb) {
