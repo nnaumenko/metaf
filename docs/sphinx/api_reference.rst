@@ -516,10 +516,9 @@ Direction
 
 			Unknown direction.
 
+	.. cpp:enum-class:: Type
 
-	.. cpp:enum-class:: Status
-
-		The status of the direction value reported. If the status is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
+		The type of the direction value reported. If the type is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
 
 		.. cpp:enumerator:: NOT_REPORTED
 
@@ -555,9 +554,9 @@ Direction
 
 	**Acquiring the data**
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			::returns:: Status of stored direction value.
+			::returns:: Type of stored direction value.
 
 		.. cpp:function:: Cardinal cardinal(bool trueDirections = false) const
 
@@ -565,19 +564,15 @@ Direction
 
 			:returns: Cardinal direction corresponding to the stored direction value.
 
-				- If the status of the stored value is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, then :cpp:enumerator:`Cardinal::NONE` is returned. 
-
-				- If the status is :cpp:enumerator:`Status::NDV` then :cpp:enumerator:`Cardinal::NDV` is returned.
-
-				- If the direction value in degrees is reported (i.e. status is :cpp:enumerator:`Status::VALUE_DEGREES`) and the value exceeds 360 degrees then :cpp:enumerator:`Cardinal::NONE` is returned.
+				.. note:: If the direction value in degrees is reported (i.e. value type is :cpp:enumerator:`Type::VALUE_DEGREES`) the corresponding cardinal direction is returned; if the value exceeds 360 degrees then :cpp:enumerator:`Cardinal::NOT_REPORTED` is returned.
 
 		.. cpp:function:: std::optional<unsigned int> degrees() const
 
 			:returns: Stored value in degrees. If cardinal value was stored, then the middle value of the corresponding directional sector is returned as follows:
 
-				================== ==============
-				Cardinal direction Returned value
-				================== ==============
+				================== ====================
+				Cardinal direction Direction in degrees
+				================== ====================
 				North              360
 				Northeast          45
 				East               90
@@ -586,10 +581,9 @@ Direction
 				Southwest          225
 				West               270
 				Northwest          315
-				================== ==============
+				================== ====================
 
-				If the status of the stored value is :cpp:enumerator:`Status::OMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`, then an empty ``std::optional`` is returned.
-
+				If the type of the stored value is other than :cpp:enumerator:`Type::VALUE_DEGREES` or :cpp:enumerator:`Type::VALUE_CARDINAL` then an empty ``std::optional`` is returned.
 
 	**Miscellaneous**
 
@@ -601,9 +595,9 @@ Direction
 
 			:returns: ``true`` if the stored direction contains a value, and ``false`` if the stored direction does not contain a concrete value.
 
-				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Status::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Status::VALUE_DEGREES`) is stored.
+				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Type::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Type::VALUE_DEGREES`) is stored.
 
-				- ``false`` is returned if the status is :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, :cpp:enumerator:`Status::NDV`, :cpp:enumerator:`Status::OVERHEAD`, :cpp:enumerator:`Status::ALQDS`, or :cpp:enumerator:`Status::UNKNOWN`.
+				- ``false`` is returned if the type of the value is :cpp:enumerator:`Type::NOT_REPORTED`, :cpp:enumerator:`Type::VARIABLE`, :cpp:enumerator:`Type::NDV`, :cpp:enumerator:`Type::OVERHEAD`, :cpp:enumerator:`Type::ALQDS`, or :cpp:enumerator:`Type::UNKNOWN`.
 
 		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction & dir2)
 
@@ -731,9 +725,9 @@ SurfaceFriction
 
 	.. note:: Surface friction coefficient is a dimensionless value and has no associated measurement units.
 
-	.. cpp:enum-class:: Status
+	.. cpp:enum-class:: Type
 
-		The status of surface friction value.
+		The type of surface friction value.
 
 		.. cpp:enumerator:: NOT_REPORTED
 
@@ -781,9 +775,9 @@ SurfaceFriction
 
 	**Acquiring the data**
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			:returns: Status of surface friction value.
+			:returns: Type of surface friction value.
 
 		.. cpp:function:: std::optional<float> coefficient() const
 
@@ -802,12 +796,12 @@ SurfaceFriction
 
 		.. cpp:function:: bool isReported() const
 
-			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:`Status::NOT_REPORTED`.
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:`Type::NOT_REPORTED`.
 
 
 		.. cpp:function:: bool isUnreliable() const
 
-			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:`Status::UNRELIABLE`.
+			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:`Type::UNRELIABLE`.
 
 
 WaveHeight
@@ -1177,7 +1171,7 @@ WeatherPhenomena
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1254,12 +1248,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			This group is only used in METAR reports.
 
-		.. cpp:enumerator:: R_SNOCLO
-
-			Aerodrome is closed due to snow accumulation.
-
-			This group may be used in form of ``SNOCLO`` or ``R/SNOCLO``.
-
 		.. cpp:enumerator:: CAVOK
 
 			Ceiling and visibility OK; all of the following conditions are met:
@@ -1316,14 +1304,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Indicates that automated station is equipped with present weather identifier and this sensor is not operating.
 
-		.. cpp:enumerator:: PNO
-
-			Indicates that automated station is equipped with tipping bucket rain gauge and this sensor is not operating.
-
-		.. cpp:enumerator:: FZRANO
-
-			Indicates that automated station is equipped with freezing rain sensor and this sensor is not operating.
-
 		.. cpp:enumerator:: TSNO
 
 			Indicates that automated station is equipped with lightning detector and this sensor is not operating.
@@ -1335,14 +1315,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 		.. cpp:enumerator:: FROIN
 
 			Frost on the instrument (e.g. due to fog depositing rime).
-
-		.. cpp:enumerator:: ICG_MISG
-
-			Icing data is missing.
-
-		.. cpp:enumerator:: PCPN_MISG
-
-			Precipitation data is missing.
 
 		.. cpp:enumerator:: PRES_MISG
 
@@ -2184,35 +2156,39 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: runwaystategroup.svg
 
-Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60``, ``R21/SNOCLO``, ``R34L/CLRD70``, etc.
+Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60``, ``R21/SNOCLO``, ``R/SNOCLO``,``R34L/CLRD70``, etc.
 
 .. cpp:class:: RunwayStateGroup
 
 	Stores information about the state of runway surface and/or accumulation of deposits for a single runway. Alternatively may store information that the deposits of runway ceased to exist or that runway is closed due to snow accumulation.
 
-	.. cpp:enum-class:: Status
+	.. cpp:enum-class:: Type
 
-		Option for the type of runway state reported: normal group with all values, CLRD group with surface friction value only, and SNOCLO group without any values.
+		Type of information about runway state.
 
-		.. cpp:enumerator:: NORMAL
+		.. cpp:enumerator:: RUNWAY_STATE
 
-			Normal type of runway state group. Runway deposits, runway contamination extent, deposit depth, and surface friction are specified in this group (any value or values may be non-reported).
+			Runway state group. Use :cpp:func:`deposits()` for type of deposits on runway (e.g. water patches, snow, slush, etc.),  :cpp:func:`contaminationExtent()` for the percentage of runway contamination by deposits, :cpp:func:`depositDepth()` for the depth of the deposits, and :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
 		.. cpp:enumerator:: RUNWAY_NOT_OPERATIONAL
 
-			Runway state group indicating that the runway is not operational. Runway deposits, runway contamination extent, and surface friction may be specified in this group (any value or values may be non-reported).
+			Runway state group indicating that the runway is not operational. Use :cpp:func:`deposits()` for type of deposits on runway (e.g. water patches, snow, slush, etc.),  :cpp:func:`contaminationExtent()` for the percentage of runway contamination by deposits, and :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
-		.. cpp:enumerator:: CLRD
+		.. cpp:enumerator:: RUNWAY_CLRD
 
-			Runway state group indicating that previously present deposits on runway were cleared or ceased to exist. Only surface friction is specified (as an actual value or non-reported value).
+			Runway state group indicating that previously present deposits on runway were cleared or ceased to exist. Use :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
-		.. cpp:enumerator:: SNOCLO
+		.. cpp:enumerator:: RUNWAY_SNOCLO
 
-			Runway state group indicating that the runway is closed due to snow accumulation. No further values are specified.
+			Runway state group indicating that the runway is closed due to snow accumulation (e.g. ``R27/SNOCLO``). No further details are specified. 
+
+		.. cpp:enumerator:: AERODROME_SNOCLO
+
+			Aerodrome is closed due to snow accumulation, coded as  ``SNOCLO`` or ``R/SNOCLO`` in the METAR report. No further details are specified. :cpp:func:`runway()` always returns 'all runways' value.
 
 	.. cpp:enum-class:: Deposits
 
-		Deposits on the runway.
+		Type of deposits on the runway.
 
 		.. cpp:enumerator:: CLEAR_AND_DRY
 
@@ -2312,33 +2288,25 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 			:returns: Runway for which the state is provided.
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			:returns: Status of runway state group. 
-
-			If the status is :cpp:enumerator:`Status::NORMAL` then group reports runway state and Deposits, Contamination Extent, Deposit Depth and Surface Friction may be reported or non-reported.
-
-			If the status is :cpp:enumerator:`Status::RUNWAY_NOT_OPERATIONAL` then group reports runway state and Deposits, Contamination Extent, and Surface Friction may be reported or non-reported; Deposit Depth is always not reported.
-
-			If the status is :cpp:enumerator:`Status::CLRD` then group indicates that deposits on the runway were cleared or ceased to exist; only Surface Friction may be reported; Deposits, Contamination Extent and Deposit Depth are never reported.
-
-			If the status is :cpp:enumerator:`Status::SNOCLO` then group indicates that runway is closed due to snow accumulation. All parameters (Deposits, Contamination Extent, Deposit Depth and Surface Friction) are never reported.
+			:returns: Type of runway state group. 
 
 		.. cpp:function:: Deposits deposits() const
 
-			:returns: Deposits on the runway. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Deposits on the runway.
 
 		.. cpp:function:: Extent contaminationExtent() const
 
-			:returns: Extent (percentage) of runway contamination with deposits. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Extent (percentage) of runway contamination with deposits.
 
 		.. cpp:function:: Precipitation depositDepth() const
 
-			:returns: Depth of the deposits on the runway or non-reported value. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Depth of the deposits on the runway or non-reported value.
 
 		.. cpp:function:: SurfaceFriction surfaceFriction() const
 
-			:returns: Surface friction or braking action or not reported value. Not reported if the status is :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Surface friction or braking action or not reported value.
 
 	**Validating**
 
@@ -2407,40 +2375,6 @@ Examples of the raw report data are ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO 
 		.. cpp:function:: bool isValid() const
 
 			:returns: ``false`` for incomplete groups. For complete groups returns ``true`` if the specified runway or direction is valid, and ``false`` otherwise.
-
-
-RainfallGroup
-^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: rainfallgroup.svg
-
-Examples of the raw report data are ``RF00.0/000.0``, ``RF00.2/011.2``, ``RF00.0////./``, and ``RF21.5/112.4/031.8``.
-
-.. cpp:class:: RainfallGroup
-
-	Stores information about recent rainfall. This group is only used in Australia.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Precipitation rainfallLast10Minutes() const
-
-			:returns: Rainfall for the last 10 minutes (or non-reported value).
-
-		.. cpp:function:: Precipitation rainfallLast60Minutes() const
-
-			:returns: Rainfall for the last 60 minutes or non-reported value.
-
-		.. cpp:function:: Precipitation rainfallSince9AM() const
-
-			:returns: Rainfall since 9:00AM (09:00) or non-reported value.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: Always returns ``true``.
 
 
 SeaSurfaceGroup
@@ -2526,11 +2460,11 @@ The following syntax corresponds to this group in METAR/TAF reports.
 
 .. image:: precipitationgroup.svg
 
-Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, ``I6012``, and ``SNINCR 2/12``.
+Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, ``I6012``, ``SNINCR 2/12``, ``RF00.0/000.0``, ``RF00.2/011.2``, and ``RF00.0////./``.
 
 .. cpp:class:: PrecipitationGroup
 
-	Stores various information about precipitation, snowfall, snow depth, and icing (typically caused by freezing precipitation). This group is only used in North America and included in remarks.
+	Stores various information about precipitation, rainfall, snowfall, snow depth, and icing (typically caused by freezing precipitation). This group is used regionally and may be included in METAR report body or in remarks.
 
 	.. cpp:enum-class:: Type
 
@@ -2582,12 +2516,31 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 		.. cpp:enumerator:: SNOW_INCREASING_RAPIDLY
 
-			Indicates that snow is increasing rapidly; use :cpp:func:`amount()` for total snowfall, and :cpp:func:`tendency()` for snow increase during last hour.
+			Indicates that snow is increasing rapidly; use :cpp:func:`total()` for total snowfall, and :cpp:func:`recent()` for snow increase during last hour.
 
 		.. cpp:enumerator:: PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT
 
 			Accumulation of precipitation since previous released weather report.
 
+		.. cpp:enumerator:: RAINFALL_9AM_10MIN
+
+			Amount of rainfall; use :cpp:func:`total()` for rainfall since 9AM (9:00) local time, and :cpp:func:`recent()` for rainfall in the last 10 minutes.
+
+		.. cpp:enumerator:: PNO
+
+			Indicates that automated station is equipped with tipping bucket rain gauge and this sensor is not operating. No further details are provided.
+
+		.. cpp:enumerator:: FZRANO
+
+			Indicates that automated station is equipped with freezing rain sensor and this sensor is not operating. No further details are provided.
+
+		.. cpp:enumerator:: ICG_MISG
+
+			Icing data is missing.
+
+		.. cpp:enumerator:: PCPN_MISG
+
+			Precipitation data is missing.
 
 	**Acquiring group data**
 
@@ -2595,13 +2548,13 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 			:returns: Type of value reported in this group.
 
-		.. cpp:function:: Precipitation amount() const
+		.. cpp:function:: Precipitation total() const
 
-			:returns: Amount of precipitation of specified type. May be a non-reported value.
+			:returns: Total amount of precipitation of specified type. May be a non-reported value.
 
-		.. cpp:function:: Precipitation tendency() const
+		.. cpp:function:: Precipitation recent() const
 
-			:returns: Increase of decrease of precipitation during recent period.
+			:returns: Amount or increase of precipitation during recent period.
 
 	**Validating**
 
@@ -3802,8 +3755,6 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 

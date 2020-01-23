@@ -9,77 +9,81 @@
 #include "metaf.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-// Test parsing of cardinal direction string, NDV, OHD, ALQDS, UNKNOWN 
+// Test parsing of cardinal direction string, NDV, OHD, ALQDS, UNKNOWN
+// Purpose: to confirm that fromCardinalString() method correctly parses 
+// strings which contain cardinal directions (N, S, E, W, NE, NW, SE, SW) or
+// special strings NDV, OHD, ALQDS, UNKNOWN, and that other strings cannot be
+// parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, fromCardinalStringN) {
 	const auto d = metaf::Direction::fromCardinalString("N");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 360u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringNW) {
 	const auto d = metaf::Direction::fromCardinalString("NW");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 315u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringW) {
 	const auto d = metaf::Direction::fromCardinalString("W");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 270u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringSW) {
 	const auto d = metaf::Direction::fromCardinalString("SW");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 225u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringS) {
 	const auto d = metaf::Direction::fromCardinalString("S");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 180u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringSE) {
 	const auto d = metaf::Direction::fromCardinalString("SE");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 135u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringE) {
 	const auto d = metaf::Direction::fromCardinalString("E");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 90u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringNE) {
 	const auto d = metaf::Direction::fromCardinalString("NE");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_EQ(d->degrees(), 45u);
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VALUE_CARDINAL);
 }
 
 TEST(Direction, fromCardinalStringNDV) {
 	const auto d = metaf::Direction::fromCardinalString("NDV");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::NDV);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::NDV);
 }
 
 TEST(Direction, fromCardinalStringOhd) {
 	const auto d = metaf::Direction::fromCardinalString("OHD", true);
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::OVERHEAD);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::OVERHEAD);
 
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("OHD").has_value());
 }
@@ -88,7 +92,7 @@ TEST(Direction, fromCardinalStringAlqds) {
 	const auto d = metaf::Direction::fromCardinalString("ALQDS", true);
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::ALQDS);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::ALQDS);
 
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("ALQDS").has_value());
 }
@@ -97,7 +101,7 @@ TEST(Direction, fromCardinalStringUnknown) {
 	const auto d = metaf::Direction::fromCardinalString("UNKNOWN", false, true);
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::UNKNOWN);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::UNKNOWN);
 
 	EXPECT_FALSE(metaf::Direction::fromCardinalString("UNKNOWN", false, false).has_value());
 }
@@ -127,32 +131,35 @@ TEST(Direction, fromCardinalStringOther) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Test parsing of degrees string, non-reported, VRB 
+// Purpose: to confirm that fromDegreesString() method correctly parses 
+// strings which contain direction in degrees, non-reported value, variable
+// direction indicator, and that other strings cannot be parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, fromDegreesString) {
 	const auto d1 = metaf::Direction::fromDegreesString("010");
 	ASSERT_TRUE(d1.has_value());
 	EXPECT_EQ(d1->degrees(), 10u);
-	EXPECT_EQ(d1->status(), metaf::Direction::Status::VALUE_DEGREES);
+	EXPECT_EQ(d1->type(), metaf::Direction::Type::VALUE_DEGREES);
 
 	const auto d2 = metaf::Direction::fromDegreesString("270");
 	ASSERT_TRUE(d2.has_value());
 	EXPECT_EQ(d2->degrees(), 270u);
-	EXPECT_EQ(d2->status(), metaf::Direction::Status::VALUE_DEGREES);
+	EXPECT_EQ(d2->type(), metaf::Direction::Type::VALUE_DEGREES);
 }
 
 TEST(Direction, fromDegreesStringVariable) {
 	const auto d = metaf::Direction::fromDegreesString("VRB");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::VARIABLE);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::VARIABLE);
 }
 
 TEST(Direction, fromDegreesStringNotReported) {
 	const auto d = metaf::Direction::fromDegreesString("///");
 	ASSERT_TRUE(d.has_value());
 	EXPECT_FALSE(d->degrees().has_value());
-	EXPECT_EQ(d->status(), metaf::Direction::Status::NOT_REPORTED);
+	EXPECT_EQ(d->type(), metaf::Direction::Type::NOT_REPORTED);
 }
 
 TEST(Direction, fromDegreesStringLastDigitNonZero) {
@@ -172,18 +179,21 @@ TEST(Direction, fromDegreesStringWrongFormat) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Test parsing of cardinal direction sector string, e.g. W-NW or S-SW-W 
+// Test parsing of cardinal direction sector string,  
+// Purpose: to confirm that fromSectorString() method correctly parses 
+// strings which contain cardinal direction sectors (e.g. W-NW or S-SW-W), and 
+// that other strings cannot be parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, fromSectorString_N_NE) {
 	const auto d = metaf::Direction::fromSectorString("N-NE");
 	ASSERT_TRUE(d.has_value());
 	const auto d0 = std::get<0>(d.value());
-	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
 
 	const auto d1 = std::get<1>(d.value());
-	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::NE);
 }
 
@@ -191,11 +201,11 @@ TEST(Direction, fromSectorString_N_E_S) {
 	const auto d = metaf::Direction::fromSectorString("N-E-S");
 	ASSERT_TRUE(d.has_value());
 	const auto d0 = std::get<0>(d.value());
-	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
 
 	const auto d1 = std::get<1>(d.value());
-	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
 }
 
@@ -203,11 +213,11 @@ TEST(Direction, fromSectorString_N_S) {
 	const auto d = metaf::Direction::fromSectorString("N-S");
 	ASSERT_TRUE(d.has_value());
 	const auto d0 = std::get<0>(d.value());
-	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
 
 	const auto d1 = std::get<1>(d.value());
-	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
 }
 
@@ -215,11 +225,11 @@ TEST(Direction, fromSectorString_N_NE_E_SW_S) {
 	const auto d = metaf::Direction::fromSectorString("N-NE-E-SW-S");
 	ASSERT_TRUE(d.has_value());
 	const auto d0 = std::get<0>(d.value());
-	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
 
 	const auto d1 = std::get<1>(d.value());
-	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
 }
 
@@ -228,11 +238,11 @@ TEST(Direction, fromSectorString_N_W_S) {
 	const auto d = metaf::Direction::fromSectorString("N-W-S");
 	ASSERT_TRUE(d.has_value());
 	const auto d0 = std::get<0>(d.value());
-	EXPECT_EQ(d0.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d0.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d0.cardinal(), metaf::Direction::Cardinal::N);
 
 	const auto d1 = std::get<1>(d.value());
-	EXPECT_EQ(d1.status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(d1.type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(d1.cardinal(), metaf::Direction::Cardinal::S);
 }
 
@@ -251,7 +261,8 @@ TEST(Direction, fromSectorString_WrongCardinal) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Test isValid() 
+// Test isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, isValidCorrectDegrees) {
@@ -305,7 +316,9 @@ TEST(Direction, isValidOutOfRange) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Test cardinal() 
+// Test cardinal()
+// Purpose: to confirm that cardinal() method produces correct value of 
+// type Direction::Cardinal for all possible types of Direction objects
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, cardinalNorth) {
@@ -470,6 +483,8 @@ TEST(Direction, cardinalAlqds) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Test rotateOctantClockwise()
+// To confirm that rotateOctantClockwise() method produces correct value for
+// all possible types of Direction objects
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, rotateOctantClockwiseDirections) {
@@ -519,6 +534,8 @@ TEST(Direction, rotateOctantClockwiseOther) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Test sectorCardinalDirToVector()
+// To confirm that sectorCardinalDirToVector() method correctly produces vector
+// of cardinal directions included in the direction sector.
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, sectorCardinalDirToVector_Sector) {
@@ -580,7 +597,10 @@ TEST(Direction, sectorCardinalDirToVector_NonSector) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Test isValue() & isReported() 
+// Test isValue() & isReported()
+// Purpose: to confirm that isValue() method correctly identifies cardinal 
+// value or value in degrees in the Direction object, and that isReported() 
+// correctly identifies reported and non-reported values.
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(Direction, isValueTrue) {

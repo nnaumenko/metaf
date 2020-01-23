@@ -133,13 +133,6 @@ protected:
 		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]++;
 	}
-	virtual void visitRainfallGroup(const metaf::RainfallGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart; (void)rawString;
-		count[variant_index<metaf::Group, metaf::RainfallGroup>()]++;
-	}
 	virtual void visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -284,10 +277,9 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayStateGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SecondaryLocationGroup>()]), 0);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RainfallGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 1);

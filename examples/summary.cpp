@@ -490,7 +490,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				if (const auto dir = gr->direction().degrees(); dir.has_value()) {
 					result.windDirection = dir.value();
 				}
-				if (gr->direction().status() == metaf::Direction::Status::VARIABLE) {
+				if (gr->direction().type() == metaf::Direction::Type::VARIABLE) {
 					result.isWindVariable = true;
 				}
 				windSpeed = gr->windSpeed();
@@ -595,7 +595,7 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 			if (const auto dir = gr->direction().degrees(); dir.has_value()) {
 				result.windDirection = dir.value();
 			}
-			if (gr->direction().status() == metaf::Direction::Status::VARIABLE) {
+			if (gr->direction().type() == metaf::Direction::Type::VARIABLE) {
 				result.isWindVariable = true;
 			}
 			windSpeed = gr->windSpeed();

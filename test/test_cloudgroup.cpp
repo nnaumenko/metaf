@@ -10,6 +10,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Cloud layer
+// Purpose: to confirm that cloud layer groups are parsed correctly, malformed
+// cloud layer groups cannot be parsed, and cloud layer groups cannot be 
+// appended to each other
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseCloudLayerMetar) {
@@ -364,6 +367,9 @@ TEST(CloudGroup, appendNonVariableCloudLayer) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vertical visibility
+// Purpose: to confirm that vertical visibility groups are parsed correctly, 
+// malformed vertical visibility groups cannot be parsed, and vertical 
+// visibility groups cannot be appended to each other
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseVerticalVisibilityMetar) {
@@ -451,6 +457,9 @@ TEST(CloudGroup, parseVerticalVisibilityWrongFormat) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Variable cloud cover
+// Purpose: to confirm that variable cloud cover groups included in remarks are 
+// parsed and appended correctly, and malformed variable cloud cover groups 
+// cannot be parsed or appended 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
@@ -782,7 +791,10 @@ TEST(CloudGroup, parseVariableCloudCoverWrongCombinationsOvc) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// 'No cloud' conditions
+// 'No cloud' conditions: CLR, SKC, NCD, NSC
+// Purpose: to confirm that groups indicating nil or non-significant clouds are 
+// parsed correctly, malformed groups of this type cannot be parsed, and 
+// groups of this type cannot be appended to each other
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseClr) {
@@ -933,6 +945,9 @@ TEST(CloudGroup, parseNoCloudWrongReportPart) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Ceiling Height and Variable Ceiling Height
+// Purpose: to confirm that ceiling height groups included in remarks are 
+// parsed and appended correctly, and malformed ceiling height groups cannot be 
+// parsed or appended 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseCeilingNoDetails) {
@@ -975,7 +990,7 @@ TEST(CloudGroup, parseCeilingDirection) {
 	EXPECT_FALSE(cg->maxHeight().isReported());
 	EXPECT_FALSE(cg->runway().has_value());
 	ASSERT_TRUE(cg->direction().has_value());
-	EXPECT_EQ(cg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);	
+	EXPECT_EQ(cg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);	
 	EXPECT_EQ(cg->direction()->cardinal(), metaf::Direction::Cardinal::NE);
 }
 
@@ -1117,7 +1132,7 @@ TEST(CloudGroup, parseVariableCeilingDirection) {
 	EXPECT_EQ(cg->maxHeight().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(cg->runway().has_value());
 	ASSERT_TRUE(cg->direction().has_value());
-	EXPECT_EQ(cg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);	
+	EXPECT_EQ(cg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);	
 	EXPECT_EQ(cg->direction()->cardinal(), metaf::Direction::Cardinal::NE);	
 }
 
@@ -1210,7 +1225,9 @@ TEST(CloudGroup, parseCeilingWrongReportPart) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// CHINO
+// CHINO 
+// Purpose: to confirm that CHINO groups included in remarks are parsed and 
+// appended correctly, and malformed CHINO groups cannot be parsed or appended 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseChinoNoDetails) {
@@ -1278,12 +1295,29 @@ TEST(CloudGroup, parseChinoDirection) {
 	EXPECT_FALSE(cg->maxHeight().isReported());
 	EXPECT_FALSE(cg->runway().has_value());
 	ASSERT_TRUE(cg->direction().has_value());
-	EXPECT_EQ(cg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(cg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(cg->direction()->cardinal(), metaf::Direction::Cardinal::SW);
+}
+
+TEST(CloudGroup, parseChinoWrongReportPart) {
+	EXPECT_FALSE(metaf::CloudGroup::parse("CHINO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("CHINO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("CHINO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("CHINO", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(CloudGroup, chinoAppendToCompleteGroup) {
+	// TODO
+}
+
+TEST(CloudGroup, chinoAppendWrongGroup) {
+	// TODO
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Tests for CLD MISG
+// Purpose: to confirm that CLD MISG group included in remarks is parsed and 
+// appended correctly 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseCldMisg) {
@@ -1328,6 +1362,7 @@ TEST(CloudGroup, parseCldAndOther) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, isValidCloudTypes) {

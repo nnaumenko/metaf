@@ -86,12 +86,6 @@ TEST(getSyntaxGroup, OTHER_AUTO) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_R_SNOCLO) {
-	const auto g = metaf::FixedGroup::parse("SNOCLO", metaf::ReportPart::METAR);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_CAVOK) {
 	const auto g = metaf::FixedGroup::parse("CAVOK", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
@@ -146,18 +140,6 @@ TEST(getSyntaxGroup, OTHER_PWINO) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_PNO) {
-	const auto g = metaf::FixedGroup::parse("PNO", metaf::ReportPart::RMK);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, OTHER_FZRANO) {
-	const auto g = metaf::FixedGroup::parse("FZRANO", metaf::ReportPart::RMK);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_TSNO) {
 	const auto g = metaf::FixedGroup::parse("TSNO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
@@ -174,22 +156,6 @@ TEST(getSyntaxGroup, OTHER_FROIN) {
 	const auto g = metaf::FixedGroup::parse("FROIN", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, ICG_MISG) {
-	auto fg = metaf::FixedGroup::parse("ICG", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, PCPN_MISG) {
-	auto fg = metaf::FixedGroup::parse("PCPN", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, PRES_MISG) {
@@ -375,12 +341,6 @@ TEST(getSyntaxGroup, OTHER_RunwayVisualRangeGroup) {
 
 TEST(getSyntaxGroup, OTHER_RunwayStateGroup) {
 	const auto g = metaf::RunwayStateGroup::parse("R16/750155", metaf::ReportPart::METAR);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, OTHER_RainfallGroup) {
-	const auto g = metaf::RainfallGroup::parse("RF00.0/000.0", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

@@ -201,15 +201,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Information on Secondary Location: " + rawString);
 	}
 
-	virtual std::string visitRainfallGroup(
-		const RainfallGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Rainfall: " + rawString);
-	}
-
 	virtual std::string visitSeaSurfaceGroup(
 		const SeaSurfaceGroup & group,
 		ReportPart reportPart,

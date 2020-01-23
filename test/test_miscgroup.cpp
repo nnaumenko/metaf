@@ -10,7 +10,11 @@
 
 const auto marginSunshineDuration = 1.0 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
 // Sunshine duration
+// Purpose: to confirm that sunshine duration groups are parsed correctly, and 
+// malformed groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, parseSunshineDuration) {
 	const auto mg1 = metaf::MiscGroup::parse("98096", metaf::ReportPart::RMK);
@@ -47,7 +51,11 @@ TEST(MiscGroup, parseSunshineDurationWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("18096", metaf::ReportPart::RMK));
 }
 
+///////////////////////////////////////////////////////////////////////////////
 // Corrected observation
+// Purpose: to confirm that groups which contain the number of the correctional 
+// observation are parsed correctly, and malformed groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, parseCorrectedObservation) {
 	const auto mg1 = metaf::MiscGroup::parse("CCA", metaf::ReportPart::METAR);
@@ -81,7 +89,11 @@ TEST(MiscGroup, parseCorrectedObservationDurationWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("CXA", metaf::ReportPart::METAR));
 }
 
+///////////////////////////////////////////////////////////////////////////////
 // Density altitude 
+// Purpose: to confirm that density altitude groups are parsed and appended 
+// correctly, and malformed density altitude groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, parseDensityAlt) {
 	auto mg1 = metaf::MiscGroup::parse("DENSITY", metaf::ReportPart::RMK);
@@ -172,7 +184,11 @@ TEST(MiscGroup, parseDensityAltAppendOther) {
 	EXPECT_EQ(mg5->append("AFT", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 // Largest hailstone size
+// Purpose: to confirm that largest hailstone groups are parsed and appended 
+// correctly, and malformed largest hailstone groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, parseGr) {
 	auto mg1 = metaf::MiscGroup::parse("GR", metaf::ReportPart::RMK);
@@ -307,7 +323,11 @@ TEST(MiscGroup, parseGrIntAppendOther) {
 	EXPECT_EQ(mg10->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 }
 
+///////////////////////////////////////////////////////////////////////////////
 // Colour codes
+// Purpose: to confirm that NATO colour code groups are parsed, and malformed 
+// groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, parseColourCodeBlue) {
 	const auto mg = metaf::MiscGroup::parse("BLU", metaf::ReportPart::METAR);
@@ -416,7 +436,10 @@ TEST(MiscGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLACKBL", metaf::ReportPart::METAR).has_value());
 }
 
-// Miscellaneous
+///////////////////////////////////////////////////////////////////////////////
+// Miscellaenous appending tests
+// Purpose: to confirm that the groups cannot append in wrong combinations
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, appendToCompleteGroups) {
 	const std::string smg1 = "98096";
@@ -637,6 +660,11 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MiscGroup, isValidSunshineDuration) {
 	const auto mg = metaf::MiscGroup::parse("98096", metaf::ReportPart::RMK);

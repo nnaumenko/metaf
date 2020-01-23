@@ -53,7 +53,7 @@ TEST(VisibilityGroup, parseMetersNDV) {
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::NDV);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::NDV);
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
@@ -65,7 +65,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorth) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::N);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -76,7 +76,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouth) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::S);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -87,7 +87,7 @@ TEST(VisibilityGroup, parseMetersDirectionWest) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -98,7 +98,7 @@ TEST(VisibilityGroup, parseMetersDirectionEast) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::E);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -109,7 +109,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorthWest) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -120,7 +120,7 @@ TEST(VisibilityGroup, parseMetersDirectionNorthEast) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NE);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -131,7 +131,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouthWest) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::SW);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -142,7 +142,7 @@ TEST(VisibilityGroup, parseMetersDirectionSouthEast) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::SE);
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 	EXPECT_TRUE(vg->isValid());
@@ -1119,7 +1119,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableIntegerInteger) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
@@ -1153,7 +1153,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionInteger) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
@@ -1189,7 +1189,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionFraction) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
@@ -1229,7 +1229,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalIntegerVariableFractionInteger) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
@@ -1268,7 +1268,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableMeters) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE);
 	EXPECT_FALSE(vg->visibility().isReported());
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_TRUE(vg->minVisibility().isInteger());
@@ -1304,7 +1304,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableIntegerFraction) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_TRUE(vg->visibility().isReported());
@@ -1337,7 +1337,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableInteger) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_TRUE(vg->visibility().isInteger());
@@ -1368,7 +1368,7 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableFraction) {
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
 	ASSERT_TRUE(vg->direction().has_value());
-	EXPECT_EQ(vg->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
 	EXPECT_TRUE(vg->visibility().isFraction());

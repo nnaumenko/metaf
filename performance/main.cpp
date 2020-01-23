@@ -85,9 +85,6 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::SecondaryLocationGroup>():
 		return "SecondaryLocationGroup";
 
-		case variant_index<metaf::Group, metaf::RainfallGroup>():
-		return "RainfallGroup";
-
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
 		return "SeaSurfaceGroup";
 
@@ -443,13 +440,12 @@ void printDataSize(){
 	printSize(groupName(16), sizeof(variant_alternative_t<16, metaf::Group>));
 	printSize(groupName(17), sizeof(variant_alternative_t<17, metaf::Group>));
 	printSize(groupName(18), sizeof(variant_alternative_t<18, metaf::Group>));
-	printSize(groupName(19), sizeof(variant_alternative_t<17, metaf::Group>));
-	printSize(groupName(20), sizeof(variant_alternative_t<18, metaf::Group>));
-	printSize(groupName(21), sizeof(variant_alternative_t<17, metaf::Group>));
-	printSize(groupName(22), sizeof(variant_alternative_t<18, metaf::Group>));
-	printSize(groupName(23), sizeof(variant_alternative_t<17, metaf::Group>));
-	printSize(groupName(24), sizeof(variant_alternative_t<18, metaf::Group>));
-	printSize(groupName(25), sizeof(variant_alternative_t<17, metaf::Group>));
+	printSize(groupName(19), sizeof(variant_alternative_t<19, metaf::Group>));
+	printSize(groupName(20), sizeof(variant_alternative_t<20, metaf::Group>));
+	printSize(groupName(21), sizeof(variant_alternative_t<21, metaf::Group>));
+	printSize(groupName(22), sizeof(variant_alternative_t<22, metaf::Group>));
+	printSize(groupName(23), sizeof(variant_alternative_t<23, metaf::Group>));
+	printSize(groupName(24), sizeof(variant_alternative_t<24, metaf::Group>));
 	cout << endl;
 }
 

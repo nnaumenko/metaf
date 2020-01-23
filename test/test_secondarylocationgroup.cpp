@@ -62,7 +62,7 @@ TEST(SecondaryLocationGroup, parseVisno) {
 	EXPECT_EQ(slg4->append("SW", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_FALSE(slg4->runway().has_value());
 	ASSERT_TRUE(slg4->direction().has_value());
-	EXPECT_EQ(slg4->direction()->status(), metaf::Direction::Status::VALUE_CARDINAL);
+	EXPECT_EQ(slg4->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(slg4->direction()->cardinal(), metaf::Direction::Cardinal::SW);
 	EXPECT_FALSE(slg4->height().isReported());
 	EXPECT_FALSE(slg4->minHeight().isReported());

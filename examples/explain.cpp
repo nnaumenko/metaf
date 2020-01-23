@@ -70,9 +70,6 @@ private:
 		const metaf::SecondaryLocationGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
@@ -217,10 +214,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "Indicates end of significant weather phenomena";
 		break;
 
-		case metaf::FixedGroup::Type::R_SNOCLO:
-		result << "Aerodrome is closed due to snow accumulation";
-		break;
-
 		case metaf::FixedGroup::Type::CAVOK:
 		result << "Ceiling and visibility OK" << lineBreak;
 		result << "Visibility 10 km or more in all directions, ";
@@ -270,16 +263,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "and this sensor is not operating";
 		break;
 
-		case metaf::FixedGroup::Type::PNO:
-		result << "This automated station is equipped with tipping bucket rain gauge ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::FZRANO:
-		result << "This automated station is equipped with freezing rain sensor ";
-		result << "and this sensor is not operating";
-		break;
-
 		case metaf::FixedGroup::Type::TSNO:
 		result << "This automated station is equipped with lightning detector ";
 		result << "and this sensor is not operating";
@@ -291,14 +274,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 
 		case metaf::FixedGroup::Type::FROIN:
 		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
-		break;
-
-		case metaf::FixedGroup::Type::ICG_MISG:
-		result << "Icing data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::PCPN_MISG:
-		result << "Precipitation data is missing";
 		break;
 
 		case metaf::FixedGroup::Type::PRES_MISG:
@@ -400,7 +375,7 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		return result.str();
 
 		case metaf::WindGroup::Type::SURFACE_WIND:
-		result << "Surface wind:" << lineBreak;
+		result << "Surface wind" << lineBreak;
 		result << "Wind direction: " << explainDirection(group.direction(), true);
 		result << lineBreak;
 		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
@@ -409,7 +384,7 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		break;
 
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
-		result << "Variable wind sector:" << lineBreak;
+		result << "Variable wind sector" << lineBreak;
 		result << "Variable wind direction sector from ";
 		result << explainDirection(group.varSectorBegin()); 
 		result << " clockwise to ";
@@ -417,7 +392,7 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		break;
 
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
-		result << "Surface wind:" << lineBreak;
+		result << "Surface wind" << lineBreak;
 		result << "Wind direction: " << explainDirection(group.direction(), true);
 		result << lineBreak;
 		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
@@ -545,6 +520,7 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 		break;
 
 		case metaf::CloudGroup::Type::CLOUD_LAYER:
+		result << "Cloud layer" << lineBreak;
 		result << cloudAmountToString(group.amount()) << lineBreak;
 		if (group.cloudType() != metaf::CloudGroup::CloudType::NONE) {
 			result << "Convective type: " << cloudTypeToString(group.cloudType());
@@ -724,8 +700,8 @@ std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup 
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	result << "State of " << explainRunway(group.runway()) << ": ";
-	switch (group.status()) {
-		case metaf::RunwayStateGroup::Status::NORMAL:
+	switch (group.type()) {
+		case metaf::RunwayStateGroup::Type::RUNWAY_STATE:
 		result << runwayStateDepositsToString(group.deposits()) << lineBreak;
 		if (group.deposits() != metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY) {
 		    result << "Depth of deposits on runway: ";
@@ -737,17 +713,21 @@ std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup 
 		result << explainSurfaceFriction(group.surfaceFriction());
 		break;
 
-		case metaf::RunwayStateGroup::Status::CLRD:
+		case metaf::RunwayStateGroup::Type::RUNWAY_CLRD:
 		result << "deposits on runway were cleared or ceased to exist" << lineBreak;
 		result << "Surface friction: ";
 		result << explainSurfaceFriction(group.surfaceFriction());
 		break;
 
-		case metaf::RunwayStateGroup::Status::SNOCLO:
+		case metaf::RunwayStateGroup::Type::RUNWAY_SNOCLO:
 		result << "closed due to snow accumulation";
 		break;
 
-		case metaf::RunwayStateGroup::Status::RUNWAY_NOT_OPERATIONAL:
+		case metaf::RunwayStateGroup::Type::AERODROME_SNOCLO:
+		result << "aerodrome closed due to snow accumulation";
+		break;
+
+		case metaf::RunwayStateGroup::Type::RUNWAY_NOT_OPERATIONAL:
 		result << "runway is not operational";
 		break;
 	}
@@ -795,25 +775,6 @@ std::string VisitorExplain::visitSecondaryLocationGroup(
 	if (const auto d = group.direction(); d.has_value()) {
 		result << " towards " << explainDirection(*d);
 	}
-	return result.str();
-}
-
-
-std::string VisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Rainfall for last 10 minutes ";
-	result << explainPrecipitation(group.rainfallLast10Minutes()) << ", ";
-	if (group.rainfallLast60Minutes().isReported()) {
-		result << "for last 60 minutes ";
-		result << explainPrecipitation(group.rainfallLast60Minutes()) << ", ";
-	}
-	result << "total rainfall since 9:00 AM ";
-	result << explainPrecipitation(group.rainfallSince9AM());
 	return result.str();
 }
 
@@ -872,23 +833,100 @@ std::string VisitorExplain::visitPrecipitationGroup(
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.type() == metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY) {
+	switch(group.type()) {
+		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
+		result << "Total precipitation for the past hour: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
+		result << "Snow depth on ground: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
+		result << "Water equivalent of frozen precipitation ";
+		result << "for the last 3 or 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
+		result << "Water equivalent of frozen precipitation for the last 3 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
+		result << "Water equivalent of frozen precipitation for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+	
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
+		result << "Water equivalent of frozen precipitation for the last 24 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
+		result << "Snowfall for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
+		result << "Water equivalent of snow on ground: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
+		result << "Ice accretion for the last hour: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
+		result << "Ice accretion for the last 3 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
+		result << "Ice accretion for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
+		result << "Precipitation accumulation since last report: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY:
 		result << "Snow increasing rapidly" << lineBreak;
-		result << "Snow increased by ";
-		result << explainPrecipitation(group.tendency());
-		result << " for the last hour, total snowfall is ";
-		result << explainPrecipitation(group.amount());
-		return result.str();
-	};
-	if (group.amount().precipitation().has_value() && 
-		!(*group.amount().precipitation()))
-	{
-		result << "Trace amount of ";
-		result << precipitationGroupTypeToString(group.type());
-	} else {
-		result << "Amount of ";
-		result << precipitationGroupTypeToString(group.type()) << " is ";
-		result << explainPrecipitation(group.amount());
+		result << "For the last hour snow increased by ";
+		result << explainPrecipitation(group.recent()) << lineBreak;
+		result << "Total snowfall: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::RAINFALL_9AM_10MIN:
+		result << "Rainfall for the last 10 minutes before report release time: ";
+		result << explainPrecipitation(group.recent()) << lineBreak;
+		result << "Rainfall since 9AM (9:00) local time: ";
+		result << explainPrecipitation(group.total()) << lineBreak;
+		break;
+
+		case metaf::PrecipitationGroup::Type::PNO:
+		result << "This automated station is equipped with tipping bucket rain gauge ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::PrecipitationGroup::Type::FZRANO:
+		result << "This automated station is equipped with freezing rain sensor ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICG_MISG:
+		result << "Icing data is missing";
+		break;
+
+		case metaf::PrecipitationGroup::Type::PCPN_MISG:
+		result << "Precipitation data is missing";
+		break;
 	}
 	return result.str();
 }
@@ -1488,39 +1526,39 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 	bool trueCardinalDirections)
 {
 	std::ostringstream result;
-	switch (direction.status()) {
-		case metaf::Direction::Status::NOT_REPORTED:
+	switch (direction.type()) {
+		case metaf::Direction::Type::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::Direction::Status::VARIABLE:
+		case metaf::Direction::Type::VARIABLE:
 		return "variable";
 
-		case metaf::Direction::Status::NDV:
+		case metaf::Direction::Type::NDV:
 		return "no directional variation";
 
-		case metaf::Direction::Status::VALUE_DEGREES:
+		case metaf::Direction::Type::VALUE_DEGREES:
 		if (const auto d = direction.degrees(); d.has_value()) {
 			result << *d << " degrees";
 		} else {
 			result << "[unable to produce value in &deg;]";
 		}
 		
-		case metaf::Direction::Status::VALUE_CARDINAL:
+		case metaf::Direction::Type::VALUE_CARDINAL:
 		if (const auto c = cardinalDirectionToString(direction.cardinal(trueCardinalDirections)); 
 			!c.empty()) {
-				if (direction.status() == metaf::Direction::Status::VALUE_DEGREES) result << "(";
+				if (direction.type() == metaf::Direction::Type::VALUE_DEGREES) result << "(";
 				result << c; 
-				if (direction.status() == metaf::Direction::Status::VALUE_DEGREES) result << ")";
+				if (direction.type() == metaf::Direction::Type::VALUE_DEGREES) result << ")";
 		}
 		break;
 
-		case metaf::Direction::Status::OVERHEAD:
+		case metaf::Direction::Type::OVERHEAD:
 		return "overhead";
 
-		case metaf::Direction::Status::ALQDS:
+		case metaf::Direction::Type::ALQDS:
 		return "all quadrants (all directions)";
 
-		case metaf::Direction::Status::UNKNOWN:
+		case metaf::Direction::Type::UNKNOWN:
 		return "unknown direction";
 	}
 	return result.str();
@@ -1553,6 +1591,7 @@ std::string VisitorExplain::explainPressure(const metaf::Pressure & pressure) {
 std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & precipitation) {
 	std::ostringstream result;
 	if (!precipitation.isReported()) return "not reported";
+	if (const auto p = precipitation.amount(); p.has_value() && !*p) return "trace amount";
 	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM); p.has_value()) {
 		result << roundTo(*p, 1) << " mm";
 	} else {
@@ -1570,21 +1609,21 @@ std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & pr
 std::string VisitorExplain::explainSurfaceFriction(
 	const metaf::SurfaceFriction & surfaceFriction)
 {
-	switch (surfaceFriction.status()) {
-		case metaf::SurfaceFriction::Status::NOT_REPORTED:
+	switch (surfaceFriction.type()) {
+		case metaf::SurfaceFriction::Type::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED:
+		case metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED:
 		if (const auto c = surfaceFriction.coefficient(); c.has_value()) {
 			return ("friction coefficient "s + roundTo(*c, 2));
 		}
 		return "[unable to produce a friction coefficient]";
 		
-		case metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED:
+		case metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED:
 		return ("braking action "s + 
 			std::string(brakingActionToString(surfaceFriction.brakingAction())));
 
-		case metaf::SurfaceFriction::Status::UNRELIABLE:
+		case metaf::SurfaceFriction::Type::UNRELIABLE:
 		return "unreliable or unmeasurable";
 	}
 }
@@ -2149,51 +2188,6 @@ std::string_view VisitorExplain::runwayStateExtentToString(
 
 		case metaf::RunwayStateGroup::Extent::RESERVED_8:
 		return "[reserved_extent_value 8]";
-	}
-}
-
-std::string_view VisitorExplain::precipitationGroupTypeToString(
-	metaf::PrecipitationGroup::Type type)
-{
-	switch (type) {
-		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
-		return "total precipitation for the past hour";
-
-		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
-		return "snow depth on ground";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
-		return "water equivalent of frozen precipitation for the last 3 or 6 hours";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
-		return "water equivalent of frozen precipitation for the last 3 hours";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
-		return "water equivalent of frozen precipitation for the last 6 hours";
-	
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
-		return "water equivalent of frozen precipitation for the last 24 hours";
-
-		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
-		return "snowfall for the last 6 hours";
-
-		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
-		return "water equivalent of snow on ground";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
-		return "ice accretion for the last hour";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
-		return "ice accretion for the last 3 hours";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
-		return "ice accretion for the last 6 hours";
-
-		case metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
-		return "precipitation accumulation since last report";
-
-		case metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY:
-		return "snow increasing rapidly";
 	}
 }
 
