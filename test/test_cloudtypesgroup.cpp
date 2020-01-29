@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto heightMargin = 1.0 / 2;
+
 //Format 1, e.g. BLSN1SC1SC1CI3
 
 TEST(CloudTypesGroup, format1parseCumulonimbus) {
@@ -408,10 +410,10 @@ TEST(CloudTypesGroup, format2parseCumulonimbus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 2000u);
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseToweringCumulus) {
@@ -422,10 +424,10 @@ TEST(CloudTypesGroup, format2parseToweringCumulus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::TOWERING_CUMULUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 2u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 2000u);
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseCumulus) {
@@ -436,10 +438,11 @@ TEST(CloudTypesGroup, format2parseCumulus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::CUMULUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 4u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 1000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 1000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseStratocumulus) {
@@ -450,10 +453,11 @@ TEST(CloudTypesGroup, format2parseStratocumulus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 6000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 6000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseNimbostratus) {
@@ -464,10 +468,11 @@ TEST(CloudTypesGroup, format2parseNimbostratus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::NIMBOSTRATUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 7000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 7000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseStratus) {
@@ -478,10 +483,11 @@ TEST(CloudTypesGroup, format2parseStratus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::STRATUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 700u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 700, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseAltostratus) {
@@ -492,10 +498,11 @@ TEST(CloudTypesGroup, format2parseAltostratus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::ALTOSTRATUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 10000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 10000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseAltocumulus) {
@@ -506,10 +513,11 @@ TEST(CloudTypesGroup, format2parseAltocumulus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::ALTOCUMULUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 7000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 7000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseCirrus) {
@@ -520,10 +528,11 @@ TEST(CloudTypesGroup, format2parseCirrus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::CIRRUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 23000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 23000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseCirrostratus) {
@@ -534,10 +543,11 @@ TEST(CloudTypesGroup, format2parseCirrostratus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::CIRROSTRATUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 22000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 22000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseCirrocumulus) {
@@ -548,10 +558,11 @@ TEST(CloudTypesGroup, format2parseCirrocumulus) {
 	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
 		metaf::CloudTypesGroup::Type::CIRROCUMULUS);
 	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 21000u);
+
+	ASSERT_TRUE(ctg->baseHeight().isReported());
+	EXPECT_NEAR(ctg->baseHeight().distance().value(), 21000, heightMargin);
 	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctg->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
 }
 
 TEST(CloudTypesGroup, format2parseWrongReportPart) {

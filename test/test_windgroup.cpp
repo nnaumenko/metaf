@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto heightMargin = 1.0 / 2.0;
+
 ///////////////////////////////////////////////////////////////////////////////
 // Surface wind (with or without gusts, in differnt units, etc) and variable
 // wind sector
@@ -427,9 +429,8 @@ TEST(WindGroup, parseWindShear) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 35u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_TRUE(wg->height().isReported());
-	EXPECT_TRUE(wg->height().isInteger());
-	ASSERT_TRUE(wg->height().integer().has_value());
-	EXPECT_EQ(wg->height().integer().value(), 2000u);
+	ASSERT_TRUE(wg->height().distance().has_value());
+	EXPECT_NEAR(wg->height().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(wg->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
 	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
@@ -502,9 +503,8 @@ TEST(WindGroup, appendWindShearGroupAndOther) {
 	EXPECT_EQ(wg->windSpeed().speed().value(), 25u);
 	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
 	EXPECT_TRUE(wg->height().isReported());
-	EXPECT_TRUE(wg->height().isInteger());
-	ASSERT_TRUE(wg->height().integer().has_value());
-	EXPECT_EQ(wg->height().integer().value(), 2000u);
+	ASSERT_TRUE(wg->height().distance().has_value());
+	EXPECT_NEAR(wg->height().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(wg->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
 	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);

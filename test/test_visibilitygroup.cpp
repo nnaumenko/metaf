@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto margin = 1.0 / 100 / 2;
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test parsing of prevailing & directional visibility in meters (e.g. 1600, 
 // 9999, ////, 9999NDV, 1500S, etc.
@@ -17,9 +19,9 @@ TEST(VisibilityGroup, parseMetersMetar) {
 	const auto vg = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1600, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -32,9 +34,9 @@ TEST(VisibilityGroup, parseMetersTaf) {
 	const auto vg = metaf::VisibilityGroup::parse("1600", metaf::ReportPart::TAF);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1600, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -47,9 +49,9 @@ TEST(VisibilityGroup, parseMetersNDV) {
 	const auto vg = metaf::VisibilityGroup::parse("9999NDV", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING_NDV);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 10000u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 10000, margin);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	ASSERT_TRUE(vg->direction().has_value());
@@ -153,7 +155,7 @@ TEST(VisibilityGroup, parseMetersNotReported) {
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
 	EXPECT_TRUE(!vg->visibility().isReported());
-	EXPECT_FALSE(vg->visibility().integer().has_value());
+	EXPECT_FALSE(vg->visibility().distance().has_value());
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -193,9 +195,9 @@ TEST(VisibilityGroup, appendMetersAndFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1200u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1200, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -214,9 +216,9 @@ TEST(VisibilityGroup, appendMetersAndRunway) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1600u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1600, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -234,9 +236,9 @@ TEST(VisibilityGroup, parseMilesInteger) {
 	const auto vg = metaf::VisibilityGroup::parse("3SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 3u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 3, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -249,9 +251,9 @@ TEST(VisibilityGroup, parseMilesIntegerTwoDigit) {
 	const auto vg = metaf::VisibilityGroup::parse("15SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 15u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 15, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -264,9 +266,9 @@ TEST(VisibilityGroup, parseMilesIntegerWithModifier) {
 	const auto vg = metaf::VisibilityGroup::parse("P6SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 6u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
@@ -280,11 +282,9 @@ TEST(VisibilityGroup, parseMilesFraction) {
 	const auto vg = metaf::VisibilityGroup::parse("1/4SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isFraction());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0/4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -297,12 +297,10 @@ TEST(VisibilityGroup, parseMilesFractionWithModifier) {
 	const auto vg = metaf::VisibilityGroup::parse("M1/4SM", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg.has_value());
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isFraction());
+	EXPECT_TRUE(vg->visibility().isReported());
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0/4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -332,16 +330,22 @@ TEST(VisibilityGroup, parseMilesWrongFormat) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("X6SM", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("/////SM", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("///SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("1/0SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M1/0SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("0/2SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M0/2SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("10/2SM", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M10/2SM", metaf::ReportPart::METAR).has_value());
 }
 
 TEST(VisibilityGroup, parseMilesIncomplete) {
 	const auto vg1 = metaf::VisibilityGroup::parse("1", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg1.has_value());
 	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg1->visibility().isInteger());
-	ASSERT_TRUE(vg1->visibility().integer().has_value());
-	EXPECT_EQ(vg1->visibility().integer().value(), 1u);
 	EXPECT_EQ(vg1->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg1->visibility().isReported());
+	ASSERT_TRUE(vg1->visibility().distance().has_value());
+	EXPECT_NEAR(vg1->visibility().distance().value(), 1, margin);
 	EXPECT_EQ(vg1->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg1->direction().has_value());
 	EXPECT_FALSE(vg1->minVisibility().isReported());
@@ -351,10 +355,10 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 	const auto vg9 = metaf::VisibilityGroup::parse("9", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg9.has_value());
 	EXPECT_EQ(vg9->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg9->visibility().isInteger());
-	ASSERT_TRUE(vg9->visibility().integer().has_value());
-	EXPECT_EQ(vg9->visibility().integer().value(), 9u);
 	EXPECT_EQ(vg9->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg9->visibility().isReported());
+	ASSERT_TRUE(vg9->visibility().distance().has_value());
+	EXPECT_NEAR(vg9->visibility().distance().value(), 9, margin);
 	EXPECT_EQ(vg9->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg9->direction().has_value());
 	EXPECT_FALSE(vg9->minVisibility().isReported());
@@ -364,10 +368,10 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 	const auto vg10 = metaf::VisibilityGroup::parse("10", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg10.has_value());
 	EXPECT_EQ(vg10->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg10->visibility().isInteger());
-	ASSERT_TRUE(vg10->visibility().integer().has_value());
-	EXPECT_EQ(vg10->visibility().integer().value(), 10u);
 	EXPECT_EQ(vg10->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg10->visibility().isReported());
+	ASSERT_TRUE(vg10->visibility().distance().has_value());
+	EXPECT_NEAR(vg10->visibility().distance().value(), 10, margin);
 	EXPECT_EQ(vg10->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg10->direction().has_value());
 	EXPECT_FALSE(vg10->minVisibility().isReported());
@@ -387,13 +391,9 @@ TEST(VisibilityGroup, appendIncompleteAndFraction) {
 	EXPECT_EQ(vg->append("1/4SM", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 2u);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 2.0 + 1.0/4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -420,9 +420,9 @@ TEST(VisibilityGroup, appendIncompleteAndOther) {
 		metaf::AppendResult::GROUP_INVALIDATED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 2u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 2, margin);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
@@ -444,11 +444,9 @@ TEST(VisibilityGroup, appendFractionAndIncomplete) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isFraction());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -467,11 +465,10 @@ TEST(VisibilityGroup, appendFractionAndRunway) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isFraction());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_EQ(vg->visibility().distance().value(), 1.0 / 4.0);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -493,9 +490,10 @@ TEST(VisibilityGroup, appendMilesIntegerAndFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1u);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -517,10 +515,10 @@ TEST(VisibilityGroup, appendIntegerMilesWithModifierAndFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 2u);
+	EXPECT_TRUE(vg->visibility().isReported());
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 2, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -570,13 +568,9 @@ TEST(VisibilityGroup, appendToCompleteIntegerFraction) {
 		metaf::AppendResult::NOT_APPENDED);
 
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::PREVAILING);
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 2u);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 2.0 + 1.0 / 4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_FALSE(vg->direction().has_value());
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -586,17 +580,9 @@ TEST(VisibilityGroup, appendToCompleteIntegerFraction) {
 }
 
 TEST(VisibilityGroup, parseInvalidVisbilityMiles) {
-	const auto vg1 = metaf::VisibilityGroup::parse("1/0SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vg1.has_value());
-	EXPECT_FALSE(vg1->isValid());
-
-	const auto vg2 = metaf::VisibilityGroup::parse("M1/0SM", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vg2.has_value());
-	EXPECT_FALSE(vg2->isValid());
-
-	const auto vg3 = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
-	ASSERT_TRUE(vg3.has_value());
-	EXPECT_FALSE(vg3->isValid());
+	const auto vg = metaf::VisibilityGroup::parse("2", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_FALSE(vg->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -642,16 +628,16 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerInteger) {
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 1u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
@@ -673,17 +659,15 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionInteger) {
 	EXPECT_FALSE(vg->direction().has_value());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 2u);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 2.0, margin);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
@@ -704,21 +688,17 @@ TEST(VisibilityGroup, parseRmkVisVariableFractionFraction) {
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 8u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 8.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isFraction());
-	ASSERT_TRUE(vg->maxVisibility().numerator().has_value());
-	EXPECT_EQ(vg->maxVisibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->maxVisibility().denominator().has_value());
-	EXPECT_EQ(vg->maxVisibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -741,20 +721,15 @@ TEST(VisibilityGroup, parseRmkVisIntegerVariableFractionInteger) {
 	EXPECT_FALSE(vg->direction().has_value());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().hasInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 2u);
-	EXPECT_TRUE(vg->minVisibility().hasFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 4u);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 2.0 + 1.0 / 4.0, margin);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
@@ -776,15 +751,15 @@ TEST(VisibilityGroup, parseRmkVisVariableIntegerIntegerTwoDigit) {
 	EXPECT_FALSE(vg->direction().has_value());
 
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 10u);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 10, margin);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 15u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 15, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
@@ -807,22 +782,17 @@ TEST(VisibilityGroup, parseRmkVisIntegerTwoDigitVariable) {
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().hasInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 10u);
-	EXPECT_TRUE(vg->minVisibility().hasFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 2u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 10.0 + 1.0 / 2.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 11u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 11, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -842,19 +812,17 @@ TEST(VisibilityGroup, parseRmkVisVariableFirstFractionTwoDigit) {
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 11u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 16u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 11.0 / 16.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 1u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -874,21 +842,17 @@ TEST(VisibilityGroup, parseRmkVisVariableSecondFractionTwoDigit) {
 	EXPECT_FALSE(vg->visibility().isReported());
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 8u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 8.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isFraction());
-	ASSERT_TRUE(vg->maxVisibility().numerator().has_value());
-	EXPECT_EQ(vg->maxVisibility().numerator().value(), 15u);
-	ASSERT_TRUE(vg->maxVisibility().denominator().has_value());
-	EXPECT_EQ(vg->maxVisibility().denominator().value(), 16u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 15.0 / 16.0, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -911,15 +875,15 @@ TEST(VisibilityGroup, parseRmkVisVariableMeters) {
 
 	EXPECT_FALSE(vg->visibility().isReported());
 
-	EXPECT_TRUE(vg->minVisibility().isInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 1500u);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1500, margin);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::METERS);
 
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3000u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3000, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
 
@@ -1122,17 +1086,17 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableIntegerInteger) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 1u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -1156,19 +1120,17 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionInteger) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 2u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 2.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -1192,21 +1154,17 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableFractionFraction) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().isFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 8u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 8.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isFraction());
-	ASSERT_TRUE(vg->maxVisibility().numerator().has_value());
-	EXPECT_EQ(vg->maxVisibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->maxVisibility().denominator().has_value());
-	EXPECT_EQ(vg->maxVisibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_EQ(vg->maxVisibility().distance().value(), 3.0 / 4.0);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -1232,22 +1190,17 @@ TEST(VisibilityGroup, parseRmkVisDirectionalIntegerVariableFractionInteger) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->minVisibility().hasInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 2u);
-	EXPECT_TRUE(vg->minVisibility().hasFraction());
-	ASSERT_TRUE(vg->minVisibility().numerator().has_value());
-	EXPECT_EQ(vg->minVisibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->minVisibility().denominator().has_value());
-	EXPECT_EQ(vg->minVisibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 2.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
-	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 3u);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 3, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_EQ(vg->sectorDirections().size(), 0u);
 
@@ -1271,15 +1224,15 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableMeters) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_TRUE(vg->minVisibility().isInteger());
-	ASSERT_TRUE(vg->minVisibility().integer().has_value());
-	EXPECT_EQ(vg->minVisibility().integer().value(), 1200u);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1200, margin);
 	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::METERS);
 
-	EXPECT_TRUE(vg->maxVisibility().isInteger());
-	ASSERT_TRUE(vg->maxVisibility().integer().has_value());
-	EXPECT_EQ(vg->maxVisibility().integer().value(), 10000u);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 10000, margin);
 	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
 	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
 
@@ -1307,14 +1260,10 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableIntegerFraction) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_TRUE(vg->visibility().isReported());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1u);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -1340,13 +1289,11 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableInteger) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 2u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 2, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_FALSE(vg->visibility().numerator().has_value());
-	EXPECT_FALSE(vg->visibility().denominator().has_value());
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
@@ -1371,13 +1318,10 @@ TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableFraction) {
 	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
 	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
 
-	EXPECT_TRUE(vg->visibility().isFraction());
-	EXPECT_FALSE(vg->visibility().integer().has_value());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 3.0 / 4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -1530,14 +1474,10 @@ TEST(VisibilityGroup, parseRmkSfcVisIntegerFraction) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isReported());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1u);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -1561,13 +1501,11 @@ TEST(VisibilityGroup, parseRmkSfcVisInteger) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 4, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_FALSE(vg->visibility().numerator().has_value());
-	EXPECT_FALSE(vg->visibility().denominator().has_value());
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
@@ -1590,13 +1528,10 @@ TEST(VisibilityGroup, parseRmkSfcVisFraction) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isFraction());
-	EXPECT_FALSE(vg->visibility().integer().has_value());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 8u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 8.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -1720,14 +1655,10 @@ TEST(VisibilityGroup, parseRmkTwrVisIntegerFraction) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isReported());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 1u);
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 3u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 3.0/4.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
@@ -1750,13 +1681,11 @@ TEST(VisibilityGroup, parseRmkTwrVisInteger) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isInteger());
-	ASSERT_TRUE(vg->visibility().integer().has_value());
-	EXPECT_EQ(vg->visibility().integer().value(), 4u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 4, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
-	EXPECT_FALSE(vg->visibility().numerator().has_value());
-	EXPECT_FALSE(vg->visibility().denominator().has_value());
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
@@ -1778,13 +1707,10 @@ TEST(VisibilityGroup, parseRmkTwrVisFraction) {
 	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER_VISIBILITY);
 	EXPECT_FALSE(vg->direction().has_value());
 
-	EXPECT_TRUE(vg->visibility().isFraction());
-	EXPECT_FALSE(vg->visibility().integer().has_value());
-	ASSERT_TRUE(vg->visibility().numerator().has_value());
-	EXPECT_EQ(vg->visibility().numerator().value(), 1u);
-	ASSERT_TRUE(vg->visibility().denominator().has_value());
-	EXPECT_EQ(vg->visibility().denominator().value(), 8u);
 	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 8.0, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());

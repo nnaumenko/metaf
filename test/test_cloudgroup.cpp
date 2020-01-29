@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+const auto heightMargin = 1.0 / 2;
+
 ///////////////////////////////////////////////////////////////////////////////
 // Cloud layer
 // Purpose: to confirm that cloud layer groups are parsed correctly, malformed
@@ -21,9 +23,8 @@ TEST(CloudGroup, parseCloudLayerMetar) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 4000u);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 4000, heightMargin);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -37,10 +38,9 @@ TEST(CloudGroup, parseCloudLayerTaf) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 4000, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 4000u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -54,10 +54,9 @@ TEST(CloudGroup, parseCloudLayerFew) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::FEW);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 11700, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 11700u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -71,10 +70,9 @@ TEST(CloudGroup, parseCloudLayerScattered) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 37000, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 37000u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -88,10 +86,9 @@ TEST(CloudGroup, parseCloudLayerBroken) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 2600, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 2600u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -105,10 +102,9 @@ TEST(CloudGroup, parseCloudLayerOvercast) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OVERCAST);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 200, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 200u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -122,10 +118,9 @@ TEST(CloudGroup, parseCloudLayerToweringCumulus) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 2500u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -139,10 +134,9 @@ TEST(CloudGroup, parseCloudLayerCumulonimbus) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 1200u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::CUMULONIMBUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -156,10 +150,9 @@ TEST(CloudGroup, parseCloudLayerConvectiveTypeNotReported) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 1600u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -173,10 +166,9 @@ TEST(CloudGroup, parseCloudLayerAmountAndTypeNotReported) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 7400, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 7400u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -190,7 +182,6 @@ TEST(CloudGroup, parseCloudLayerAmountAndHeightNotReported) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
-	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
@@ -205,7 +196,6 @@ TEST(CloudGroup, parseCloudLayerNotReported) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
-	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
@@ -377,10 +367,9 @@ TEST(CloudGroup, parseVerticalVisibilityMetar) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
+	ASSERT_TRUE(cg->verticalVisibility().isReported());
+	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->verticalVisibility().isInteger());
-	ASSERT_TRUE(cg->verticalVisibility().integer().has_value());
-	EXPECT_EQ(cg->verticalVisibility().integer().value(), 1600u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -394,10 +383,9 @@ TEST(CloudGroup, parseVerticalVisibilityTaf) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
+	ASSERT_TRUE(cg->verticalVisibility().isReported());
+	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->verticalVisibility().isInteger());
-	ASSERT_TRUE(cg->verticalVisibility().integer().has_value());
-	EXPECT_EQ(cg->verticalVisibility().integer().value(), 1600u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -411,10 +399,9 @@ TEST(CloudGroup, parseVerticalVisibilityZero) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
+	ASSERT_TRUE(cg->verticalVisibility().isReported());
+	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 0, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->verticalVisibility().isInteger());
-	ASSERT_TRUE(cg->verticalVisibility().integer().has_value());
-	EXPECT_EQ(cg->verticalVisibility().integer().value(), 0u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -428,7 +415,6 @@ TEST(CloudGroup, parseVerticalVisibilityNotReported) {
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
-	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
@@ -470,10 +456,9 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	EXPECT_EQ(cg1->append("SCT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED);
+	ASSERT_TRUE(cg1->height().isReported());
+	EXPECT_NEAR(cg1->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg1->height().isInteger());
-	ASSERT_TRUE(cg1->height().integer().has_value());
-	EXPECT_EQ(cg1->height().integer().value(), 1600u);
 	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
 	auto cg2 = metaf::CloudGroup::parse("SCT016", metaf::ReportPart::RMK);
@@ -483,10 +468,9 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	EXPECT_EQ(cg2->append("BKN", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN);
+	ASSERT_TRUE(cg2->height().isReported());
+	EXPECT_NEAR(cg2->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg2->height().isInteger());
-	ASSERT_TRUE(cg2->height().integer().has_value());
-	EXPECT_EQ(cg2->height().integer().value(), 1600u);
 	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
 	auto cg3 = metaf::CloudGroup::parse("BKN016", metaf::ReportPart::RMK);
@@ -496,10 +480,9 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	EXPECT_EQ(cg3->append("OVC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(cg3->amount(), metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST);
+	ASSERT_TRUE(cg3->height().isReported());
+	EXPECT_NEAR(cg3->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg3->height().isInteger());
-	ASSERT_TRUE(cg3->height().integer().has_value());
-	EXPECT_EQ(cg3->height().integer().value(), 1600u);
 	EXPECT_EQ(cg3->cloudType(), metaf::CloudGroup::CloudType::NONE);
 }
 
@@ -512,6 +495,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED);
 	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_FALSE(cg1->height().isReported());
 
 	auto cg2 = metaf::CloudGroup::parse("SCT", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
@@ -521,6 +505,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN);
 	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_FALSE(cg2->height().isReported());
 
 	auto cg3 = metaf::CloudGroup::parse("BKN", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
@@ -530,6 +515,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 	EXPECT_EQ(cg3->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg3->amount(), metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST);
 	EXPECT_EQ(cg3->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_FALSE(cg3->height().isReported());
 }
 
 TEST(CloudGroup, parseVariableCloudCoverWrongReportPart) {
@@ -958,10 +944,9 @@ TEST(CloudGroup, parseCeilingNoDetails) {
 
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CEILING);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 2500u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
@@ -979,10 +964,9 @@ TEST(CloudGroup, parseCeilingDirection) {
 
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CEILING);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+	ASSERT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_TRUE(cg->height().isInteger());
-	ASSERT_TRUE(cg->height().integer().has_value());
-	EXPECT_EQ(cg->height().integer().value(), 2500u);
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
@@ -1002,9 +986,8 @@ TEST(CloudGroup, parseCeilingRunway) {
 
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::CEILING);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
-	EXPECT_TRUE(cg1->height().isInteger());
-	ASSERT_TRUE(cg1->height().integer().has_value());
-	EXPECT_EQ(cg1->height().integer().value(), 2500u);
+	ASSERT_TRUE(cg1->height().isReported());
+	EXPECT_NEAR(cg1->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg1->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
@@ -1024,9 +1007,8 @@ TEST(CloudGroup, parseCeilingRunway) {
 
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::CEILING);
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
-	EXPECT_TRUE(cg2->height().isInteger());
-	ASSERT_TRUE(cg2->height().integer().has_value());
-	EXPECT_EQ(cg2->height().integer().value(), 1700u);
+	ASSERT_TRUE(cg2->height().isReported());
+	EXPECT_NEAR(cg2->height().distance().value(), 1700, heightMargin);
 	EXPECT_EQ(cg2->height().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
 
@@ -1050,12 +1032,12 @@ TEST(CloudGroup, parseVariableCeilingNoDetails) {
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	ASSERT_TRUE(cg->minHeight().isInteger());
-	EXPECT_EQ(cg->minHeight().integer().value(), 800u);
+	ASSERT_TRUE(cg->minHeight().isReported());
+	EXPECT_NEAR(cg->minHeight().distance().value(), 800, heightMargin);
 	EXPECT_EQ(cg->minHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg->minHeight().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(cg->maxHeight().isInteger());
-	EXPECT_EQ(cg->maxHeight().integer().value(), 1400u);
+	ASSERT_TRUE(cg->maxHeight().isReported());
+	EXPECT_NEAR(cg->maxHeight().distance().value(), 1400, heightMargin);
 	EXPECT_EQ(cg->maxHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg->maxHeight().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(cg->runway().has_value());
@@ -1073,12 +1055,12 @@ TEST(CloudGroup, parseVariableCeilingRunway) {
 	EXPECT_FALSE(cg1->height().isReported());
 	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
-	ASSERT_TRUE(cg1->minHeight().isInteger());
-	EXPECT_EQ(cg1->minHeight().integer().value(), 800u);
+	ASSERT_TRUE(cg1->minHeight().isReported());
+	EXPECT_NEAR(cg1->minHeight().distance().value(), 800, heightMargin);
 	EXPECT_EQ(cg1->minHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg1->minHeight().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(cg1->maxHeight().isInteger());
-	EXPECT_EQ(cg1->maxHeight().integer().value(), 1400u);
+	ASSERT_TRUE(cg1->maxHeight().isReported());
+	EXPECT_NEAR(cg1->maxHeight().distance().value(), 1400, heightMargin);
 	EXPECT_EQ(cg1->maxHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg1->maxHeight().modifier(), metaf::Distance::Modifier::NONE);
 	ASSERT_TRUE(cg1->runway().has_value());
@@ -1096,12 +1078,12 @@ TEST(CloudGroup, parseVariableCeilingRunway) {
 	EXPECT_FALSE(cg2->height().isReported());
 	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
-	ASSERT_TRUE(cg2->minHeight().isInteger());
-	EXPECT_EQ(cg2->minHeight().integer().value(), 200u);
+	ASSERT_TRUE(cg2->minHeight().isReported());
+	EXPECT_NEAR(cg2->minHeight().distance().value(), 200, heightMargin);
 	EXPECT_EQ(cg2->minHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg2->minHeight().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(cg2->maxHeight().isInteger());
-	EXPECT_EQ(cg2->maxHeight().integer().value(), 600u);
+	ASSERT_TRUE(cg2->maxHeight().isReported());
+	EXPECT_NEAR(cg2->maxHeight().distance().value(), 600, heightMargin);
 	EXPECT_EQ(cg2->maxHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg2->maxHeight().modifier(), metaf::Distance::Modifier::NONE);
 	ASSERT_TRUE(cg2->runway().has_value());
@@ -1122,12 +1104,12 @@ TEST(CloudGroup, parseVariableCeilingDirection) {
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	ASSERT_TRUE(cg->minHeight().isInteger());
-	EXPECT_EQ(cg->minHeight().integer().value(), 800u);
+	ASSERT_TRUE(cg->minHeight().isReported());
+	EXPECT_NEAR(cg->minHeight().distance().value(), 800, heightMargin);
 	EXPECT_EQ(cg->minHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg->minHeight().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(cg->maxHeight().isInteger());
-	EXPECT_EQ(cg->maxHeight().integer().value(), 1400u);
+	ASSERT_TRUE(cg->maxHeight().isReported());
+	EXPECT_NEAR(cg->maxHeight().distance().value(), 1400, heightMargin);
 	EXPECT_EQ(cg->maxHeight().unit(), metaf::Distance::Unit::FEET);
 	EXPECT_EQ(cg->maxHeight().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(cg->runway().has_value());

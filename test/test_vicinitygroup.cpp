@@ -8,6 +8,14 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto margin = 1.0 / 100 / 2;
+
+///////////////////////////////////////////////////////////////////////////////
+// Phenomena tests
+// Purpose: to confirm that all weather phenomena in vicinity group are parsed
+// and appended (if applicable) correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(VicinityGroup, parseCB_N) {
 	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
@@ -317,6 +325,12 @@ TEST(VicinityGroup, parseCB_other) {
 	EXPECT_EQ(vg4->append("UNKNOWN", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Direction tests
+// Purpose: to confirm that directions and direction sectors in vicinity group 
+// are parsed and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(VicinityGroup, parseCB_N_SE) {
 	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
@@ -426,6 +440,12 @@ TEST(VicinityGroup, parseCB_N_AND_other) {
 	EXPECT_EQ(vg4->append("UNKNOWN", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Movement direction tests
+// Purpose: to confirm that movement directions in vicinity group are parsed  
+// and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(VicinityGroup, parseCB_N_SE_MOV_N) {
 	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
@@ -481,6 +501,12 @@ TEST(VicinityGroup, parseCB_N_SE_MOV_other) {
 	EXPECT_EQ(vg3->append("MOV", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(vg3->append("TEST", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Distance tests
+// Purpose: to confirm that distance in form of DSNT, VC, or value specified in 
+// kilometers in the vicinity group are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(VicinityGroup, parseCB_DSNT) {
 	auto vg = metaf::VicinityGroup::parse("CB", metaf::ReportPart::RMK);
@@ -553,11 +579,9 @@ TEST(VicinityGroup, parseCB_15KM_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->distance().distance().has_value());
+	EXPECT_NEAR(vg->distance().distance().value(), 15000, margin);
 	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
-	ASSERT_TRUE(vg->distance().integer().has_value());
-	EXPECT_EQ(vg->distance().integer().value(), 15000u);
-	EXPECT_FALSE(vg->distance().numerator().has_value());
-	EXPECT_FALSE(vg->distance().denominator().has_value());
 	EXPECT_EQ(vg->movingDirection().cardinal(), metaf::Direction::Cardinal::NOT_REPORTED);
 	EXPECT_EQ(vg->directions().size(), 1u);
 	EXPECT_EQ(vg->directions().at(0).cardinal(), metaf::Direction::Cardinal::E);
@@ -594,11 +618,9 @@ TEST(VicinityGroup, parseCB_5KM_E_AND_OHD_MOV_E) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->distance().distance().has_value());
+	EXPECT_NEAR(vg->distance().distance().value(), 5000, margin);
 	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
-	ASSERT_TRUE(vg->distance().integer().has_value());
-	EXPECT_EQ(vg->distance().integer(), 5000u);
-	EXPECT_FALSE(vg->distance().numerator().has_value());
-	EXPECT_FALSE(vg->distance().denominator().has_value());
 	EXPECT_EQ(vg->movingDirection().cardinal(), metaf::Direction::Cardinal::E);
 	EXPECT_EQ(vg->directions().size(), 2u);
 	EXPECT_EQ(vg->directions().at(0).cardinal(), metaf::Direction::Cardinal::E);
@@ -616,11 +638,9 @@ TEST(VicinityGroup, parseCB_40KM_E_MOV_UNKNOWN) {
 
 	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::CUMULONIMBUS);
 	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(vg->distance().distance().has_value());
+	EXPECT_NEAR(vg->distance().distance().value(), 40000, margin);
 	EXPECT_EQ(vg->distance().unit(), metaf::Distance::Unit::METERS);
-	ASSERT_TRUE(vg->distance().integer().has_value());
-	EXPECT_EQ(vg->distance().integer(), 40000u);
-	EXPECT_FALSE(vg->distance().numerator().has_value());
-	EXPECT_FALSE(vg->distance().denominator().has_value());
 	EXPECT_EQ(vg->movingDirection().cardinal(), metaf::Direction::Cardinal::UNKNOWN);
 	EXPECT_EQ(vg->directions().size(), 1u);
 	EXPECT_EQ(vg->directions().at(0).cardinal(), metaf::Direction::Cardinal::E);

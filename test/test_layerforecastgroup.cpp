@@ -8,28 +8,38 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto margin = 1.0 / 2;
+
 TEST(LayerForecastGroup, baseTopHeights) {
 	const auto lfg1 = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg1.has_value());
 
-	ASSERT_TRUE(lfg1->baseHeight().isInteger());	
-	ASSERT_TRUE(lfg1->baseHeight().integer().has_value());
-	EXPECT_EQ(lfg1->baseHeight().integer().value(), 3000u);
+	EXPECT_TRUE(lfg1->baseHeight().isReported());	
+	EXPECT_EQ(lfg1->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg1->baseHeight().distance().has_value());
+	EXPECT_NEAR(lfg1->baseHeight().distance().value(), 3000, margin);
+	EXPECT_EQ(lfg1->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
-	ASSERT_TRUE(lfg1->topHeight().isInteger());	
-	ASSERT_TRUE(lfg1->topHeight().integer().has_value());
-	EXPECT_EQ(lfg1->topHeight().integer().value(), 7000u);
+	EXPECT_TRUE(lfg1->topHeight().isReported());	
+	EXPECT_EQ(lfg1->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg1->topHeight().distance().has_value());
+	EXPECT_NEAR(lfg1->topHeight().distance().value(), 7000, margin);
+	EXPECT_EQ(lfg1->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
 	const auto lfg2 = metaf::LayerForecastGroup::parse("520004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg2.has_value());
 
-	ASSERT_TRUE(lfg2->baseHeight().isInteger());	
-	ASSERT_TRUE(lfg2->baseHeight().integer().has_value());
-	EXPECT_EQ(lfg2->baseHeight().integer().value(), 0u);
+	EXPECT_TRUE(lfg2->baseHeight().isReported());	
+	EXPECT_EQ(lfg2->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg2->baseHeight().distance().has_value());
+	EXPECT_NEAR(lfg2->baseHeight().distance().value(), 0, margin);
+	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
-	ASSERT_TRUE(lfg2->topHeight().isInteger());	
-	ASSERT_TRUE(lfg2->topHeight().integer().has_value());
-	EXPECT_EQ(lfg2->topHeight().integer().value(), 4000u);
+	EXPECT_TRUE(lfg2->topHeight().isReported());	
+	EXPECT_EQ(lfg2->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg2->topHeight().distance().has_value());
+	EXPECT_NEAR(lfg2->topHeight().distance().value(), 4000, margin);
+	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 }
 
 TEST(LayerForecastGroup, icingTrace) {

@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto margin = 1.0 / 100 / 2;
+
 ///////////////////////////////////////////////////////////////////////////////
 // VISNO
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,12 +121,12 @@ TEST(SecondaryLocationGroup, parseRunwayVariableVisibility) {
 	EXPECT_FALSE(slg1->minHeight().isReported());
 	EXPECT_FALSE(slg1->maxHeight().isReported());
 	EXPECT_FALSE(slg1->visibility().isReported());
-	ASSERT_TRUE(slg1->minVisibility().isInteger());
-	EXPECT_EQ(slg1->minVisibility().integer().value(), 1u);
+	ASSERT_TRUE(slg1->minVisibility().distance().has_value());
+	EXPECT_EQ(slg1->minVisibility().distance().value(), 1u);
 	EXPECT_EQ(slg1->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg1->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(slg1->maxVisibility().isInteger());
-	EXPECT_EQ(slg1->maxVisibility().integer().value(), 3u);
+	ASSERT_TRUE(slg1->maxVisibility().distance().has_value());
+	EXPECT_EQ(slg1->maxVisibility().distance().value(), 3u);
 	EXPECT_EQ(slg1->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg1->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
@@ -141,13 +143,12 @@ TEST(SecondaryLocationGroup, parseRunwayVariableVisibility) {
 	EXPECT_FALSE(slg2->minHeight().isReported());
 	EXPECT_FALSE(slg2->maxHeight().isReported());
 	EXPECT_FALSE(slg2->visibility().isReported());
-	ASSERT_TRUE(slg2->minVisibility().isFraction());
-	EXPECT_EQ(slg2->minVisibility().numerator().value(), 1u);
-	EXPECT_EQ(slg2->minVisibility().denominator().value(), 4u);
+	ASSERT_TRUE(slg2->minVisibility().distance().has_value());
+	EXPECT_NEAR(slg2->minVisibility().distance().value(), 0.25, margin);
 	EXPECT_EQ(slg2->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg2->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(slg2->maxVisibility().isInteger());
-	EXPECT_EQ(slg2->maxVisibility().integer().value(), 2u);
+	ASSERT_TRUE(slg2->maxVisibility().distance().has_value());
+	EXPECT_NEAR(slg2->maxVisibility().distance().value(), 2, margin);
 	EXPECT_EQ(slg2->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg2->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
@@ -164,14 +165,10 @@ TEST(SecondaryLocationGroup, parseRunwayVariableVisibility) {
 	EXPECT_FALSE(slg3->minHeight().isReported());
 	EXPECT_FALSE(slg3->maxHeight().isReported());
 	EXPECT_FALSE(slg3->visibility().isReported());
-	ASSERT_TRUE(slg3->minVisibility().isFraction());
-	EXPECT_EQ(slg3->minVisibility().numerator().value(), 1u);
-	EXPECT_EQ(slg3->minVisibility().denominator().value(), 8u);
+	EXPECT_EQ(slg3->minVisibility().distance().value(), 1.0 / 8);
 	EXPECT_EQ(slg3->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg3->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(slg3->maxVisibility().isFraction());
-	EXPECT_EQ(slg3->maxVisibility().numerator().value(), 1u);
-	EXPECT_EQ(slg3->maxVisibility().denominator().value(), 4u);
+	EXPECT_EQ(slg3->maxVisibility().distance().value(), 1.0 / 4);
 	EXPECT_EQ(slg3->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg3->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
 
@@ -189,15 +186,12 @@ TEST(SecondaryLocationGroup, parseRunwayVariableVisibility) {
 	EXPECT_FALSE(slg4->minHeight().isReported());
 	EXPECT_FALSE(slg4->maxHeight().isReported());
 	EXPECT_FALSE(slg4->visibility().isReported());
-	ASSERT_TRUE(slg4->minVisibility().hasInteger());
-	ASSERT_TRUE(slg4->minVisibility().hasFraction());
-	EXPECT_EQ(slg4->minVisibility().integer().value(), 1u);
-	EXPECT_EQ(slg4->minVisibility().numerator().value(), 3u);
-	EXPECT_EQ(slg4->minVisibility().denominator().value(), 4u);
+	ASSERT_TRUE(slg4->minVisibility().distance().has_value());
+	EXPECT_NEAR(slg4->minVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
 	EXPECT_EQ(slg4->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg4->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(slg4->maxVisibility().isInteger());
-	EXPECT_EQ(slg4->maxVisibility().integer().value(), 2u);
+	ASSERT_TRUE(slg4->maxVisibility().distance().has_value());
+	EXPECT_NEAR(slg4->maxVisibility().distance().value(), 2, margin);
 	EXPECT_EQ(slg4->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg4->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
 }
@@ -216,8 +210,8 @@ TEST(SecondaryLocationGroup, parseRunwayNonVariableVisibility) {
 	EXPECT_FALSE(slg1->height().isReported());
 	EXPECT_FALSE(slg1->minHeight().isReported());
 	EXPECT_FALSE(slg1->maxHeight().isReported());
-	ASSERT_TRUE(slg1->visibility().isInteger());
-	EXPECT_EQ(slg1->visibility().integer().value(), 2u);
+	ASSERT_TRUE(slg1->visibility().distance().has_value());
+	EXPECT_NEAR(slg1->visibility().distance().value(), 2, margin);
 	EXPECT_EQ(slg1->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg1->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg1->minVisibility().isReported());
@@ -235,9 +229,7 @@ TEST(SecondaryLocationGroup, parseRunwayNonVariableVisibility) {
 	EXPECT_FALSE(slg2->height().isReported());
 	EXPECT_FALSE(slg2->minHeight().isReported());
 	EXPECT_FALSE(slg2->maxHeight().isReported());
-	ASSERT_TRUE(slg2->visibility().isFraction());
-	EXPECT_EQ(slg2->visibility().numerator().value(), 3u);
-	EXPECT_EQ(slg2->visibility().denominator().value(), 4u);
+	EXPECT_NEAR(slg2->visibility().distance().value(), 3.0 / 4, margin);
 	EXPECT_EQ(slg2->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg2->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg2->minVisibility().isReported());
@@ -255,8 +247,8 @@ TEST(SecondaryLocationGroup, parseRunwayNonVariableVisibility) {
 	EXPECT_FALSE(slg3->height().isReported());
 	EXPECT_FALSE(slg3->minHeight().isReported());
 	EXPECT_FALSE(slg3->maxHeight().isReported());
-	ASSERT_TRUE(slg3->visibility().isInteger());
-	EXPECT_EQ(slg3->visibility().integer().value(), 15u);
+	ASSERT_TRUE(slg3->visibility().isReported());
+	EXPECT_NEAR(slg3->visibility().distance().value(), 15, margin);
 	EXPECT_EQ(slg3->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg3->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg3->minVisibility().isReported());
@@ -275,11 +267,8 @@ TEST(SecondaryLocationGroup, parseRunwayNonVariableVisibility) {
 	EXPECT_FALSE(slg4->height().isReported());
 	EXPECT_FALSE(slg4->minHeight().isReported());
 	EXPECT_FALSE(slg4->maxHeight().isReported());
-	ASSERT_TRUE(slg4->visibility().hasInteger());
-	ASSERT_TRUE(slg4->visibility().hasFraction());
-	EXPECT_EQ(slg4->visibility().integer().value(), 1u);
-	EXPECT_EQ(slg4->visibility().numerator().value(), 3u);
-	EXPECT_EQ(slg4->visibility().denominator().value(), 4u);
+	ASSERT_TRUE(slg4->visibility().isReported());
+	EXPECT_EQ(slg4->visibility().distance().value(), 1.0 + 3.0 / 4.0);
 	EXPECT_EQ(slg4->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg4->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg4->minVisibility().isReported());
@@ -500,8 +489,8 @@ TEST(SecondaryLocationGroup, parseAppendOtherToCompleteGroup) {
 	EXPECT_FALSE(slg->height().isReported());
 	EXPECT_FALSE(slg->minHeight().isReported());
 	EXPECT_FALSE(slg->maxHeight().isReported());
-	ASSERT_TRUE(slg->visibility().isInteger());
-	EXPECT_EQ(slg->visibility().integer().value(), 2u);
+	ASSERT_TRUE(slg->visibility().isReported());
+	EXPECT_EQ(slg->visibility().distance().value(), 2u);
 	EXPECT_EQ(slg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg->minVisibility().isReported());
@@ -531,8 +520,8 @@ TEST(SecondaryLocationGroup, parseAppendOtherToCompleteGroup) {
 	EXPECT_FALSE(slg->height().isReported());
 	EXPECT_FALSE(slg->minHeight().isReported());
 	EXPECT_FALSE(slg->maxHeight().isReported());
-	ASSERT_TRUE(slg->visibility().isInteger());
-	EXPECT_EQ(slg->visibility().integer().value(), 2u);
+	ASSERT_TRUE(slg->visibility().isReported());
+	EXPECT_EQ(slg->visibility().distance().value(), 2u);
 	EXPECT_EQ(slg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 	EXPECT_EQ(slg->visibility().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(slg->minVisibility().isReported());

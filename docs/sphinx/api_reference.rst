@@ -319,9 +319,7 @@ Distance
 
 .. cpp:class:: Distance
 
-	Stores a distance or height value. The value may be expressed as integer (e.g. 3500) or rational (e.g. 2 1/4) number.
-
-	The value consists of integer and fraction components, fraction component in turn consists of numerator and denominator. Integer or fraction parts can be optionally not reported (i.e. no value).
+	Stores a distance or height value. The value may be expressed as meters, feet (e.g. 3500 or 1500) or in statute miles (e.g. 2 1/4 or 2.25). The value in statute miles may contain integer and/or fraction parts.
 
 	.. cpp:enum-class:: Unit
 
@@ -363,19 +361,61 @@ Distance
 
 			The distance is 5 to 10 nautical miles (coded ``VC`` in remark groups). The exact value is not reported.
 
+	.. cpp:enum-class:: MilesFraction
+
+		Identifies reportable values for the fraction of mile, as per Table 6-1 of Field Meteorology Handbook Number 1.
+
+		.. cpp:enumerator:: NONE
+
+			The value is integer; no fraction.
+
+		.. cpp:enumerator:: F_1_16
+
+			Fraction value of 1/16.
+
+		.. cpp:enumerator:: F_1_8
+
+			Fraction value of 1/8.
+
+		.. cpp:enumerator:: F_3_16
+
+			Fraction value of 3/16.
+
+		.. cpp:enumerator:: F_1_4
+
+			Fraction value of 1/4.
+
+		.. cpp:enumerator:: F_5_16
+
+			Fraction value of 5/16.
+
+		.. cpp:enumerator:: F_3_8
+
+			Fraction value of 3/8.
+
+		.. cpp:enumerator:: F_1_2
+
+			Fraction value of 1/2.
+
+		.. cpp:enumerator:: F_5_8
+
+			Fraction value of 5/8.
+
+		.. cpp:enumerator:: F_3_4
+
+			Fraction value of 3/4.
+
+		.. cpp:enumerator:: F_7_8
+
+			Fraction value of 7/8.
+
 	**Acquiring the data**
 
-		.. cpp:function:: std::optional<unsigned int> integer() const
+		.. cpp:function:: std::optional<float> distance() const
 
-			:returns: Integer component of stored distance value or empty ``std::optional`` if there is no integer component or the value is not reported.
+			:returns: Stored distance value in the units specified by :cpp:func:`Distance::unit()` or empty ``std::optional`` if the value is not reported.
 
-		.. cpp:function:: std::optional<unsigned int> numerator() const
-
-			:returns: Numerator of fraction component of stored distance value or empty ``std::optional`` if there is no fraction part or the value is not reported.
-
-		.. cpp:function:: std::optional<unsigned int> denominator() const
-
-			:returns: Denominator of fraction component of stored distance value or empty ``std::optional`` if there is no fraction part or the value is not reported.
+			.. note:: This method returns a decimal value in statute miles (e.g. 2.5). If instead an integer & fraction value in statute miles is required, use :cpp:func:`Distance::miles()`.
 
 		.. cpp:function:: Modifier modifier() const
 
@@ -384,24 +424,6 @@ Distance
 		.. cpp:function:: Unit unit() const
 
 			:returns: Distance measurement unit which was used with stored value.
-
-	**Integer & fraction components**
-
-		.. cpp:function:: bool isInteger() const
-
-			:returns: ``true`` if the stored value has only integer component, and ``false`` if the stored value does not have an integer component or has fraction component or is not reported.
-
-		.. cpp:function:: bool hasInteger() const
-
-			:returns: ``true`` if the stored value has integer component, and ``false`` if the stored value does not have an integer component or is not reported. Presence or absence of fraction component is ignored.
-
-		.. cpp:function:: bool isFraction() const
-
-			:returns: ``true`` if the stored value has only fraction component, and ``false`` if the stored value does not have a fraction component or has integer component or is not reported.
-
-		.. cpp:function:: bool hasFraction() const
-
-			:returns: ``true`` if the stored value has fraction component, and ``false`` if the stored value does not have a fraction component or is not reported. Presence or absence of integer component is ignored.
 
 	**Miscellaneous**
 
@@ -412,6 +434,26 @@ Distance
 		.. cpp:function:: bool isReported()
 
 			:returns: ``true`` if the conditions for :cpp:func:`isValue()` are met, or the modifier is either :cpp:enumerator:`Modifier::DISTANT` or :cpp:enumerator:`Modifier::VICINITY`; ``false`` otherwise.
+
+		.. cpp:function:: std::optional<std::pair<unsigned int, MilesFraction>> miles() const
+
+			:returns: Value in statute miles in the form of integer and fraction.
+
+				If the value is not reported, an empty ``std::optional`` is returned.
+
+				For the reported values, the ``std::pair`` is returned where ``unsigned int`` component is an integer part, and :cpp:enum:`MilesFraction` component is a fraction part. For example, for the value of ``2 3/4 statute miles``, an ``unsigned int`` component contains ``2`` and :cpp:enum:`MilesFraction` component contains :cpp:enumerator:`MilesFraction::F_3_4`.
+
+					.. note:: This method may only return the following values (as per Table 6-1 of Field Meteorology Handbook Number 1):
+
+						Below 1/2 statute mile: increments of 1/16 statute mile (0, 1/16, 1/8, 3/16, 1/4, 5/16, 3/8).
+
+						From 1/2 to 2 statute miles: increments of 1/8 statute mile (1/2, 5/8, 3/4, 7/8, 1, 1 1/8, 1 1/4, 1 3/8, 1 1/2, 1 5/8, 1 3/4, 1 7/8).
+
+						From 2 to 3 statute miles: increments of 1/4 statute mile (2, 2 1/4 2 1/2, 2 3/4).
+
+						From 3 to 15 statute miles: increments of 1 statute mile (3, 4, 5, etc).
+
+						Above 15 statute miles: increments of 5 statute miles (15, 20, 25, etc).
 
 	**Converting to other measurement units**
 

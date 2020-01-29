@@ -129,6 +129,7 @@ private:
 
 	static std::string_view speedUnitToString(metaf::Speed::Unit unit);
 	static std::string_view distanceUnitToString(metaf::Distance::Unit unit);
+	static std::string_view distanceMilesFractionToString(metaf::Distance::MilesFraction f);
 	static std::string_view cardinalDirectionToString(metaf::Direction::Cardinal cardinal);
 	static std::string_view brakingActionToString(
 		metaf::SurfaceFriction::BrakingAction brakingAction);
@@ -1483,11 +1484,20 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 	}
 	if (!distance.isValue()) return result.str();
 
-	const auto d = distance.toUnit(distance.unit());
-	if (!d.has_value()) return "[unable to get distance's floating-point value]";
 	if (distance.unit() == metaf::Distance::Unit::STATUTE_MILES) {
-		result << roundTo(*d, 3);
+		const auto d = distance.miles();
+		if (!d.has_value()) return "[unable to get distance value in miles]";
+		const auto integer = std::get<unsigned int>(d.value());
+		const auto fraction = std::get<metaf::Distance::MilesFraction>(d.value());
+		if (integer || fraction == metaf::Distance::MilesFraction::NONE)
+			result << integer;
+		if (integer && fraction != metaf::Distance::MilesFraction::NONE)
+			result << " ";
+		if (fraction != metaf::Distance::MilesFraction::NONE)
+			result << distanceMilesFractionToString(fraction);
 	} else {
+		const auto d = distance.toUnit(distance.unit());
+		if (!d.has_value()) return "[unable to get distance's floating-point value]";
 		result << static_cast<int>(*d);
 	}
 	result << " " << distanceUnitToString(distance.unit());
@@ -1502,8 +1512,16 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 		result << " / ";
 	}
 	if (distance.unit() != metaf::Distance::Unit::STATUTE_MILES) {
-		if (const auto d = distance.toUnit(metaf::Distance::Unit::STATUTE_MILES); d.has_value()) {
-			result << roundTo(*d, 3);
+		if (const auto d = distance.miles(); d.has_value()) {
+			if (!d.has_value()) return "[unable to get distance value in miles]";
+			const auto integer = std::get<unsigned int>(d.value());
+			const auto fraction = std::get<metaf::Distance::MilesFraction>(d.value());
+			if (integer || fraction == metaf::Distance::MilesFraction::NONE)
+				result << integer;
+			if (integer && fraction != metaf::Distance::MilesFraction::NONE)
+				result << " ";
+			if (fraction != metaf::Distance::MilesFraction::NONE)
+				result << distanceMilesFractionToString(fraction);
 			result << " " << distanceUnitToString(metaf::Distance::Unit::STATUTE_MILES);
 		} else {
 			result << "[unable to convert distance to statute miles]";
@@ -1734,6 +1752,23 @@ std::string_view VisitorExplain::distanceUnitToString(metaf::Distance::Unit unit
 		case metaf::Distance::Unit::FEET:			return "feet";
 	}
 }
+
+std::string_view VisitorExplain::distanceMilesFractionToString(metaf::Distance::MilesFraction f) {
+	switch (f) {
+		case metaf::Distance::MilesFraction::NONE: 		return "";
+		case metaf::Distance::MilesFraction::F_1_16:	return "1/16";
+		case metaf::Distance::MilesFraction::F_1_8:		return "1/8";
+		case metaf::Distance::MilesFraction::F_3_16:	return "3/16";
+		case metaf::Distance::MilesFraction::F_1_4:		return "1/4";
+		case metaf::Distance::MilesFraction::F_5_16:	return "5/16";
+		case metaf::Distance::MilesFraction::F_3_8:		return "3/8";
+		case metaf::Distance::MilesFraction::F_1_2:		return "1/2";
+		case metaf::Distance::MilesFraction::F_5_8:		return "5/8";
+		case metaf::Distance::MilesFraction::F_3_4:		return "3/4";
+		case metaf::Distance::MilesFraction::F_7_8:		return "7/8";
+	}
+}
+
 
 std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Cardinal cardinal) {
 	switch(cardinal) {

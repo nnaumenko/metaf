@@ -248,45 +248,42 @@ public:
 		DISTANT,
 		VICINITY
 	};
-	inline std::optional<unsigned int> integer() const { return distValueInt; }
-	inline std::optional<unsigned int> numerator() const { return distValueNum; }
-	inline std::optional<unsigned int> denominator() const { return distValueDen; }
-	Modifier modifier() const { return distModifier; }
+	enum class MilesFraction {
+		NONE,
+		F_1_16,
+		F_1_8,
+		F_3_16,
+		F_1_4,
+		F_5_16,
+		F_3_8,
+		F_1_2,
+		F_5_8,
+		F_3_4,
+		F_7_8
+	};
+	inline std::optional<float> distance() const;
 	Unit unit() const { return distUnit; }
-	bool isInteger() const {
-		return (integer().has_value() &&
-			!numerator().has_value() && !denominator().has_value());
-	}
-	bool isFraction() const {
-		return (!integer().has_value() &&
-			numerator().has_value() && denominator().has_value());
-	}
-	bool isValue() const {
-		return (integer().has_value() ||
-				(numerator().has_value() && denominator().has_value()));
-	}
+	Modifier modifier() const { return distModifier; }
+	bool isValue() const { return (dist.has_value()); }
 	bool isReported() const {
 		return (isValue() || 
 			modifier() == Modifier::DISTANT || 
 			modifier() == Modifier::VICINITY);
 	}
-	bool hasInteger() const { return integer().has_value(); }
-	bool hasFraction() const { 
-		return (numerator().has_value() && denominator().has_value()); 
-	}
 	inline std::optional<float> toUnit(Unit unit) const;
-	bool isValid() const {
-		if (distValueDen.has_value() && !distValueDen.value()) return false;
-		if (distValueNum.has_value() && !distValueNum.value()) return false;
-		return true;
-	}
+	inline std::optional<std::pair<unsigned int, MilesFraction>> miles() const;
+
+	bool isValid() const { return true; }
 
 	Distance() = default;
-	Distance(int d, Unit u) : distValueInt(d), distUnit(u) {} //Init distance without fraction
-	Distance(unsigned int numerator, unsigned int denominator) : //Init fractional distance in miles 
-		distValueNum(numerator), distValueDen(denominator), 
-		distUnit(Unit::STATUTE_MILES) {} 
-	Distance(Unit u) : distUnit(u) {} // Init non-reported distance
+	Distance(unsigned int d, Unit u) : 
+		dist (d * (u == Unit::STATUTE_MILES ? statuteMileFactor : 1)), distUnit(u) {}
+	Distance(unsigned int numerator, unsigned int denominator) {
+		if (!denominator) return;
+		dist = numerator * statuteMileFactor / denominator;
+		distUnit = Unit::STATUTE_MILES;
+	}
+	Distance(Unit u) : distUnit(u) {}
 	static inline std::optional<Distance> fromIntegerAndFraction(const Distance & integer,
 		const Distance & fraction);
 	static inline std::optional<Distance> fromMeterString(const std::string & s);
@@ -301,10 +298,12 @@ public:
 	static inline Distance makeVicinity();
 private:
 	Modifier distModifier = Modifier::NONE;
-	std::optional<unsigned int> distValueInt;
-	std::optional<unsigned int> distValueNum;
-	std::optional<unsigned int> distValueDen;
+	std::optional<unsigned int> dist;
 	Unit distUnit = Unit::METERS;
+
+	// If distance unit is statute mile, d stores value in 1/10000ths of mile
+	// This allows precision down to 1/16th (0.0625) mile without digit loss
+	static const unsigned int statuteMileFactor = 10000;
 
 	static const unsigned int heightFactor = 100; //height unit is 100s of feet
 
@@ -1075,6 +1074,27 @@ private:
 	inline bool appendVariable(const std::string & group);
 	inline bool appendVariableMeters(const std::string & group);
 
+	// the following code is temporary until VisibilityGroup is refactored
+	// temporary code begin
+	static const inline float fractionMargin = 
+		1.0 / 100 / 2; // detection whether distance is integer 
+	bool isInteger(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) < fractionMargin && floor(val.value()));
+	}
+	bool isFraction(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) >= fractionMargin && !floor(val.value()));		
+	}
+	bool isIntegerFraction(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) >= fractionMargin && floor(val.value()));
+	}
+	// temporary code end
+
 	Type visType = Type::PREVAILING;
 	Distance vis;
 	Distance visMax;
@@ -1476,6 +1496,27 @@ private:
 	Distance maxVis;
 
 	inline bool appendVisibility(const std::string & group);
+
+	// the following code is temporary until VisibilityGroup is refactored
+	// temporary code begin
+	static const inline float fractionMargin = 
+		1.0 / 100 / 2; // detection whether distance is integer 
+	bool isInteger(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) < fractionMargin && floor(val.value()));
+	}
+	bool isFraction(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) >= fractionMargin && !floor(val.value()));		
+	}
+	bool isIntegerFraction(const Distance & d) const {
+		const auto val = d.distance();
+		if (!val.has_value()) return false;
+		return (val.value() - floor(val.value()) >= fractionMargin && floor(val.value()));
+	}
+	// temporary code end
 };
 
 class SeaSurfaceGroup {
@@ -2785,12 +2826,11 @@ std::optional<Distance> Distance::fromMeterString(const std::string & s) {
 
 	const auto dist = strToUint(s, 0, 4);
 	if (!dist.has_value()) return error;
-	distance.distValueInt = dist.value();
+	distance.dist = dist;
 
-	if (const auto valueMoreThan10km = 9999u; distance.distValueInt == valueMoreThan10km) {
-		static const auto value10km = 10000u;
-		distance.distValueInt = value10km;
+	if (const auto valueMoreThan10km = 9999u; distance.dist == valueMoreThan10km) {
 		distance.distModifier = Modifier::MORE_THAN;
+		distance.dist = 10000u;
 	}
 	return distance;
 }
@@ -2820,22 +2860,26 @@ std::optional<Distance> Distance::fromMileString(const std::string & s) {
 		if (intLength < minDigits || intLength > maxDigits) return error;
 		const auto dist = strToUint(s, intPos, intLength);
 		if (!dist.has_value()) return error;
-		distance.distValueInt = dist.value();
+		distance.dist = dist.value() * statuteMileFactor;
 	} else {
 		//Fraction value, e.g. 1/2SM, 11/2SM, 5/16SM, 11/16SM
 		const auto fraction = fractionStrToUint(s,
 			static_cast<int>(modifier.has_value()),
 			s.length() - unitLength - static_cast<int>(modifier.has_value()));
 		if (!fraction.has_value()) return error;
-		const auto numerator = std::get<0>(fraction.value());
-		const auto denominator = std::get<1>(fraction.value());
-		distance.distValueNum = numerator;
-		distance.distValueDen = denominator;
+		auto integer = 0u;
+		auto numerator = std::get<0>(fraction.value());
+		auto denominator = std::get<1>(fraction.value());
+		if (!numerator || !denominator) return error;
 		if (numerator >= denominator) { //e.g. 11/2SM = 1 1/2SM
 			static const auto decimalRadix = 10u;
-			distance.distValueInt = numerator / decimalRadix;
-			distance.distValueNum = numerator % decimalRadix;
+			integer = numerator / decimalRadix;
+			numerator = numerator % decimalRadix;
 		}
+		if (!numerator) return error;
+		distance.dist = 
+			integer * statuteMileFactor + 
+			numerator * statuteMileFactor / denominator;
 	}
 	return distance;
 }
@@ -2849,7 +2893,7 @@ std::optional<Distance> Distance::fromHeightString(const std::string & s) {
 	if (s == "///") return distance;
 	const auto h = strToUint(s, 0, 3);
 	if (!h.has_value())	return error;
-	distance.distValueInt = h.value() * heightFactor;
+	distance.dist = h.value() * heightFactor;
 	return distance;
 }
 
@@ -2862,7 +2906,7 @@ std::optional<Distance> Distance::fromRvrString(const std::string & s, bool unit
 		if (s == "////") return distance;
 		const auto dist = strToUint(s, 0, 4);
 		if (!dist.has_value()) return error;
-		distance.distValueInt = dist.value();
+		distance.dist = dist.value();
 		return distance;
 	}
 	if (s.length() == 5) {
@@ -2871,7 +2915,7 @@ std::optional<Distance> Distance::fromRvrString(const std::string & s, bool unit
 		distance.distModifier = modifier.value();
 		const auto dist = strToUint(s, 1, 4);
 		if (!dist.has_value()) return error;
-		distance.distValueInt = dist.value();
+		distance.dist = dist.value();
 		return distance;
 	}
 	return error;
@@ -2890,9 +2934,8 @@ std::optional<std::pair<Distance, Distance>> Distance::fromLayerString(
 	Distance baseHeight, topHeight;
 	baseHeight.distUnit = Unit::FEET;
 	topHeight.distUnit = Unit::FEET;
-	baseHeight.distValueInt = h.value() * heightFactor;
-	topHeight.distValueInt =
-		h.value() * heightFactor + d.value() * layerDepthFactor;
+	baseHeight.dist = h.value() * heightFactor;
+	topHeight.dist = h.value() * heightFactor + d.value() * layerDepthFactor;
 	return std::pair(baseHeight, topHeight);
 }
 
@@ -2913,7 +2956,7 @@ std::optional<Distance> Distance::fromKmString(const std::string & s) {
 
 	Distance distance;
 	distance.distUnit = Unit::METERS;
-	distance.distValueInt = dist.value() * metersPerKm;
+	distance.dist = dist.value() * metersPerKm;
 	return distance;
 }
 
@@ -2924,28 +2967,96 @@ std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & intege
 		!fraction.isValid() ||
 		integer.modifier() != Modifier::NONE ||
 		fraction.modifier() != Modifier::NONE ||
-		integer.unit() != fraction.unit() ||
-		!integer.isInteger() ||
-		!fraction.isFraction()) return std::optional<Distance>();
-	Distance result = integer;
-	result.distValueNum = fraction.distValueNum;
-	result.distValueDen = fraction.distValueDen;
+		integer.unit() != Unit::STATUTE_MILES || 
+		fraction.unit() != Unit::STATUTE_MILES ||
+		!integer.dist.has_value() ||
+		!fraction.dist.has_value() ||
+		(integer.dist.value() % statuteMileFactor) ||
+		!(fraction.dist.value() % statuteMileFactor)) 
+			return std::optional<Distance>();
+	Distance result;
+	result.dist = integer.dist.value() + fraction.dist.value();
+	result.distUnit = Unit::STATUTE_MILES;
 	return result;
 }
 
 std::optional<float> Distance::toUnit(Unit unit) const {
-	static const std::optional<float> error;
-	if (!isReported()) return error;
-	if (!distValueDen.value_or(1)) return error;
-	const auto value = distValueInt.value_or(0) +
-		static_cast<float>(distValueNum.value_or(0)) / distValueDen.value_or(1);
-	if (distUnit == unit) return value;
+	const auto d = distance();
+	if (!d.has_value()) return std::optional<float>();
 	switch (distUnit) {
-		case Unit::METERS: 			return metersToUnit(value, unit);
-		case Unit::STATUTE_MILES:	return milesToUnit(value, unit);
-		case Unit::FEET:			return feetToUnit(value, unit);
-		default:					return error;
+		case Unit::METERS: 			return metersToUnit(d.value(), unit);
+		case Unit::STATUTE_MILES:	return milesToUnit(d.value(), unit);
+		case Unit::FEET:			return feetToUnit(d.value(), unit);
 	}
+}
+
+std::optional<float> Distance::distance() const {
+	if (!dist.has_value()) return std::optional<float>();
+	if (distUnit == Unit::STATUTE_MILES) 
+		return (static_cast<float>(dist.value()) / statuteMileFactor);
+	return dist.value();
+}
+
+std::optional<std::pair<unsigned int, Distance::MilesFraction>> Distance::miles() const
+{
+	const auto milesDecimal = toUnit(Unit::STATUTE_MILES);
+	if (!milesDecimal.has_value()) return std::optional<std::pair<unsigned int, Distance::MilesFraction>>();
+	static const unsigned int denominator = 16u;
+	const unsigned int topHeavyNumerator = std::round(milesDecimal.value() * denominator);
+	switch (topHeavyNumerator) { 
+		case 0:  return std::pair(0u, MilesFraction::NONE);
+		case 1:  return std::pair(0u, MilesFraction::F_1_16);
+		case 2:  return std::pair(0u, MilesFraction::F_1_8);
+		case 3:  return std::pair(0u, MilesFraction::F_3_16);
+		case 4:  return std::pair(0u, MilesFraction::F_1_4);
+		case 5:  return std::pair(0u, MilesFraction::F_5_16);
+		case 6: 
+		case 7:  return std::pair(0u, MilesFraction::F_3_8);
+		case 8:
+		case 9:  return std::pair(0u, MilesFraction::F_1_2);
+		case 10: 
+		case 11: return std::pair(0u, MilesFraction::F_5_8);
+		case 12: 
+		case 13: return std::pair(0u, MilesFraction::F_3_4);
+		case 14: 
+		case 15: return std::pair(0u, MilesFraction::F_7_8);
+		case 16:
+		case 17: return std::pair(1u, MilesFraction::NONE);
+		case 18:
+		case 19: return std::pair(1u, MilesFraction::F_1_8);
+		case 20:
+		case 21: return std::pair(1u, MilesFraction::F_1_4);
+		case 22:
+		case 23: return std::pair(1u, MilesFraction::F_3_8);
+		case 24:
+		case 25: return std::pair(1u, MilesFraction::F_1_2);
+		case 26:
+		case 27: return std::pair(1u, MilesFraction::F_5_8);
+		case 28:
+		case 29: return std::pair(1u, MilesFraction::F_3_4);
+		case 30:
+		case 31: return std::pair(1u, MilesFraction::F_7_8);
+		case 32:
+		case 33: 
+		case 34:
+		case 35: return std::pair(2u, MilesFraction::NONE);
+		case 36:
+		case 37: 
+		case 38: 
+		case 39: return std::pair(2u, MilesFraction::F_1_4);
+		case 40: 
+		case 41: 
+		case 42: 
+		case 43: return std::pair(2u, MilesFraction::F_1_2);
+		case 44:
+		case 45: 
+		case 46:
+		case 47: return std::pair(2u, MilesFraction::F_3_4);
+		default: break;
+	}
+	unsigned int integer = topHeavyNumerator / denominator;
+	if (integer > 15) integer = 5 * (integer / 5);
+	return std::pair (integer, MilesFraction::NONE);
 }
 
 std::optional<Distance::Modifier> Distance::modifierFromChar(char c) {
@@ -2959,7 +3070,6 @@ std::optional<float> Distance::metersToUnit(float value, Unit unit) {
 		case Unit::METERS: 			return value;
 		case Unit::STATUTE_MILES:	return (value / 1609.347);
 		case Unit::FEET:			return (value / 0.3048);
-		default: return std::optional<float>();
 	}
 }
 
@@ -2968,7 +3078,6 @@ std::optional<float> Distance::milesToUnit(float value, Unit unit) {
 		case Unit::METERS: 			return (value * 1609.347);
 		case Unit::STATUTE_MILES:	return value;
 		case Unit::FEET:			return (value * 5280.0);
-		default: return std::optional<float>();
 	}
 }
 
@@ -2977,17 +3086,16 @@ std::optional<float> Distance::feetToUnit(float value, Unit unit) {
 		case Unit::METERS: 			return (value * 0.3048);
 		case Unit::STATUTE_MILES:	return (value / 5280.0);
 		case Unit::FEET:			return value;
-		default: return std::optional<float>();
 	}
 }
 
 Distance Distance::cavokVisibility(bool unitMiles) {
 	Distance result;
 	result.distModifier = Modifier::MORE_THAN;
-	result.distValueInt = cavokVisibilityMeters;
+	result.dist = cavokVisibilityMeters;
 	result.distUnit = Unit::METERS;
 	if (unitMiles) {
-		result.distValueInt = cavokVisibilityMiles;
+		result.dist = cavokVisibilityMiles * statuteMileFactor;
 		result.distUnit = Unit::STATUTE_MILES;
 	}
 	return result;
@@ -4381,7 +4489,7 @@ AppendResult WindGroup::appendWindShift(const std::string & group,
 bool WindGroup::isValid() const {
 	if (incompleteText != IncompleteText::NONE) return false;
 	if (!gustSpeed().speed().value_or(1)) return false;
-	if (!height().integer().value_or(1)) return false;
+	if (!height().distance().value_or(1)) return false;
 	if (runway().has_value() && !runway()->isValid()) return false;
 	if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) 
 		return false; // if wind speed cannot be greater than gust speed
@@ -4435,7 +4543,6 @@ AppendResult VisibilityGroup::append(const std::string & group,
 
 		case IncompleteType::NON_RMK_INTEGER:
 		if (const auto v = Distance::fromMileString(group); v.has_value()) {
-			if (!v->isFraction()) return AppendResult::GROUP_INVALIDATED;
 			const auto vAppended = 
 				Distance::fromIntegerAndFraction(visibility(), v.value());
 			if (!vAppended.has_value()) return AppendResult::GROUP_INVALIDATED;
@@ -4564,7 +4671,7 @@ bool VisibilityGroup::appendDirection(const std::string & group)
 
 bool VisibilityGroup::appendInteger(const std::string & group)
 {
-	if (vis.hasInteger()) return false;
+	if (vis.isReported()) return false;
 	if (group.empty() || group.length() > 2) return false;
 	const auto val = strToUint(group, 0, group.length());
 	if (!val.has_value()) return false;
@@ -4590,15 +4697,15 @@ bool VisibilityGroup::appendInteger(const std::string & group)
 }
 
 bool VisibilityGroup::appendFraction(const std::string & group) {
-	if (vis.hasFraction()) return false;
+	if (isFraction(vis) || isIntegerFraction(vis)) return false;
 
 	const auto fraction = fractionStrToUint(group, 0, group.length());
 	if (!fraction.has_value()) return false;
 	const auto numerator = std::get<0>(fraction.value());
 	const auto denominator = std::get<1>(fraction.value());
-	
 	auto v = Distance(numerator, denominator);
-	if (vis.isInteger()) {
+	if (!v.isValue()) return false;
+	if (isInteger(vis)) {
 		const auto t = Distance::fromIntegerAndFraction(vis, v);
 		if (!t.has_value()) return false;
 		v = t.value();
@@ -4609,7 +4716,8 @@ bool VisibilityGroup::appendFraction(const std::string & group) {
 }
 
 bool VisibilityGroup::appendVariable(const std::string & group) {
-	if (vis.hasFraction() || visMax.isReported()) return false;
+	if (isFraction(vis) || isIntegerFraction(vis)) return false;
+	if (visMax.isReported()) return false;
 
 	static const std::regex rgx(
 		"(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))V(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))");
@@ -4626,8 +4734,10 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 		if (!fraction.has_value()) return false;
 		const auto numerator = std::get<0>(fraction.value());
 		const auto denominator = std::get<1>(fraction.value());
+		if (!numerator || !denominator) return false;
 		auto d = Distance(numerator, denominator);
-		if (minDistance.isInteger()) {
+		if (!d.isValue()) return false;
+		if (isInteger(minDistance)) {
 			const auto t = Distance::fromIntegerAndFraction(minDistance, d);
 			if (!t.has_value()) return false;
 			d = t.value();
@@ -4635,7 +4745,7 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 		minDistance = d;
 	}
 	if (match.length(matchIntegerMin)) {
-		if (minDistance.hasInteger()) return false;
+		if (isInteger(minDistance)) return false;
 		minDistance = Distance(std::stoi(match.str(matchIntegerMin)), Distance::Unit::STATUTE_MILES);
 	}
 	if (!minDistance.isValid()) return false;
@@ -4646,7 +4756,9 @@ bool VisibilityGroup::appendVariable(const std::string & group) {
 		if (!fraction.has_value()) return false;
 		const auto numerator = std::get<0>(fraction.value());
 		const auto denominator = std::get<1>(fraction.value());
+		if (!numerator || !denominator) return false;
 		maxDistance = Distance(numerator, denominator);
+		if (!maxDistance.isValue()) return false;
 	}
 	if (match.length(matchIntegerMax)) {
 		maxDistance = Distance(std::stoi(match.str(matchIntegerMax)), Distance::Unit::STATUTE_MILES);
@@ -5365,7 +5477,10 @@ bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
 	static const auto maxIntegerLength = 2; // Note: fraction string is 
 	// minimum 3 chars long (e.g. 1/2) and can't be 2 chars long
 
-	if (vis.hasFraction() || minVis.isReported() || maxVis.isReported()) return false;
+	if (isFraction(vis) || 
+		isIntegerFraction(vis) || 
+		minVis.isReported() || 
+		maxVis.isReported()) return false;
 	if (group.empty()) return false;
 
 	const auto vPos = group.find("V");
@@ -5385,7 +5500,9 @@ bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
 		const auto numerator = std::get<0>(fraction.value());
 		const auto denominator = std::get<1>(fraction.value());
 		auto d = Distance(numerator, denominator);
-		if (vis.isInteger()) {
+		if (!numerator || !denominator) return false;
+		if (!d.isValue()) return false;
+		if (isInteger(vis)) {
 			const auto t = Distance::fromIntegerAndFraction(vis, std::move(d));
 			if (!t.has_value()) return false;
 			d = std::move(t.value());
@@ -5411,8 +5528,10 @@ bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
 		if (!fraction.has_value()) return false;
 		const auto numerator = std::get<0>(fraction.value());
 		const auto denominator = std::get<1>(fraction.value());
+		if (!numerator || !denominator) return false;
 		minv = Distance(numerator, denominator);
-		if (v.isInteger()) {
+		if (!minv.isValue()) return false;
+		if (isInteger(v)) {
 			const auto t = Distance::fromIntegerAndFraction(v, minv);
 			if (!t.has_value()) return false;
 			minv = t.value();
@@ -5429,7 +5548,9 @@ bool SecondaryLocationGroup::appendVisibility(const std::string & group) {
 		if (!fraction.has_value()) return false;
 		const auto numerator = std::get<0>(fraction.value());
 		const auto denominator = std::get<1>(fraction.value());
+		if (!numerator || !denominator) return false;
 		maxv = Distance(numerator, denominator);
+		if (!maxv.isValue()) return false;
 	}
 	vis = std::move(v); minVis = std::move(minv); maxVis = std::move(maxv);
 	t = Type::VARIABLE_VISIBILITY;
