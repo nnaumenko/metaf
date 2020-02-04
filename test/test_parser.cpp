@@ -1796,4 +1796,3 @@ TEST(ParserResultReportPartAndRawString, invalidatedGroupsFollowedByValidGroup) 
 	EXPECT_EQ(result.groups.at(11).rawString, "T00560028");
 	EXPECT_EQ(result.groups.at(11).reportPart, metaf::ReportPart::RMK);
 }
-

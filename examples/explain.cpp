@@ -59,15 +59,7 @@ private:
 	virtual std::string visitPressureGroup(const metaf::PressureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitRunwayVisualRangeGroup(
-		const metaf::RunwayVisualRangeGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
 	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitSecondaryLocationGroup(
-		const metaf::SecondaryLocationGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
@@ -126,6 +118,7 @@ private:
 	static std::string explainSurfaceFriction(const metaf::SurfaceFriction & surfaceFriction);
 	static std::string explainWaveHeight(const metaf::WaveHeight & waveHeight);
 	static std::string explainWeatherPhenomena(const metaf::WeatherPhenomena & weatherPhenomena);
+	static std::string explainDirectionSector(const std::vector<metaf::Direction> dir);
 
 	static std::string_view speedUnitToString(metaf::Speed::Unit unit);
 	static std::string_view distanceUnitToString(metaf::Distance::Unit unit);
@@ -142,11 +135,9 @@ private:
 	static std::string_view weatherPhenomenaDescriptorToString(metaf::WeatherPhenomena::Descriptor descriptor);
 	static std::string_view weatherPhenomenaWeatherToString(metaf::WeatherPhenomena::Weather weather);
 	static std::string_view specialWeatherPhenomenaToString(const metaf::WeatherPhenomena & wp);
-	static std::string_view rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
+	static std::string_view visTrendToString(metaf::VisibilityGroup::Trend trend);
 	static std::string_view runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
 	static std::string_view runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
-	static unsigned int colourCodeVisibility(metaf::MiscGroup::Type code);
-	static unsigned int colourCodeCeiling(metaf::MiscGroup::Type code);
 	static std::string_view precipitationGroupTypeToString(
 		metaf::PrecipitationGroup::Type type);
 	static std::string_view layerForecastGroupTypeToString(
@@ -255,10 +246,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "This manual station does not issue SPECI (unscheduled) reports";
 		break;
 
-		case metaf::FixedGroup::Type::RVRNO:
-		result << "Runway visual range should be reported but is missing";
-		break;
-
 		case metaf::FixedGroup::Type::PWINO:
 		result << "This automated station is equipped with present weather identifier ";
 		result << "and this sensor is not operating";
@@ -279,10 +266,6 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 
 		case metaf::FixedGroup::Type::PRES_MISG:
 		result << "Atmospheric pressure (altimeter) data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::RVR_MISG:
-		result << "Runway visual range data is missing";
 		break;
 
 		case metaf::FixedGroup::Type::T_MISG:
@@ -466,43 +449,125 @@ std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & 
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visibility (";
 	switch (group.type()) {
 		case metaf::VisibilityGroup::Type::PREVAILING:
+		result << "Prevailing visibility is ";
+		result << explainDistance(group.visibility());
+		break;
+
 		case metaf::VisibilityGroup::Type::PREVAILING_NDV:
-		case metaf::VisibilityGroup::Type::PREVAILING_VARIABLE:
-		result << "prevailing";
+		result << "Prevailing visibility is "; 
+		result << explainDistance(group.visibility());
+		result << lineBreak;
+		result << "This station cannot differentiate the directional ";
+		result << "variation of visibility";
 		break;
 
 		case metaf::VisibilityGroup::Type::DIRECTIONAL:
-		case metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE:
-		if (group.direction().has_value()) result << explainDirection(*group.direction());
+		result << "Directional visibility toward ";
+		result << explainDirection(group.direction().value());
+		result << " is " << explainDistance(group.visibility());
+		break;
+	
+		case metaf::VisibilityGroup::Type::RUNWAY:
+		result << "Visibility for ";
+		result << explainRunway(group.runway().value());
+		result << " is " << explainDistance(group.visibility());
 		break;
 
-		case metaf::VisibilityGroup::Type::SURFACE_VISIBILITY:
-		result << "at surface level";
+		case metaf::VisibilityGroup::Type::RVR:
+		result << "Runway visual range for ";
+		result << explainRunway(group.runway().value()) << " is ";
+		result << explainDistance(group.visibility());
+		if (group.trend() != metaf::VisibilityGroup::Trend::NONE) {
+			result << ", and the trend is " << visTrendToString(group.trend());
+		}
 		break;
 
-		case metaf::VisibilityGroup::Type::TOWER_VISIBILITY:
-		result << "from air traffic control tower";
+		case metaf::VisibilityGroup::Type::SURFACE:
+		result << "Visibility at surface level is ";
+		result << explainDistance(group.visibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::TOWER:
+		result << "Visibility from air traffic control tower is ";
+		result << explainDistance(group.visibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::SECTOR:
+		result << "Sector visibility is ";
+		result << explainDistance(group.visibility()) << lineBreak;
+		result << "In the following directions: ";
+		result << explainDirectionSector(group.sectorDirections());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_PREVAILING:
+		result << "Prevailing visibility is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL:
+		result << "Directional visibility toward ";
+		result << explainDirection(group.direction().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_RUNWAY:
+		result << "Visibility for ";
+		result << explainRunway(group.runway().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_RVR:
+		result << "Runway visual range for ";
+		result << explainRunway(group.runway().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		if (group.trend() != metaf::VisibilityGroup::Trend::NONE) {
+			result << ", and the trend is " << visTrendToString(group.trend());
+		}
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_SECTOR:
+		result << "Sector visibility is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility()) << lineBreak;
+		result << "In the following directions: ";
+		result << explainDirectionSector(group.sectorDirections());
 		break;
 
 		case metaf::VisibilityGroup::Type::VIS_MISG:
-		return "Visibility data missing";
-	}
-	result << ") ";
-	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_VARIABLE ||
-		group.type() == metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE)
-	{
-		result << "is variable" << lineBreak;
-		result << "from " << explainDistance(group.minVisibility()) << lineBreak;
-		result << "to " << explainDistance(group.maxVisibility()) << lineBreak;
-	} else {
-		result << explainDistance(group.visibility());
-	}
-	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_NDV) {
-		result << lineBreak;
-		result << "This station does not distinguish directional variation of visibility";
+		result << "Visibility data missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::RVR_MISG:
+		result << "Runway visual range data is missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::RVRNO:
+		result << "Runway visual range should be reported but is missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::VISNO:
+		result << "Visibility data not awailable";
+		if (const auto r = group.runway(); r.has_value()) {
+			result << " for " << explainRunway(*r);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " in the direction of " << explainDirection(*d);
+		}
+		break;
 	}
 	return result.str();
 }
@@ -672,27 +737,6 @@ std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & grou
 	return result.str();
 }
 
-std::string VisitorExplain::visitRunwayVisualRangeGroup(
-	const metaf::RunwayVisualRangeGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visual range of " << explainRunway(group.runway()) << " is ";
-	if (group.isVariableVisualRange()) {
-		result << explainDistance(group.maxVisualRange());
-		result << " to " << explainDistance(group.maxVisualRange());
-	} else {
-		result << explainDistance(group.visualRange());
-	}
-	if (group.trend() != metaf::RunwayVisualRangeGroup::Trend::NONE) {
-		result << ", and the trend is " << rvrTrendToString(group.trend());
-	}
-	return result.str();
-}
-
 std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
@@ -731,50 +775,6 @@ std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup 
 		case metaf::RunwayStateGroup::Type::RUNWAY_NOT_OPERATIONAL:
 		result << "runway is not operational";
 		break;
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitSecondaryLocationGroup(
-	const metaf::SecondaryLocationGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch (group.type()) {
-		case metaf::SecondaryLocationGroup::Type::CEILING:
-		result << "Ceiling height " << explainDistance(group.height());
-		break;
-
-		case metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING:
-		result << "Ceiling height is variable between ";
-		result << explainDistance(group.minHeight());
-		result << " and ";
-		result << explainDistance(group.maxHeight());
-		break;
-
-		case metaf::SecondaryLocationGroup::Type::VISNO:
-		result << "Visibility data not awailable";
-		break;
-
-		case metaf::SecondaryLocationGroup::Type::VISIBILITY:
-		result << "Visibility " << explainDistance(group.visibility());
-		break;
-
-		case metaf::SecondaryLocationGroup::Type::VARIABLE_VISIBILITY:
-		result << "Variable visibility from ";
-		result << explainDistance(group.minVisibility());
-		result << " to ";
-		result << explainDistance(group.maxVisibility());
-		break;
-	}
-	if (const auto rw = group.runway(); rw.has_value()) {
-		result << " at " << explainRunway(*rw);
-	}
-	if (const auto d = group.direction(); d.has_value()) {
-		result << " towards " << explainDirection(*d);
 	}
 	return result.str();
 }
@@ -1095,11 +1095,7 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 	const auto directions = group.directions();
 	if (directions.size()) {
 		result << "Lightning strikes observed in the following directions: ";
-		for (auto i=0u; i<directions.size(); i++) {
-			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i].cardinal());
-		}
-		result << lineBreak;
+		result << explainDirectionSector(group.directions());
 	}
 	return result.str();
 }
@@ -1177,13 +1173,10 @@ std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & grou
 	}
 	result << lineBreak;
 
-	const auto directions = group.directions();
-	if (directions.size()) {
+	
+	if (const auto directions = group.directions(); directions.size()) {
 		result << "Observed in the following directions: ";
-		for (auto i=0u; i<directions.size(); i++) {
-			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i].cardinal());
-		}
+		result << explainDirectionSector(directions);
 		result << lineBreak;
 	}
 
@@ -1736,6 +1729,15 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 	return result.str();
 }
 
+std::string VisitorExplain::explainDirectionSector(const std::vector<metaf::Direction> dir) {
+	std::string result;
+	for (auto i=0u; i<dir.size(); i++) {
+		if (i) result += ", ";
+		result += cardinalDirectionToString(dir[i].cardinal());
+	}
+	return result;
+}
+
 std::string_view VisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
 	switch (unit) {	
 		case metaf::Speed::Unit::KNOTS: 				return "knots";
@@ -2138,13 +2140,13 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 	return std::string();
 }
 
-std::string_view VisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend) {
+std::string_view VisitorExplain::visTrendToString(metaf::VisibilityGroup::Trend trend) {
 	switch(trend) {
-		case metaf::RunwayVisualRangeGroup::Trend::NONE:		return std::string_view();
-		case metaf::RunwayVisualRangeGroup::Trend::NOT_REPORTED:return "not reported";
-		case metaf::RunwayVisualRangeGroup::Trend::UPWARD:		return "upward";
-		case metaf::RunwayVisualRangeGroup::Trend::NEUTRAL:		return "neutral";
-		case metaf::RunwayVisualRangeGroup::Trend::DOWNWARD:	return "downward";
+		case metaf::VisibilityGroup::Trend::NONE:			return std::string_view();
+		case metaf::VisibilityGroup::Trend::NOT_REPORTED:	return "not reported";
+		case metaf::VisibilityGroup::Trend::UPWARD:			return "upward";
+		case metaf::VisibilityGroup::Trend::NEUTRAL:		return "neutral";
+		case metaf::VisibilityGroup::Trend::DOWNWARD:		return "downward";
 	}
 }
 

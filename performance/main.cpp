@@ -76,14 +76,8 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::PressureGroup>():
 		return "PressureGroup";
 
-		case variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>():
-		return "RunwayVisualRangeGroup";
-
 		case variant_index<metaf::Group, metaf::RunwayStateGroup>():
 		return "RunwayStateGroup";
-
-		case variant_index<metaf::Group, metaf::SecondaryLocationGroup>():
-		return "SecondaryLocationGroup";
 
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
 		return "SeaSurfaceGroup";
@@ -444,8 +438,6 @@ void printDataSize(){
 	printSize(groupName(20), sizeof(variant_alternative_t<20, metaf::Group>));
 	printSize(groupName(21), sizeof(variant_alternative_t<21, metaf::Group>));
 	printSize(groupName(22), sizeof(variant_alternative_t<22, metaf::Group>));
-	printSize(groupName(23), sizeof(variant_alternative_t<23, metaf::Group>));
-	printSize(groupName(24), sizeof(variant_alternative_t<24, metaf::Group>));
 	cout << endl;
 }
 

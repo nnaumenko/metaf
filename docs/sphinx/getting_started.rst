@@ -301,15 +301,6 @@ Now add to class MyVisitor the following group handling methods ::
 		return ("Pressure: " + rawString);
 	}
 
-	virtual std::string visitRunwayVisualRangeGroup(
-		const RunwayVisualRangeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Runway Visual Range: " + rawString);
-	}
-
 	virtual std::string visitRunwayStateGroup(
 		const RunwayStateGroup & group,
 		ReportPart reportPart,
@@ -319,24 +310,6 @@ Now add to class MyVisitor the following group handling methods ::
 		return ("State of Runway:" + rawString);
 	}
 
-	virtual std::string visitSecondaryLocationGroup(
-		const SecondaryLocationGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Information on Secondary Location: " + rawString);
-	}
-
-	virtual std::string visitRainfallGroup(
-		const RainfallGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Rainfall: " + rawString);
-	}
-
 	virtual std::string visitSeaSurfaceGroup(
 		const SeaSurfaceGroup & group,
 		ReportPart reportPart,
@@ -344,15 +317,6 @@ Now add to class MyVisitor the following group handling methods ::
 	{
 		(void)group; (void)reportPart;
 		return ("Sea Surface: " + rawString);
-	}
-
-	virtual std::string visitColourCodeGroup(
-		const ColourCodeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Colour Code: " + rawString);
 	}
 
 	virtual std::string visitMinMaxTemperatureGroup(

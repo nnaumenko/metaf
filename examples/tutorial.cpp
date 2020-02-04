@@ -174,15 +174,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Pressure: " + rawString);
 	}
 
-	virtual std::string visitRunwayVisualRangeGroup(
-		const RunwayVisualRangeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Runway Visual Range: " + rawString);
-	}
-
 	virtual std::string visitRunwayStateGroup(
 		const RunwayStateGroup & group,
 		ReportPart reportPart,
@@ -190,15 +181,6 @@ class MyVisitor : public Visitor<std::string> {
 	{
 		(void)group; (void)reportPart;
 		return ("State of Runway:" + rawString);
-	}
-
-	virtual std::string visitSecondaryLocationGroup(
-		const SecondaryLocationGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Information on Secondary Location: " + rawString);
 	}
 
 	virtual std::string visitSeaSurfaceGroup(

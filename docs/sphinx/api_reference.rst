@@ -1213,7 +1213,7 @@ WeatherPhenomena
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1338,10 +1338,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.
 
-		.. cpp:enumerator:: RVRNO
-
-			Runway visual range should be reported but is missing.
-
 		.. cpp:enumerator:: PWINO
 
 			Indicates that automated station is equipped with present weather identifier and this sensor is not operating.
@@ -1361,10 +1357,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 		.. cpp:enumerator:: PRES_MISG
 
 			Atmospheric pressure (altimeter) data is missing.
-
-		.. cpp:enumerator:: RVR_MISG
-
-			Runway visual range data is missing.
 
 		.. cpp:enumerator:: T_MISG
 
@@ -1678,19 +1670,9 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 VisibilityGroup
 ^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: visibilitygroup.svg
-
-.. image:: visibilitygroup_rmk.svg
-
-.. note:: Spaces between sequential groups in METAR/TAF report are not shown.
-
-Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, ``1100W``, ``3SM``, ``25SM``, ``1/4SM``, ``2 1/4SM``, ``M1/4SM``, ``P6SM``, ``////SM``, ``VIS 1V3``, ``VIS W 1/4``, ``SFC VIS 3``, ``TWR VIS 2 1/2``.
-
 .. cpp:class:: VisibilityGroup
 
-	Stores information about prevailing visibility or visibility towards cardinal direction.
+	Stores information about prevailing visibility, visibility towards cardinal direction, visibility for runway, visibility at surface level, visibility from air trafic control tower, runway visual range, etc.
 
 	See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
 
@@ -1700,35 +1682,72 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:enumerator:: PREVAILING
 
-			Prevailing visibility information is stored. Use :cpp:func:`visibility()`.
+			Prevailing visibility. Use :cpp:func:`visibility()`.
 
 		.. cpp:enumerator:: PREVAILING_NDV
 
-			Prevailing visibility information is stored and this station cannot differentiate the directional variation of visibility. Use :cpp:func:`visibility()`.
+			Prevailing visibility; indicates that this station cannot differentiate the directional variation of visibility. Use :cpp:func:`visibility()`. :cpp:func:`direction()` will return direction of type :cpp:enumerator:`Direction::Type::NDV`.
 
 		.. cpp:enumerator:: DIRECTIONAL
 
-			Additional directional visibility information is stored. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
+			Additional visibility value for a single cardinal direction. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
 
-		.. cpp:enumerator:: PREVAILING_VARIABLE
+		.. cpp:enumerator:: RUNWAY
 
-			Variable prevailing visibility information is stored. Use :cpp:func:`minVisibility()` and :cpp:func:`maxVisibility()`. This information may be included in remarks in North America.
+			Additional visibility value for a runway. Use :cpp:func:`visibility()` and :cpp:func:`runway()`.
 
-		.. cpp:enumerator:: SURFACE_VISIBILITY
+		.. cpp:enumerator:: RVR
 
-			Visibility at surface level is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
+			Runway visual range. Use :cpp:func:`visibility()`, :cpp:func:`trend()` and :cpp:func:`runway()`.
 
-		.. cpp:enumerator:: TOWER_VISIBILITY
+		.. cpp:enumerator:: SURFACE
 
-			Visibility from aerodrome's air traffic control tower is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
+			Visibility at surface level. Use :cpp:func:`visibility()`.
 
-		.. cpp:enumerator:: DIRECTIONAL_VARIABLE
+		.. cpp:enumerator:: TOWER
 
-			Variable directional visibility information is stored. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`. This information may be included in remarks in North America.
+			Visibility from aerodrome's air traffic control tower. Use :cpp:func:`visibility()`.
+
+		.. cpp:enumerator:: SECTOR
+
+			Sector visibility for a range of cardinal directions. Use :cpp:func:`visibility()` and :cpp:func:`sectorDirections()`.
+
+		.. cpp:enumerator:: VARIABLE_PREVAILING
+
+			Variable prevailing visibility. Use :cpp:func:`minVisibility()` and :cpp:func:`maxVisibility()`.
+
+		.. cpp:enumerator:: VARIABLE_DIRECTIONAL
+
+			Variable directional visibility. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`.
+
+		.. cpp:enumerator:: VARIABLE_RUNWAY
+
+			Variable visibility for a runway. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, :cpp:func:`trend()` and :cpp:func:`runway()`.
+
+		.. cpp:enumerator:: VARIABLE_RVR
+
+			Variable runway visual range. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, :cpp:func:`trend()`, and :cpp:func:`runway()`.
+
+		.. cpp:enumerator:: VARIABLE_SECTOR
+
+			Sector visibility for a range of cardinal directions. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()` and :cpp:func:`sectorDirections()`.
 
 		.. cpp:enumerator:: VIS_MISG
 
-			Visibility data is missing (coded ``VIS MISG`` in the remarks), all data methods will return non-reported values.
+			Indicates that visibility data is missing (coded ``VIS MISG`` in the remarks), no further details are specified.
+
+		.. cpp:enumerator:: RVR_MISG
+
+			Indicates that runway visual range data is missing (coded ``RVR MISG`` in the remarks), no further details are specified.
+
+		.. cpp:enumerator:: RVRNO
+
+			Indicates that runway visual range should be reported but is missing, no further details are specified.
+
+		.. cpp:enumerator:: VISNO
+
+			Indicates that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no further details were specified.
+
 
 	**Acquiring group data**
 
@@ -2355,68 +2374,6 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 	.. cpp:function:: bool isValid() const
 
 		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid and :cpp:enum:`Extent` returned by :cpp:func:`contaminationExtent()` is not a reserved value.
-
-
-
-SecondaryLocationGroup
-^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR reports.
-
-Examples of the raw report data are ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO RWY05``, ``CHINO RWY05``, and ``CHINO E``.
-
-.. cpp:class:: SecondaryLocationGroup
-
-	Stores additional info details in the secondary locations (e.g. runway).
-
-	.. cpp:enum-class::  Type
-
-		Type of information actually stored. 
-
-		.. cpp:enumerator:: CEILING
-
-			This group indicates the ceiling height. Use :cpp:func:``height()`` to get ceiling height and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
-
-		.. cpp:enumerator:: VARIABLE_CEILING
-
-			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed, and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
-
-		.. cpp:enumerator:: VISNO
-
-			This group indicates the that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
-
-
-	**Acquiring group data**
-
-	.. cpp:function:: Runway runway() const
-
-		:returns: Runway data if this secondary location is runway, and empty ``std::optional`` otherwise.
-
-	.. cpp:function:: Direction direction() const
-
-		:returns: Direction data if this secondary location is a cardinal direction, and empty ``std::optional`` otherwise.
-
-	.. cpp:function:: Distance height() const
-
-		:returns: Height (e.g. ceiling height for a runway or aerodrome). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance minHeight() const
-
-		:returns: Minimum height (e.g. minimum ceiling height for a variable ceiling). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance maxHeight() const
-
-		:returns: Maximum height (e.g. maximum ceiling height for a variable ceiling). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance visibility() const
-
-		:returns: Currently always return a non-reported Distance value.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``false`` for incomplete groups. For complete groups returns ``true`` if the specified runway or direction is valid, and ``false`` otherwise.
 
 
 SeaSurfaceGroup
@@ -3795,8 +3752,6 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 	.. cpp:function:: protected virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 

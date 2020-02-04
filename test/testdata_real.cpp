@@ -4580,5 +4580,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0708/0710 14010KT"
 		" BECMG 0720/0722 36010KT"
 		"="
+	},
+	
+	{
+		"BGJN", "Ilulissat Arpt", {2020, 2, 2},		
+		"BGJN 022250Z AUTO 07002KT 8000NDV -SG SCT055/// BKN070/// M16/M19 Q1003"
+		"=",
+		""
 	}
 };

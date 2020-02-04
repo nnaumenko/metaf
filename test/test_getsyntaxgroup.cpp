@@ -128,12 +128,6 @@ TEST(getSyntaxGroup, OTHER_NOSPECI) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_RVRNO) {
-	const auto g = metaf::FixedGroup::parse("RVRNO", metaf::ReportPart::RMK);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_PWINO) {
 	const auto g = metaf::FixedGroup::parse("PWINO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
@@ -160,14 +154,6 @@ TEST(getSyntaxGroup, OTHER_FROIN) {
 
 TEST(getSyntaxGroup, PRES_MISG) {
 	auto fg = metaf::FixedGroup::parse("PRES", metaf::ReportPart::RMK);
-	ASSERT_TRUE(fg.has_value());
-	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
-		metaf::AppendResult::APPENDED);
-	EXPECT_EQ(metaf::getSyntaxGroup(fg.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, RVR_MISG) {
-	auto fg = metaf::FixedGroup::parse("RVR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg.has_value());
 	EXPECT_EQ(fg->append("MISG", metaf::ReportPart::RMK), 
 		metaf::AppendResult::APPENDED);
@@ -329,12 +315,6 @@ TEST(getSyntaxGroup, OTHER_TemperatureForecastGroup) {
 
 TEST(getSyntaxGroup, OTHER_PressureGroup) {
 	const auto g = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
-TEST(getSyntaxGroup, OTHER_RunwayVisualRangeGroup) {
-	const auto g = metaf::RunwayVisualRangeGroup::parse("R30/5000VP6000FT/U", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
