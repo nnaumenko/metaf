@@ -130,8 +130,8 @@ static bool isTemperature(const metaf::Group & group) {
 	return(std::holds_alternative<metaf::TemperatureGroup>(group));
 }
 
-static bool isTempForecast(const metaf::Group & group) {
-	return(std::holds_alternative<metaf::TemperatureForecastGroup>(group));
+static bool isMinMaxTemp(const metaf::Group & group) {
+	return(std::holds_alternative<metaf::MinMaxTemperatureGroup>(group));
 }
 
 static bool isPressure(const metaf::Group & group) {
@@ -993,18 +993,17 @@ TEST(ParserSyntaxValidTafReports, reportsWithTemperatureForecasts) {
 	EXPECT_TRUE(isLocation(result1.groups.at(1).group));
 	EXPECT_TRUE(isReportTime(result1.groups.at(2).group));
 	EXPECT_TRUE(isTimeSpan(result1.groups.at(3).group));
-	EXPECT_TRUE(isTempForecast(result1.groups.at(4).group));
+	EXPECT_TRUE(isMinMaxTemp(result1.groups.at(4).group));
 
 	const auto result2 = metaf::Parser::parse("TAF ZZZZ 041115Z 0412/0512 TX07/0416Z TN03/0505Z=");
 	EXPECT_EQ(result2.reportMetadata.type, metaf::ReportType::TAF);
 	EXPECT_EQ(result2.reportMetadata.error, metaf::ReportError::NONE);
-	EXPECT_EQ(result2.groups.size(), 6u);
+	EXPECT_EQ(result2.groups.size(), 5u);
 	EXPECT_TRUE(isTaf(result2.groups.at(0).group));
 	EXPECT_TRUE(isLocation(result2.groups.at(1).group));
 	EXPECT_TRUE(isReportTime(result2.groups.at(2).group));
 	EXPECT_TRUE(isTimeSpan(result2.groups.at(3).group));
-	EXPECT_TRUE(isTempForecast(result2.groups.at(4).group));
-	EXPECT_TRUE(isTempForecast(result2.groups.at(5).group));
+	EXPECT_TRUE(isMinMaxTemp(result2.groups.at(4).group));
 }
 
 TEST(ParserSyntaxValidTafReports, reportWithRemarks) {
@@ -1075,7 +1074,7 @@ TEST(ParserSyntaxValidTafReports, reportTypeNotSpecified) {
 	EXPECT_TRUE(isLocation(result1.groups.at(0).group));
 	EXPECT_TRUE(isReportTime(result1.groups.at(1).group));
 	EXPECT_TRUE(isTimeSpan(result1.groups.at(2).group));
-	EXPECT_TRUE(isTempForecast(result1.groups.at(3).group));
+	EXPECT_TRUE(isMinMaxTemp(result1.groups.at(3).group));
 
 	const auto result2 = metaf::Parser::parse("ZZZZ 041115Z 0412/0512 RMK TEST=");
 	EXPECT_EQ(result2.reportMetadata.type, metaf::ReportType::TAF);
@@ -1092,12 +1091,11 @@ TEST(ParserSyntaxValidTafReports, reportTimeNotSpecified) {
 	const auto result = metaf::Parser::parse("TAF ZZZZ 0412/0512 TX07/0416Z TN03/0505Z=");
 	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
 	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
-	EXPECT_EQ(result.groups.size(), 5u);
+	EXPECT_EQ(result.groups.size(), 4u);
 	EXPECT_TRUE(isTaf(result.groups.at(0).group));
 	EXPECT_TRUE(isLocation(result.groups.at(1).group));
 	EXPECT_TRUE(isTimeSpan(result.groups.at(2).group));
-	EXPECT_TRUE(isTempForecast(result.groups.at(3).group));
-	EXPECT_TRUE(isTempForecast(result.groups.at(4).group));
+	EXPECT_TRUE(isMinMaxTemp(result.groups.at(3).group));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

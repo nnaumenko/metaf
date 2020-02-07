@@ -643,19 +643,9 @@ void temperatureForecastFromTaf(
 	metaf::Temperature minTemp, maxTemp;
 	for (const auto & tafGroupInfo : tafGroups) {
 		const auto & tafGroup = tafGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::TemperatureForecastGroup>(&tafGroup); gr) {
-			switch(gr->point()) {
-				case metaf::TemperatureForecastGroup::Point::MINIMUM:
-				minTemp = gr->airTemperature();
-				break;
-
-				case metaf::TemperatureForecastGroup::Point::MAXIMUM:
-				maxTemp = gr->airTemperature();
-				break;
-
-				default:
-				break;
-			}
+		if (const auto gr = std::get_if<metaf::MinMaxTemperatureGroup>(&tafGroup); gr) {
+			minTemp = gr->minimum();
+			maxTemp = gr->maximum();
 		}
 	}
 	if (const auto t = minTemp.toUnit(tempUnit); t.has_value()) {

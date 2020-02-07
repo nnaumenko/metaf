@@ -13,9 +13,9 @@ TEST(GroupParser, parse) {
 		metaf::GroupParser::parse("9999", metaf::ReportPart::METAR, metaf::missingMetadata);
 	EXPECT_TRUE(std::holds_alternative<metaf::VisibilityGroup>(visGroup));
 
-	const metaf::Group tempForecastGroup = 
+	const metaf::Group minMaxTempGroup = 
 		metaf::GroupParser::parse("TX03/1200Z", metaf::ReportPart::TAF, metaf::missingMetadata);
-	EXPECT_TRUE(std::holds_alternative<metaf::TemperatureForecastGroup>(tempForecastGroup));
+	EXPECT_TRUE(std::holds_alternative<metaf::MinMaxTemperatureGroup>(minMaxTempGroup));
 
 	const metaf::Group fixedGroup = 
 		metaf::GroupParser::parse("SPECI", metaf::ReportPart::HEADER, metaf::missingMetadata);

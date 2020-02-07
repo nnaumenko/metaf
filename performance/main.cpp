@@ -70,9 +70,6 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::TemperatureGroup>():
 		return "TemperatureGroup";
 
-		case variant_index<metaf::Group, metaf::TemperatureForecastGroup>():
-		return "TemperatureForecastGroup";
-
 		case variant_index<metaf::Group, metaf::PressureGroup>():
 		return "PressureGroup";
 
@@ -437,7 +434,6 @@ void printDataSize(){
 	printSize(groupName(19), sizeof(variant_alternative_t<19, metaf::Group>));
 	printSize(groupName(20), sizeof(variant_alternative_t<20, metaf::Group>));
 	printSize(groupName(21), sizeof(variant_alternative_t<21, metaf::Group>));
-	printSize(groupName(22), sizeof(variant_alternative_t<22, metaf::Group>));
 	cout << endl;
 }
 

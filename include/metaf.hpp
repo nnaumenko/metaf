@@ -44,7 +44,6 @@ class VisibilityGroup;
 class CloudGroup;
 class WeatherGroup;
 class TemperatureGroup;
-class TemperatureForecastGroup;
 class PressureGroup;
 class RunwayStateGroup;
 class SeaSurfaceGroup;
@@ -69,7 +68,6 @@ using Group = std::variant<
 	CloudGroup,
 	WeatherGroup,
 	TemperatureGroup,
-	TemperatureForecastGroup,
 	PressureGroup,
 	RunwayStateGroup,
 	SeaSurfaceGroup,
@@ -1288,40 +1286,6 @@ private:
 	Temperature dp;
 };
 
-class TemperatureForecastGroup {
-public:
-	enum class Point {
-		NOT_SPECIFIED,
-		MINIMUM,
-		MAXIMUM
-	};
-	Point point() const { return p; }
-	Temperature airTemperature() const { return t; }
-	MetafTime time() const { return tm; }
-	bool isValid() const { return tm.isValid(); }
-
-	TemperatureForecastGroup() = default;
-	static inline std::optional<TemperatureForecastGroup> parse(
-		const std::string & group,
-		ReportPart reportPart,
-		const ReportMetadata & reportMetadata = missingMetadata);
-	AppendResult inline append(const std::string & group,
-		ReportPart reportPart = ReportPart::UNKNOWN,
-		const ReportMetadata & reportMetadata = missingMetadata);
-
-private:
-	Point p = Point::NOT_SPECIFIED;
-	Temperature t;
-	MetafTime tm;
-
-	static std::optional<Point> pointFromString (const std::string & s) {
-		if (s == "T")  return Point::NOT_SPECIFIED;
-		if (s == "TX") return Point::MAXIMUM;
-		if (s == "TN") return Point::MINIMUM;
-		return std::optional<Point>();
-	}
-};
-
 class PressureGroup {
 public:
 	enum class Type {
@@ -1444,14 +1408,17 @@ private:
 
 class MinMaxTemperatureGroup {
 public:
-	enum class ObservationPeriod {
-		HOURS6,		//6 hourly
-		HOURS24,	//24 hourly
+	enum class Type {
+		OBSERVED_6_HOURLY,
+		OBSERVED_24_HOURLY,
+		FORECAST
 	};
-	ObservationPeriod observationPeriod() const { return obsPeriod; }
+	Type type() const { return t; }
 	Temperature minimum() const { return minTemp; }
+	std::optional<MetafTime> minimumTime() const { return minTime; }
 	Temperature maximum() const { return maxTemp; }
-	bool isValid() const { return true; }
+	std::optional<MetafTime> maximumTime() const { return maxTime; }
+	inline bool isValid() const;
 
 	MinMaxTemperatureGroup() = default;
 	static inline std::optional<MinMaxTemperatureGroup> parse(
@@ -1462,9 +1429,22 @@ public:
 		ReportPart reportPart = ReportPart::UNKNOWN,
 		const ReportMetadata & reportMetadata = missingMetadata);
 private:
-	ObservationPeriod obsPeriod = ObservationPeriod::HOURS6;
+	Type t = Type::FORECAST;
 	Temperature minTemp;
 	Temperature maxTemp;
+	std::optional<MetafTime> minTime;
+	std::optional<MetafTime> maxTime;
+	bool isIncomplete = false;
+
+	static inline std::optional<MinMaxTemperatureGroup> from6hourly(
+		const std::string & group);
+	static inline std::optional<MinMaxTemperatureGroup> from24hourly(
+		const std::string & group);
+	static inline std::optional<MinMaxTemperatureGroup> fromForecast(
+		const std::string & group);
+
+	inline AppendResult append6hourly(const std::string & group);
+	inline AppendResult appendForecast(const std::string & group);
 };
 
 class PrecipitationGroup {
@@ -2103,9 +2083,6 @@ protected:
 	virtual T visitTemperatureGroup(const TemperatureGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
-	virtual T visitTemperatureForecastGroup(const TemperatureForecastGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString) = 0;
 	virtual T visitPressureGroup(const PressureGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
@@ -2178,9 +2155,6 @@ inline T Visitor<T>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<TemperatureGroup>(&group); gr) {
 		return this->visitTemperatureGroup(*gr, reportPart, rawString);
-	}
-	if (const auto gr = std::get_if<TemperatureForecastGroup>(&group); gr) {
-		return this->visitTemperatureForecastGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<PressureGroup>(&group); gr) {
 		return this->visitPressureGroup(*gr, reportPart, rawString);
@@ -2263,10 +2237,6 @@ inline void Visitor<void>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<TemperatureGroup>(&group); gr) {
 		this->visitTemperatureGroup(*gr, reportPart, rawString);
-		return;
-	}
-	if (const auto gr = std::get_if<TemperatureForecastGroup>(&group); gr) {
-		this->visitTemperatureForecastGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<PressureGroup>(&group); gr) {
@@ -5112,41 +5082,6 @@ AppendResult TemperatureGroup::append(const std::string & group,
 
 ///////////////////////////////////////////////////////////////////////////
 
-std::optional<TemperatureForecastGroup> TemperatureForecastGroup::parse(
-	const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata;
-	static const std::optional<TemperatureForecastGroup> notRecognised;
-	if (reportPart != ReportPart::TAF) return notRecognised;
-	static const std::regex rgx ("(T[XN]?)(M?\\d\\d)/(\\d\\d\\d\\d)Z");
-	static const auto matchPoint = 1, matchTemperature = 2, matchTime = 3;
-	std::smatch match;
-	if (!std::regex_match(group, match, rgx)) return notRecognised;
-	auto point = pointFromString(match.str(matchPoint));
-	if (!point.has_value()) return notRecognised;
-	auto temp = Temperature::fromString(match.str(matchTemperature));
-	if (!temp.has_value()) return notRecognised;
-	auto time = MetafTime::fromStringDDHH(match.str(matchTime));
-	if (!time.has_value()) return notRecognised;
-	TemperatureForecastGroup result;
-	result.p = point.value();
-	result.t = temp.value();
-	result.tm = time.value();
-	return result;
-}
-
-AppendResult TemperatureForecastGroup::append(const std::string & group,
-	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
-{
-	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
-}
-
-///////////////////////////////////////////////////////////////////////////
-
 std::optional<PressureGroup> PressureGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
@@ -5331,69 +5266,154 @@ std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::parse(
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	std::optional<MinMaxTemperatureGroup> notRecognised;
-	static const std::regex rgx6hourly("([12])([01]\\d\\d\\d|////)");
-	static const auto matchType6hourly = 1, matchValue6hourly = 2;
-	static const std::regex rgx24hourly("4([01]\\d\\d\\d)([01]\\d\\d\\d)");
-	static const auto matchMaxTemp24hourly = 1, matchMinTemp24hourly = 2;
-	if (reportPart != ReportPart::RMK) return notRecognised;
-	std::smatch match;
-	if (std::regex_match(group, match, rgx24hourly)) {
-		const auto max =
-			Temperature::fromRemarkString(match.str(matchMaxTemp24hourly));
-		if (!max.has_value()) return notRecognised;
-		const auto min =
-			Temperature::fromRemarkString(match.str(matchMinTemp24hourly));
-		if (!min.has_value()) return notRecognised;
-		MinMaxTemperatureGroup result;
-		result.obsPeriod = ObservationPeriod::HOURS24;
-		result.minTemp = min.value();
-		result.maxTemp = max.value();
-		return result;
+	if (reportPart == ReportPart::TAF) return fromForecast(group);
+	if (reportPart == ReportPart::RMK) {
+		if (const auto h6 = from6hourly(group); h6.has_value()) return h6;
+		if (const auto h24 = from24hourly(group); h24.has_value()) return h24;
 	}
-	if (std::regex_match(group, match, rgx6hourly)) {
-		if (match.str(matchValue6hourly) == "////") {
-			MinMaxTemperatureGroup result;
-			result.obsPeriod = ObservationPeriod::HOURS6;
-			return result;
-		}
-		const auto t =
-			Temperature::fromRemarkString(match.str(matchValue6hourly));
-		if (!t.has_value()) return notRecognised;
-		MinMaxTemperatureGroup result;
-		result.obsPeriod = ObservationPeriod::HOURS6;
-		switch(auto type = match.str(matchType6hourly); std::stoi(type)) {
-			case 1: result.maxTemp = t.value(); break;
-			case 2: result.minTemp = t.value(); break;
-			default: return notRecognised;
-		}
-		return result;
-	}
-	return notRecognised;
+	return std::optional<MinMaxTemperatureGroup>();
 }
 
 AppendResult MinMaxTemperatureGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata;
-	if (observationPeriod() != ObservationPeriod::HOURS6)
-		return AppendResult::NOT_APPENDED;
-	const auto nextGroup = parse(group, reportPart, reportMetadata);
-	if (!nextGroup.has_value()) return AppendResult::NOT_APPENDED;
+	(void)reportPart; (void)reportMetadata;
+	switch (type()) {
+		case Type::OBSERVED_6_HOURLY: return append6hourly(group);
+		case Type::OBSERVED_24_HOURLY: return AppendResult::NOT_APPENDED;
+		case Type::FORECAST: return appendForecast(group);
+	}
+}
 
-	if (nextGroup->observationPeriod() != observationPeriod())
-		return AppendResult::NOT_APPENDED;
-	if (minimum().temperature().has_value() &&
-		nextGroup->minimum().temperature().has_value()) return AppendResult::NOT_APPENDED;
-	if (maximum().temperature().has_value() &&
-		nextGroup->maximum().temperature().has_value()) return AppendResult::NOT_APPENDED;
+std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::from6hourly(
+	const std::string & group)
+{
+	std::optional<MinMaxTemperatureGroup> notRecognised;
+	static const std::regex rgx("([12])([01]\\d\\d\\d|////)");
+	static const auto matchType = 1, matchValue = 2;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return notRecognised;
+	MinMaxTemperatureGroup result;
+	result.t = Type::OBSERVED_6_HOURLY;
+	if (match.str(matchValue) == "////") return result;
+	const auto temp = Temperature::fromRemarkString(match.str(matchValue));
+	if (!temp.has_value()) return notRecognised;
+	const auto typeStr = match.str(matchType);
+	if (typeStr == "1") { result.maxTemp = temp.value(); return result; }
+	if (typeStr == "2") { result.minTemp = temp.value(); return result; }
+	return notRecognised;
+}
 
-	if (!minimum().temperature().has_value() &&
-		nextGroup->minimum().temperature().has_value()) minTemp = nextGroup->minTemp;
-	if (!maximum().temperature().has_value() &&
-		nextGroup->maximum().temperature().has_value()) maxTemp = nextGroup->maxTemp;
+std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::from24hourly(
+	const std::string & group)
+{
+	std::optional<MinMaxTemperatureGroup> notRecognised;
+	static const std::regex rgx("4([01]\\d\\d\\d)([01]\\d\\d\\d)");
+	static const auto matchMax = 1, matchMin = 2;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return notRecognised;
+	const auto max = Temperature::fromRemarkString(match.str(matchMax));
+	if (!max.has_value()) return notRecognised;
+	const auto min = Temperature::fromRemarkString(match.str(matchMin));
+	if (!min.has_value()) return notRecognised;
+	MinMaxTemperatureGroup result;
+	result.t = Type::OBSERVED_24_HOURLY;
+	result.minTemp = min.value();
+	result.maxTemp = max.value();
+	return result;
+}
+
+std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::fromForecast(
+	const std::string & group)
+{
+	static const std::optional<MinMaxTemperatureGroup> notRecognised;
+	static const std::regex rgx ("T([XN])?(M?\\d\\d)/(\\d\\d\\d\\d)Z");
+	static const auto matchPoint = 1, matchTemperature = 2, matchTime = 3;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return notRecognised;
+	auto temp = Temperature::fromString(match.str(matchTemperature));
+	if (!temp.has_value()) return notRecognised;
+	auto time = MetafTime::fromStringDDHH(match.str(matchTime));
+	if (!time.has_value()) return notRecognised;
+	MinMaxTemperatureGroup result;
+	result.t = Type::FORECAST;
+	if (match.str(matchPoint) == "N") {
+		result.minTemp = temp.value();
+		result.minTime = time;
+		return result;
+	} 
+	if (match.str(matchPoint) == "X") {
+		result.maxTemp = temp.value();
+		result.maxTime = time;
+		return result;
+	}
+	if (!match.length(matchPoint)) {
+		result.minTemp = temp.value();
+		result.minTime = time;
+		result.maxTemp = temp.value();
+		result.maxTime = time;
+		result.isIncomplete = true;
+		return result;		
+	}
+	return notRecognised;
+}
+
+AppendResult MinMaxTemperatureGroup::append6hourly(const std::string & group) {
+	static const auto error = AppendResult::NOT_APPENDED;
+	const auto nextGroup = from6hourly(group);
+	if (!nextGroup.has_value()) return error;
+	if (minTemp.isReported() && nextGroup->minTemp.isReported()) return error;
+	if (maxTemp.isReported() && nextGroup->maxTemp.isReported()) return error;
+	if (!minTemp.isReported() && nextGroup->minTemp.isReported()) minTemp = nextGroup->minTemp;
+	if (!maxTemp.isReported() && nextGroup->maxTemp.isReported()) maxTemp = nextGroup->maxTemp;
 	return AppendResult::APPENDED;
+}
+
+AppendResult MinMaxTemperatureGroup::appendForecast(const std::string & group) {
+	static const auto error = AppendResult::NOT_APPENDED;
+	if (minTemp.isReported() && maxTemp.isReported() && !isIncomplete) return error;
+	const auto nextGroup = fromForecast(group);
+	if (!nextGroup.has_value()) return error;
+	if (isIncomplete != nextGroup->isIncomplete) return error;
+	if (!isIncomplete) {
+		// Minimum or maximum temperature point specified explicitly
+		// Get minimum either from *this or from nextGroup, and maximum from other group
+		// Make sure appending two minimums or two maximums will result in error
+		if (minTemp.isReported() && nextGroup->minTemp.isReported()) return error;
+		if (maxTemp.isReported() && nextGroup->maxTemp.isReported()) return error;
+		if (!minTemp.isReported() && nextGroup->minTemp.isReported()) {
+			minTemp = nextGroup->minTemp;
+			minTime = nextGroup->minTime;
+		}
+		if (!maxTemp.isReported() && nextGroup->maxTemp.isReported()) {
+			maxTemp = nextGroup->maxTemp;
+			maxTime = nextGroup->maxTime;
+		}
+		if (!minTemp.isReported() || !maxTemp.isReported()) return error;
+	} else {
+		maxTemp = nextGroup->maxTemp;
+		maxTime = nextGroup->maxTime;
+		if ((!minTemp.isFreezing() && maxTemp.isFreezing()) || 
+			minTemp.temperature().value() > maxTemp.temperature().value())
+		{
+			std::swap(minTemp, maxTemp);
+			std::swap(minTime, maxTime);
+		}
+		isIncomplete = false;
+	}
+	return AppendResult::APPENDED;
+}
+
+bool MinMaxTemperatureGroup::isValid() const {
+	if (isIncomplete) return false;
+	if (minimum().isReported() && 
+		maximum().isReported() &&
+		!minimum().isFreezing() && 
+		maximum().isFreezing()) return false;
+	if (!minimumTime().value_or(MetafTime()).isValid()) return false;
+	if (!maximumTime().value_or(MetafTime()).isValid()) return false;
+	return ((minimum().temperature().value_or(-100) < maximum().temperature().value_or(100)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

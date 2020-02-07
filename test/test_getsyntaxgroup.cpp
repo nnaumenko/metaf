@@ -307,12 +307,6 @@ TEST(getSyntaxGroup, OTHER_TemperatureGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_TemperatureForecastGroup) {
-	const auto g = metaf::TemperatureForecastGroup::parse("TX07/1105Z", metaf::ReportPart::TAF);
-	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
-}
-
 TEST(getSyntaxGroup, OTHER_PressureGroup) {
 	const auto g = metaf::PressureGroup::parse("Q1033", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());

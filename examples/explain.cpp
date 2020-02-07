@@ -52,10 +52,6 @@ private:
 	virtual std::string visitTemperatureGroup(const metaf::TemperatureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitTemperatureForecastGroup(
-		const metaf::TemperatureForecastGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
 	virtual std::string visitPressureGroup(const metaf::PressureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
@@ -413,11 +409,11 @@ std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
 		break;
 
 		case metaf::WindGroup::Type::PEAK_WIND:
-		result << "Peak wind ";
-		if (group.eventTime().has_value()) {
-			result << "was observed at ";
-			result << explainMetafTime(*group.eventTime());
-		}
+		result << "Peak wind was observed at ";
+		result << explainMetafTime(group.eventTime().value());
+		result << lineBreak;
+		result << "Wind direction: " << explainDirection(group.direction(), true) << lineBreak;
+		result << "Wind speed: " << explainSpeed(group.windSpeed());
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
@@ -687,32 +683,6 @@ std::string VisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup 
 	return result.str();
 }
 
-std::string VisitorExplain::visitTemperatureForecastGroup(
-	const metaf::TemperatureForecastGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch(group.point()) {
-		case metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED:
-		result << "Temperature";
-		break;
-
-		case metaf::TemperatureForecastGroup::Point::MINIMUM: 
-		result << "Minimum temperature";
-		break;
-
-		case metaf::TemperatureForecastGroup::Point::MAXIMUM:
-		result << "Maximum temperature";
-		break;
-	}
-	result << " " << explainTemperature(group.airTemperature()) << ", ";
-	result << "expected on " << explainMetafTime(group.time());
-	return result.str();
-}
-
 std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
@@ -798,30 +768,40 @@ std::string VisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTempe
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	std::string periodStr;
-	switch(group.observationPeriod()) {
-		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6:
-		periodStr = "6-hourly";
+	switch(group.type()) {
+		case metaf::MinMaxTemperatureGroup::Type::OBSERVED_6_HOURLY:
+		result << "Observed 6-hourly minimum/maximum temperature: " << lineBreak;
+		result << "Minimum temperature: ";
+		result << explainTemperature(group.minimum()) << lineBreak;
+		result << "Maximum temperature: ";
+		result << explainTemperature(group.minimum());
 		break;
 
-		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS24:
-		periodStr = "24-hourly";
-		break;
-	}
-	result << periodStr << " " << " minimum / maximum temperature";
-	if (!group.minimum().temperature().has_value() && 
-		!group.maximum().temperature().has_value()) {
-			result << " is not reported";
-			return result.str();
-	}
-	result << lineBreak;
-	if (group.minimum().temperature().has_value()) {
-		result << "Minimum temperature ";
+		case metaf::MinMaxTemperatureGroup::Type::OBSERVED_24_HOURLY:
+		result << "Observed 24-hourly minimum/maximum temperature: " << lineBreak;
+		result << "Minimum temperature: ";
 		result << explainTemperature(group.minimum()) << lineBreak;
-	}
-	if (group.maximum().temperature().has_value()) {
-		result << "Maximum temperature ";
-		result << explainTemperature(group.maximum()) << lineBreak;
+		result << "Maximum temperature: ";
+		result << explainTemperature(group.minimum());
+		break;
+
+		case metaf::MinMaxTemperatureGroup::Type::FORECAST:
+		result << "Forecast minimum/maximum temperature" << lineBreak;
+		if (group.minimum().isReported()) {
+			result << "Minimum temperature: ";
+			result << explainTemperature(group.minimum());
+			result << ", expected at ";
+			result << explainMetafTime(group.minimumTime().value());
+			result << lineBreak;
+		}
+		if (group.maximum().isReported()) {
+			result << "Maximum temperature: ";
+			result << explainTemperature(group.maximum());
+			result << ", expected at ";
+			result << explainMetafTime(group.maximumTime().value());
+			result << lineBreak;
+		}
+		break;
 	}
 	return result.str();
 }

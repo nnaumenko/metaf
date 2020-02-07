@@ -283,15 +283,6 @@ Now add to class MyVisitor the following group handling methods ::
 		return ("Temperature and Dew Point: " + rawString);
 	}
 
-	virtual std::string visitTemperatureForecastGroup(
-		const TemperatureForecastGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Tempreature Forecast: " + rawString);
-	}
-
 	virtual std::string visitPressureGroup(
 		const PressureGroup & group,
 		ReportPart reportPart,

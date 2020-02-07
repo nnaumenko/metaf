@@ -1213,7 +1213,7 @@ WeatherPhenomena
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1227,14 +1227,6 @@ This section contains the information on each group class which stores informati
 
 FixedGroup
 ^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
-
-.. image:: fixedgroup.svg
-
-The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
-
-.. image:: fixedgrouprmk.svg
 
 .. cpp:class:: FixedGroup
 
@@ -2039,63 +2031,6 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 			:returns: ``true`` if stored ambient air temperature and dew point information is valid, and ``false`` otherwise. The information is considered valid if the dew point is less or equal than ambient air temperature.
 
 
-TemperatureForecastGroup
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: temperatureforecastgroup.svg
-
-Examples of the raw report data are ``TX15/3111Z``, ``TN00/3103Z``, and ``T30/1218Z``.
-
-.. cpp:class:: TemperatureForecastGroup
-
-	Stores information about forecast ambient air temperature along with the time when it is expected.
-
-		.. cpp:enum-class:: Point
-
-			Temperature point for which the forecast is reported.
-			
-			.. cpp:enumerator:: NOT_SPECIFIED
-
-				Forecast temperature point is not specified; temperature expected at certain time is reported.
-
-			.. cpp:enumerator:: MINIMUM
-
-				Forecast for minimum temperature is reported.
-
-			.. cpp:enumerator:: MAXIMUM
-
-				Forecast for maximum temperature is reported.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Point point() const
-
-			Temperature point for which the forecast is reported.
-
-		.. cpp:function:: Temperature airTemperature() const
-
-			Forecast ambient air temperature.
-
-		.. cpp:function:: MetafTime time() const
-
-			Time when the forecast temperature is expected.
-
-	**Additional data**
-
-		.. cpp:function:: std::optional<float> relativeHumidity()
-
-			:returns: Relative humidity value based on ambient air temperature and dew point stored in this group, or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
-
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``true`` if forecast ambient air temperature information is valid, and ``false`` otherwise. The information is considered valid if the time is a valid value.
-
-
 PressureGroup
 ^^^^^^^^^^^^^
 
@@ -2139,75 +2074,6 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, 
 
 			:returns: Always returns ``true``.
 
-
-RunwayVisualRangeGroup
-^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: runwayvisualrangegroup.svg
-
-Examples of the raw report data are ``R24/P6000FT``, ``R31/0200N``, ``R26/0325N``, ``R23/3000V4500FT/D``, etc.
-
-.. cpp:class:: RunwayVisualRangeGroup
-
-	Stores information about visual range of a single runway.
-
-	.. cpp:enum-class:: Trend
-
-		Trend of runway visual range variation.
-
-		.. cpp:enumerator:: NONE
-
-			Trend is not specified in group.
-
-		.. cpp:enumerator:: NOT_REPORTED
-
-			Trend is specified as not reported.
-
-		.. cpp:enumerator:: UPWARD
-
-			Trend is upward (runway visual range increases / improves).
-
-		.. cpp:enumerator:: NEUTRAL
-
-			Trend is neutral (no significant changes to runway visual range).
-
-		.. cpp:enumerator:: DOWNWARD
-
-			Trend is downward (runway visual range decreases / deteriorates).
-
-	**Acquiring group data**
-
-		.. cpp:function:: Runway runway() const
-
-			:returns: Runway the visual range is provided for.
-
-		.. cpp:function:: Distance visualRange() const
-
-			:returns: Runway visual range value (if reported) or non-reported value if variable visual range is reported.
-
-		.. cpp:function:: Distance minVisualRange() const
-
-			:returns: Low limit of variable visual range or non-reported value if no variable visual range is reported.
-
-		.. cpp:function:: Distance maxVisualRange() const
-
-			:returns: High limit of variable visual range or non-reported value if no variable visual range is reported.
-
-		.. cpp:function:: Trend trend() const
-
-			:returns: Trend of runway visual range variation.
-
-		.. cpp:function:: bool isVariableVisualRange() const
-
-			:returns: ``true`` if variable visual range is reported and ``false`` otherwise.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``true`` if runway visual range information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid, and visual range / variable visual range are valid distance values (if reported).
 
 
 RunwayStateGroup
@@ -2409,57 +2275,63 @@ Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6
 MinMaxTemperatureGroup
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: minmaxtemperaturegroup.svg
-
-Examples of the raw report data are ``401120084``, ``20012``, and ``11021``. 
-
 .. cpp:class:: MinMaxTemperatureGroup
 
-	Stores information about 24-hourly or 6-hourly minimum and/or maximum temperature. This group is only used in North America and included in remarks.
+	Stores information about observed or forecast minimum and/or maximum temperature.
 
-	.. cpp:enum-class:: ObservationPeriod
+	.. cpp:enum-class:: Type
 
-		Indicates the period of observation for which the minimum and/or maximum value is reported.
+		Group type which specifies what kind of data stored in this group.
 
-		.. cpp:enumerator:: HOURS6
+		.. cpp:enumerator:: OBSERVED_24_HOURLY
 
-			Indicates that group stores information about 6-hourly minimum/maximum temperatuer.
+			Observed 24-hourly minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values.
 
-		.. cpp:enumerator:: HOURS24
+		.. cpp:enumerator:: OBSERVED_6_HOURLY
 
-			Indicates that group stores information about 24-hourly minimum/maximum temperatuer.
+			Observed 6-hourly minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values; one or both of the values may be non-reported.
+
+		.. cpp:enumerator:: FORECAST
+
+			Forecast minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values. Use :cpp:func:`minimumTime()` and :cpp:func:`maximumTime()` for the time when the specified temperature is forecast to occur.
+
+			.. note:: If only one temperature point was reported without further specifying whether it is a minimum or maximum value, then both :cpp:func:`minimum()` and :cpp:func:`maximum()` will return the same value; also :cpp:func:`minimumTime()` and :cpp:func:`maximumTime()` will return the same value.
+
 
 	**Acquiring group data**
 
-		.. cpp:function:: ObservationPeriod observationPeriod() const
+		.. cpp:function:: Type type() const
 
-			:returns: Period of observation for which the minimum and/or maximum value is reported.
+			:returns: Minimum/maximum temperature group type which specifies what kind of data is stored in this group.
 
 		.. cpp:function:: Temperature minimum() const
 
-			:returns: Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if minimum temperature was not specified in this group.
+			:returns: Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
 
 		.. cpp:function:: Temperature maximum() const
 
-			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if maximum temperature was not specified in this group.
+			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
+
+		.. cpp:function:: std::optional<MetafTime> minimumTime() const
+
+			:returns: Time when the minimum temperature is forecast to occur, or empty ``std::optional`` if the group stores data other than forecast.
+
+			Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
+
+		.. cpp:function:: std::optional<MetafTime> maximumTime() const
+
+			:returns: Time when the maximum temperature is forecast to occur, or empty ``std::optional`` if the group stores data other than forecast.
+
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: Always returns ``true``.
+			:returns: ``true`` if the minimum temperature is greater or equal to maximum temperature, and ``false`` otherwise.
 
 
 PrecipitationGroup
 ^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: precipitationgroup.svg
-
-Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, ``I6012``, ``SNINCR 2/12``, ``RF00.0/000.0``, ``RF00.2/011.2``, and ``RF00.0////./``.
 
 .. cpp:class:: PrecipitationGroup
 
@@ -3745,11 +3617,7 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitTemperatureGroup(const TemperatureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	.. cpp:function:: protected virtual T visitTemperatureForecastGroup(const TemperatureForecastGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
 	.. cpp:function:: protected virtual T visitPressureGroup(const PressureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
