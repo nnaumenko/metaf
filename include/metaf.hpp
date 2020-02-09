@@ -35,7 +35,7 @@ struct Version {
 	inline static const char tag [] = "";
 };
 
-class FixedGroup;
+class KeywordGroup;
 class LocationGroup;
 class ReportTimeGroup;
 class TrendGroup;
@@ -59,7 +59,7 @@ class MiscGroup;
 class UnknownGroup;
 
 using Group = std::variant<
-	FixedGroup,
+	KeywordGroup,
 	LocationGroup,
 	ReportTimeGroup,
 	TrendGroup,
@@ -766,7 +766,7 @@ using FallbackGroup = UnknownGroup;
 
 ///////////////////////////////////////////////////////////////////////////
 
-class FixedGroup {
+class KeywordGroup {
 public:
 	enum class Type {
 		METAR,
@@ -778,29 +778,19 @@ public:
 		COR,
 		AUTO,
 		CAVOK,
-		NSW,
 		RMK,
 		MAINTENANCE_INDICATOR,
 		AO1,
 		AO2,
 		AO1A,
 		AO2A,
-		NOSPECI,
-		PWINO,
-		TSNO,
-		SLPNO,
-		FROIN,
-		PRES_MISG,
-		T_MISG,
-		TD_MISG,
-		WX_MISG,
-		TS_LTNG_TEMPO_UNAVBL
+		NOSPECI
 	};
 	Type type() const { return t; }
 	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
 
-	FixedGroup() = default;
-	static inline std::optional<FixedGroup> parse(const std::string & group,
+	KeywordGroup() = default;
+	static inline std::optional<KeywordGroup> parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata = missingMetadata);
 	AppendResult inline append(const std::string & group,
@@ -823,8 +813,8 @@ private:
 	};
 	IncompleteText incompleteText = IncompleteText::NONE;
 
-	FixedGroup(Type type) :t (type) {}
-	FixedGroup(IncompleteText it, Type t) :t (t), incompleteText(it) {}
+	KeywordGroup(Type type) :t (type) {}
+	KeywordGroup(IncompleteText it, Type t) :t (t), incompleteText(it) {}
 
 	static inline Type typeFromIncomplete(IncompleteText it);
 };
@@ -1227,10 +1217,16 @@ public:
 		CURRENT,
 		RECENT,
 		EVENT,
+		NSW,
+		PWINO,
+		WX_MISG,
+		TSNO,
+		TS_LTNG_TEMPO_UNAVBL
 	};
 	Type type() const { return t; }
 	inline std::vector<WeatherPhenomena> weatherPhenomena() const;
-	bool isValid() const { 
+	bool isValid() const {
+		if (incompleteText != IncompleteText::NONE) return false;
 		for (auto i=0u; i < wSize; i++) 
 			if (!w[i].isOmitted() && !w[i].isValid()) return false;
 		return true;
@@ -1246,12 +1242,21 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
+	enum class IncompleteText {
+		NONE,
+		WX,
+		TSLTNG,
+		TSLTNG_TEMPO
+	};
+
 	inline bool addWeatherPhenomena(const WeatherPhenomena & wp);
 
 	Type t = Type::CURRENT;
 	static const inline size_t wSize = 10;
 	WeatherPhenomena w[wSize];
+	IncompleteText incompleteText = IncompleteText::NONE;
 
+	WeatherGroup(Type tp, IncompleteText i = IncompleteText::NONE) : t(tp), incompleteText(i) {}
 	static inline WeatherGroup notReported();
 	static inline WeatherGroup notReportedRecent();
 
@@ -1265,6 +1270,12 @@ private:
 
 class TemperatureGroup {
 public:
+	enum class Type {
+		TEMPERATURE_AND_DEW_POINT,
+		T_MISG,
+		TD_MISG
+	};
+	Type type() const { return tp; }
 	Temperature airTemperature() const { return t; }
 	Temperature dewPoint() const { return dp; }
 	std::optional<float> relativeHumidity() const {
@@ -1282,8 +1293,12 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
+	Type tp = Type::TEMPERATURE_AND_DEW_POINT;
 	Temperature t;
 	Temperature dp;
+	bool isIncomplete = false;
+
+	TemperatureGroup(Type t, bool i = false) : tp(t), isIncomplete(i) {}
 };
 
 class PressureGroup {
@@ -1291,11 +1306,13 @@ public:
 	enum class Type {
 		OBSERVED_QNH,			//Observed mean sea level pressure (METAR)
 		FORECAST_LOWEST_QNH,	//Forecast lowest sea level pressure
-		OBSERVED_QFE			//Observed actual (non-normalised) pressure
+		OBSERVED_QFE,			//Observed actual (non-normalised) pressure
+		SLPNO,					//Mean sea-level pressure information is not available
+		PRES_MISG,				//Atmospheric pressure (altimeter) data is missing
 	};
 	Type type() const { return t; }
 	Pressure atmosphericPressure() const { return p; }
-	bool isValid() const { return true; }
+	bool isValid() const { return (!isIncomplete); }
 
 	PressureGroup() = default;
 	static inline std::optional<PressureGroup> parse(
@@ -1309,6 +1326,9 @@ public:
 private:
 	Type t = Type::OBSERVED_QNH;
 	Pressure p;
+	bool isIncomplete = false;
+
+	PressureGroup (Type tp, bool i = false) : t(tp), isIncomplete(i) {} 
 };
 
 class RunwayStateGroup {
@@ -1857,7 +1877,8 @@ public:
 		COLOUR_CODE_BLACKYELLOW1,
 		COLOUR_CODE_BLACKYELLOW2,
 		COLOUR_CODE_BLACKAMBER,
-		COLOUR_CODE_BLACKRED
+		COLOUR_CODE_BLACKRED,
+		FROIN
 	};
 	Type type() const { return groupType; }
 	std::optional<float> data() const { return groupData; }
@@ -2055,8 +2076,8 @@ public:
 		return visit(groupInfo.group, groupInfo.reportPart, groupInfo.rawString);
 	}
 protected:
-	virtual T visitFixedGroup(
-		const FixedGroup & group,
+	virtual T visitKeywordGroup(
+		const KeywordGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
 	virtual T visitLocationGroup(const LocationGroup & group,
@@ -2129,8 +2150,8 @@ inline T Visitor<T>::visit(const Group & group,
 	ReportPart reportPart,
 	const std::string & rawString)
 {
-	if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
-		return this->visitFixedGroup(*gr, reportPart, rawString);
+	if (const auto gr = std::get_if<KeywordGroup>(&group); gr) {
+		return this->visitKeywordGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
 		return this->visitLocationGroup(*gr, reportPart, rawString);
@@ -2203,8 +2224,8 @@ inline void Visitor<void>::visit(const Group & group,
 	ReportPart reportPart,
 	const std::string & rawString)
 {
-	if (const auto gr = std::get_if<FixedGroup>(&group); gr) {
-		this->visitFixedGroup(*gr, reportPart, rawString);
+	if (const auto gr = std::get_if<KeywordGroup>(&group); gr) {
+		this->visitKeywordGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<LocationGroup>(&group); gr) {
@@ -3775,92 +3796,50 @@ bool WeatherPhenomena::isValid() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::optional<FixedGroup> FixedGroup::parse(const std::string & group,
+std::optional<KeywordGroup> KeywordGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
 	if (reportPart == ReportPart::HEADER) {
-		if (group == "METAR") return FixedGroup(Type::METAR);
-		if (group == "SPECI") return FixedGroup(Type::SPECI);
-		if (group == "TAF") return FixedGroup(Type::TAF);
-		if (group == "AMD") return FixedGroup(Type::AMD);
+		if (group == "METAR") return KeywordGroup(Type::METAR);
+		if (group == "SPECI") return KeywordGroup(Type::SPECI);
+		if (group == "TAF") return KeywordGroup(Type::TAF);
+		if (group == "AMD") return KeywordGroup(Type::AMD);
 	}
 	if (reportPart == ReportPart::HEADER || reportPart == ReportPart::METAR) {
-		if (group == "COR") return FixedGroup(Type::COR);
+		if (group == "COR") return KeywordGroup(Type::COR);
 	}
 	if (reportPart == ReportPart::HEADER ||
 		reportPart == ReportPart::METAR ||
 		reportPart == ReportPart::TAF) {
-			if (group == "NIL") return FixedGroup(Type::NIL);
-			if (group == "CNL") return FixedGroup(Type::CNL);
+			if (group == "NIL") return KeywordGroup(Type::NIL);
+			if (group == "CNL") return KeywordGroup(Type::CNL);
 	}
 	if (reportPart == ReportPart::METAR) {
-		if (group == "AUTO") return FixedGroup(Type::AUTO);
+		if (group == "AUTO") return KeywordGroup(Type::AUTO);
 	}
 	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
-		if (group == "CAVOK") return FixedGroup(Type::CAVOK);
-		if (group == "NSW") return FixedGroup(Type::NSW);
-		if (group == "RMK") return FixedGroup(Type::RMK);
+		if (group == "CAVOK") return KeywordGroup(Type::CAVOK);
+		if (group == "RMK") return KeywordGroup(Type::RMK);
 	}
 	if (reportPart == ReportPart::RMK) {
-		if (group == "AO1") return FixedGroup(Type::AO1);
-		if (group == "AO2") return FixedGroup(Type::AO2);
-		if (group == "AO1A") return FixedGroup(Type::AO1A);
-		if (group == "AO2A") return FixedGroup(Type::AO2A);
-		if (group == "NOSPECI") return FixedGroup(Type::NOSPECI);
-		if (group == "PWINO") return FixedGroup(Type::PWINO);
-		if (group == "TSNO") return FixedGroup(Type::TSNO);
-		if (group == "SLPNO") return FixedGroup(Type::SLPNO);
-		if (group == "FROIN") return FixedGroup(Type::FROIN);
-		if (group == "PRES") return FixedGroup(IncompleteText::PRES, Type::PRES_MISG);
-		if (group == "T") return FixedGroup(IncompleteText::T, Type::T_MISG);
-		if (group == "TD") return FixedGroup(IncompleteText::TD, Type::TD_MISG);
-		if (group == "WX") return FixedGroup(IncompleteText::WX, Type::WX_MISG);
-		if (group == "TS/LTNG") return FixedGroup(IncompleteText::TS_LTNG, Type::TS_LTNG_TEMPO_UNAVBL);
+		if (group == "AO1") return KeywordGroup(Type::AO1);
+		if (group == "AO2") return KeywordGroup(Type::AO2);
+		if (group == "AO1A") return KeywordGroup(Type::AO1A);
+		if (group == "AO2A") return KeywordGroup(Type::AO2A);
+		if (group == "NOSPECI") return KeywordGroup(Type::NOSPECI);
 	}
-	if (group == "$") return FixedGroup(Type::MAINTENANCE_INDICATOR);
-	return std::optional<FixedGroup>();
+	if (group == "$") return KeywordGroup(Type::MAINTENANCE_INDICATOR);
+	return std::optional<KeywordGroup>();
 }
 
-AppendResult FixedGroup::append(const std::string & group,
+AppendResult KeywordGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)reportPart;
-
-	switch (incompleteText) {
-		case IncompleteText::NONE:
-		return AppendResult::NOT_APPENDED;
-
-		case IncompleteText::CLD:
-		case IncompleteText::PRES:
-		case IncompleteText::T:
-		case IncompleteText::TD:
-		case IncompleteText::WND:
-		case IncompleteText::WX:
-		if (group == "MISG") {
-			incompleteText = IncompleteText::NONE;
-			return AppendResult::APPENDED; 
-		}
-		break;
-
-		case IncompleteText::TS_LTNG:
-		if (group == "TEMPO") {
-			incompleteText = IncompleteText::TS_LTNG_TEMPO;
-			return AppendResult::APPENDED;
-		}
-		break;
-
-		case IncompleteText::TS_LTNG_TEMPO:
-		if (group == "UNAVBL") {
-			t = Type::TS_LTNG_TEMPO_UNAVBL;
-			incompleteText = IncompleteText::NONE; 
-			return AppendResult::APPENDED;
-		}
-		break;
-	}
-	return AppendResult::GROUP_INVALIDATED;
+	(void)group; (void)reportMetadata; (void)reportPart;
+	return AppendResult::NOT_APPENDED;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3923,11 +3902,8 @@ std::optional<TrendGroup> TrendGroup::parse(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	// Warning: if TrendGroup is ever changed to parse remarks, note
-	// that TEMPO can be part of group TS/LTNG TEMPO UNAVBL
-	// FixedGroup::append relies on TrendGroup::parse skipping remarks
 	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
-		// Detect trend type fixed groups
+		// Detect trend type groups
 		if (group == "BECMG") return TrendGroup(Type::BECMG);
 		if (group == "TEMPO") return TrendGroup(Type::TEMPO);
 		if (group == "INTER") return TrendGroup(Type::INTER);
@@ -4073,7 +4049,7 @@ bool TrendGroup::isProbabilityGroup() const {
 }
 
 bool TrendGroup::isTrendTypeGroup() const {
-	// Trend type group is a fixed group BECMG / TEMPO / INTER
+	// Trend type group is a group BECMG / TEMPO / INTER
 	// No probability or time allowed
 	if (type() != Type::BECMG &&
 		type() != Type::TEMPO &&
@@ -4780,7 +4756,7 @@ AppendResult CloudGroup::append(const std::string & group,
 
 std::optional<CloudGroup> CloudGroup::parseCloudLayerOrVertVis(const std::string & s) {
 	static const std::optional<CloudGroup> notRecognised;
-	// Attempt to parse fixed groups
+	// Attempt to parse 'no cloud' groups
 	if (s == "NCD") return CloudGroup(Type::NO_CLOUDS, Amount::NCD);
 	if (s == "NSC") return CloudGroup(Type::NO_CLOUDS, Amount::NSC);
 	if (s == "CLR") return CloudGroup(Type::NO_CLOUDS, Amount::NONE_CLR);
@@ -4913,6 +4889,7 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 {
 	std::optional<WeatherGroup> notRecognised;
 	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
+		if (group == "NSW") return WeatherGroup(Type::NSW);
 		if (const auto wp = parseWeatherWithoutEvent(group, reportPart); wp.has_value()) {
 			WeatherGroup result;
 			result.w[0] = wp.value();
@@ -4921,6 +4898,10 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 		}
 	}
 	if (reportPart == ReportPart::RMK) {
+		if (group == "PWINO") return WeatherGroup(Type::PWINO);
+		if (group == "TSNO") return WeatherGroup(Type::TSNO);
+		if (group == "WX") return WeatherGroup(Type::WX_MISG, IncompleteText::WX);
+		if (group == "TS/LTNG") return WeatherGroup(Type::TS_LTNG_TEMPO_UNAVBL, IncompleteText::TSLTNG);
 		if (!reportMetadata.reportTime.has_value()) return notRecognised;
 		return parseWeatherEvent(group, reportMetadata.reportTime.value());
 	}
@@ -4932,6 +4913,26 @@ AppendResult WeatherGroup::append(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
+	switch (incompleteText) {
+		case IncompleteText::NONE:
+		break;
+
+		case IncompleteText::WX:
+		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE; 
+		return AppendResult::APPENDED;
+
+		case IncompleteText::TSLTNG:
+		if (group != "TEMPO") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::TSLTNG_TEMPO; 
+		return AppendResult::APPENDED;
+
+		case IncompleteText::TSLTNG_TEMPO:
+		if (group != "UNAVBL") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
+	}
+
 	if (type() == Type::EVENT) return AppendResult::NOT_APPENDED;
 
 	const auto wp = parseWeatherWithoutEvent(group, reportPart);
@@ -5022,6 +5023,7 @@ bool WeatherGroup::addWeatherPhenomena(const WeatherPhenomena & wp) {
 ///////////////////////////////////////////////////////////////////////////
 
 bool TemperatureGroup::isValid() const {
+	if (isIncomplete) return false;
 	// Either temperature or dew point not reported: always valid
 	if (!airTemperature().temperature().has_value() ||
 		!dewPoint().temperature().has_value()) return true;
@@ -5045,29 +5047,35 @@ std::optional<TemperatureGroup> TemperatureGroup::parse(const std::string & grou
 	static const std::regex rmkRgx("T([01]\\d\\d\\d)([01]\\d\\d\\d)?");
 	static const auto rmkMatchTemperature = 1, rmkMatchDewPoint = 2;
 	std::smatch match;
-	if (reportPart == ReportPart::METAR && regex_match(group, match, rgx)) {
-		const auto t = Temperature::fromString(match.str(matchTemperature));
-		if (!t.has_value()) return notRecognised;
-		TemperatureGroup result;
-		result.t = t.value();
-		if (match.length(matchDewPoint)) {
-			const auto dp = Temperature::fromString(match.str(matchDewPoint));
-			if (!dp.has_value()) return notRecognised;
-			result.dp = dp.value();
+	if (reportPart == ReportPart::METAR) {
+		if (regex_match(group, match, rgx)) {
+			const auto t = Temperature::fromString(match.str(matchTemperature));
+			if (!t.has_value()) return notRecognised;
+			TemperatureGroup result(Type::TEMPERATURE_AND_DEW_POINT);
+			result.t = t.value();
+			if (match.length(matchDewPoint)) {
+				const auto dp = Temperature::fromString(match.str(matchDewPoint));
+				if (!dp.has_value()) return notRecognised;
+				result.dp = dp.value();
+			}
+			return result;
 		}
-		return result;
 	}
-	if (reportPart == ReportPart::RMK && regex_match(group, match, rmkRgx)) {
-		const auto t = Temperature::fromRemarkString(match.str(rmkMatchTemperature));
-		if (!t.has_value()) return notRecognised;
-		TemperatureGroup result;
-		result.t = t.value();
-		if (match.length(matchDewPoint)) {
-			const auto dp = Temperature::fromRemarkString(match.str(rmkMatchDewPoint));
-			if (!dp.has_value()) return notRecognised;
-			result.dp = dp.value();
+	if (reportPart == ReportPart::RMK) {
+		if (group == "T") return TemperatureGroup(Type::T_MISG, true);
+		if (group == "TD") return TemperatureGroup(Type::TD_MISG, true);
+		if (regex_match(group, match, rmkRgx)) {
+			const auto t = Temperature::fromRemarkString(match.str(rmkMatchTemperature));
+			if (!t.has_value()) return notRecognised;
+			TemperatureGroup result;
+			result.t = t.value();
+			if (match.length(matchDewPoint)) {
+				const auto dp = Temperature::fromRemarkString(match.str(rmkMatchDewPoint));
+				if (!dp.has_value()) return notRecognised;
+				result.dp = dp.value();
+			}
+			return result;
 		}
-		return result;
 	}
 	return notRecognised;
 }
@@ -5077,6 +5085,11 @@ AppendResult TemperatureGroup::append(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata; (void)group; (void)reportPart;
+	if (isIncomplete && (type() == Type::T_MISG || type() == Type::TD_MISG)) {
+		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
+		isIncomplete = false;
+		return AppendResult::APPENDED;
+	}
 	return AppendResult::NOT_APPENDED;
 }
 
@@ -5107,6 +5120,8 @@ std::optional<PressureGroup> PressureGroup::parse(const std::string & group,
 		return result;
 	}
 	if (reportPart == ReportPart::RMK) {
+		if (group == "SLPNO") return PressureGroup(Type::SLPNO);
+		if (group == "PRES") return PressureGroup(Type::PRES_MISG, true);
 		if (const auto pr = Pressure::fromSlpString(group); pr.has_value()) {
 			PressureGroup result;
 			result.p = pr.value();
@@ -5128,7 +5143,12 @@ AppendResult PressureGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)group; (void)reportPart;
+	(void)reportMetadata; (void)reportPart;
+	if (isIncomplete && type() == Type::PRES_MISG) {
+		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
+		isIncomplete = false;
+		return AppendResult::APPENDED;
+	}
 	return AppendResult::NOT_APPENDED;
 }
 
@@ -6217,6 +6237,10 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 			result.groupData = std::stoi(match.str(matchValue));
 			return result;
 		}
+		if (group == "FROIN") {
+			result.groupType = Type::FROIN;
+			return result;
+		}
 	}
 
 	return std::optional<MiscGroup>();
@@ -6313,18 +6337,18 @@ bool MiscGroup::isValid() const {
 ///////////////////////////////////////////////////////////////////////////////
 
 SyntaxGroup getSyntaxGroup(const Group & group) {
-	if (auto fixedGroup = std::get_if<FixedGroup>(&group)) {
-		switch (fixedGroup->type()) {
-			case FixedGroup::Type::METAR:	return SyntaxGroup::METAR;
-			case FixedGroup::Type::SPECI:	return SyntaxGroup::SPECI;
-			case FixedGroup::Type::TAF:		return SyntaxGroup::TAF;
-			case FixedGroup::Type::COR:		return SyntaxGroup::COR;
-			case FixedGroup::Type::AMD:		return SyntaxGroup::AMD;
-			case FixedGroup::Type::NIL:		return SyntaxGroup::NIL;
-			case FixedGroup::Type::CNL:		return SyntaxGroup::CNL;
-			case FixedGroup::Type::RMK:		return SyntaxGroup::RMK;
+	if (auto keywordGroup = std::get_if<KeywordGroup>(&group)) {
+		switch (keywordGroup->type()) {
+			case KeywordGroup::Type::METAR:	return SyntaxGroup::METAR;
+			case KeywordGroup::Type::SPECI:	return SyntaxGroup::SPECI;
+			case KeywordGroup::Type::TAF:	return SyntaxGroup::TAF;
+			case KeywordGroup::Type::COR:	return SyntaxGroup::COR;
+			case KeywordGroup::Type::AMD:	return SyntaxGroup::AMD;
+			case KeywordGroup::Type::NIL:	return SyntaxGroup::NIL;
+			case KeywordGroup::Type::CNL:	return SyntaxGroup::CNL;
+			case KeywordGroup::Type::RMK:	return SyntaxGroup::RMK;
 
-			case FixedGroup::Type::MAINTENANCE_INDICATOR:
+			case KeywordGroup::Type::MAINTENANCE_INDICATOR:
 			return SyntaxGroup::MAINTENANCE_INDICATOR;
 
 			default:						return SyntaxGroup::OTHER;

@@ -11,6 +11,12 @@
 static const auto tempMargin = 0.1/2;
 static const auto rhMargin = 0.1/2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Non-precise values
+// Purpose: to confirm that temperature value strings with precision of 1 C 
+// are parsed correctly, and that other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Temperature, fromStringPositive) {
 	const auto t = metaf::Temperature::fromString("17");
 	ASSERT_TRUE(t.has_value());
@@ -72,6 +78,12 @@ TEST(Temperature, fromStringWrongFormat) {
 	EXPECT_FALSE(metaf::Temperature::fromString("///").has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Precise values
+// Purpose: to confirm that temperature value strings with precision of 0.1 C 
+// are parsed correctly, and that other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Temperature, fromRemarkStringPositive) {
 	const auto t = metaf::Temperature::fromRemarkString("0147");
 	ASSERT_TRUE(t.has_value());
@@ -109,6 +121,13 @@ TEST(Temperature, fromRemarkStringWrongFormat) {
 	EXPECT_FALSE(metaf::Temperature::fromString("////").has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// toUnit() tests
+// Purpose: to confirm that toUnit() method correctly converts the data to 
+// degrees Celsius and Fahrenheit and that non-reported values result in 
+// empty optional
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Temperature, toUnitSameUnit) {
 	const auto t = metaf::Temperature::fromString("07");
 	ASSERT_TRUE(t.has_value());
@@ -140,6 +159,12 @@ TEST(Temperature, toUnitNotReported) {
 	EXPECT_FALSE(t->toUnit(metaf::Temperature::Unit::C).has_value());
 	EXPECT_FALSE(t->toUnit(metaf::Temperature::Unit::F).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Additional values
+// Purpose: to confirm that relativeHumidity(), heatIndex(), and windChill() 
+// methods produce correct temperature values.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Temperature, relativeHumidity) {
 	const auto t35 = metaf::Temperature::fromString("35");
@@ -499,6 +524,12 @@ TEST(Temperature, windChillNotDefined) {
 		metaf::Temperature::windChill(t9.value(), snr.value()).isReported());
 
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// isReported() test
+// Purpose: to confirm that isReported() method correctly distingishes between
+// reported and non-reported values
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Temperature, isReported) {
 	const auto t17 = metaf::Temperature::fromString("17");

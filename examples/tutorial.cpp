@@ -75,13 +75,13 @@ std::string errorMessage(ReportError error) {
 }
 
 class MyVisitor : public Visitor<std::string> {
-	virtual std::string visitFixedGroup(
-		const FixedGroup & group,
+	virtual std::string visitKeywordGroup(
+		const KeywordGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		(void)group; (void)reportPart;  
-		return ("Fixed Text: " + rawString);
+		return ("Keyword: " + rawString);
 	}
 
 	virtual std::string visitLocationGroup(

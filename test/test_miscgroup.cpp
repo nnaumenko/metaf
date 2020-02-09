@@ -131,6 +131,23 @@ TEST(MiscGroup, parseDensityWrongReportPart) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("DENSITY", metaf::ReportPart::TAF));
 }
 
+TEST(MiscGroup, parseDensityAltWrongFormat) {
+	static const std::string g1 = "ALT";
+	static const std::string g2 = "3200FT";
+
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::RMK));
+
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::RMK));
+}
+
 TEST(MiscGroup, parseDensityAppendOther) {
 	auto mg1 = metaf::MiscGroup::parse("DENSITY", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg1.has_value());
@@ -227,6 +244,23 @@ TEST(MiscGroup, parseGrWrongReportPart) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("GR", metaf::ReportPart::HEADER));
 	EXPECT_FALSE(metaf::MiscGroup::parse("GR", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::MiscGroup::parse("GR", metaf::ReportPart::TAF));
+}
+
+TEST(MiscGroup, parseGrWrongFormat) {
+	static const std::string g1 = "1/4";
+	static const std::string g2 = "1";
+
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g1, metaf::ReportPart::RMK));
+
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::MiscGroup::parse(g2, metaf::ReportPart::RMK));
 }
 
 TEST(MiscGroup, parseGrAppendOther) {
@@ -333,96 +367,108 @@ TEST(MiscGroup, parseColourCodeBlue) {
 	const auto mg = metaf::MiscGroup::parse("BLU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLUE);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeWhite) {
 	const auto mg = metaf::MiscGroup::parse("WHT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_WHITE);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeGreen) {
 	const auto mg = metaf::MiscGroup::parse("GRN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_GREEN);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeYellow1) {
 	const auto mg = metaf::MiscGroup::parse("YLO1", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_YELLOW1);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeYellow2) {
 	const auto mg = metaf::MiscGroup::parse("YLO2", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_YELLOW2);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeAmber) {
 	const auto mg = metaf::MiscGroup::parse("AMB", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_AMBER);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeRed) {
 	const auto mg = metaf::MiscGroup::parse("RED", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_RED);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackBlue) {
 	const auto mg = metaf::MiscGroup::parse("BLACKBLU", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackWhite) {
 	const auto mg = metaf::MiscGroup::parse("BLACKWHT", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKWHITE);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackGreen) {
 	const auto mg = metaf::MiscGroup::parse("BLACKGRN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKGREEN);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackYellow1) {
 	const auto mg = metaf::MiscGroup::parse("BLACKYLO1", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackYellow2) {
 	const auto mg = metaf::MiscGroup::parse("BLACKYLO2", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW2);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackAmber) {
 	const auto mg = metaf::MiscGroup::parse("BLACKAMB", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKAMBER);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackRed) {
 	const auto mg = metaf::MiscGroup::parse("BLACKRED", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKRED);
+	EXPECT_FALSE(mg->data().has_value());
 }
 
-TEST(MiscGroup, parseWrongReportPart) {
-	static const std::string gs("BLU");
-	ASSERT_TRUE(metaf::MiscGroup::parse(gs, metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::MiscGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
-	EXPECT_FALSE(metaf::MiscGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
-	EXPECT_FALSE(metaf::MiscGroup::parse(gs, metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::MiscGroup::parse(gs, metaf::ReportPart::RMK).has_value());
+TEST(MiscGroup, parseCoulourCodeWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::RMK).has_value());
 }
 
-TEST(MiscGroup, parseWrongFormat) {
+TEST(MiscGroup, parseColourCodeWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("ZZZZZZ", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLACK", metaf::ReportPart::METAR).has_value());
@@ -434,6 +480,25 @@ TEST(MiscGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLACKBLUE", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLACKBLLU", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLACKBL", metaf::ReportPart::METAR).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Frost on instrument
+// Purpose: to confirm that FROIN group is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseFroin) {
+	const auto mg = metaf::MiscGroup::parse("FROIN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::FROIN);
+	EXPECT_FALSE(mg->data().has_value());
+}
+
+TEST(MiscGroup, parseFroinWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("FROIN", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FROIN", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FROIN", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FROIN", metaf::ReportPart::METAR).has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -452,6 +517,7 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	const std::string smg8 = "1/4";
 	const std::string smg9 = "AMB";
 	const std::string smg10 = "BLACKAMB";
+	const std::string smg11 = "FROIN";
 
 	auto mg1 = metaf::MiscGroup::parse(smg1, metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg1.has_value());
@@ -484,6 +550,9 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	auto mg7 = metaf::MiscGroup::parse(smg10, metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg7.has_value());
 
+	auto mg8 = metaf::MiscGroup::parse(smg11, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg8.has_value());
+
 	EXPECT_EQ(mg1->append(smg1, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append(smg2, metaf::ReportPart::RMK), 
@@ -503,6 +572,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg1->append(smg9, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -529,6 +600,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append("RMK", metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append("TEST", metaf::ReportPart::METAR), 
@@ -553,6 +626,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg3->append(smg9, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg3->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg3->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -579,6 +654,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg4->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append("TEST", metaf::ReportPart::RMK), 
@@ -603,6 +680,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg6->append(smg9, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg6->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg5->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -629,6 +708,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg6->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append("TEST", metaf::ReportPart::RMK), 
@@ -654,11 +735,39 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg7->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg7->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg7->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg7->append("TEST", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 
+	EXPECT_EQ(mg8->append(smg1, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg2, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg3, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg4, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg5, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg6, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg7, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg8, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg9, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append("RMK", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append("TEST", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -760,4 +869,10 @@ TEST(MiscGroup, isValidColourCodes) {
 	const auto mg14 = metaf::MiscGroup::parse("BLACKRED", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg14.has_value());
 	EXPECT_TRUE(mg14->isValid());
+}
+
+TEST(MiscGroup, isValidFroin) {
+	const auto mg1 = metaf::MiscGroup::parse("FROIN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_TRUE(mg1->isValid());
 }

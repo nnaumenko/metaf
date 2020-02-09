@@ -8,6 +8,11 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// LTG group
+// Purpose: to confirm that single LTG group is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LightningGroup, parseLtg) {
 	const auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(lg.has_value());
@@ -21,6 +26,12 @@ TEST(LightningGroup, parseLtg) {
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 0u);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Distant and vicinity groups
+// Purpose: to confirm that LTG DSNT and LTG VC groups with or without 
+// direction or direction sectors specified are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LightningGroup, parseLtgDsnt) {
 	auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
@@ -90,6 +101,11 @@ TEST(LightningGroup, parseLtgVcAlqds) {
 	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::ALQDS);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Frequency
+// Purpose: to confirm that each lightning frequence is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LightningGroup, parseOcnlLtg) {
 	auto lg = metaf::LightningGroup::parse("OCNL", metaf::ReportPart::RMK);
 	ASSERT_TRUE(lg.has_value());
@@ -137,6 +153,12 @@ TEST(LightningGroup, parseConsLtg) {
 	EXPECT_FALSE(lg->isUnknownType());
 	EXPECT_EQ(lg->directions().size(), 0u);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Directions and direction sectors
+// Purpose: to confirm that lightning groups with directions and direction
+// sectors specified are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LightningGroup, parseLtgNE) {
 	auto lg = metaf::LightningGroup::parse("LTG", metaf::ReportPart::RMK);
@@ -297,6 +319,13 @@ TEST(LightningGroup, parseLtgIcCcCgOhd) {
 	EXPECT_EQ(lg->directions().size(), 1u);
 	EXPECT_EQ(lg->directions().at(0).cardinal(), metaf::Direction::Cardinal::OHD);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Lightning types
+// Purpose: to confirm that each lightning type (cloud-cloud, cloud-ground, 
+// in-cloud, cloud-air) is parsed correctly, that unrecognised lightning types
+// are ignored, and that maximum number of lightning types can be recognised
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LightningGroup, parseLtgCcCaOhd) {
 	auto lg = metaf::LightningGroup::parse("LTGCCCA", metaf::ReportPart::RMK);

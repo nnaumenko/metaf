@@ -8,6 +8,11 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Number parsing tests
+// Purpose: to confirm that number strings and substrings are correctly parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(StrToUint, number1digit) {
 	const auto r1 = metaf::strToUint("0", 0, 1);
 	ASSERT_TRUE(r1.has_value());
@@ -120,6 +125,12 @@ TEST(StrToUint, number4digit) {
 	ASSERT_TRUE(r8.has_value());
 	EXPECT_EQ(r8.value(), 7531u);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Incorrect cases
+// Purpose: to confirm that invalid arguments and non-number strings result in
+// empty optional
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(StrToUint, stringTooShort) {
 	EXPECT_FALSE(metaf::strToUint("1", 0, 2).has_value());

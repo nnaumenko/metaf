@@ -15,7 +15,6 @@
 // returns true for UnknownGroup
 ///////////////////////////////////////////////////////////////////////////////
 
-
 TEST(UnknownGroup, parse) {
 	static const std::string str = "AAAAAAAA";
 	const auto ug1 = metaf::UnknownGroup::parse(str, metaf::ReportPart::UNKNOWN);

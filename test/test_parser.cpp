@@ -9,88 +9,58 @@
 #include "testdata_real.h"
 #include "metaf.hpp"
 
-TEST(Parser, RealDataParsingMETAR) {
-	for (const auto & data : testdata::realDataSet) {
-		if (!data.metar.empty()) {
-			const std::string report = data.metar;
-			metaf::ParseResult parseResult;
-			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });
-			EXPECT_EQ(parseResult.reportMetadata.error, 
-				metaf::ReportError::NONE) << "Report: " << data.metar;
-			EXPECT_EQ(parseResult.reportMetadata.type, 
-				metaf::ReportType::METAR) << "Report: " << data.metar;
-		}
-	}
-}
-
-TEST(Parser, RealDataParsingTAF) {
-	for (const auto & data : testdata::realDataSet) {
-		if (!data.taf.empty()) {
-			const std::string report = data.taf;
-			metaf::ParseResult parseResult;
-			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });
-			EXPECT_EQ(parseResult.reportMetadata.error, 
-				metaf::ReportError::NONE) << "Report: " << data.taf;
-			EXPECT_EQ(parseResult.reportMetadata.type,
-				metaf::ReportType::TAF) << "Report: " << data.taf;
-		}
-	}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 static bool isUnknown(const metaf::Group & group) {
 	return std::holds_alternative<metaf::UnknownGroup>(group);
 }
 
 static bool isMetar(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::METAR);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::METAR);
 }
 
 static bool isSpeci(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::SPECI);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::SPECI);
 }
 
 static bool isTaf(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::TAF);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::TAF);
 }
 
 static bool isAmd(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::AMD);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::AMD);
 }
 
 static bool isNil(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::NIL);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::NIL);
 }
 
 static bool isCnl(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::CNL);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::CNL);
 }
 
 static bool isCor(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::COR);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::COR);
 }
 
 static bool isRmk(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == metaf::FixedGroup::Type::RMK);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == metaf::KeywordGroup::Type::RMK);
 }
 
 static bool isMaintenanceIndicator(const metaf::Group & group) {
-	if (!std::holds_alternative<metaf::FixedGroup>(group)) return false;
-	return (std::get<metaf::FixedGroup>(group).type() == 
-		metaf::FixedGroup::Type::MAINTENANCE_INDICATOR);
+	if (!std::holds_alternative<metaf::KeywordGroup>(group)) return false;
+	return (std::get<metaf::KeywordGroup>(group).type() == 
+		metaf::KeywordGroup::Type::MAINTENANCE_INDICATOR);
 }
 
-static bool isFixedGroup(const metaf::Group & group) {
-	return std::holds_alternative<metaf::FixedGroup>(group);
+static bool isKeywordGroup(const metaf::Group & group) {
+	return std::holds_alternative<metaf::KeywordGroup>(group);
 }
 
 static bool isLocation(const metaf::Group & group) {
@@ -138,6 +108,47 @@ static bool isPressure(const metaf::Group & group) {
 	return(std::holds_alternative<metaf::PressureGroup>(group));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Real-life METAR and TAF data testing
+// Purpose: to confirm that test set of METAR and TAF reports produced by 
+// actual weather stations around the world can be parsed without errors, 
+// without crashing and without throwing exceptions, and that the report types
+// (METAR or TAF) are identified correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(Parser, RealDataParsingMETAR) {
+	for (const auto & data : testdata::realDataSet) {
+		if (!data.metar.empty()) {
+			const std::string report = data.metar;
+			metaf::ParseResult parseResult;
+			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });
+			EXPECT_EQ(parseResult.reportMetadata.error, 
+				metaf::ReportError::NONE) << "Report: " << data.metar;
+			EXPECT_EQ(parseResult.reportMetadata.type, 
+				metaf::ReportType::METAR) << "Report: " << data.metar;
+		}
+	}
+}
+
+TEST(Parser, RealDataParsingTAF) {
+	for (const auto & data : testdata::realDataSet) {
+		if (!data.taf.empty()) {
+			const std::string report = data.taf;
+			metaf::ParseResult parseResult;
+			EXPECT_NO_THROW({ parseResult = metaf::Parser::parse(report); });
+			EXPECT_EQ(parseResult.reportMetadata.error, 
+				metaf::ReportError::NONE) << "Report: " << data.taf;
+			EXPECT_EQ(parseResult.reportMetadata.type,
+				metaf::ReportType::TAF) << "Report: " << data.taf;
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse malformed reports
+// Purpose: to confirm that parsing of various malformed reports results in 
+// parser error of correct type, and that only part of malformed report (before
+// error is encountered) is parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxMalformedReports, emptyReport) {
@@ -286,6 +297,34 @@ TEST(ParserSyntaxMalformedReports, tafReportTypeAndTimeNotSpecified) {
 	EXPECT_TRUE(isTimeSpan(result.groups.at(1).group));
 }
 
+TEST(ParserSyntaxMalformedReports, corStrayGroupInPlaceOfLocation) {
+	const auto result1 = metaf::Parser::parse("METAR COR 9999=");
+	EXPECT_EQ(result1.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result1.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
+	EXPECT_EQ(result1.groups.size(), 3u);
+	EXPECT_TRUE(isMetar(result1.groups.at(0).group));
+	EXPECT_TRUE(isCor(result1.groups.at(1).group));
+	EXPECT_TRUE(isUnknown(result1.groups.at(2).group));
+
+	const auto result2 = metaf::Parser::parse("TAF COR 9999=");
+	EXPECT_EQ(result2.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result2.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
+	EXPECT_EQ(result2.groups.size(), 3u);
+	EXPECT_TRUE(isTaf(result2.groups.at(0).group));
+	EXPECT_TRUE(isCor(result2.groups.at(1).group));
+	EXPECT_TRUE(isUnknown(result2.groups.at(2).group));
+}
+
+TEST(ParserSyntaxMalformedReports, amdStrayGroupInPlaceOfLocation) {
+	const auto result = metaf::Parser::parse("TAF AMD 9999=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
+	EXPECT_EQ(result.groups.size(), 3u);
+	EXPECT_TRUE(isTaf(result.groups.at(0).group));
+	EXPECT_TRUE(isAmd(result.groups.at(1).group));
+	EXPECT_TRUE(isUnknown(result.groups.at(2).group));
+}
+
 TEST(ParserSyntaxMalformedReports, metarReportTooLarge) {
 	const auto result = metaf::Parser::parse(
 		"METAR KNCA 121556Z AUTO 08008KT 10SM FEW035 31/23 A3010"
@@ -340,6 +379,10 @@ TEST(ParserSyntaxMalformedReports, tafReportTooLarge) {
 	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::REPORT_TOO_LARGE);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Parse nil reports
+// Purpose: to confirm that various nil reports are parsed correctly, and 
+// parsing of malformed nil reports results in error or correct type
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxNilReports, locationNil) {
@@ -423,34 +466,6 @@ TEST(ParserSyntaxNilReports, tafAmdLocationNil) {
 	EXPECT_TRUE(isAmd(result.groups.at(1).group));
 	EXPECT_TRUE(isLocation(result.groups.at(2).group));
 	EXPECT_TRUE(isNil(result.groups.at(3).group));
-}
-
-TEST(ParserSyntaxMalformedReports, corStrayGroupInPlaceOfLocation) {
-	const auto result1 = metaf::Parser::parse("METAR COR 9999=");
-	EXPECT_EQ(result1.reportMetadata.type, metaf::ReportType::METAR);
-	EXPECT_EQ(result1.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
-	EXPECT_EQ(result1.groups.size(), 3u);
-	EXPECT_TRUE(isMetar(result1.groups.at(0).group));
-	EXPECT_TRUE(isCor(result1.groups.at(1).group));
-	EXPECT_TRUE(isUnknown(result1.groups.at(2).group));
-
-	const auto result2 = metaf::Parser::parse("TAF COR 9999=");
-	EXPECT_EQ(result2.reportMetadata.type, metaf::ReportType::TAF);
-	EXPECT_EQ(result2.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
-	EXPECT_EQ(result2.groups.size(), 3u);
-	EXPECT_TRUE(isTaf(result2.groups.at(0).group));
-	EXPECT_TRUE(isCor(result2.groups.at(1).group));
-	EXPECT_TRUE(isUnknown(result2.groups.at(2).group));
-}
-
-TEST(ParserSyntaxMalformedReports, amdStrayGroupInPlaceOfLocation) {
-	const auto result = metaf::Parser::parse("TAF AMD 9999=");
-	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
-	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::EXPECTED_LOCATION);
-	EXPECT_EQ(result.groups.size(), 3u);
-	EXPECT_TRUE(isTaf(result.groups.at(0).group));
-	EXPECT_TRUE(isAmd(result.groups.at(1).group));
-	EXPECT_TRUE(isUnknown(result.groups.at(2).group));
 }
 
 TEST(ParserSyntaxNilReports, locationTimeNil) {
@@ -607,6 +622,11 @@ TEST(ParserSyntaxNilReports, typeCorAmdLocationTimeTimespanNil) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Parse cancelled TAF reports
+// Purpose: to confirm that various cancelled reports TAF are parsed correctly, 
+// and parsing of malformed cancelled TAF reports results in error or correct 
+// type
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxCancelledReports, typeLocationCnl) {
 	const auto result1 = metaf::Parser::parse("METAR ZZZZ CNL=");
@@ -721,6 +741,10 @@ TEST(ParserSyntaxCancelledReports, typeCorAmdLocationTimeTimespanCnl) {
 	EXPECT_TRUE(isCnl(result2.groups.at(5).group));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Valid METAR/SPECI reports
+// Purpose: to confirm that various METAR and SPECI reports of valid syntax are
+// parsed correctly 
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxValidMetarReports, plainReports) {
@@ -941,6 +965,10 @@ TEST(ParserSyntaxValidMetarReports, reportWithTrend) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Valid METAR reports
+// Purpose: to confirm that various TAF reports of valid syntax are parsed 
+// correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxValidTafReports, plainReport) {
 	const auto result = metaf::Parser::parse("TAF ZZZZ 041115Z 0412/0512 24005KT 10SM FEW250=");
@@ -1099,6 +1127,13 @@ TEST(ParserSyntaxValidTafReports, reportTimeNotSpecified) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Report designator/separator tests 
+// Purpose: to confirm that all types of valid separators between report groups
+// are processed by parser correctly (e.g. sequences of spaces / tabs / line 
+// breaks between report groups), that any text after report end designator 
+// ('=' character) is ignored, and that reports without report end designator 
+// are parsed without issues. 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxDesignatorsAndSeparators, noReportEndDesignator) {
 	const auto result1 = metaf::Parser::parse("METAR ZZZZ 041115Z 24005KT 9999 FEW040 25/18 Q1011 NOSIG");
@@ -1217,6 +1252,10 @@ TEST(ParserSyntaxDesignatorsAndSeparators, strayTextAfterReportEndDesignator) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Maintenance indicator tests 
+// Purpose: to confirm that automated station maintenance indicator 
+// ('$' character) is parsed correctly.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAtMetarBodyBegin) {
 	const auto result = metaf::Parser::parse("METAR ZZZZ 041115Z $");
@@ -1320,6 +1359,10 @@ TEST(ParserSyntaxMaintenanceIndicator, maintenanceIndicatorAfterNil) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Reports with appended groups 
+// Purpose: to confirm that reports which contain appended groups (e.g. groups
+// 1 and 1/4SM which result in a single group) are parsed correctly. 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserAppended, appendedGroups) {
 	const auto result = metaf::Parser::parse(
@@ -1341,12 +1384,18 @@ TEST(ParserAppended, appendedGroups) {
 	EXPECT_TRUE(isTemperature(result.groups.at(8).group));
 	EXPECT_TRUE(isPressure(result.groups.at(9).group));
 	EXPECT_TRUE(isRmk(result.groups.at(10).group));
-	EXPECT_TRUE(isFixedGroup(result.groups.at(11).group));
+	EXPECT_TRUE(isKeywordGroup(result.groups.at(11).group));
 	EXPECT_TRUE(isVisibility(result.groups.at(12).group));
 	EXPECT_TRUE(isPressure(result.groups.at(13).group));
 	EXPECT_TRUE(isTemperature(result.groups.at(14).group));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Tests of Result, reportPart and rawString
+// Purpose: to confirm that report metadata, part of report where each group 
+// belongs and group raw string are produced by parser in correct manner, and 
+// that METAR and TAF reports are identidied even if the relevant keyword is 
+// not included in the beginning of the report
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(ParserResultReportPartAndRawString, metar) {
@@ -1495,7 +1544,6 @@ TEST(ParserResultReportPartAndRawString, autodetectTaf) {
 	EXPECT_EQ(result.groups.size(), 7u);
 }
 
-
 TEST(ParserResultReportPartAndRawStringParse, error) {
 	const auto result = metaf::Parser::parse(
 		"ZZZZ FEW010 BKN022 12/11 Q1002");
@@ -1567,7 +1615,7 @@ TEST(ParserResultReportPartAndRawString, appendedGroups) {
 	EXPECT_EQ(result.groups.at(10).rawString, "RMK");
 	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::METAR);
 
-	EXPECT_TRUE(isFixedGroup(result.groups.at(11).group));
+	EXPECT_TRUE(isKeywordGroup(result.groups.at(11).group));
 	EXPECT_EQ(result.groups.at(11).rawString, "AO2");
 	EXPECT_EQ(result.groups.at(11).reportPart, metaf::ReportPart::RMK);
 

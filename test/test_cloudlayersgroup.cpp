@@ -8,6 +8,11 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Low-layer clouds
+// Purpose: to confirm that every type of low-layer clouds is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(CloudLayersGroup, parseLowLayer0) {
 	const auto clg = metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::RMK);
 	ASSERT_TRUE(clg.has_value());
@@ -73,6 +78,11 @@ TEST(CloudLayersGroup, parseLowLayerNo) {
 	ASSERT_TRUE(clg.has_value());
 	EXPECT_EQ(clg->lowLayer(), metaf::CloudLayersGroup::LowLayer::NOT_OBSERVABLE);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Mid-layer clouds
+// Purpose: to confirm that every type of mid-layer clouds is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudLayersGroup, parseMidLayer0) {
 	const auto clg = metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::RMK);
@@ -140,6 +150,11 @@ TEST(CloudLayersGroup, parseMidLayerNo) {
 	EXPECT_EQ(clg->midLayer(), metaf::CloudLayersGroup::MidLayer::NOT_OBSERVABLE);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// High-layer clouds
+// Purpose: to confirm that every type of low clouds is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(CloudLayersGroup, parseHighLayer0) {
 	const auto clg = metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::RMK);
 	ASSERT_TRUE(clg.has_value());
@@ -206,6 +221,11 @@ TEST(CloudLayersGroup, parseHighLayerNo) {
 	EXPECT_EQ(clg->highLayer(), metaf::CloudLayersGroup::HighLayer::NOT_OBSERVABLE);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Incorrect groups
+// Purpose: to confirm that malformed groups are not parsed.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(CloudLayersGroup, parseWrongReportPart) {
 	EXPECT_FALSE(metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::CloudLayersGroup::parse("8/000", metaf::ReportPart::HEADER).has_value());
@@ -222,6 +242,11 @@ TEST(CloudLayersGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::CloudLayersGroup::parse("8/00A", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudLayersGroup::parse("8/", metaf::ReportPart::RMK).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudLayersGroup, isValidTrue) {
 	const auto clg1 = metaf::CloudLayersGroup::parse("8/578", metaf::ReportPart::RMK);
@@ -254,6 +279,11 @@ TEST(CloudLayersGroup, isValidFalse) {
 	ASSERT_TRUE(clg3.has_value());
 	EXPECT_FALSE(clg3->isValid());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that no group can be appended to group of this type
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudLayersGroup, append) {
 	auto clg1 = metaf::CloudLayersGroup::parse("8/578", metaf::ReportPart::RMK);

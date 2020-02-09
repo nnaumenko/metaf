@@ -745,6 +745,14 @@ TEST(VisibilityGroup, parseVisWrongReportPart) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::TAF).has_value());
 }
 
+TEST(VisibilityGroup, parseMisg) {
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("MISG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("MISG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("MISG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("MISG", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test parsing of RVR MISG
 // Purpose: to confirm that RVR MISG group is parsed and appended correctly.

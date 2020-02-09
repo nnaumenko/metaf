@@ -25,7 +25,7 @@ private:
 	static const inline std::string groupNotValidMessage = 
 		"Data in this group may be errorneous, incomplete or inconsistent"s;
 
-	virtual std::string visitFixedGroup(const metaf::FixedGroup & group,
+	virtual std::string visitKeywordGroup(const metaf::KeywordGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 	virtual std::string visitLocationGroup(const metaf::LocationGroup & group,
@@ -154,7 +154,7 @@ private:
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
 };
 
-std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
+std::string VisitorExplain::visitKeywordGroup(const metaf::KeywordGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
@@ -162,47 +162,42 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
-		case metaf::FixedGroup::Type::METAR:
+		case metaf::KeywordGroup::Type::METAR:
 		result << "Report type: METAR (weather observation report)";
 		break;
 
-		case metaf::FixedGroup::Type::SPECI:
+		case metaf::KeywordGroup::Type::SPECI:
 		result << "Report type: unscheduled METAR (weather observation report)" << lineBreak;
 		result << "Unscheduled report is issued dut to sudden changes in weather ";
 		result << "conditions: wind shift, visibility decrease, severe weather, ";
 		result << "clouds formed or dissipated, etc.";
 		break;
 
-		case metaf::FixedGroup::Type::TAF:
+		case metaf::KeywordGroup::Type::TAF:
 		result << "Report type: TAF (terminal aerodrome forecast)";
 		break;
 
-		case metaf::FixedGroup::Type::AMD:
+		case metaf::KeywordGroup::Type::AMD:
 		result << "Amended report";
 		break;
 
-		case metaf::FixedGroup::Type::NIL:
+		case metaf::KeywordGroup::Type::NIL:
 		result << "Missing report";
 		break;
 
-		case metaf::FixedGroup::Type::CNL:
+		case metaf::KeywordGroup::Type::CNL:
 		result << "Cancelled report";
 		break;
 
-		case metaf::FixedGroup::Type::COR:
+		case metaf::KeywordGroup::Type::COR:
 		result << "Correctional report";
 		break;
 
-		case metaf::FixedGroup::Type::AUTO:
+		case metaf::KeywordGroup::Type::AUTO:
 		result << "Fully automated report with no human intervention or oversight";
 		break;
 
-		case metaf::FixedGroup::Type::NSW:
-		result << "No significant weather" << lineBreak;
-		result << "Indicates end of significant weather phenomena";
-		break;
-
-		case metaf::FixedGroup::Type::CAVOK:
+		case metaf::KeywordGroup::Type::CAVOK:
 		result << "Ceiling and visibility OK" << lineBreak;
 		result << "Visibility 10 km or more in all directions, ";
 		result << "no cloud below 5000 feet (1500 meters), ";
@@ -210,74 +205,36 @@ std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
 		result << "no significant weather phenomena";
 		break;
 
-		case metaf::FixedGroup::Type::RMK:
+		case metaf::KeywordGroup::Type::RMK:
 		result << "The remarks are as follows" << lineBreak;
 		break;
 
-		case metaf::FixedGroup::Type::MAINTENANCE_INDICATOR:
+		case metaf::KeywordGroup::Type::MAINTENANCE_INDICATOR:
 		result << "Automated station requires maintenance";
 		break;
 
-		case metaf::FixedGroup::Type::AO1:
+		case metaf::KeywordGroup::Type::AO1:
 		result << "This automated station is not equipped with a precipitation discriminator";
 		break;
 
-		case metaf::FixedGroup::Type::AO2:
+		case metaf::KeywordGroup::Type::AO2:
 		result << "This automated station is equipped with a precipitation discriminator";
 		break;
 
-		case metaf::FixedGroup::Type::AO1A:
+		case metaf::KeywordGroup::Type::AO1A:
 		result << "This automated station is not equipped with a precipitation discriminator";
 		result << lineBreak;
 		result << "Automated observation is augmented by a human observer";
 		break;
 
-		case metaf::FixedGroup::Type::AO2A:
+		case metaf::KeywordGroup::Type::AO2A:
 		result << "This automated station is equipped with a precipitation discriminator";
 		result << lineBreak;
 		result << "Automated observation is augmented by a human observer";
 		break;
 
-		case metaf::FixedGroup::Type::NOSPECI:
+		case metaf::KeywordGroup::Type::NOSPECI:
 		result << "This manual station does not issue SPECI (unscheduled) reports";
-		break;
-
-		case metaf::FixedGroup::Type::PWINO:
-		result << "This automated station is equipped with present weather identifier ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::TSNO:
-		result << "This automated station is equipped with lightning detector ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::SLPNO:
-		result << "Mean sea-level pressure information is not available";
-		break;
-
-		case metaf::FixedGroup::Type::FROIN:
-		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
-		break;
-
-		case metaf::FixedGroup::Type::PRES_MISG:
-		result << "Atmospheric pressure (altimeter) data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::T_MISG:
-		result << "Temperature data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::TD_MISG:
-		result << "Dew point data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::WX_MISG:
-		result << "Weather phenomena data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL:
-		result << "Thunderstorm / lightning data is missing";
 		break;
 	}
 	return result.str();
@@ -643,20 +600,48 @@ std::string VisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group,
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch (group.type()) {
 		case metaf::WeatherGroup::Type::CURRENT: 
-		result << "Weather phenomena:";
+		result << "Weather phenomena:" << lineBreak;
+		for (const auto p : group.weatherPhenomena()) {
+			result << explainWeatherPhenomena(p) << lineBreak;
+		}
 		break;
 		
 		case metaf::WeatherGroup::Type::RECENT: 
-		result << "Recent weather:"; break;
+		result << "Recent weather:" << lineBreak;
+		for (const auto p : group.weatherPhenomena()) {
+			result << explainWeatherPhenomena(p) << lineBreak;
+		}
+		break;
 		
 		case metaf::WeatherGroup::Type::EVENT: 
-		result << "Precipitation beginning/ending time:"; break;
-	}
-	result << lineBreak;
+		result << "Precipitation beginning/ending time:" << lineBreak;
+		for (const auto p : group.weatherPhenomena()) {
+			result << explainWeatherPhenomena(p) << lineBreak;
+		}
+		break;
 
-	const auto phenomena = group.weatherPhenomena();
-	for (const auto p : phenomena) {
-		result << explainWeatherPhenomena(p) << lineBreak;
+		case metaf::WeatherGroup::Type::NSW:
+		result << "No significant weather" << lineBreak;
+		result << "Indicates end of significant weather phenomena";
+		break;
+
+		case metaf::WeatherGroup::Type::PWINO:
+		result << "This automated station is equipped with present weather identifier ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::WeatherGroup::Type::TSNO:
+		result << "This automated station is equipped with lightning detector ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::WeatherGroup::Type::WX_MISG:
+		result << "Weather phenomena data is missing";
+		break;
+
+		case metaf::WeatherGroup::Type::TS_LTNG_TEMPO_UNAVBL:
+		result << "Thunderstorm / lightning data is missing";
+		break;
 	}
 	return result.str();
 }
@@ -668,17 +653,26 @@ std::string VisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup 
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Air temperature: " << explainTemperature(group.airTemperature()) << lineBreak;
-	result << "Dew point: " << explainTemperature(group.dewPoint()) << lineBreak;
-	if (const auto rh = group.relativeHumidity(); rh.has_value()) {
-			result << "Relative humidity: " << static_cast<int>(*rh) << " percent";
-			result << lineBreak; 
-	}
-	if (const auto heatIndex = metaf::Temperature::heatIndex(
-		group.airTemperature(), 
-		group.dewPoint());
-		heatIndex.temperature().has_value()) {
-			result << "Heat index: " << explainTemperature(heatIndex) << lineBreak;
+	switch (group.type()) {
+		case metaf::TemperatureGroup::Type::TEMPERATURE_AND_DEW_POINT:
+		result << "Air temperature: ";
+		result << explainTemperature(group.airTemperature()) << lineBreak;
+		result << "Dew point: ";
+		result << explainTemperature(group.dewPoint()) << lineBreak;
+		if (const auto rh = group.relativeHumidity(); rh.has_value()) {
+				result << "Relative humidity: ";
+				result << static_cast<int>(*rh);
+				result << " percent" << lineBreak; 
+		}
+		break;
+
+		case metaf::TemperatureGroup::Type::T_MISG:
+		result << "Temperature data is missing";
+		break;
+
+		case metaf::TemperatureGroup::Type::TD_MISG:
+		result << "Dew point data is missing";
+		break;
 	}
 	return result.str();
 }
@@ -692,18 +686,28 @@ std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & grou
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
 	switch(group.type()) {
 		case metaf::PressureGroup::Type::OBSERVED_QNH:
-		result << "Observed mean atmospheric pressure (normalised to sea level)";
+		result << "Observed mean atmospheric pressure (normalised to sea level): ";
+		result << explainPressure(group.atmosphericPressure());
 		break;
 
 		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
-		result << "Forecast lowest sea level pressure";
+		result << "Forecast lowest sea level pressure: ";
+		result << explainPressure(group.atmosphericPressure());
 		break;
 
 		case metaf::PressureGroup::Type::OBSERVED_QFE:
-		result << "Observed actual atmospheric pressure";
+		result << "Observed actual atmospheric pressure: ";
+		result << explainPressure(group.atmosphericPressure());
+		break;
+
+		case metaf::PressureGroup::Type::SLPNO:
+		result << "Mean sea-level pressure information is not available";
+		break;
+
+		case metaf::PressureGroup::Type::PRES_MISG:
+		result << "Atmospheric pressure (altimeter) data is missing";
 		break;
 	}
-	result << ": " << explainPressure(group.atmosphericPressure());
 	return result.str();
 }
 
@@ -1261,6 +1265,10 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << "either visibility &lt;800 m or ";
 		result << "lowest cloud base height &lt;200 ft ";
 		result << "or both";
+		break;
+
+		case metaf::MiscGroup::Type::FROIN:
+		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
 		break;
 	}
 	return result.str();

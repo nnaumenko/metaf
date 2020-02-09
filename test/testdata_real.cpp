@@ -7,6 +7,14 @@
 
 #include "testdata_real.h"
 
+///////////////////////////////////////////////////////////////////////////////
+// Data from real-life METAR/TAF reports produced by actual weather stations
+// This set has been put together to cover a maximum number of of METAR/TAF 
+// report structures and group formats.
+// Note: reference date is provided for every report allows to confirm that 
+// every reports is really produced by the specified station at specified time.
+///////////////////////////////////////////////////////////////////////////////
+
 const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 
 	{

@@ -470,8 +470,8 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 	metaf::Speed windSpeed;
 	for (const auto & metarGroupInfo : metarGroups) {
 		const auto & metarGroup = metarGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::FixedGroup>(&metarGroup); gr) {
-			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
+		if (const auto gr = std::get_if<metaf::KeywordGroup>(&metarGroup); gr) {
+			if (gr->type() == metaf::KeywordGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
 				if (v.has_value()) result.visibility = v.value();	
 				result.cloud = Cloud::MOSTLY_CLEAR;
@@ -580,8 +580,8 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 	int trendCounter = 0;
 	for (const auto & tafGroupInfo : tafGroups) {
 		const auto & tafGroup = tafGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::FixedGroup>(&tafGroup); gr) {
-			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
+		if (const auto gr = std::get_if<metaf::KeywordGroup>(&tafGroup); gr) {
+			if (gr->type() == metaf::KeywordGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
 				if (v.has_value()) result.visibility = v.value();	
 				result.cloud = Cloud::MOSTLY_CLEAR;

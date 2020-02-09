@@ -13,22 +13,24 @@
 
 namespace testdata {
 
-	struct MetarTafRealData {
-		std::string airportICAO;
-		std::string airportName;
-		struct {
-			int year = 0;
-			int month = 0;
-			int day = 0;
-		} date;
-		std::string metar;
-		std::string taf;
-	};
+struct MetarTafRealData {
+	std::string airportICAO;
+	std::string airportName;
+	struct {
+		int year = 0;
+		int month = 0;
+		int day = 0;
+	} date;
+	std::string metar;
+	std::string taf;
+};
 
-	/// Data from real METAR/TAF reports
-	/// @details METAR & TAF data to cover a maximum number of of METAR/TAF message 
-	/// structures and group variants
-	extern const std::vector<MetarTafRealData> realDataSet;
+///////////////////////////////////////////////////////////////////////////////
+// Data from real-life METAR/TAF reports produced by actual weather stations
+// This set has been put together to cover a maximum number of of METAR/TAF 
+// report structures and group formats.
+///////////////////////////////////////////////////////////////////////////////
+extern const std::vector<MetarTafRealData> realDataSet;
 
 } // namespace test
 

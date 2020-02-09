@@ -202,13 +202,13 @@ Since MyVisitor is inherited from ``Visitor<std::string>``, this means that all 
 
 Now add to class MyVisitor the following group handling methods ::
 
-	virtual std::string visitFixedGroup(
-		const FixedGroup & group,
+	virtual std::string visitKeywordGroup(
+		const KeywordGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		(void)group; (void)reportPart;  
-		return ("Fixed Text: " + rawString);
+		return ("Keyword: " + rawString);
 	}
 
 	virtual std::string visitLocationGroup(

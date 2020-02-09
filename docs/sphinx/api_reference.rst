@@ -1294,12 +1294,6 @@ FixedGroup
 
 				- no significant weather phenomena.
 
-		.. cpp:enumerator:: NSW
-
-			Nil significant weather.
-
-			This group is only used in trends and indicates the end of a significant weather phenomena.
-
 		.. cpp:enumerator:: RMK
 
 			This group designates the beginning of the remarks.
@@ -1330,42 +1324,6 @@ FixedGroup
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.
 
-		.. cpp:enumerator:: PWINO
-
-			Indicates that automated station is equipped with present weather identifier and this sensor is not operating.
-
-		.. cpp:enumerator:: TSNO
-
-			Indicates that automated station is equipped with lightning detector and this sensor is not operating.
-
-		.. cpp:enumerator:: SLPNO
-
-			Mean sea-level pressure information is not available.
-
-		.. cpp:enumerator:: FROIN
-
-			Frost on the instrument (e.g. due to fog depositing rime).
-
-		.. cpp:enumerator:: PRES_MISG
-
-			Atmospheric pressure (altimeter) data is missing.
-
-		.. cpp:enumerator:: T_MISG
-
-			Temperature data is missing.
-
-		.. cpp:enumerator:: TD_MISG
-
-			Dew point data is missing.
-
-		.. cpp:enumerator:: WX_MISG
-
-			Weather phenomena data is missing.
-
-		.. cpp:enumerator:: TS_LTNG_TEMPO_UNAVBL
-
-			Thunderstorm/lightning data is missing.
-
 
 	**Acquiring group data**
 
@@ -1382,12 +1340,6 @@ FixedGroup
 
 LocationGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: locationgroup.svg
-
-Examples of the raw report data are ``UKLL`` and ``K2J3``.
 
 .. cpp:class:: LocationGroup
 
@@ -1413,10 +1365,6 @@ Examples of the raw report data are ``UKLL`` and ``K2J3``.
 ReportTimeGroup
 ^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: reporttimegroup.svg
-
 Example of this group is ``302330Z``.
 
 .. cpp:class:: ReportTimeGroup
@@ -1441,15 +1389,7 @@ Example of this group is ``302330Z``.
 TrendGroup
 ^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: trendgroup.svg
-
-.. note:: Spaces between sequential groups in METAR/TAF report are not shown. 
-
 See :doc:`basics` for more information on weather trends and how they are reported.
-
-Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, ``3100/3124``, ``FM311000``, ``BECMG AT2000``, ``BECMG TL0040``, ``TEMPO FM2200 TL2215``, ``BECMG 3100/3107``, ``PROB30 3100/3104``, ``PROB30 TEMPO 3107/3109``, ``INTER 3100/3102``, etc.
 
 .. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
 
@@ -1552,8 +1492,6 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 
 WindGroup
 ^^^^^^^^^
-
-Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, ``WS020/05065KT``, ``WSHFT 1851``, ``WSHFT 30 FROPA``, ``PK WND 29026/2204``, ``WND MISG``, ``WSCONDS``, ``WS RWY22``, and ``WS ALL RWY``.
 
 .. cpp:class:: WindGroup
 
@@ -1781,8 +1719,6 @@ VisibilityGroup
 CloudGroup
 ^^^^^^^^^^
 
-Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250``, ``FEW019TCU``, ``FEW013///``, ``//////CB``, ``//////``, ``CLR``, ``SKC``, ``NCD``, ``NSC``, ``VV002``, and ``VV///``.
-
 .. cpp:class:: CloudGroup
 
 	Stores information about a single cloud layer, cloud-like obscuration, lack of cloud cover or vertical visibility.
@@ -1954,12 +1890,6 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 WeatherGroup
 ^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: weathergroup.svg
-
-Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, ``RAB12``, ``RAB1153E1158DZB04``, ``RAE31SNB04PLB04E15`` etc.
-
 .. cpp:class:: WeatherGroup
 
 	Stores information about recent or current weather phenomena, or on the beginning or ending time of weather phenomena.
@@ -1982,6 +1912,28 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 			Time of beginning or ending of weather phenomena is stored in this group.
 
+		.. cpp:enumerator:: NSW
+
+			Nil significant weather.
+
+			This group is only used in trends and indicates the end of a significant weather phenomena. No further information is provided.
+
+		.. cpp:enumerator:: PWINO
+
+			Indicates that automated station is equipped with present weather identifier and this sensor is not operating. No further information is provided.
+
+		.. cpp:enumerator:: TSNO
+
+			Indicates that automated station is equipped with lightning detector and this sensor is not operating. No further information is provided.
+
+		.. cpp:enumerator:: WX_MISG
+
+			Weather phenomena data is missing. No further information is provided.
+
+		.. cpp:enumerator:: TS_LTNG_TEMPO_UNAVBL
+
+			Thunderstorm/lightning data is missing. No further information is provided.
+
 
 	**Acquiring group data**
 
@@ -1998,23 +1950,41 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: This method is for compatibility only and always returns ``true`` for this group. All groups that are not valid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) are not recognised as a WeatherGroup.
+			:returns: ``true`` if all weather phenomena included in this group are valid; ``false`` otherwise.
+
+				Invalid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) may be not recognised as a WeatherGroup.
+
+				For ``WX`` not followed by ``MISG`` and for ``TS/LTNG`` not followed by ``TEMPO`` and ``UNAVBL`` returns ``false``.
 
 
 TemperatureGroup
 ^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: temperaturegroup.svg
-
-Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02``, ``M00/M00``, ``00/M00``, ``/////``, ``T02330206``, ``T10171028``, and ``T0261``.
-
 .. cpp:class:: TemperatureGroup
 
 	Stores information about current ambient air temperature and dew point. Group which reports values rounded to integer of degrees Celsius (e.g. ``10/M00``) is included in METAR report body. Group which reports values in tength of degrees Celsius (e.g. ``T02330206``) is used in North America and is included in remarks.
 
+	.. cpp:enum-class:: Type
+
+		Group type which specifies what kind of data stored within this group.
+
+		.. cpp:enumerator:: TEMPERATURE_AND_DEW_POINT
+
+			Temperature and dew point. Use :cpp:func:`airTemperature()` and :cpp:func:`dewPoint()` for ambient air temperature and dew point.
+
+		.. cpp:enumerator:: T_MISG
+
+			Temperature data is missing. No further details provided.
+
+		.. cpp:enumerator:: TD_MISG
+
+			Dew point data is missing. No further details provided.
+
 	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of the group.
 
 		.. cpp:function:: Temperature airTemperature() const
 
@@ -2028,23 +1998,23 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: ``true`` if stored ambient air temperature and dew point information is valid, and ``false`` otherwise. The information is considered valid if the dew point is less or equal than ambient air temperature.
+			:returns: ``true`` if stored ambient air temperature and dew point information is valid and the group is complete; ``false`` otherwise. 
+
+				The information is considered valid if the dew point is less or equal than ambient air temperature.
+
+				Groups ``TD`` and ``T`` not followed by ``MISG`` are incomplete; ``false`` is returned for such groups.
 
 
 PressureGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: pressuregroup.svg
-
-Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, ``QNH2981INS``, ``SLP960``, ``QFE761/1015``, and ``QFE741``.
 
 .. cpp:class:: PressureGroup
 
 	Stores information about observed or forecast atmospheric pressure.
 
 	.. cpp:enum-class:: Type
+
+		Group type which specifies what kind of data stored within this group.
 
 		.. cpp:enumerator:: OBSERVED_QNH
 
@@ -2058,11 +2028,19 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, 
 
 			Indicates that group contains an observed actual atmospheric pressure (e.g. remark ``QFE761/1015`` or ``QFE741``). This group is used by some countries which were part of Soviet Union.
 
+		.. cpp:enumerator:: SLPNO
+
+			Mean sea-level pressure information is not available. No further details are provided.
+
+		.. cpp:enumerator:: PRES_MISG
+
+			Atmospheric pressure (altimeter) data is missing. No further details are provided.
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of the pressure value (observed or forecast).
+			:returns: Type of the pressure value (observed, forecast, and data missing).
 
 		.. cpp:function:: Pressure atmosphericPressure() const
 
@@ -2072,18 +2050,12 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, 
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: Always returns ``true``.
+			:returns: Always returns ``true`` for all groups except ``PRES`` not followed by ``MISG``.
 
 
 
 RunwayStateGroup
 ^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: runwaystategroup.svg
-
-Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60``, ``R21/SNOCLO``, ``R/SNOCLO``,``R34L/CLRD70``, etc.
 
 .. cpp:class:: RunwayStateGroup
 
@@ -2244,12 +2216,6 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 SeaSurfaceGroup
 ^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: seasurfacegroup.svg
-
-Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6``, ``W///S/``, ``W04/H///``, and ``W///H///``.
 
 .. cpp:class:: SeaSurfaceGroup
 
@@ -2437,12 +2403,6 @@ PrecipitationGroup
 LayerForecastGroup
 ^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: layerforecastgroup.svg
-
-Examples of the raw report data are ``520004``, and ``620304``. 
-
 .. cpp:class:: LayerForecastGroup
 
 	Stores various information about forecast atmospheric layer (span of heights where certain conditions such as icing or turbulence are forecast). This group may be present in TAFs issued at military aerodromes of NATO countries.
@@ -2560,12 +2520,6 @@ Examples of the raw report data are ``520004``, and ``620304``.
 PressureTendencyGroup
 ^^^^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: pressuretendencygroup.svg
-
-Example of the raw report data is ``52032``, ``5////``, ``PRESRR``, and ``PRESFR``. 
-
 .. cpp:class:: PressureTendencyGroup
 
 	Stores information about atmospheric pressure tendency for the last 3 hours. This group is used in North America and is included in remarks.
@@ -2674,12 +2628,6 @@ Example of the raw report data is ``52032``, ``5////``, ``PRESRR``, and ``PRESFR
 
 CloudTypesGroup
 ^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudtypesgroup.svg
-
-Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3``, ``SC1SC1SC3AC2``, and ``3CU010``.
 
 .. cpp:class:: CloudTypesGroup
 
@@ -2816,12 +2764,6 @@ Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3``, ``SC1SC1SC3AC2``,
 
 CloudLayersGroup
 ^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudlayersgroup.svg
-
-Example of the raw report data is ``8/578``, and ``8/903``.
 
 .. cpp:class:: CloudLayersGroup
 
@@ -2995,12 +2937,6 @@ Example of the raw report data is ``8/578``, and ``8/903``.
 LightningGroup
 ^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: lightninggroup.svg
-
-Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, etc.
-
 .. cpp:class:: LightningGroup
 
 	Stores information about observed lightning flashes. This group is included in the remarks and is used in North America.
@@ -3072,12 +3008,6 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 VicinityGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: vicinitygroup.svg
-
-Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MOV NE``, ``TCU DSNT W-NW AND S MOV W``, ``ACC ALQDS``, ``CB OHD AND E MOV E`` etc.
 
 .. cpp:class:: VicinityGroup
 
@@ -3184,10 +3114,6 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 MiscGroup
 ^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, ``CCC``, ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2``, ``AMB``, ``RED``, ``BLACKBLU``, ``BLACKWHT``, ``BLACKGRN``, ``BLACKYLO1``, ``BLACKYLO2``, ``BLACKAMB``, and ``BLACKRED``. 
-
 .. cpp:class:: MiscGroup
 
 	Stores various data provided in METAR or TAF report.
@@ -3267,6 +3193,10 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, ``CCC``, ``BLU`
 		.. cpp:enumerator:: COLOUR_CODE_BLACKRED
 
 			Same as :cpp:enumerator:`COLOUR_CODE_RED` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: FROIN
+
+			Indicates frost on the instrument (e.g. due to fog depositing rime). No data are provided.
 
 	**Acquiring group data**
 

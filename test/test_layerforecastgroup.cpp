@@ -10,6 +10,12 @@
 
 static const auto margin = 1.0 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Atmospheric layer range
+// Purpose: to confirm that base and top heights which define the atmospheric
+// layer range are parsed and identified correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LayerForecastGroup, baseTopHeights) {
 	const auto lfg1 = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg1.has_value());
@@ -41,6 +47,11 @@ TEST(LayerForecastGroup, baseTopHeights) {
 	EXPECT_NEAR(lfg2->topHeight().distance().value(), 4000, margin);
 	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Icing groups
+// Purpose: to confirm that each type if icing is identified correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, icingTrace) {
 	const auto lfg = metaf::LayerForecastGroup::parse("600304", metaf::ReportPart::TAF);
@@ -101,6 +112,11 @@ TEST(LayerForecastGroup, icingSevereClearInPrecipitation) {
 	ASSERT_TRUE(lfg.has_value());
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION);	
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Turbulence groups
+// Purpose: to confirm that each type if turbulence is identified correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, turbulenceNone) {
 	const auto lfg = metaf::LayerForecastGroup::parse("500004", metaf::ReportPart::TAF);
@@ -168,6 +184,11 @@ TEST(LayerForecastGroup, turbulenceExtreme) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Incorrect groups
+// Purpose: to confirm that incorrect groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LayerForecastGroup, wrongReportPart) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("620324", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("620324", metaf::ReportPart::HEADER).has_value());
@@ -192,6 +213,12 @@ TEST(LayerForecastGroup, wrongFormat) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("620A24", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62A324", metaf::ReportPart::TAF).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that turbulence/icing forecast groups do not append to
+// each other and other groups cannot be appended.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, append) {
 	auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);
@@ -218,6 +245,11 @@ TEST(LayerForecastGroup, append) {
 	EXPECT_EQ(lfg2->append("TEST", metaf::ReportPart::TAF), 
 		metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method returns true for all groups
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, isValid) {
 	const auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);

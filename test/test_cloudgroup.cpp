@@ -1342,6 +1342,14 @@ TEST(CloudGroup, parseCldAndOther) {
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
+TEST(CloudGroup, parseMisg) {
+	EXPECT_FALSE(metaf::CloudGroup::parse("MISG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("MISG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("MISG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("MISG", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
 // Purpose: to confirm that isValid() method correctly validates the data

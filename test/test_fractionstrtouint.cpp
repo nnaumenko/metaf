@@ -8,6 +8,11 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Fraction formats
+// Purpose: to confirm that various fractions are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(FractionStrToUint, numerator1digit_denominator1digit) {
 	const auto r3_8 = metaf::fractionStrToUint("3/8", 0, 3);
 	ASSERT_TRUE(r3_8.has_value());
@@ -75,6 +80,12 @@ TEST(FractionStrToUint, numerator2digit_denominator2digit) {
 	EXPECT_EQ(std::get<0>(r99_00.value()), 99u);
 	EXPECT_EQ(std::get<1>(r99_00.value()), 0u);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Arguments test: startPos and length
+// Purpose: to confirm that only part of the string is parsed as fraction, as
+// per startPos and length arguments. 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(FractionStrToUint, length) {
 	const auto r1 = metaf::fractionStrToUint("3/4SM", 0, 3);

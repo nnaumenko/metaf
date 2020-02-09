@@ -10,6 +10,13 @@
 
 static const auto margin = 0.01 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Parsing tests
+// Purpose: to confirm that surface friction and braking action strings are 
+// parsed correctly, the reserved values and 'unreliable or unmeasurable' value
+// are correctly identified, and that other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SurfaceFriction, fromStringFrictionCoefficient) {
 	const auto sf1 = metaf::SurfaceFriction::fromString("90");
 	ASSERT_TRUE(sf1.has_value());
@@ -105,6 +112,12 @@ TEST(SurfaceFriction, fromStringWrongFormat) {
 	EXPECT_FALSE(metaf::SurfaceFriction::fromString("/").has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Braking action
+// Purpose: to confirm that correct braking action values are returned for 
+// specified surface friction values
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SurfaceFriction, brakingActionPoor) {
 	const auto sf1 = metaf::SurfaceFriction::fromString("00");
 	ASSERT_TRUE(sf1.has_value());
@@ -167,6 +180,12 @@ TEST(SurfaceFriction, brakingActionNotReported) {
 	EXPECT_EQ(sf->brakingAction(), metaf::SurfaceFriction::BrakingAction::NONE);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// isReported() test
+// Purpose: to confirm that isReported() method correctly distingishes between
+// reported and non-reported values.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SurfaceFriction, isReported) {
 	const auto sf62 = metaf::SurfaceFriction::fromString("62");
 	ASSERT_TRUE(sf62.has_value());
@@ -176,6 +195,12 @@ TEST(SurfaceFriction, isReported) {
 	ASSERT_TRUE(sfNr.has_value());
 	EXPECT_FALSE(sfNr->isReported());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// isUnreliable() test
+// Purpose: to confirm that isUnreliable() method correctly identifies value of
+// 'unreliable or unmeasurable' kind.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SurfaceFriction, isUnreliable) {
 	const auto sf99 = metaf::SurfaceFriction::fromString("99");

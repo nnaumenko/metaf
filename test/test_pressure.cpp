@@ -11,6 +11,11 @@
 static const auto margin = 0.01 / 2;
 static const auto slpMargin = 0.1 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// fromString() tests
+// Purpose: to confirm that SLP in format Qxxxx and Axxxx is parsed correctly,
+// and the strings which do not fit this format are not parsed  
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Pressure, fromStringHectopascal) {
 	const auto p = metaf::Pressure::fromString("Q0994");
@@ -56,6 +61,12 @@ TEST(Pressure, fromStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromString("A///"));
 	EXPECT_FALSE(metaf::Pressure::fromString("A/////"));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// fromForecastString() tests
+// Purpose: to confirm that forecast lowest SLP in format QNHxxxxINS is parsed 
+// correctly, and the strings which do not fit this format are not parsed  
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Pressure, fromForecastString) {
 	const auto p = metaf::Pressure::fromForecastString("QNH2979INS");
@@ -120,6 +131,13 @@ TEST(Pressure, fromSlpStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromSlpString("SLP0215"));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// fromQfeString() tests
+// Purpose: to confirm that actual atmospheric pressure in format QFExxx/xxxx 
+// is parsed correctly, and the strings which do not fit this format are not 
+// parsed  
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Pressure, fromQfeString) {
 	const auto p1 = metaf::Pressure::fromQfeString("QFE750");
 	ASSERT_TRUE(p1.has_value());
@@ -162,6 +180,12 @@ TEST(Pressure, fromQfeStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromQfeString("QFE761/1015Q"));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// fromTendencyString() tests
+// Purpose: to confirm that 3-digit atmospheric pressure tendency values are 
+// parsed correctly, and the values that do not fit this format are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Pressure, fromTendencyString) {
 	const auto p = metaf::Pressure::fromTendencyString("032");
 	ASSERT_TRUE(p.has_value());
@@ -187,6 +211,12 @@ TEST(Pressure, fromTendencyStringWrongFormat) {
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString("03.2"));
 	EXPECT_FALSE(metaf::Pressure::fromTendencyString("3.2"));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// toUnit() tests
+// Purpose: to confirm that toUnit() method correctly converts the data to 
+// various pressure units and that non-reported values result in empty optional
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Pressure, toUnitSameUnit) {
 	const auto p1 = metaf::Pressure::fromString("A2934");
@@ -266,6 +296,12 @@ TEST(Pressure, toUnitMmHgToInHg) {
 	EXPECT_TRUE(p->toUnit(metaf::Pressure::Unit::INCHES_HG).has_value());
 	EXPECT_NEAR(p->toUnit(metaf::Pressure::Unit::INCHES_HG).value(), 30.12, margin);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// isReported() tests
+// Purpose: to confirm that isReported() method correctly distinguishes between
+// reported and non-reported atmospheric pressure values
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Pressure, isReported) {
 	const auto pQ0994 = metaf::Pressure::fromString("Q0994");

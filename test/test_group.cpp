@@ -9,7 +9,13 @@
 #include "metaf.hpp"
 #include <type_traits>
 
-//Confirm that Group occupies a contiguous memory area
+///////////////////////////////////////////////////////////////////////////////
+// Memory test
+// Purpose: to confirm that that Group type occupies a contiguous memory area,
+// Note: if Group occupies a contiguous memory area, then every alternative 
+// included in Group variant also occupies a contiguous memory area
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Group, is_standard_layout) {
     EXPECT_TRUE(std::is_standard_layout<metaf::Group>::value);
 }

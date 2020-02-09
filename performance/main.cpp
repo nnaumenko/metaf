@@ -43,8 +43,8 @@ constexpr size_t variant_index() {
 /// @return Name of the group in human-readable form.
 string_view groupName (size_t index) {
 	switch (index) {
-		case variant_index<metaf::Group, metaf::FixedGroup>():
-		return "FixedGroup";
+		case variant_index<metaf::Group, metaf::KeywordGroup>():
+		return "KeywordGroup";
 
 		case variant_index<metaf::Group, metaf::LocationGroup>():
 		return "LocationGroup";
