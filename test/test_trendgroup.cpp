@@ -8,6 +8,13 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse probability groups
+// Purpose: to confirm that probability groups are parsed correctly and 
+// malformed groups are not parsed 
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(TrendGroup, parseProb30) {
 	const auto tg = metaf::TrendGroup::parse("PROB30", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
@@ -46,6 +53,12 @@ TEST(TrendGroup, parseProbWrongFormat) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("PROB100", metaf::ReportPart::TAF));
 	EXPECT_FALSE(metaf::TrendGroup::parse("PROB5", metaf::ReportPart::TAF));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse trend type groups
+// Purpose: to confirm that NOSIG, BECMG, TEMPO, and INTER groups are parsed 
+// correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, parseNosig) {
 	const auto tg = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);
@@ -153,11 +166,11 @@ TEST(TrendGroup, parseInterWrongReportPart) {
 	EXPECT_FALSE(metaf::TrendGroup::parse(gs, metaf::ReportPart::RMK));
 }
 
-TEST(TrendGroup, parseWrongFixedGroup) {
-	EXPECT_FALSE(metaf::TrendGroup::parse("ZZZZZ", metaf::ReportPart::METAR));
-	EXPECT_FALSE(metaf::TrendGroup::parse("NOSIG1", metaf::ReportPart::METAR));
-	EXPECT_FALSE(metaf::TrendGroup::parse("TEMP", metaf::ReportPart::METAR));
-}
+///////////////////////////////////////////////////////////////////////////////
+// Parse FMxxxxxx groups
+// Purpose: to confirm that FM groups (6 digit time) are parsed correctly and 
+// malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, parseFm) {
 	static const std::string gs("FM191445");
@@ -191,6 +204,12 @@ TEST(TrendGroup, parseFmWrongFormat) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("FM//////", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse("FM19144A", metaf::ReportPart::METAR));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse time span groups
+// Purpose: to confirm that time span groups xxxx/xxxx are parsed 
+// correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, parseTimeSpan) {
 	static const std::string gs("1221/1303");
@@ -249,6 +268,12 @@ TEST(TrendGroup, parseTimeSpanWrongFormat) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("122A/1303", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse("1221/130A", metaf::ReportPart::METAR));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse FM, TL, and AT groups
+// Purpose: to confirm that FM, TL, and AT groups (4 digit time) are parsed 
+// correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, parseTrendTimeFm) {
 	static const std::string gs("FM1445");
@@ -330,9 +355,20 @@ TEST(TrendGroup, parseTrendTimeWrongFormat) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("AT153A", metaf::ReportPart::METAR));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Empty string
+// Purpose: to confirm that empty string is not parsed as TrendGroup
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(TrendGroup, parseEmptyString) {
 	EXPECT_FALSE(metaf::TrendGroup::parse("", metaf::ReportPart::METAR));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests: probability
+// Purpose: to confirm that groups are appended correctly to the probability
+// groups
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, appendProbabilityFollowedByTempo) {
 	auto tg = metaf::TrendGroup::parse("PROB30", metaf::ReportPart::TAF);
@@ -420,6 +456,12 @@ TEST(TrendGroup, appendProbabilityFollowedByFixedGroup) {
 	EXPECT_FALSE(tg->timeTill().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests: trend type
+// Purpose: to confirm that groups are appended correctly to the trend type
+// groups such as BECMG, TEMPO and INTER
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, appendTrendFollowedByTimeSpan) {
 	auto tg = metaf::TrendGroup::parse("BECMG", metaf::ReportPart::TAF);
@@ -521,6 +563,12 @@ TEST(TrendGroup, appendProbTrendFollowedByTimeSpan) {
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests: FMxxxxxx and NOSIG
+// Purpose: to confirm that no group can be appended do FMxxxxxx and NOSIG
+// groups
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(TrendGroup, appendFrom) {
 	auto tg = metaf::TrendGroup::parse("FM191445", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
@@ -572,6 +620,12 @@ TEST(TrendGroup, appendNosig) {
 	EXPECT_FALSE(tg->timeTill().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests: time FMxxxx and TLxxxx
+// Purpose: to confirm that FMxxxx and TLxxxx groups are appended correctly 
+// with each other
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, appendTrendTimeFromTill) {
 	auto tg = metaf::TrendGroup::parse("FM1230", metaf::ReportPart::METAR);
@@ -659,6 +713,12 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	EXPECT_EQ(tgAt->timeAt()->minute(), 15u);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// isTimeSpanGroup() tests
+// Purpose: to confirm that groups isTimeSpanGroup() method correctly 
+// identifies time span groups xxxx/xxxx.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(TrendGroup, isTimeSpanGroupTrue) {
 	const auto tg = metaf::TrendGroup::parse("1221/1303", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(tg.has_value());
@@ -738,6 +798,11 @@ TEST(TrendGroup, isTimeSpanFalseOther) {
 	ASSERT_TRUE(tg8.has_value());
 	EXPECT_FALSE(tg8->isTimeSpanGroup());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, isValidTrueNosigBecmgTempoInter) {
 	const auto tg1 = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);

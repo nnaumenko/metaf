@@ -11,8 +11,9 @@
 static const auto heightMargin = 1.0 / 2.0;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Surface wind (with or without gusts, in differnt units, etc) and variable
-// wind sector
+// Surface wind with or without gusts
+// Purpose: to confirm that groups which contain surface wind data, with or
+// without gusts are parsed correctly and malformed groups are not parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseSurfaceWindKnotsMetar) {
@@ -221,6 +222,12 @@ TEST(WindGroup, parseSurfaceWindWrongFormat) {
 	EXPECT_FALSE(metaf::WindGroup::parse("////", metaf::ReportPart::METAR).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Variable wind sector group
+// Purpose: to confirm that groups which contain variable wind sector are 
+// parsed correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(WindGroup, parseVariableWindSectorMetar) {
 	const auto wg = metaf::WindGroup::parse("180V240", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
@@ -275,6 +282,13 @@ TEST(WindGroup, parseVariableWindSectorWrongFormat) {
 	EXPECT_FALSE(metaf::WindGroup::parse("180V///", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::WindGroup::parse("///V///", metaf::ReportPart::METAR).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Surface wind and variable wind sector
+// Purpose: to confirm that groups which contain surface wind and variable wind
+// sector are appended correctly, and wrong combinations of groups cannot be
+// appended
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, appendSurfaceWindAndVariableWindSector) {
 	auto wg = metaf::WindGroup::parse("18005G10KT", metaf::ReportPart::METAR);
@@ -415,6 +429,8 @@ TEST(WindGroup, appendVariableWindSectorAndOther) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Wind shear
+// Purpose: to confirm that wind shear groups are parsed correctly and that 
+// malformed groups are not parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWindShear) {
@@ -514,6 +530,8 @@ TEST(WindGroup, appendWindShearGroupAndOther) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Calm wind
+// Purpose: to confirm that calm wind (i.e. no wind) groups are identified 
+// correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, calmWindKnots) {
@@ -565,7 +583,9 @@ TEST(WindGroup, calmWindKmh) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Wind shear conditions
+// WSCONDS group
+// Purpose: to confirm that WSCONDS group is parsed correctly and that no other
+// group can be appended to it.
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWsconds) {
@@ -642,7 +662,8 @@ TEST(WindGroup, appendWscondsAndOther) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Wind data missing
+// WND MISG group
+// Purpose: to confirm that WND MISG groups are parsed and appended correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWndMisg) {
@@ -678,7 +699,9 @@ TEST(WindGroup, appendOtherToWnd) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Wind shift
+// Wind shift groups
+// Purpose: to confirm that observed wind shift groups are parsed and appended 
+// correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWshft) {
@@ -863,7 +886,9 @@ TEST(WindGroup, appendWshftAndOther) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Peak wind
+// Peak wind groups
+// Purpose: to confirm that observed peak wind groups are parsed and appended 
+// correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parsePk) {
@@ -1261,7 +1286,9 @@ TEST(WindGroup, appendPkWndDirSpeedMinuteNoReportData) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Wind shear at lower levels (all runways)
+// WS ALL RWY groups
+// Purpose: to confirm that groups identifiying wind shear at lower levels for 
+// all runways are parsed and appended correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWs) {
@@ -1621,7 +1648,9 @@ TEST(WindGroup, windShearAppendOtherToWsAll) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Wind shear at lower levels (for a runway)
+// Wind shear at lower levels for a runway
+// Purpose: to confirm that groups identifiying wind shear at lower levels for 
+// one runway are parsed and appended correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, parseWsR32) {
@@ -1794,7 +1823,8 @@ TEST(WindGroup, parseWsWrongReportPart) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Misc: isValid()
+// Tests for isValid()
+// Purpose: to confirm that isValid() method returns true for all values
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WindGroup, isValidTrueSurfaceWind) {

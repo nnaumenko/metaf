@@ -10,7 +10,13 @@
 
 static const auto heightMargin = 1.0 / 2;
 
-//Format 1, e.g. BLSN1SC1SC1CI3
+
+///////////////////////////////////////////////////////////////////////////////
+// Parsing multiple cloud types / obscurations in single group format
+// Purpose: to confirm that group with format which contains multiple cloud
+// layer or obscuration types with their octa (e.g. BLSN1SC1SC1CI3) are parsed
+// correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudTypesGroup, format1parseCumulonimbus) {
 	const auto ctg = metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::RMK);
@@ -400,7 +406,12 @@ TEST(CloudTypesGroup, format1parseWrongFormat) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2/CI3", metaf::ReportPart::RMK).has_value());
 }
 
-//Format 2, e.g. 8NS070
+///////////////////////////////////////////////////////////////////////////////
+// Parsing single cloud type in a single group format
+// Purpose: to confirm that group with format which contains single cloud
+// types with their octa and height (e.g. 8NS070) are parsed correctly and 
+// malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudTypesGroup, format2parseCumulonimbus) {
 	const auto ctg = metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::RMK);
@@ -576,7 +587,10 @@ TEST(CloudTypesGroup, format2parseWrongFormat) {
 	//TODO
 }
 
-// Miscellaneous
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that CloudTypesGroup do not append to each other
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudTypesGroup, append) {
 	auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
@@ -621,6 +635,11 @@ TEST(CloudTypesGroup, append) {
 	EXPECT_EQ(ctg3->append("TEST", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method always returns true
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudTypesGroup, isValid) {
 	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);

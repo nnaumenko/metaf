@@ -10,6 +10,12 @@
 
 static const auto margin = 0.1 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Parse descriptive state of sea surface
+// Purpose: to confirm that strings which contain descriptive state of sea 
+// surface are parsed correctly and other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(WaveHeight, fromStringStateOfSurfaceCalmGlassy) {
 	const auto wh = metaf::WaveHeight::fromString("S0");
 	ASSERT_TRUE(wh.has_value());
@@ -211,6 +217,12 @@ TEST(WaveHeight, fromStringWaveHeightWrongFormat) {
 	EXPECT_FALSE(metaf::WaveHeight::fromString("H////").has_value());
 	EXPECT_FALSE(metaf::WaveHeight::fromString("H00A").has_value());
 }	
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse wave height
+// Purpose: to confirm that strings which contain wave height in decimeters
+// are parsed correctly and other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WaveHeight, stateOfSurfaceCalmGlassy) {
 	const auto wh1 = metaf::WaveHeight::fromString("H000");
