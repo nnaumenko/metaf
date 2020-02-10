@@ -228,8 +228,8 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Cloud Types: " + rawString);
 	}
 
-	virtual std::string visitCloudLayersGroup(
-		const CloudLayersGroup & group,
+	virtual std::string visitLowMidHighCloudGroup(
+		const LowMidHighCloudGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString)
 	{

@@ -194,12 +194,12 @@ protected:
 		(void)group; (void)reportPart; (void)rawString;
 		count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]++;
 	}
-	virtual void visitCloudLayersGroup(const metaf::CloudLayersGroup & group,
+	virtual void visitLowMidHighCloudGroup(const metaf::LowMidHighCloudGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
 	{
 		(void)group; (void)reportPart; (void)rawString;
-		count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]++;
+		count[variant_index<metaf::Group, metaf::LowMidHighCloudGroup>()]++;
 	}
 
 	virtual void visitLightningGroup(const metaf::LightningGroup & group,
@@ -263,7 +263,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 1);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudLayersGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LowMidHighCloudGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 2);

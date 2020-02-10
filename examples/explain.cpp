@@ -81,8 +81,8 @@ private:
 		const metaf::CloudTypesGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitCloudLayersGroup(
-		const metaf::CloudLayersGroup & group,
+	virtual std::string visitLowMidHighCloudGroup(
+		const metaf::LowMidHighCloudGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 	virtual std::string visitLightningGroup(
@@ -115,6 +115,7 @@ private:
 	static std::string explainWaveHeight(const metaf::WaveHeight & waveHeight);
 	static std::string explainWeatherPhenomena(const metaf::WeatherPhenomena & weatherPhenomena);
 	static std::string explainDirectionSector(const std::vector<metaf::Direction> dir);
+	static std::string explainCloudType(const metaf::CloudType ct);
 
 	static std::string_view speedUnitToString(metaf::Speed::Unit unit);
 	static std::string_view distanceUnitToString(metaf::Distance::Unit unit);
@@ -126,7 +127,7 @@ private:
 		metaf::WaveHeight::StateOfSurface stateOfSurface);
 	static std::string_view trendTypeToString(metaf::TrendGroup::Type type);
 	static std::string_view cloudAmountToString(metaf::CloudGroup::Amount amount);
-	static std::string_view cloudTypeToString(metaf::CloudGroup::CloudType type);
+	static std::string_view convectiveTypeToString(metaf::CloudGroup::ConvectiveType type);
 	static std::string_view weatherPhenomenaQualifierToString(metaf::WeatherPhenomena::Qualifier qualifier);
 	static std::string_view weatherPhenomenaDescriptorToString(metaf::WeatherPhenomena::Descriptor descriptor);
 	static std::string_view weatherPhenomenaWeatherToString(metaf::WeatherPhenomena::Weather weather);
@@ -134,22 +135,14 @@ private:
 	static std::string_view visTrendToString(metaf::VisibilityGroup::Trend trend);
 	static std::string_view runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
 	static std::string_view runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
-	static std::string_view precipitationGroupTypeToString(
-		metaf::PrecipitationGroup::Type type);
-	static std::string_view layerForecastGroupTypeToString(
-		metaf::LayerForecastGroup::Type type);
-	static std::string_view pressureTendencyTypeToString(
-		metaf::PressureTendencyGroup::Type type);
-	static std::string_view pressureTendencyTrendToString(
-		metaf::PressureTendencyGroup::Trend trend);
-	static std::string_view cloudTypeToString(
-		metaf::CloudTypesGroup::Type type);
-	static std::string_view cloudLowLayerToString(
-		metaf::CloudLayersGroup::LowLayer lowLayer);
-	static std::string_view cloudMidLayerToString(
-		metaf::CloudLayersGroup::MidLayer midLayer);
-	static std::string_view cloudHighLayerToString(
-		metaf::CloudLayersGroup::HighLayer highLayer);
+	static std::string_view precipitationGroupTypeToString(metaf::PrecipitationGroup::Type type);
+	static std::string_view layerForecastGroupTypeToString(metaf::LayerForecastGroup::Type type);
+	static std::string_view pressureTendencyTypeToString(metaf::PressureTendencyGroup::Type type);
+	static std::string_view pressureTendencyTrendToString(metaf::PressureTendencyGroup::Trend trend);
+	static std::string_view cloudTypeToString(metaf::CloudType::Type type);
+	static std::string_view cloudLowLayerToString(metaf::LowMidHighCloudGroup::LowLayer lowLayer);
+	static std::string_view cloudMidLayerToString(metaf::LowMidHighCloudGroup::MidLayer midLayer);
+	static std::string_view cloudHighLayerToString(metaf::LowMidHighCloudGroup::HighLayer highLayer);
 
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
 };
@@ -541,8 +534,8 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 		case metaf::CloudGroup::Type::CLOUD_LAYER:
 		result << "Cloud layer" << lineBreak;
 		result << cloudAmountToString(group.amount()) << lineBreak;
-		if (group.cloudType() != metaf::CloudGroup::CloudType::NONE) {
-			result << "Convective type: " << cloudTypeToString(group.cloudType());
+		if (group.convectiveType() != metaf::CloudGroup::ConvectiveType::NONE) {
+			result << "Convective type: " << convectiveTypeToString(group.convectiveType());
 			result << lineBreak;
 		}
 		result << "Base height " << explainDistance(group.height());
@@ -555,28 +548,6 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 
 		case metaf::CloudGroup::Type::CEILING:
 		result << "Ceiling height " << explainDistance(group.height());
-		break;
-
-		case metaf::CloudGroup::Type::VARIABLE_CEILING:
-		result << "Ceiling height is variable between ";
-		result << explainDistance(group.minHeight());
-		result << " and ";
-		result << explainDistance(group.maxHeight());
-		break;
-
-		case metaf::CloudGroup::Type::CHINO:
-		result << "Ceiling data not awailable";
-		break;
-
-		case metaf::CloudGroup::Type::CLD_MISG:
-		result << "Sky condition data (cloud data) is missing";
-		break;
-	}
-
-	switch (group.type()) {
-		case metaf::CloudGroup::Type::CEILING:
-		case metaf::CloudGroup::Type::VARIABLE_CEILING:
-		case metaf::CloudGroup::Type::CHINO:
 		if (const auto rw = group.runway(); rw.has_value()) {
 			result << " at " << explainRunway(*rw);
 		}
@@ -585,9 +556,37 @@ std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
 		}
 		break;
 
-		default: break;
-	}
+		case metaf::CloudGroup::Type::VARIABLE_CEILING:
+		result << "Ceiling height is variable between ";
+		result << explainDistance(group.minHeight());
+		result << " and ";
+		result << explainDistance(group.maxHeight());
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
 
+		case metaf::CloudGroup::Type::CHINO:
+		result << "Ceiling data not awailable";
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
+
+		case metaf::CloudGroup::Type::CLD_MISG:
+		result << "Sky condition data (cloud data) is missing";
+		break;
+
+		case metaf::CloudGroup::Type::OBSCURATION:
+		result << "Ground-based or aloft obscuration";
+		break;
+	}
 	return result.str();
 }
 
@@ -973,26 +972,16 @@ std::string VisitorExplain::visitCloudTypesGroup(
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	const auto clouds = group.toVector();
+	const auto clouds = group.cloudTypes();
+	result << "Obscuration / cloud layers: " << lineBreak;
 	for (auto i = 0u; i < clouds.size(); i++) {
-		if (i == 0u) {
-			result << "Lowest cloud layer or obscuration: ";
-		} else {
-			result << "Next cloud layer: ";
-		}
-		result << cloudTypeToString(std::get<metaf::CloudTypesGroup::Type>(clouds.at(i)));
-		result << ", covering " << std::get<unsigned int>(clouds.at(i)) << "/8 of sky";
-		result << lineBreak;
-	}
-	if (group.baseHeight().isReported()) {
-		result << "Base height is ";
-		result << explainDistance(group.baseHeight());
+		result << explainCloudType(clouds.at(i)) << lineBreak;
 	}
 	return result.str();
 }
 
-std::string VisitorExplain::visitCloudLayersGroup(
-	const metaf::CloudLayersGroup & group,
+std::string VisitorExplain::visitLowMidHighCloudGroup(
+	const metaf::LowMidHighCloudGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
@@ -1726,6 +1715,19 @@ std::string VisitorExplain::explainDirectionSector(const std::vector<metaf::Dire
 	return result;
 }
 
+std::string VisitorExplain::explainCloudType(const metaf::CloudType ct) {
+	std::ostringstream result;
+	result << cloudTypeToString(ct.type());
+	result << " covering ";
+	result << ct.okta();
+	result << "/8 of the sky";
+	if (const auto h = ct.height(); h.isReported()) {
+		result << ", base height ";
+		result << explainDistance(ct.height());
+	}
+	return result.str();
+}
+
 std::string_view VisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
 	switch (unit) {	
 		case metaf::Speed::Unit::KNOTS: 				return "knots";
@@ -1922,18 +1924,20 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 	}
 }
 
-std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::CloudType type) {
+std::string_view VisitorExplain::convectiveTypeToString(
+	metaf::CloudGroup::ConvectiveType type)
+{
 	switch (type) {
-		case metaf::CloudGroup::CloudType::NONE:
+		case metaf::CloudGroup::ConvectiveType::NONE:
 		return std::string_view();
 
-		case metaf::CloudGroup::CloudType::NOT_REPORTED:
+		case metaf::CloudGroup::ConvectiveType::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::CloudGroup::CloudType::TOWERING_CUMULUS:
+		case metaf::CloudGroup::ConvectiveType::TOWERING_CUMULUS:
 		return "towering cumulus";
 
-		case metaf::CloudGroup::CloudType::CUMULONIMBUS:
+		case metaf::CloudGroup::ConvectiveType::CUMULONIMBUS:
 		return "cumulonimbus";
 	}
 }
@@ -2352,248 +2356,198 @@ std::string_view VisitorExplain::pressureTendencyTrendToString(
 	}	
 }
 
-std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type type) {
+std::string_view VisitorExplain::cloudTypeToString(metaf::CloudType::Type type) {
 	switch(type) {
-		case metaf::CloudTypesGroup::Type::CUMULONIMBUS:
-		return "cumulonimbus";
-
-		case metaf::CloudTypesGroup::Type::TOWERING_CUMULUS:
-		return "towering cumulus";
-
-		case metaf::CloudTypesGroup::Type::CUMULUS:
-		return "cumulus";
-
-		case metaf::CloudTypesGroup::Type::CUMULUS_FRACTUS:
-		return "cumulus fractus";
-
-		case metaf::CloudTypesGroup::Type::STRATOCUMULUS:
-		return "stratocumulus";
-
-		case metaf::CloudTypesGroup::Type::NIMBOSTRATUS:
-		return "nimbostratus";
-
-		case metaf::CloudTypesGroup::Type::STRATUS:
-		return "stratus";
-
-		case metaf::CloudTypesGroup::Type::STRATUS_FRACTUS:
-		return "stratus fractus";
-
-		case metaf::CloudTypesGroup::Type::ALTOSTRATUS:
-		return "altostratus";
-		
-		case metaf::CloudTypesGroup::Type::ALTOCUMULUS:
-		return "altocumulus";
-
-		case metaf::CloudTypesGroup::Type::ALTOCUMULUS_CASTELLANUS:
-		return "altocumulus castellanus";
-		
-		case metaf::CloudTypesGroup::Type::CIRRUS:
-		return "cirrus";
-		
-		case metaf::CloudTypesGroup::Type::CIRROSTRATUS:
-		return "cirrostratus";
-		
-		case metaf::CloudTypesGroup::Type::CIRROCUMULUS:
-		return "cirrocumulus";
-		
-		case metaf::CloudTypesGroup::Type::BLOWING_SNOW:
-		return "blowing snow";
-
-		case metaf::CloudTypesGroup::Type::BLOWING_DUST:
-		return "blowing dust";
-
-		case metaf::CloudTypesGroup::Type::BLOWING_SAND:
-		return "blowing sand";
-
-		case metaf::CloudTypesGroup::Type::ICE_CRYSTALS:
-		return "ice crystals";
-
-		case metaf::CloudTypesGroup::Type::RAIN:
-		return "rain";
-
-		case metaf::CloudTypesGroup::Type::DRIZZLE:
-		return "drizzle";
-
-		case metaf::CloudTypesGroup::Type::SNOW:
-		return "snow";
-
-		case metaf::CloudTypesGroup::Type::ICE_PELLETS:
-		return "ice pellets";
-
-		case metaf::CloudTypesGroup::Type::SMOKE:
-		return "smoke";
-
-		case metaf::CloudTypesGroup::Type::FOG:
-		return "fog";
-
-		case metaf::CloudTypesGroup::Type::MIST:
-		return "mist";
-
-		case metaf::CloudTypesGroup::Type::HAZE:
-		return "haze";
+		case metaf::CloudType::Type::NOT_REPORTED:		return "cumulonimbus";
+		case metaf::CloudType::Type::CUMULONIMBUS:		return "cumulonimbus";
+		case metaf::CloudType::Type::TOWERING_CUMULUS:	return "towering cumulus";
+		case metaf::CloudType::Type::CUMULUS:			return "cumulus";
+		case metaf::CloudType::Type::CUMULUS_FRACTUS:	return "cumulus fractus";
+		case metaf::CloudType::Type::STRATOCUMULUS:		return "stratocumulus";
+		case metaf::CloudType::Type::NIMBOSTRATUS:		return "nimbostratus";
+		case metaf::CloudType::Type::STRATUS:			return "stratus";
+		case metaf::CloudType::Type::STRATUS_FRACTUS:	return "stratus fractus";
+		case metaf::CloudType::Type::ALTOSTRATUS:		return "altostratus";
+		case metaf::CloudType::Type::ALTOCUMULUS:		return "altocumulus";
+		case metaf::CloudType::Type::ALTOCUMULUS_CASTELLANUS:return "altocumulus castellanus";
+		case metaf::CloudType::Type::CIRRUS:			return "cirrus";
+		case metaf::CloudType::Type::CIRROSTRATUS:		return "cirrostratus";
+		case metaf::CloudType::Type::CIRROCUMULUS:		return "cirrocumulus";
+		case metaf::CloudType::Type::BLOWING_SNOW:		return "blowing snow";
+		case metaf::CloudType::Type::BLOWING_DUST:		return "blowing dust";
+		case metaf::CloudType::Type::BLOWING_SAND:		return "blowing sand";
+		case metaf::CloudType::Type::ICE_CRYSTALS:		return "ice crystals";
+		case metaf::CloudType::Type::RAIN:				return "rain";
+		case metaf::CloudType::Type::DRIZZLE:			return "drizzle";
+		case metaf::CloudType::Type::SNOW:				return "snow";
+		case metaf::CloudType::Type::ICE_PELLETS:		return "ice pellets";
+		case metaf::CloudType::Type::SMOKE:				return "smoke";
+		case metaf::CloudType::Type::FOG:				return "fog";
+		case metaf::CloudType::Type::MIST:				return "mist";
+		case metaf::CloudType::Type::HAZE:				return "haze";
 	}
 }
 
-std::string_view VisitorExplain::cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer) {
+std::string_view VisitorExplain::cloudLowLayerToString(metaf::LowMidHighCloudGroup::LowLayer lowLayer) {
 	switch(lowLayer) {
-		case metaf::CloudLayersGroup::LowLayer::NONE:
+		case metaf::LowMidHighCloudGroup::LowLayer::NONE:
 		return "No low layer clouds";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_HU_CU_FR:
+		case metaf::LowMidHighCloudGroup::LowLayer::CU_HU_CU_FR:
 		return "Cumulus clouds showing little vertical extent "
 			"(Cumulus humilis or Cumulus fractus of dry weather or both)";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_MED_CU_CON:
+		case metaf::LowMidHighCloudGroup::LowLayer::CU_MED_CU_CON:
 		return "Cumulus clouds showing moderate or significant vertical extent "
 			"(Cumulus mediocris or Cumulus congestus, with or without Cumulus "
 			"humilis or Cumulus fractus or stratocumulus, all having their bases on "
 			"the same level)";
 
-		case metaf::CloudLayersGroup::LowLayer::CB_CAL:
+		case metaf::LowMidHighCloudGroup::LowLayer::CB_CAL:
 		return "Cumulonimbus clouds without fibrous or striated parts at summit "
 			"(Cumulonimbus calvus with or without Cumulus, Stratocumulus or Stratus)";
 
-		case metaf::CloudLayersGroup::LowLayer::SC_CUGEN:
+		case metaf::LowMidHighCloudGroup::LowLayer::SC_CUGEN:
 		return "Stratocumulus clouds resulting from the spreading out of Cumulus "
 			"(Stratocumulus cumulogenitus; Cumulus may also be present)";
 
-		case metaf::CloudLayersGroup::LowLayer::SC_NON_CUGEN:
+		case metaf::LowMidHighCloudGroup::LowLayer::SC_NON_CUGEN:
 		return "Stratocumulus clouds not resulting from the spreading out of Cumulus "
 			"(Stratocumulus non-cumulogenitus)";
 
-		case metaf::CloudLayersGroup::LowLayer::ST_NEB_ST_FR:
+		case metaf::LowMidHighCloudGroup::LowLayer::ST_NEB_ST_FR:
 		return "Stratus clouds which consist of a continuous single sheet or layer "
 			"with a fairly uniform base, or transitory stage during the formation "
 			"or the dissipation of such clouds "
 			"(Stratus nebulosus or Stratus fractus of dry weather, or both)";
 
-		case metaf::CloudLayersGroup::LowLayer::ST_FR_CU_FR_PANNUS:
+		case metaf::LowMidHighCloudGroup::LowLayer::ST_FR_CU_FR_PANNUS:
 		return "Ragged grey clouds which form below precipitating clouds "
 			"(Stratus fractus or Cumulus fractus of wet weather, or both (pannus) )";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS:
+		case metaf::LowMidHighCloudGroup::LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS:
 		return "Cumulus and Stratocumulus not formed by spreading of Cumulus "
 			"with bases at different levels";
 
-		case metaf::CloudLayersGroup::LowLayer::CB_CAP:
+		case metaf::LowMidHighCloudGroup::LowLayer::CB_CAP:
 		return "Cumulonimbus clouds with fibrous or striated summits, often with an anvil "
 			"(Cumulonimbus capillatus or Cumulonimbus capillatus incus)";
 
-		case metaf::CloudLayersGroup::LowLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::LowLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena";
 	}
 }
 
-std::string_view VisitorExplain::cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer) {
+std::string_view VisitorExplain::cloudMidLayerToString(metaf::LowMidHighCloudGroup::MidLayer midLayer) {
 	switch(midLayer) {
-		case metaf::CloudLayersGroup::MidLayer::NONE:
+		case metaf::LowMidHighCloudGroup::MidLayer::NONE:
 		return "No mid-layer clouds";
 
-		case metaf::CloudLayersGroup::MidLayer::AS_TR:
+		case metaf::LowMidHighCloudGroup::MidLayer::AS_TR:
 		return "A veil of greyish or bluish colour translucent enough "
 			"to reveal the position of the Sun or Moon "
 			"(Altostratus translucidus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AS_OP_NS:
+		case metaf::LowMidHighCloudGroup::MidLayer::AS_OP_NS:
 		return "A veil of a darker grey or a darker bluish grey dense enough to "
 			"completely mask the Sun or Moon "
 			"(Altostratus opacus or Nimbostratus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR:
 		return "Altocumulus (mackerel sky) clouds in patches or sheets at the same "
 			"level or in a single layer "
 			"(Altocumulus translucidus at a single level)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR_LEN_PATCHES:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR_LEN_PATCHES:
 		return "Patches, often lenticular (lens or almond-shaped), of Altocumulus "
 			"translucidus, continually changing and occurring at one or more levels";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR_AC_OP_SPREADING:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR_AC_OP_SPREADING:
 		return "Altocumulus translucidus in bands, or one or more layers of "
 			"Altocumulus translucidus or Altocumulus opacus, "
 			"progressively invading the sky";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_CUGEN_AC_CBGEN:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_CUGEN_AC_CBGEN:
 		return "Altocumulus resulting generally from the spreading "
 			"out of the summits of Cumulus; or Alcocumulus clouds acompanying Cumulonimbus "
 			"(Altocumulus cumulogenitus or Altocumulus cumulonimbogenitus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS:
 		return "Altocumulus duplicatus, or Altocumulus opacus in a single layer, not "
 			"progressively invading the sky, or Altocumulus with Altostratus or "
 			"Nimbostratus.";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_CAS_AC_FLO:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_CAS_AC_FLO:
 		return "Turrets at appear to be arranged in lines with a common horizontal "
 			"base or scattered tufts with rounded and slightly bulging upper parts"
 			"(Altocumulus castellanus or Altocumulus floccus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_OF_CHAOTIC_SKY:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_OF_CHAOTIC_SKY:
 		return "Sky of chaotic, heavy and stagnant appearance, which consist of "
 			"superposed, more or less broken cloud sheets of ill-defined species "
 			"or varieties";
 
-		case metaf::CloudLayersGroup::MidLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::MidLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena or because of a continuous layer of lower clouds";
 	}
 }
 
-std::string_view VisitorExplain::cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer) {
+std::string_view VisitorExplain::cloudHighLayerToString(metaf::LowMidHighCloudGroup::HighLayer highLayer) {
 	switch(highLayer) {
-		case metaf::CloudLayersGroup::HighLayer::NONE:
+		case metaf::LowMidHighCloudGroup::HighLayer::NONE:
 		return "No high-layer clouds";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_FIB_CI_UNC:
 		return "Nearly straight or more or less curved filaments; more rarely, "
 			"they are shaped like commas topped with either a hook or a tuft "
 			"that is not rounded "
 			"(Cirrus fibratus and sometimes Cirrus uncinus, not "
 			"progressively invading the sky)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CI_CAS_CI_FLO:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_SPI_CI_CAS_CI_FLO:
 		return "Cirrus spissatus, in patches or entangled sheaves, that usually "
 			"do not increase and sometimes appear to be the remains of the upper "
 			"part of a Cumulonimbus; or Cirrus clouds with small fibrous turrets "
 			"rising from common base; or more or less isolated tufts, often with trails "
 			"(Cirrus spissatus or Cirrus castellanus or Cirrus floccus)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CBGEN:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_SPI_CBGEN:
 		return "Cirrus clouds originated from a Cumulonimbus cloud(s) "
 			"(Cirrus spissatus cumulonimbogenitus)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC_SPREADING:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_FIB_CI_UNC_SPREADING:
 		return "Cirrus uncinus, Cirrus fibratus or both, progressively invading the sky; "
 			"they generally thicken as a whole";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
 		return "Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
 			"progressively invading the sky; they generally thicken as a whole, "
 			"but the continuous veil does not reach 45&deg; above the horizon";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
 		return "Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
 			"progressively invading the sky; they generally thicken as a whole; "
 			"the continuous veil extends more than 45&deg; above the horizon, without "
 			"the sky being totally covered";
 
-		case metaf::CloudLayersGroup::HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
+		case metaf::LowMidHighCloudGroup::HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
 		return "Light, uniform and nebulous veil showing no distinct details"
 			"or a white and fibrous veil with more or less clear-cut striations, "
 			"covering the whole sky"
 			"(Cirrostratus nebulosus or Cirrostratus fibratus covering the whole sky)";
 
-		case metaf::CloudLayersGroup::HighLayer::CS:
+		case metaf::LowMidHighCloudGroup::HighLayer::CS:
 		return "A veil of Cirrostratus that is not (or no longer) invading the sky "
 			"progressively and that does not completely cover the whole sky";
 
-		case metaf::CloudLayersGroup::HighLayer::CC:
+		case metaf::LowMidHighCloudGroup::HighLayer::CC:
 		return "Cirrocumulus alone, or predominant among the high-layer clouds; when "
 			"alone, its elements are frequently grouped into more or less extensive "
 			"patches with very characteristic small wavelets";
 
-		case metaf::CloudLayersGroup::HighLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::HighLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena or because of a continuous layer of lower clouds";
 	}

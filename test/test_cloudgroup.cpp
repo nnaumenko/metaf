@@ -25,7 +25,7 @@ TEST(CloudGroup, parseCloudLayerMetar) {
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 4000, heightMargin);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -41,7 +41,7 @@ TEST(CloudGroup, parseCloudLayerTaf) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 4000, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -57,7 +57,7 @@ TEST(CloudGroup, parseCloudLayerFew) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 11700, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -73,7 +73,7 @@ TEST(CloudGroup, parseCloudLayerScattered) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 37000, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -89,7 +89,7 @@ TEST(CloudGroup, parseCloudLayerBroken) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 2600, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -105,7 +105,7 @@ TEST(CloudGroup, parseCloudLayerOvercast) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 200, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -121,7 +121,7 @@ TEST(CloudGroup, parseCloudLayerToweringCumulus) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::TOWERING_CUMULUS);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -137,7 +137,7 @@ TEST(CloudGroup, parseCloudLayerCumulonimbus) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::CUMULONIMBUS);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::CUMULONIMBUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -153,7 +153,7 @@ TEST(CloudGroup, parseCloudLayerConvectiveTypeNotReported) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -169,7 +169,7 @@ TEST(CloudGroup, parseCloudLayerAmountAndTypeNotReported) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 7400, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -183,7 +183,7 @@ TEST(CloudGroup, parseCloudLayerAmountAndHeightNotReported) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::TOWERING_CUMULUS);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::TOWERING_CUMULUS);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -197,7 +197,7 @@ TEST(CloudGroup, parseCloudLayerNotReported) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NOT_REPORTED);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NOT_REPORTED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -370,7 +370,7 @@ TEST(CloudGroup, parseVerticalVisibilityMetar) {
 	ASSERT_TRUE(cg->verticalVisibility().isReported());
 	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -386,7 +386,7 @@ TEST(CloudGroup, parseVerticalVisibilityTaf) {
 	ASSERT_TRUE(cg->verticalVisibility().isReported());
 	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -402,7 +402,7 @@ TEST(CloudGroup, parseVerticalVisibilityZero) {
 	ASSERT_TRUE(cg->verticalVisibility().isReported());
 	EXPECT_NEAR(cg->verticalVisibility().distance().value(), 0, heightMargin);
 	EXPECT_EQ(cg->verticalVisibility().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -416,7 +416,7 @@ TEST(CloudGroup, parseVerticalVisibilityNotReported) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->height().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -459,7 +459,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	ASSERT_TRUE(cg1->height().isReported());
 	EXPECT_NEAR(cg1->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg1->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	auto cg2 = metaf::CloudGroup::parse("SCT016", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
@@ -471,7 +471,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	ASSERT_TRUE(cg2->height().isReported());
 	EXPECT_NEAR(cg2->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg2->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	auto cg3 = metaf::CloudGroup::parse("BKN016", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
@@ -483,7 +483,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithHeight) {
 	ASSERT_TRUE(cg3->height().isReported());
 	EXPECT_NEAR(cg3->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(cg3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg3->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg3->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 }
 
 TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
@@ -494,7 +494,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED);
-	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg1->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg1->height().isReported());
 
 	auto cg2 = metaf::CloudGroup::parse("SCT", metaf::ReportPart::RMK);
@@ -504,7 +504,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN);
-	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg2->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg2->height().isReported());
 
 	auto cg3 = metaf::CloudGroup::parse("BKN", metaf::ReportPart::RMK);
@@ -514,7 +514,7 @@ TEST(CloudGroup, parseVariableCloudCoverWithoutHeight) {
 
 	EXPECT_EQ(cg3->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
 	EXPECT_EQ(cg3->amount(), metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST);
-	EXPECT_EQ(cg3->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg3->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg3->height().isReported());
 }
 
@@ -787,14 +787,14 @@ TEST(CloudGroup, parseClr) {
 	static const std::string gs("CLR");
 	static const auto expectedAmount = metaf::CloudGroup::Amount::NONE_CLR;
 	static const auto expectedType = metaf::CloudGroup::Type::NO_CLOUDS;
-	static const auto expectedCloudType = metaf::CloudGroup::CloudType::NONE;
+	static const auto expectedCloudType = metaf::CloudGroup::ConvectiveType::NONE;
 
 	const auto cg1 = metaf::CloudGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_EQ(cg1->type(), expectedType);
 	EXPECT_EQ(cg1->amount(), expectedAmount);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg1->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
@@ -806,7 +806,7 @@ TEST(CloudGroup, parseClr) {
 	EXPECT_EQ(cg2->type(), expectedType);
 	EXPECT_EQ(cg2->amount(), expectedAmount);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg2->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
@@ -818,14 +818,14 @@ TEST(CloudGroup, parseSkc) {
 	static const std::string gs("SKC");
 	static const auto expectedAmount = metaf::CloudGroup::Amount::NONE_SKC;
 	static const auto expectedType = metaf::CloudGroup::Type::NO_CLOUDS;
-	static const auto expectedCloudType = metaf::CloudGroup::CloudType::NONE;
+	static const auto expectedCloudType = metaf::CloudGroup::ConvectiveType::NONE;
 
 	const auto cg1 = metaf::CloudGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_EQ(cg1->type(), expectedType);
 	EXPECT_EQ(cg1->amount(), expectedAmount);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg1->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
@@ -837,7 +837,7 @@ TEST(CloudGroup, parseSkc) {
 	EXPECT_EQ(cg2->type(), expectedType);
 	EXPECT_EQ(cg2->amount(), expectedAmount);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg2->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
@@ -849,14 +849,14 @@ TEST(CloudGroup, parseNcd) {
 	static const std::string gs("NCD");
 	static const auto expectedAmount = metaf::CloudGroup::Amount::NCD;
 	static const auto expectedType = metaf::CloudGroup::Type::NO_CLOUDS;
-	static const auto expectedCloudType = metaf::CloudGroup::CloudType::NONE;
+	static const auto expectedCloudType = metaf::CloudGroup::ConvectiveType::NONE;
 
 	const auto cg1 = metaf::CloudGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_EQ(cg1->type(), expectedType);
 	EXPECT_EQ(cg1->amount(), expectedAmount);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg1->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
@@ -868,7 +868,7 @@ TEST(CloudGroup, parseNcd) {
 	EXPECT_EQ(cg2->type(), expectedType);
 	EXPECT_EQ(cg2->amount(), expectedAmount);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg2->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
@@ -880,14 +880,14 @@ TEST(CloudGroup, parseNsc) {
 	static const std::string gs("NSC");
 	static const auto expectedAmount = metaf::CloudGroup::Amount::NSC;
 	static const auto expectedType = metaf::CloudGroup::Type::NO_CLOUDS;
-	static const auto expectedCloudType = metaf::CloudGroup::CloudType::NONE;
+	static const auto expectedCloudType = metaf::CloudGroup::ConvectiveType::NONE;
 
 	const auto cg1 = metaf::CloudGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_EQ(cg1->type(), expectedType);
 	EXPECT_EQ(cg1->amount(), expectedAmount);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg1->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
@@ -899,7 +899,7 @@ TEST(CloudGroup, parseNsc) {
 	EXPECT_EQ(cg2->type(), expectedType);
 	EXPECT_EQ(cg2->amount(), expectedAmount);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), expectedCloudType);
+	EXPECT_EQ(cg2->convectiveType(), expectedCloudType);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
@@ -947,7 +947,7 @@ TEST(CloudGroup, parseCeilingNoDetails) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -967,7 +967,7 @@ TEST(CloudGroup, parseCeilingDirection) {
 	ASSERT_TRUE(cg->height().isReported());
 	EXPECT_NEAR(cg->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
@@ -989,7 +989,7 @@ TEST(CloudGroup, parseCeilingRunway) {
 	ASSERT_TRUE(cg1->height().isReported());
 	EXPECT_NEAR(cg1->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(cg1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg1->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
@@ -1010,7 +1010,7 @@ TEST(CloudGroup, parseCeilingRunway) {
 	ASSERT_TRUE(cg2->height().isReported());
 	EXPECT_NEAR(cg2->height().distance().value(), 1700, heightMargin);
 	EXPECT_EQ(cg2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg2->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
@@ -1030,7 +1030,7 @@ TEST(CloudGroup, parseVariableCeilingNoDetails) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VARIABLE_CEILING);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	ASSERT_TRUE(cg->minHeight().isReported());
 	EXPECT_NEAR(cg->minHeight().distance().value(), 800, heightMargin);
@@ -1053,7 +1053,7 @@ TEST(CloudGroup, parseVariableCeilingRunway) {
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::VARIABLE_CEILING);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg1->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	ASSERT_TRUE(cg1->minHeight().isReported());
 	EXPECT_NEAR(cg1->minHeight().distance().value(), 800, heightMargin);
@@ -1076,7 +1076,7 @@ TEST(CloudGroup, parseVariableCeilingRunway) {
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::VARIABLE_CEILING);	
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg2->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	ASSERT_TRUE(cg2->minHeight().isReported());
 	EXPECT_NEAR(cg2->minHeight().distance().value(), 200, heightMargin);
@@ -1102,7 +1102,7 @@ TEST(CloudGroup, parseVariableCeilingDirection) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VARIABLE_CEILING);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	ASSERT_TRUE(cg->minHeight().isReported());
 	EXPECT_NEAR(cg->minHeight().distance().value(), 800, heightMargin);
@@ -1220,7 +1220,7 @@ TEST(CloudGroup, parseChinoNoDetails) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -1236,7 +1236,7 @@ TEST(CloudGroup, parseChinoRunway) {
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg1->height().isReported());
-	EXPECT_EQ(cg1->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg1->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg1->verticalVisibility().isReported());
 	EXPECT_FALSE(cg1->minHeight().isReported());
 	EXPECT_FALSE(cg1->maxHeight().isReported());
@@ -1251,7 +1251,7 @@ TEST(CloudGroup, parseChinoRunway) {
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg2->height().isReported());
-	EXPECT_EQ(cg2->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg2->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
@@ -1271,7 +1271,7 @@ TEST(CloudGroup, parseChinoDirection) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());
@@ -1310,7 +1310,7 @@ TEST(CloudGroup, parseCldMisg) {
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLD_MISG);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
 	EXPECT_FALSE(cg->height().isReported());
-	EXPECT_EQ(cg->cloudType(), metaf::CloudGroup::CloudType::NONE);
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());
 	EXPECT_FALSE(cg->minHeight().isReported());
 	EXPECT_FALSE(cg->maxHeight().isReported());

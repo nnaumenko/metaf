@@ -1209,6 +1209,148 @@ WeatherPhenomena
 					 - if descriptor FZ (freezing) is present, the weather phenomena must contain FG (fog), or the precipitation type which is potentially may freeze: UP (undetermined precipitation), or RA(rain), or DZ (drizzle); other precipitation may be present alone with specified above, e.g. ``FZRASN`` (freezing rain and snow) is valid, while ``FZSNPL`` (freezing snow and ice pellets) is not valid;
 
 
+CloudType
+^^^^^^^^^
+
+.. cpp:class:: CloudType
+
+	Specifies type of the cloud in the layer, base height, and sky coverage (okta).
+
+	.. cpp:enum-class:: Type
+
+		Type/genus of clouds.
+
+		.. note:: Also includes weather phenomena causing obscuration such as rain, fog, blowing snow, etc. used in Canada in addition to clouds.
+
+		.. cpp:enumerator:: NOT_REPORTED
+
+			Type of the cloud is not reported or not known.
+
+		.. cpp:enumerator:: CUMULONIMBUS
+
+			Cumulonimbus clouds.
+
+		.. cpp:enumerator:: TOWERING_CUMULUS
+
+			Towering Cumulus clouds.
+
+		.. cpp:enumerator:: CUMULUS
+
+			Cumulus clouds.
+
+		.. cpp:enumerator:: CUMULUS_FRACTUS
+
+			Cumulus fractus clouds.
+
+		.. cpp:enumerator:: STRATOCUMULUS
+
+			Stratocumulus clouds.
+
+		.. cpp:enumerator:: NIMBOSTRATUS
+
+			Nimbostratus clouds.
+
+		.. cpp:enumerator:: STRATUS
+
+			Stratus clouds.
+
+		.. cpp:enumerator:: STRATUS_FRACTUS
+
+			Stratus fractus clouds.
+
+		.. cpp:enumerator:: ALTOSTRATUS
+
+			Altostratus clouds clouds.
+
+		.. cpp:enumerator:: ALTOCUMULUS
+
+			Altocumulus clouds clouds.
+
+		.. cpp:enumerator:: ALTOCUMULUS_CASTELLANUS
+
+			Altostratus castellanus clouds.
+
+		.. cpp:enumerator:: CIRRUS
+
+			Cirrus clouds.
+
+		.. cpp:enumerator:: CIRROSTRATUS
+
+			Cirrostratus clouds.
+
+		.. cpp:enumerator:: CIRROCUMULUS
+
+			Cirrostratus clouds.
+
+		.. cpp:enumerator:: BLOWING_SNOW
+
+			Blowing snow (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_DUST
+
+			Blowing dust (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_SAND
+
+			Blowing sand (used only in Canada).
+
+		.. cpp:enumerator:: ICE_CRYSTALS
+
+			Ice crystals (used only in Canada).
+
+		.. cpp:enumerator:: RAIN
+
+			Rain (used only in Canada).
+
+		.. cpp:enumerator:: DRIZZLE
+
+			Drizzle (used only in Canada).
+
+		.. cpp:enumerator:: SNOW
+
+			Snow falling from the clouds (used only in Canada).
+
+		.. cpp:enumerator:: ICE_PELLETS
+
+			Ice pellets (used only in Canada).
+
+		.. cpp:enumerator:: SMOKE
+
+			Smoke (used only in Canada).
+
+		.. cpp:enumerator:: FOG
+
+			Fog (used only in Canada).
+
+		.. cpp:enumerator:: MIST
+
+			Mist (used only in Canada).
+
+		.. cpp:enumerator:: HAZE
+
+			Haze (used only in Canada).
+
+	**Acquiring the data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of the cloud or obscuration or :cpp:enumerator:`Type::NOT_REPORTED`` if cloud type is not specified or 
+			cannot be included in this format.
+
+		.. cpp:function:: Distance height() const
+
+			:returns: Height of the cloud base; may be a non-reported value if the base height is not reported or cannot be included in this format.
+
+		.. cpp:function:: unsigned int okta() const
+
+			:returns: Sky coverage in 1/8th (e.g. 3 okta means that this cloud covers 3/8 of the sky).
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: ``true`` if the octa value is in range 1 to 8, and ``false`` otherwise.
+
 
 Group
 -----

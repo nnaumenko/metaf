@@ -517,7 +517,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 		if (const auto gr = std::get_if<metaf::CloudGroup>(&metarGroup); gr) {
 			result.cloud = 
 				cloudFromCloudGroupAmount(static_cast<Cloud>(result.cloud), gr->amount());
-			if (gr->cloudType() == metaf::CloudGroup::CloudType::CUMULONIMBUS) {
+			if (gr->convectiveType() == metaf::CloudGroup::ConvectiveType::CUMULONIMBUS) {
 				result.isStormClouds = true;
 			}
 		}
@@ -614,7 +614,7 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 		if (const auto gr = std::get_if<metaf::CloudGroup>(&tafGroup); gr) {
 			result.cloud = 
 				cloudFromCloudGroupAmount(static_cast<Cloud>(result.cloud), gr->amount());
-			if (gr->cloudType() == metaf::CloudGroup::CloudType::CUMULONIMBUS) {
+			if (gr->convectiveType() == metaf::CloudGroup::ConvectiveType::CUMULONIMBUS) {
 				result.isStormClouds = true;
 			}
 		}

@@ -117,9 +117,10 @@ TEST(getSyntaxGroup, OTHER_NOSPECI) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Location and report time
-// Purpose: to confirm that location groups and report release time groups are 
-// correctly identified as groups significant for METAR and TAF syntax.
+// Location, report time, and time span
+// Purpose: to confirm that location groups, report release time groups, and
+// time span trend groups are correctly identified as groups significant for 
+// METAR and TAF syntax.
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(getSyntaxGroup, LOCATION) {
@@ -134,18 +135,17 @@ TEST(getSyntaxGroup, REPORT_TIME) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::REPORT_TIME);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Trends
-// Purpose: to confirm that trend groups are correctly identified as groups 
-// significant for METAR and TAF syntax or groups not significant for report
-// syntax.
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(getSyntaxGroup, TIME_SPAN) {
+TEST(getSyntaxGroup, TREND_TIME_SPAN) {
 	const auto g = metaf::TrendGroup::parse("0812/0824", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::TIME_SPAN);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Other trends
+// Purpose: to confirm that trend groups other than time span are correctly 
+// identified as groups NOT significant for METAR and TAF syntax.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(getSyntaxGroup, OTHER_NOSIG) {
 	const auto g = metaf::TrendGroup::parse("NOSIG", metaf::ReportPart::METAR);
@@ -309,8 +309,8 @@ TEST(getSyntaxGroup, OTHER_CloudTypesGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_CloudLayersGroup) {
-	const auto g = metaf::CloudLayersGroup::parse("8/578", metaf::ReportPart::RMK);
+TEST(getSyntaxGroup, OTHER_LowMidHighCloudGroup) {
+	const auto g = metaf::LowMidHighCloudGroup::parse("8/578", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }

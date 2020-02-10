@@ -52,7 +52,7 @@ class PrecipitationGroup;
 class LayerForecastGroup;
 class PressureTendencyGroup;
 class CloudTypesGroup;
-class CloudLayersGroup;
+class LowMidHighCloudGroup;
 class LightningGroup;
 class VicinityGroup;
 class MiscGroup;
@@ -76,7 +76,7 @@ using Group = std::variant<
 	LayerForecastGroup,
 	PressureTendencyGroup,
 	CloudTypesGroup,
-	CloudLayersGroup,
+	LowMidHighCloudGroup,
 	LightningGroup,
 	VicinityGroup,
 	MiscGroup,
@@ -678,6 +678,58 @@ private:
 	static inline bool isDescriptorFzAllowed (Weather w);
 };
 
+class CloudType {
+public:
+	enum class Type {
+		NOT_REPORTED,
+		//Low clouds
+		CUMULONIMBUS,
+		TOWERING_CUMULUS,
+		CUMULUS,
+		CUMULUS_FRACTUS,
+		STRATOCUMULUS,
+		NIMBOSTRATUS,
+		STRATUS,
+		STRATUS_FRACTUS,
+		//Med clouds
+		ALTOSTRATUS,
+		ALTOCUMULUS,
+		ALTOCUMULUS_CASTELLANUS,
+		//High clouds
+		CIRRUS,
+		CIRROSTRATUS,
+		CIRROCUMULUS,
+		//Obscurations
+		BLOWING_SNOW,
+		BLOWING_DUST,
+		BLOWING_SAND,
+		ICE_CRYSTALS,
+		RAIN,
+		DRIZZLE,
+		SNOW,
+		ICE_PELLETS,
+		SMOKE,
+		FOG,
+		MIST,
+		HAZE
+	};
+	Type type() const { return tp; }
+	Distance height() const { return ht; }
+	unsigned int okta() const { return okt; }
+	bool isValid() const { return (okt >= 1u && okt <= 8u); }
+
+	CloudType() = default;
+	static inline std::optional<CloudType> fromString(const std::string & s);
+private:
+	Type tp = Type::NOT_REPORTED;
+	Distance ht;
+	unsigned int okt = 0u;
+
+	CloudType(Type t, Distance h, unsigned int o) : tp(t), ht(h), okt(o) {}
+	static inline Type cloudTypeFromString(const std::string & s);
+	static inline Type cloudTypeOrObscurationFromString(const std::string & s);
+};
+
 ///////////////////////////////////////////////////////////////////////////
 
 enum class ReportType {
@@ -1118,7 +1170,8 @@ public:
 		CEILING,
 		VARIABLE_CEILING,
 		CHINO,
-		CLD_MISG
+		CLD_MISG,
+		OBSCURATION
 	};
 	enum class Amount {
 		NOT_REPORTED,
@@ -1135,7 +1188,7 @@ public:
 		VARIABLE_SCATTERED_BROKEN,
 		VARIABLE_BROKEN_OVERCAST
 	};
-	enum class CloudType {
+	enum class ConvectiveType {
 		NONE,
 		NOT_REPORTED,
 		TOWERING_CUMULUS,
@@ -1143,7 +1196,7 @@ public:
 	};
 	Type type() const { return tp; }
 	Amount amount() const { return amnt; }
-	CloudType cloudType() const { return ctp; }
+	ConvectiveType convectiveType() const { return convtype; }
 	inline Distance height() const {
 		if (type() != Type::CLOUD_LAYER && type() != Type::CEILING) 
 			return heightNotReported;
@@ -1161,7 +1214,7 @@ public:
 		if (type() != Type::VERTICAL_VISIBILITY) return heightNotReported;
 		return heightOrVertVis;
 	}
-	WeatherPhenomena obscuration() const { return w; }
+	CloudType cloudType() const { return CloudType(); }
 	std::optional<Runway> runway() const { return rw; }
 	std::optional<Direction> direction() const { return dir; }
 	bool isValid() const { 
@@ -1183,7 +1236,7 @@ private:
 	Amount amnt = Amount::NOT_REPORTED;
 	Distance heightOrVertVis;
 	Distance maxHt;
-	CloudType ctp = CloudType::NONE;
+	ConvectiveType convtype = ConvectiveType::NONE;
 	WeatherPhenomena w;
 	std::optional<Runway> rw;
 	std::optional<Direction> dir;
@@ -1205,7 +1258,7 @@ private:
 	static inline std::optional<CloudGroup> parseCloudLayerOrVertVis(const std::string & s);
 	static inline std::optional<CloudGroup> parseVariableCloudLayer(const std::string & s);
 	static inline std::optional<Amount> amountFromString(const std::string & s);
-	static inline std::optional<CloudType> cloudTypeFromString(const std::string & s);
+	static inline std::optional<ConvectiveType> convectiveTypeFromString(const std::string & s);
 	inline AppendResult appendVariableCloudAmount(const std::string & group);
 	inline AppendResult appendCeiling(const std::string & group);
 	inline AppendResult appendRunwayOrCardinalDirection(const std::string & group);
@@ -1608,41 +1661,8 @@ private:
 
 class CloudTypesGroup {
 public:
-	enum class Type {
-		//Low clouds
-		CUMULONIMBUS,
-		TOWERING_CUMULUS,
-		CUMULUS,
-		CUMULUS_FRACTUS,
-		STRATOCUMULUS,
-		NIMBOSTRATUS,
-		STRATUS,
-		STRATUS_FRACTUS,
-		//Med clouds
-		ALTOSTRATUS,
-		ALTOCUMULUS,
-		ALTOCUMULUS_CASTELLANUS,
-		//High clouds
-		CIRRUS,
-		CIRROSTRATUS,
-		CIRROCUMULUS,
-		//Obscurations
-		BLOWING_SNOW,
-		BLOWING_DUST,
-		BLOWING_SAND,
-		ICE_CRYSTALS,
-		RAIN,
-		DRIZZLE,
-		SNOW,
-		ICE_PELLETS,
-		SMOKE,
-		FOG,
-		MIST,
-		HAZE
-	};
-	inline std::vector<std::pair<Type, unsigned int>> toVector() const;
-	Distance baseHeight() const { return bh; }
-	bool isValid() const { return true; }
+	inline std::vector<CloudType> cloudTypes() const;
+	inline bool isValid() const;
 
 	CloudTypesGroup() = default;
 	static inline std::optional<CloudTypesGroup> parse(const std::string & group,
@@ -1653,16 +1673,12 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
-	size_t cloudTypesSize = 0;
-	inline static const size_t cloudTypesMaxSize = 8;
-	std::pair<Type, unsigned int> cloudTypes[cloudTypesMaxSize];
-	Distance bh;
-
-	static inline std::optional<Type> cloudTypeFromString(std::string s);
-	static inline std::optional<Type> typeFromString(std::string s);
+	size_t cldTpSize = 0;
+	inline static const size_t cldTpMaxSize = 8;
+	CloudType cldTp[cldTpMaxSize];
 };
 
-class CloudLayersGroup {
+class LowMidHighCloudGroup {
 public:
 	enum class LowLayer {
 		NONE,
@@ -1708,8 +1724,8 @@ public:
 	HighLayer highLayer() const { return cloudHighLayer; }
 	inline bool isValid() const;
 
-	CloudLayersGroup() = default;
-	static inline std::optional<CloudLayersGroup> parse(const std::string & group,
+	LowMidHighCloudGroup() = default;
+	static inline std::optional<LowMidHighCloudGroup> parse(const std::string & group,
 		ReportPart reportPart,
 		const ReportMetadata & reportMetadata = missingMetadata);
 	AppendResult inline append(const std::string & group,
@@ -2128,7 +2144,7 @@ protected:
 	virtual T visitCloudTypesGroup(const CloudTypesGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
-	virtual T visitCloudLayersGroup(const CloudLayersGroup & group,
+	virtual T visitLowMidHighCloudGroup(const LowMidHighCloudGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
 	virtual T visitLightningGroup(const LightningGroup & group,
@@ -2201,8 +2217,8 @@ inline T Visitor<T>::visit(const Group & group,
 	if (const auto gr = std::get_if<CloudTypesGroup>(&group); gr) {
 		return this->visitCloudTypesGroup(*gr, reportPart, rawString);
 	}
-	if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
-		return this->visitCloudLayersGroup(*gr, reportPart, rawString);
+	if (const auto gr = std::get_if<LowMidHighCloudGroup>(&group); gr) {
+		return this->visitLowMidHighCloudGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
 		return this->visitLightningGroup(*gr, reportPart, rawString);
@@ -2292,8 +2308,8 @@ inline void Visitor<void>::visit(const Group & group,
 		this->visitCloudTypesGroup(*gr, reportPart, rawString);
 		return;
 	}
-	if (const auto gr = std::get_if<CloudLayersGroup>(&group); gr) {
-		this->visitCloudLayersGroup(*gr, reportPart, rawString);
+	if (const auto gr = std::get_if<LowMidHighCloudGroup>(&group); gr) {
+		this->visitLowMidHighCloudGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<LightningGroup>(&group); gr) {
@@ -3796,6 +3812,72 @@ bool WeatherPhenomena::isValid() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+std::optional<CloudType> CloudType::fromString(const std::string & s) {
+	static const std::optional<CloudType> error;
+	if (s.empty()) return error;
+	if (s[0] >= '0' && s[0] <= '9') {
+		// Format with height 8NS070 or 3TCU022 (6 or 7 chars)
+		// std::regex("(\d)([A-Z][A-Z][A-Z]?)(\d\d\d)")
+		if (s.length() != 6 && s.length() != 7) return error;
+		static const auto heightDigits = 3u, oktaDigits = 1u;
+		const auto typeStrLen = s.length() - heightDigits - oktaDigits;
+		const auto heightValue = 
+			Distance::fromHeightString(s.substr(s.length() - heightDigits));
+		if (!heightValue.has_value()) return error;
+		if (!heightValue->isReported()) return error;
+		const auto typeValue = cloudTypeFromString(s.substr(oktaDigits, typeStrLen));
+		if (typeValue == Type::NOT_REPORTED) return error;
+		return CloudType(typeValue, heightValue.value(), s[0] - '0');
+	} else {
+		// Format without height BLSN1 or SC1 (3 or more chars)
+		// std::regex("([A-Z][A-Z]+)(\d)")
+		if (s.length() < 3) return error;
+		const auto oktaCh = s[s.length() - 1];
+		if (oktaCh < '0' || oktaCh > '9') return error;
+		const auto typeValue = 
+			cloudTypeOrObscurationFromString(s.substr(0, s.length() - 1));
+		if (typeValue == Type::NOT_REPORTED) return error;
+		return CloudType(typeValue, Distance(), oktaCh - '0');
+	}
+}
+
+CloudType::Type CloudType::cloudTypeFromString(const std::string & s) {
+	if (s == "CB")    return Type::CUMULONIMBUS;
+	if (s == "TCU")   return Type::TOWERING_CUMULUS;
+	if (s == "CU")    return Type::CUMULUS;
+	if (s == "CF")    return Type::CUMULUS_FRACTUS;
+	if (s == "SC")    return Type::STRATOCUMULUS;
+	if (s == "NS")    return Type::NIMBOSTRATUS;
+	if (s == "ST")    return Type::STRATUS;
+	if (s == "SF")    return Type::STRATUS_FRACTUS;
+	if (s == "AS")    return Type::ALTOSTRATUS;
+	if (s == "AC")    return Type::ALTOCUMULUS;
+	if (s == "ACC")   return Type::ALTOCUMULUS_CASTELLANUS;
+	if (s == "CI")    return Type::CIRRUS;
+	if (s == "CS")    return Type::CIRROSTRATUS;
+	if (s == "CC")    return Type::CIRROCUMULUS;
+	return Type::NOT_REPORTED;
+}
+
+CloudType::Type CloudType::cloudTypeOrObscurationFromString(const std::string & s) {
+	if (const auto t = cloudTypeFromString(s); t != Type::NOT_REPORTED) return t;
+	if (s == "BLSN")  return Type::BLOWING_SNOW;
+	if (s == "BLDU")  return Type::BLOWING_DUST;
+	if (s == "BLSA")  return Type::BLOWING_SAND;
+	if (s == "IC")    return Type::ICE_CRYSTALS;
+	if (s == "RA")    return Type::RAIN;
+	if (s == "DZ")    return Type::DRIZZLE;
+	if (s == "SN")    return Type::SNOW;
+	if (s == "PL")    return Type::ICE_PELLETS;
+	if (s == "FU")    return Type::SMOKE;
+	if (s == "FG")    return Type::FOG;
+	if (s == "BR")    return Type::MIST;
+	if (s == "HZ")    return Type::HAZE;
+	return Type::NOT_REPORTED;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 std::optional<KeywordGroup> KeywordGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
@@ -4765,18 +4847,18 @@ std::optional<CloudGroup> CloudGroup::parseCloudLayerOrVertVis(const std::string
 	std::smatch match;
 	static const std::regex rgx(
 		"([A-Z][A-Z][A-Z]?|///)(\\d\\d\\d|///)([CT][BC][U]?|///)?");
-	static const auto matchAmount = 1, matchHeight = 2, matchCldType = 3;
+	static const auto matchAmount = 1, matchHeight = 2, matchCnvType = 3;
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	if (!amount.has_value()) return notRecognised;
 	const auto height = Distance::fromHeightString(match.str(matchHeight));
 	if (!height.has_value()) return notRecognised;
-	const auto ctype = cloudTypeFromString(match.str(matchCldType));
-	if (!ctype.has_value()) return notRecognised;
+	const auto cnvtype = convectiveTypeFromString(match.str(matchCnvType));
+	if (!cnvtype.has_value()) return notRecognised;
 
 	// If vertical visibility is given, convective cloud type must not be specified
-	if (amount.value() == Amount::OBSCURED && ctype.value() != CloudType::NONE) 
+	if (amount.value() == Amount::OBSCURED && cnvtype.value() != ConvectiveType::NONE) 
 		return notRecognised;
 
 	CloudGroup result;
@@ -4784,7 +4866,7 @@ std::optional<CloudGroup> CloudGroup::parseCloudLayerOrVertVis(const std::string
 	if (amount == Amount::OBSCURED) result.tp = Type::VERTICAL_VISIBILITY;
 	result.amnt = amount.value();
 	result.heightOrVertVis = height.value();
-	result.ctp = ctype.value();
+	result.convtype = cnvtype.value();
 	return result;
 }
 
@@ -4825,14 +4907,14 @@ std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string
 	return std::optional<Amount>();
 }
 
-std::optional<CloudGroup::CloudType> CloudGroup::cloudTypeFromString(
+std::optional<CloudGroup::ConvectiveType> CloudGroup::convectiveTypeFromString(
 	const std::string & s)
 {
-	if (s.empty()) return CloudType::NONE;
-	if (s == "TCU") return CloudType::TOWERING_CUMULUS;
-	if (s == "CB") return CloudType::CUMULONIMBUS;
-	if (s == "///") return CloudType::NOT_REPORTED;
-	return std::optional<CloudType>();
+	if (s.empty()) return ConvectiveType::NONE;
+	if (s == "TCU") return ConvectiveType::TOWERING_CUMULUS;
+	if (s == "CB") return ConvectiveType::CUMULONIMBUS;
+	if (s == "///") return ConvectiveType::NOT_REPORTED;
+	return std::optional<ConvectiveType>();
 }
 
 AppendResult CloudGroup::appendVariableCloudAmount(const std::string & group) {
@@ -5743,12 +5825,10 @@ AppendResult PressureTendencyGroup::append(const std::string & group,
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::vector<std::pair<CloudTypesGroup::Type, unsigned int>>
-CloudTypesGroup::toVector() const
-{
-	std::vector<std::pair<CloudTypesGroup::Type, unsigned int>> result;
-	for (auto i=0u; i < cloudTypesSize; i++) {
-		result.push_back(cloudTypes[i]);
+std::vector<CloudType> CloudTypesGroup::cloudTypes() const {
+	std::vector<CloudType> result;
+	for (auto i=0u; i < cldTpSize; i++) {
+		result.push_back(cldTp[i]);
 	}
 	return result;
 }
@@ -5760,43 +5840,28 @@ std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 	(void)reportMetadata;
 	std::optional<CloudTypesGroup> notRecognised;
 	//"(CB|TCU|CU|CF|SC|NS|ST|SF|AS|AC|ACC|CI|CS|CC|BLSN|BLDU|BLSA|IC|)(\\d)"
-	static const std::regex matchRgx("(?:(?:[A-Z]{2,4})[1-8])+");
-	static const std::regex searchRgx("([A-Z]{2,4})([1-8])");
-	static const auto matchType = 1, matchOkta = 2;
-	static const std::regex altFormatRgx("([1-8])([A-Z][A-Z][A-Z]?)(\\d\\d\\d)");
-	static const auto altMatchOkta = 1, altMatchType = 2, altMatchHeight = 3;
+	static const std::regex matchRgx("(?:(?:[A-Z]{2,4})[\\d])+");
+	static const std::regex searchRgx("[A-Z]{2,4}[\\d]");
 
 	if (reportPart != ReportPart::RMK) return notRecognised;
 	std::smatch match;
-	if (std::regex_match(group, match, altFormatRgx)) {
-		//Assuming okta is a number in range 1..8, guaranteed by regex
-		const auto okta = static_cast<unsigned int>(stoi(match.str(altMatchOkta)));
-		const auto type = cloudTypeFromString(match.str(altMatchType));
+	CloudTypesGroup result;
+	
+	if (const auto ctp = CloudType::fromString(group); ctp.has_value()) {
+		result.cldTp[0] = ctp.value();
+		result.cldTpSize = 1;
+		return result;
+	}
+	if (!std::regex_match(group, match, matchRgx)) return notRecognised;
+	auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
+	while (iter != std::sregex_iterator()) {
+		match = *iter++;
+		const auto type = CloudType::fromString(match.str(0));
 		if (!type.has_value()) return notRecognised;
-		const auto ht = Distance::fromHeightString(match.str(altMatchHeight));
-		if (!ht.has_value()) return notRecognised;
-		CloudTypesGroup result;
-		result.bh = ht.value();
-		result.cloudTypesSize = 1;
-		result.cloudTypes[0] = std::pair(type.value(), okta);
-		return result;
+		if (result.cldTpSize >= result.cldTpMaxSize) return result;
+		result.cldTp[result.cldTpSize++] = type.value();
 	}
-	if (std::regex_match(group, match, matchRgx)) {
-		CloudTypesGroup result;
-		auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
-		while (iter != std::sregex_iterator()) {
-			match = *iter++;
-			const auto type = typeFromString(match.str(matchType));
-			if (!type.has_value()) return notRecognised;
-			const auto okta = static_cast<unsigned int>(stoi(match.str(matchOkta)));
-			//Assuming okta is from 1 to 8, guaranteed by regex
-			if (result.cloudTypesSize >= result.cloudTypesMaxSize) return result;
-			result.cloudTypes[result.cloudTypesSize++] = std::pair(type.value(), okta);
-		}
-		return result;
-	}
-	return notRecognised;
-
+	return result;
 }
 
 AppendResult CloudTypesGroup::append(const std::string & group,
@@ -5807,44 +5872,16 @@ AppendResult CloudTypesGroup::append(const std::string & group,
 	return AppendResult::NOT_APPENDED;
 }
 
-std::optional<CloudTypesGroup::Type> CloudTypesGroup::cloudTypeFromString(std::string s) {
-	if (s == "CB")    return Type::CUMULONIMBUS;
-	if (s == "TCU")   return Type::TOWERING_CUMULUS;
-	if (s == "CU")    return Type::CUMULUS;
-	if (s == "CF")    return Type::CUMULUS_FRACTUS;
-	if (s == "SC")    return Type::STRATOCUMULUS;
-	if (s == "NS")    return Type::NIMBOSTRATUS;
-	if (s == "ST")    return Type::STRATUS;
-	if (s == "SF")    return Type::STRATUS_FRACTUS;
-	if (s == "AS")    return Type::ALTOSTRATUS;
-	if (s == "AC")    return Type::ALTOCUMULUS;
-	if (s == "ACC")   return Type::ALTOCUMULUS_CASTELLANUS;
-	if (s == "CI")    return Type::CIRRUS;
-	if (s == "CS")    return Type::CIRROSTRATUS;
-	if (s == "CC")    return Type::CIRROCUMULUS;
-	return std::optional<CloudTypesGroup::Type>();
-}
-
-std::optional<CloudTypesGroup::Type> CloudTypesGroup::typeFromString(std::string s) {
-	if (const auto t = cloudTypeFromString(s); t.has_value()) return t;
-	if (s == "BLSN")  return Type::BLOWING_SNOW;
-	if (s == "BLDU")  return Type::BLOWING_DUST;
-	if (s == "BLSA")  return Type::BLOWING_SAND;
-	if (s == "IC")    return Type::ICE_CRYSTALS;
-	if (s == "RA")    return Type::RAIN;
-	if (s == "DZ")    return Type::DRIZZLE;
-	if (s == "SN")    return Type::SNOW;
-	if (s == "PL")    return Type::ICE_PELLETS;
-	if (s == "FU")    return Type::SMOKE;
-	if (s == "FG")    return Type::FOG;
-	if (s == "BR")    return Type::MIST;
-	if (s == "HZ")    return Type::HAZE;
-	return std::optional<CloudTypesGroup::Type>();
+bool CloudTypesGroup::isValid() const {
+	for (auto i=0u; i < cldTpSize; i++) {
+		if (!cldTp[i].isValid()) return false;
+	}
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool CloudLayersGroup::isValid() const {
+bool LowMidHighCloudGroup::isValid() const {
 	if (lowLayer() == LowLayer::NOT_OBSERVABLE &&
 		midLayer() != MidLayer::NOT_OBSERVABLE) return false;
 	if (midLayer() == MidLayer::NOT_OBSERVABLE &&
@@ -5853,12 +5890,12 @@ bool CloudLayersGroup::isValid() const {
 }
 
 
-std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & group,
+std::optional<LowMidHighCloudGroup> LowMidHighCloudGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	std::optional<CloudLayersGroup> notRecognised;
+	std::optional<LowMidHighCloudGroup> notRecognised;
 	static const std::regex rgx("8/([\\d/])([\\d/])([\\d/])");
 	static const auto matchLowLayer = 1, matchMidLayer = 2, matchHighLayer = 3;
 
@@ -5873,14 +5910,14 @@ std::optional<CloudLayersGroup> CloudLayersGroup::parse(const std::string & grou
 		return notRecognised;
 	}
 
-	CloudLayersGroup result;
+	LowMidHighCloudGroup result;
 	result.cloudLowLayer = lowLayer.value();
 	result.cloudMidLayer = midLayer.value();
 	result.cloudHighLayer = highLayer.value();
 	return result;
 }
 
-AppendResult CloudLayersGroup::append(const std::string & group,
+AppendResult LowMidHighCloudGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
@@ -5888,7 +5925,7 @@ AppendResult CloudLayersGroup::append(const std::string & group,
 	return AppendResult::NOT_APPENDED;
 }
 
-std::optional<CloudLayersGroup::LowLayer> CloudLayersGroup::lowLayerFromChar(char c) {
+std::optional<LowMidHighCloudGroup::LowLayer> LowMidHighCloudGroup::lowLayerFromChar(char c) {
 	switch (c) {
 		case '0': return LowLayer::NONE;
 		case '1': return LowLayer::CU_HU_CU_FR;
@@ -5905,7 +5942,7 @@ std::optional<CloudLayersGroup::LowLayer> CloudLayersGroup::lowLayerFromChar(cha
 	}
 }
 
-std::optional<CloudLayersGroup::MidLayer> CloudLayersGroup::midLayerFromChar(char c) {
+std::optional<LowMidHighCloudGroup::MidLayer> LowMidHighCloudGroup::midLayerFromChar(char c) {
 	switch (c) {
 		case '0': return MidLayer::NONE;
 		case '1': return MidLayer::AS_TR;
@@ -5922,7 +5959,7 @@ std::optional<CloudLayersGroup::MidLayer> CloudLayersGroup::midLayerFromChar(cha
 	}
 }
 
-std::optional<CloudLayersGroup::HighLayer> CloudLayersGroup::highLayerFromChar(char c) {
+std::optional<LowMidHighCloudGroup::HighLayer> LowMidHighCloudGroup::highLayerFromChar(char c) {
 	switch (c) {
 		case '0': return HighLayer::NONE;
 		case '1': return HighLayer::CI_FIB_CI_UNC;

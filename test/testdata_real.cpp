@@ -1825,6 +1825,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"RJTK", "Kisarazu (JGSDF)", {2018, 9, 13},
+		"SPECI RJTK 130029Z 02010KT 9999 FEW020 SCT040 BKN230 24/16 Q1021"
+		" RMK 1CU020 4SC040 5CI230 A3016"
+		"=",
+		""
+	},
+
+	{
 		"KEKN", "Elkins Arpt", {2018, 9, 13},
 		"SPECI KEKN 130503Z AUTO 00000KT 1/4SM FG VV002 19/18 A3024"
 		" RMK AO2 T01890183 TSNO"
@@ -3666,6 +3674,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"RJBD", "Nanki-Shirahama Arpt", {2018, 9, 20},
+		"SPECI RJBD 200732Z 12005KT 4500 -SHRA BR FEW006 SCT015 FEW025CB BKN060 22/22 Q1009"
+		" RMK 1ST006 3CU015 1CB025 6SC060 A2981 CB 25KM E MOV NE"
+		"=",
+		""
+	},
+
+	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
 		"METAR ENSE 201620Z AUTO 24040KT 9999NDV FEW010/// SCT020/// BKN027/// 12/10 Q0988 W///S7"
 		"=",
@@ -3883,6 +3899,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"RJFY", "Kanoya (JMSDF)", {2018, 9, 24},
+		"SPECI RJFY 240332Z 05003KT 010V080 9999 -RA FEW005 SCT025 OVC035 22/20 Q1015"
+		" RMK 1ST005 3CU025 8NS035 A2999"
+		"=",
+		""
+	},
+
+	{
 		"EHJR", "K13-a Sea(OIL)", {2018, 9, 24},
 		"METAR EHJR 241925Z AUTO 33015KT //// // ///////// 13/06 Q1036 RE// W17/H23"
 		"=",
@@ -3907,6 +3931,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2500/2502 23008KT"
 		" TEMPO 2506/2518 20020KT SHRA BKN014CB"
 		"="
+	},
+
+	{
+		"RJNG", "Gifu (JASDF)", {2018, 9, 25},		
+		"SPECI RJNG 250349Z 33006KT 9999 FEW010 SCT070 OVC100 21/18 Q1014"
+		" RMK 1CU010 3AC070 8AS100 A2994"
+		"=",
+		""
 	},
 
 	{
@@ -3942,6 +3974,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM270300 29015G25KT P6SM BKN030"
 		" BECMG 2703/2705 29010KT"
 		" RMK NXT FCST BY 261200Z"
+		"="
+	},
+
+	{
+		"RJAA", "Narita Intl", {2018, 9, 26},
+		"SPECI RJAA 261945Z 36020KT 4000 -SHRA BR FEW003 SCT004 BKN006 FEW020TCU 15/15 Q1014"
+		" RMK 1ST003 3ST004 5ST006 1TCU020 A2995 TCU 10KM N-NE MOV NE"
+		"=",
+		"TAF RJAA 261706Z 2618/2800 01015KT 8000 -SHRA FEW008 BKN012"
+		" TEMPO 2618/2623 3000 SHRA BR FEW002 BKN004"
+		" BECMG 2715/2718 34005KT"
 		"="
 	},
 
