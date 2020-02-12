@@ -159,51 +159,127 @@ TEST(CloudTypesGroup, parseFormatWithHeightWrongFormat) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Appending tests
-// Purpose: to confirm that CloudTypesGroup do not append to each other
+// Purpose: to confirm that CloudTypesGroup without base height can not be 
+// appended to any group and any group cannot be appended to this kind of 
+// group; and that groups with height can be appended to each other providing
+// the number of groups does not exceed the limit
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(CloudTypesGroup, append) {
-	auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg1.has_value());
+TEST(CloudTypesGroup, appendGroupsWithoutHeight) {
+	static const std::string strNoHeightMultiple = "AC4CI6";
+	static const std::string strNoHeightSingle = "SC3";
+	static const std::string strHeight = "3CU012";
 
-	auto ctg2 = metaf::CloudTypesGroup::parse("SC3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg2.has_value());
+	auto ctgNoHeightMultiple = 
+		metaf::CloudTypesGroup::parse(strNoHeightMultiple, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightMultiple.has_value());
 
-	auto ctg3 = metaf::CloudTypesGroup::parse("3CU012", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg3.has_value());
+	auto ctgNoHeightSingle = 
+		metaf::CloudTypesGroup::parse(strNoHeightSingle, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightSingle.has_value());
 
-	EXPECT_EQ(ctg1->append("AC1CI6", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("SC3", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("6SC009", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("RMK", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("TEST", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
+	auto ctgHeight = 
+		metaf::CloudTypesGroup::parse(strHeight, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightSingle.has_value());
 
-	EXPECT_EQ(ctg2->append("AC1CI6", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("SC3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("6SC009", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("RMK", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("TEST", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strHeight, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(ctg3->append("AC1CI6", metaf::ReportPart::RMK), 
+	const auto ctvSingle = ctgNoHeightSingle->cloudTypes();	
+	ASSERT_EQ(ctvSingle.size(), 1u);
+	EXPECT_EQ(ctvSingle[0].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctvSingle[0].height().isReported());
+	EXPECT_EQ(ctvSingle[0].okta(), 3u);
+
+	EXPECT_EQ(ctgNoHeightMultiple->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("SC3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightMultiple->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("6SC009", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightMultiple->append(strHeight, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("RMK", metaf::ReportPart::RMK), 
+
+	const auto ctvMultiple = ctgNoHeightMultiple->cloudTypes();	
+	ASSERT_EQ(ctvMultiple.size(), 2u);
+	EXPECT_EQ(ctvMultiple[0].type(), metaf::CloudType::Type::ALTOCUMULUS);
+	EXPECT_FALSE(ctvMultiple[0].height().isReported());
+	EXPECT_EQ(ctvMultiple[0].okta(), 4u);
+	EXPECT_EQ(ctvMultiple[1].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ctvMultiple[1].height().isReported());
+	EXPECT_EQ(ctvMultiple[1].okta(), 6u);
+
+	EXPECT_EQ(ctgHeight->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("TEST", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgHeight->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+
+	const auto ctvHeight = ctgHeight->cloudTypes();	
+	ASSERT_EQ(ctvHeight.size(), 1u);
+	EXPECT_EQ(ctvHeight[0].type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_TRUE(ctvHeight[0].height().isReported());
+	EXPECT_EQ(ctvHeight[0].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctvHeight[0].height().distance().has_value());
+	EXPECT_NEAR(ctvHeight[0].height().distance().value(), 1200, heightMargin);
+	EXPECT_EQ(ctvHeight[0].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctvHeight[0].okta(), 3u);
+}
+
+TEST(CloudTypesGroup, appendGroupsWithHeight) {
+	auto ctg = metaf::CloudTypesGroup::parse("1CU020", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg.has_value());
+
+	EXPECT_EQ(ctg->append("4SC040", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append("5CI230", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	const auto ctv = ctg->cloudTypes();
+	ASSERT_EQ(ctv.size(), 3u);
+
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_TRUE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[0].height().distance().has_value());
+	EXPECT_NEAR(ctv[0].height().distance().value(), 2000, heightMargin);
+	EXPECT_EQ(ctv[0].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[0].okta(), 1u);
+
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_TRUE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[1].height().distance().has_value());
+	EXPECT_NEAR(ctv[1].height().distance().value(), 4000, heightMargin);
+	EXPECT_EQ(ctv[1].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[1].okta(), 4u);
+
+	EXPECT_EQ(ctv[2].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_TRUE(ctv[2].height().isReported());
+	EXPECT_EQ(ctv[2].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[2].height().distance().has_value());
+	EXPECT_NEAR(ctv[2].height().distance().value(), 23000, heightMargin);
+	EXPECT_EQ(ctv[2].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[2].okta(), 5u);
+}
+
+TEST(CloudTypesGroup, appendTooManyGroupsWithHeight) {
+	static const std::string groupStr = "3CU012";
+	auto ctg = metaf::CloudTypesGroup::parse(groupStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg.has_value());
+
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	const auto ctv = ctg->cloudTypes();
+	ASSERT_EQ(ctv.size(), 8u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

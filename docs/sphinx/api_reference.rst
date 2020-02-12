@@ -1355,7 +1355,7 @@ CloudType
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1367,18 +1367,18 @@ Group types
 This section contains the information on each group class which stores information on individual types of METAR/TAF groups.
 
 
-FixedGroup
-^^^^^^^^^^
+KeywordGroup
+^^^^^^^^^^^^
 
-.. cpp:class:: FixedGroup
+.. cpp:class:: KeywordGroup
 
-	Fixed group represent a text which is never modified if it is included in the report.
+	KeywordGroup represents a group with a standardised keyword significant for report syntax.
 
 	For example, report types METAR, SPECI or TAF at the beginning of the report or CAVOK in the report body are always spelled exactly the same way and have no modifications.
 
 	.. cpp:enum-class:: Type
 
-		Designates the fixed text which is represented by this group.
+		Designates the keyword which is represented by this group.
 
 		.. cpp:enumerator:: METAR
 
@@ -1471,7 +1471,7 @@ FixedGroup
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of the fixed text group.
+			:returns: Type of the keyword group.
 
 	**Validating**
 
@@ -1746,7 +1746,7 @@ VisibilityGroup
 
 	Stores information about prevailing visibility, visibility towards cardinal direction, visibility for runway, visibility at surface level, visibility from air trafic control tower, runway visual range, etc.
 
-	See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
+	See also CAVOK (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
 
 	.. cpp:enum-class:: Type
 
@@ -1887,7 +1887,7 @@ CloudGroup
 
 			Ceiling height. Use :cpp:func:`height()` for ceiling height value. Use :cpp:func:`runway()` and :cpp:func:`direction()` for the location where ceiling is reported.
 
-			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator:: VARIABLE_CEILING
 
@@ -1905,7 +1905,7 @@ CloudGroup
 
 		Amount (cover) of the cloud layer.
 
-		See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+		See also CAVOK (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) which may be used to specify no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator::	NOT_REPORTED
 
@@ -1919,7 +1919,7 @@ CloudGroup
 
 			Nil significant clouds: no cloud below 5000 feet (1500 meters), no cumulonimbus or towering cumulus, and no vertical visibility restriction.
 
-			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator:: NONE_CLR
 
@@ -3473,35 +3473,35 @@ ReportError
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_NIL
 
-		This error occurs if any group is encountered after NIL. (see :cpp:enumerator:`metaf::FixedGroup::NIL`).
+		This error occurs if any group is encountered after NIL. (see :cpp:enumerator:`metaf::KeywordGroup::NIL`).
 
 		.. note: NIL means missing report, thus including groups in report body are not allowed.
 
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_CNL
 
-		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::FixedGroup::CNL`).
+		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::KeywordGroup::CNL`).
 
 		.. note: CNL means canceled report, thus including groups in report body are not allowed.
 
 
 	.. cpp:enumerator:: UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY
 
-		This error occurs if NIL or CNL are found in the middle of non-empty reports (see :cpp:enumerator:`metaf::FixedGroup::NIL` and :cpp:enumerator:`metaf::FixedGroup::CNL`).
+		This error occurs if NIL or CNL are found in the middle of non-empty reports (see :cpp:enumerator:`metaf::KeywordGroup::NIL` and :cpp:enumerator:`metaf::KeywordGroup::CNL`).
 
 		.. note: NIL means missing report and CNL means canceled report; these groups must not be included is the report which contains any actual observation or forecast.
 
 
 	.. cpp:enumerator:: AMD_ALLOWED_IN_TAF_ONLY
 
-		Group AMD which designates amended report (see :cpp:enumerator:`metaf::FixedGroup::AMD`) is only used in TAF reports. This error occurs if AMD is encountered in a METAR report.
+		Group AMD which designates amended report (see :cpp:enumerator:`metaf::KeywordGroup::AMD`) is only used in TAF reports. This error occurs if AMD is encountered in a METAR report.
 
-		.. note: COR (see :cpp:enumerator:`metaf::FixedGroup::COR`) may be used in both METAR and TAF reports.
+		.. note: COR (see :cpp:enumerator:`metaf::KeywordGroup::COR`) may be used in both METAR and TAF reports.
 
 
 	.. cpp:enumerator:: CNL_ALLOWED_IN_TAF_ONLY
 
-		Group CNL which designates canceled report (see :cpp:enumerator:`metaf::FixedGroup::CNL`) is only used in TAF reports. 
+		Group CNL which designates canceled report (see :cpp:enumerator:`metaf::KeywordGroup::CNL`) is only used in TAF reports. 
 
 		Since METAR reports contain the actual weather observation, canceling a METAR report is a semantic error.
 
@@ -3671,7 +3671,7 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 		:return: Value returned by corresponding virtual method or T() if the suitable method cannot be found for the Group variant alternative.
 
-	.. cpp:function:: protected virtual T visitFixedGroup(const FixedGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+	.. cpp:function:: protected virtual T visitKeywordGroup(const KeywordGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitLocationGroup(const LocationGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 

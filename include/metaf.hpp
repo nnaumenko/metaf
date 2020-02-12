@@ -5855,11 +5855,11 @@ std::optional<CloudTypesGroup> CloudTypesGroup::parse(const std::string & group,
 	if (!std::regex_match(group, match, matchRgx)) return notRecognised;
 	auto iter = std::sregex_iterator(group.begin(), group.end(), searchRgx);
 	while (iter != std::sregex_iterator()) {
-		match = *iter++;
-		const auto type = CloudType::fromString(match.str(0));
-		if (!type.has_value()) return notRecognised;
 		if (result.cldTpSize >= result.cldTpMaxSize) return result;
-		result.cldTp[result.cldTpSize++] = type.value();
+		match = *iter++;
+		const auto ctp = CloudType::fromString(match.str(0));
+		if (!ctp.has_value()) return notRecognised;
+		result.cldTp[result.cldTpSize++] = ctp.value();
 	}
 	return result;
 }
@@ -5869,7 +5869,13 @@ AppendResult CloudTypesGroup::append(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
+	if (cldTpSize >= cldTpMaxSize) return AppendResult::NOT_APPENDED;
+	if (!cldTp[cldTpSize - 1].height().isReported()) return AppendResult::NOT_APPENDED;
+	const auto ctp = CloudType::fromString(group);
+	if (!ctp.has_value()) return AppendResult::NOT_APPENDED;
+	if (!ctp->height().isReported()) return AppendResult::NOT_APPENDED;
+	cldTp[cldTpSize++] = ctp.value();
+	return AppendResult::APPENDED;
 }
 
 bool CloudTypesGroup::isValid() const {
