@@ -1975,9 +1975,6 @@ std::string_view VisitorExplain::weatherPhenomenaWeatherToString(
 	metaf::WeatherPhenomena::Weather weather)
 {
 	switch (weather) {
-			case metaf::WeatherPhenomena::Weather::OMITTED:
-			return "not specified";
-
 			case metaf::WeatherPhenomena::Weather::NOT_REPORTED:
 			return "not reported";
 

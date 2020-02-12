@@ -123,47 +123,11 @@ Example of a TAF report is as follows:
 
 ## Roadmap
 
-### Transition to version 5.0.0
+There are no plans to change the API in the foreseeable future.
 
-As the project progressed, the changes accumulated and backward compatibility was favoured heavly, so API kept growing and grew to the point where it is somewhat confusing and cumbersome.
+At this stage the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring. Also a couple of group formats are planned to be added eventually.
 
-#### FixedGroup
-
-FixedGroup::Type apparently grew beyond being meaningful.
-
-MISG and xxxxxNO groups are to be moved to the groups where they belong, e.g. WSCONDS and WND MISG groups should semantically belong to WindGroup.
-
-There may be other types of FixedGroup which really belong to other groups. 
-
-#### SecondaryLocationGroup
-
-SecondaryLocationGroup represents a very different data because it represents generally 'any data for secondary locations such as runways or cardinal directions'. SecondaryLocationGroup may store the following data: 
-
-* Wind shear at lower layers: there is WindGroup for wind and wind shear.
-* Runway visibility data and missing runway visibility data: there is a VisibilityGroup for visibility.
-* Ceiling data and missing ceiling data: there is a CloudGroup for sky condition.
-
-SecondaryLocationGroup is to be deleted and its functionality is to go to groups listed above.
-
-#### RunwayVisualRangeGroup
-
-RunwayVisualRangeGroup is very similar to VisibilityGroup. Its functionality is to be integrated into VisibilityGroup and RunwayVisualRangeGroup is to be removed.
-
-#### RainfallGroup and TemperatureForecastGroup
-
-Both groups were created in early version, but since then their more generalised counterparts were introduced.
-
-TemperatureForecastGroup reports minimum and maximum temperature, but MinMaxTemperatureGroup also does.
-
-RainfallGroup is reporting precipitation but PrecipitationGroup does pretty much the same thing.
-
-#### ColourCodeGroup
-
-This group is relatively rare and represents a very small amount of data; there is MiscGroup for this. ColourCodeGroup is to be integrated into MiscGroup.
-
-### After transition to vesion 5.0.0
-
-After version 5.0.0 the project is pretty much complete. Only bugfixes, test coverage improvements, and 'under the hood' optimisations will be introduced. No further groups to parser are planned, however if your region uses some group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
+If your region uses some group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
 
 ## Acknowledgements
 
@@ -178,3 +142,5 @@ METAR, TAF, and weather station data used in [weather summary example](https://n
 Weather widget uses the following external content: [Weather Icons by Erik Flowers](http://weathericons.io) distributed under [SIL OFL 1.1 license](http://scripts.sil.org/OFL), [Source Sans Pro Font](https://fonts.google.com/specimen/Source+Sans+Pro) by Paul D. Hunt distributed under [Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web), ['eye-regular'](https://fontawesome.com/icons/eye?style=regular) and ['icicles-solid'](https://fontawesome.com/icons/icicles?style=solid) icons by Font Awesome distributed under [Creative Commons Attribution 4.0 International license](https://fontawesome.com/license). METAR, TAF, and weather station data are acquired from [Aviation Weather Center Text Data Server](https://www.aviationweather.gov/dataserver) using [CORS-anywhere](https://cors-anywhere.herokuapp.com/).
 
 The project repository is hosted on [Gitlab](https://about.gitlab.com/) and mirrored to [Github](https://github.com/).
+
+Thanks to [Ogimet](https://www.ogimet.com/) for providing the access to historical METAR and TAF data.

@@ -1355,7 +1355,7 @@ CloudType
 Group
 -----
 
-.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, LowMidHighCloudGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1877,7 +1877,7 @@ CloudGroup
 
 			Cloud layer specified in METAR report, trend or remarks.
 
-			Use :cpp:func:`amount()` for cloud amount, :cpp:func:`height()` for base height, and :cpp:func:`cloudType()` for significant convective type.
+			Use :cpp:func:`amount()` for cloud amount, :cpp:func:`height()` for base height, and :cpp:func:`convectiveType()` for significant convective type.
 
 		.. cpp:enumerator:: VERTICAL_VISIBILITY
 
@@ -1900,6 +1900,12 @@ CloudGroup
 		.. cpp:enumerator:: CLD_MISG
 
 			Indicates the that cloud data are missing. No further details are provided.
+
+		.. cpp:enumerator:: OBSCURATION
+
+			Indicates the that instead of cloud data, a ground-based or aloft obscuration data is specified.
+
+			Use :cpp:func:`amount()` for obscuration amount, :cpp:func:`height()` for base height (or zero height for ground-based obscuration), and :cpp:func:`cloudType()` for type of obscuration.
 
 	.. cpp:enum-class:: Amount
 
@@ -1964,9 +1970,9 @@ CloudGroup
 			Cloud cover is variable between :cpp:enumerator:`BROKEN` and  :cpp:enumerator:`OVERCAST`.
 
 
-	.. cpp:enum-class:: CloudType
+	.. cpp:enum-class:: ConvectiveType
 
-		Type of the cloud in the layer.
+		Significant convective type of the cloud in the layer.
 
 		.. cpp:enumerator::NONE
 
@@ -1990,9 +1996,9 @@ CloudGroup
 
 			:returns: Amount (cover) of clouds in layer or clear sky conditions.
 
-		.. cpp:function:: CloudType type() const
+		.. cpp:function:: ConvectiveType type() const
 
-			:returns: Type of the cloud in the layer.
+			:returns: Convective type of the cloud in the layer.
 
 		.. cpp:function:: Distance height() const
 
@@ -2014,13 +2020,15 @@ CloudGroup
 
 			:returns: Maximum ceiling height if variable ceiling height is reported; non-reported value otherwise.
 
-		.. cpp::function:: WeatherPhenomena obscuration() const
-
-			:returns: Type of obscuration if ground-based or aloft obscuration is reported in this group. Currently always returns an 'omitted' :cpp:class:`WeatherPhenomena`
-
 		.. cpp::function:: std::optional<Runway> runway() const
 
 			:returns: For location-specific data such as ceiling, .
+
+	**Miscellaneous**
+
+		.. cpp:function: std::optional<CloudType> cloudType() const
+
+			:returns: :cpp:class:`CloudType` corresponding to the information stored in the group (maximum okta value, convective type, and cloud base height or minimum height if variable), or empty std::optional if 'no clouds' conditions or vertical visibility or missing data groups.
 
 	**Validating**
 
@@ -2904,10 +2912,10 @@ CloudTypesGroup
 			:returns: Always returns ``true``.
 
 
-CloudLayersGroup
-^^^^^^^^^^^^^^^^
+LowMidHighCloudGroup
+^^^^^^^^^^^^^^^^^^^^
 
-.. cpp:class:: CloudLayersGroup
+.. cpp:class:: LowMidHighCloudGroup
 
 	Stores information about predominant cloud types in low, mid, and high cloud layers. This group is included in the remarks and is used in North America.
 
@@ -3705,7 +3713,7 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	.. cpp:function:: protected T visitCloudLayersGroup(const CloudLayersGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+	.. cpp:function:: protected T visitLowMidHighCloudGroup(const LowMidHighCloudGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected T visitLightningGroup(const LightningGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 

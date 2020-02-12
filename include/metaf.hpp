@@ -590,7 +590,6 @@ public:
 		FREEZING
 	};	
 	enum class Weather {
-		OMITTED,
 		NOT_REPORTED,
 		DRIZZLE,
 		RAIN,
@@ -626,13 +625,6 @@ public:
 	inline std::vector<Weather> weather() const;
 	Event event() const { return ev; }
 	std::optional<MetafTime> time() const { return tm; }
-	bool isOmitted() const { 
-		return (w[0] == Weather::OMITTED && 
-			qualifier() == Qualifier::NONE && 
-			descriptor() == Descriptor::NONE && 
-			event() == Event::NONE &&
-			!tm.has_value());
-	}
 	inline bool isValid() const;
 
 	WeatherPhenomena() = default;
@@ -643,35 +635,27 @@ public:
 		const MetafTime & reportTime,
 		const WeatherPhenomena & previous);
 	static WeatherPhenomena notReported(bool recent) {
-		WeatherPhenomena result;
-		result.w[0] = Weather::NOT_REPORTED;
-		if (recent) result.q = Qualifier::RECENT;
-		return result;
+		const auto q = recent ? Qualifier::RECENT : Qualifier::NONE;
+		return WeatherPhenomena(Weather::NOT_REPORTED, Descriptor::NONE, q);
 	}
 
 private:
 	Qualifier q = Qualifier::NONE;
 	Descriptor d = Descriptor::NONE;
 	static const inline size_t wSize = 3;
-	Weather w[wSize] = { Weather::OMITTED };
+	size_t wsz = 0;
+	Weather w[wSize];
 	Event ev = Event::NONE;
 	std::optional<MetafTime> tm;
 
 	WeatherPhenomena(Weather wthr1, 
 		Weather wthr2, 
 		Descriptor dscr = Descriptor::NONE, 
-		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)  
-	{
-		w[0] = wthr1; w[1] = wthr2;
-		w[2] = Weather::OMITTED; 
-	}
-
+		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr), wsz(2), w{wthr1, wthr2} {}
 	WeatherPhenomena(Weather wthr, 
 		Descriptor dscr = Descriptor::NONE, 
-		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr)
-	{
-		w[0] = wthr; w[1] = Weather::OMITTED;
-	}
+		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr), wsz(1), w{wthr} {}
+	WeatherPhenomena(Descriptor dscr, Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr) {}
 
 	static inline bool isDescriptorShAllowed (Weather w);
 	static inline bool isDescriptorTsAllowed (Weather w);
@@ -719,13 +703,13 @@ public:
 	bool isValid() const { return (okt >= 1u && okt <= 8u); }
 
 	CloudType() = default;
+	CloudType(Type t, Distance h, unsigned int o) : tp(t), ht(h), okt(o) {}
 	static inline std::optional<CloudType> fromString(const std::string & s);
 private:
 	Type tp = Type::NOT_REPORTED;
 	Distance ht;
 	unsigned int okt = 0u;
 
-	CloudType(Type t, Distance h, unsigned int o) : tp(t), ht(h), okt(o) {}
 	static inline Type cloudTypeFromString(const std::string & s);
 	static inline Type cloudTypeOrObscurationFromString(const std::string & s);
 };
@@ -1214,7 +1198,7 @@ public:
 		if (type() != Type::VERTICAL_VISIBILITY) return heightNotReported;
 		return heightOrVertVis;
 	}
-	CloudType cloudType() const { return CloudType(); }
+	inline std::optional<CloudType> cloudType() const;
 	std::optional<Runway> runway() const { return rw; }
 	std::optional<Direction> direction() const { return dir; }
 	bool isValid() const { 
@@ -1262,6 +1246,8 @@ private:
 	inline AppendResult appendVariableCloudAmount(const std::string & group);
 	inline AppendResult appendCeiling(const std::string & group);
 	inline AppendResult appendRunwayOrCardinalDirection(const std::string & group);
+	static inline unsigned int amountToMaxOkta(Amount a);
+	static inline CloudType::Type convectiveTypeToCloudTypeType(ConvectiveType t);
 };
 
 class WeatherGroup {
@@ -1280,8 +1266,8 @@ public:
 	inline std::vector<WeatherPhenomena> weatherPhenomena() const;
 	bool isValid() const {
 		if (incompleteText != IncompleteText::NONE) return false;
-		for (auto i=0u; i < wSize; i++) 
-			if (!w[i].isOmitted() && !w[i].isValid()) return false;
+		for (auto i=0u; i < wsz; i++) 
+			if (!w[i].isValid()) return false;
 		return true;
 	}
 
@@ -1306,6 +1292,7 @@ private:
 
 	Type t = Type::CURRENT;
 	static const inline size_t wSize = 10;
+	size_t wsz = 0;
 	WeatherPhenomena w[wSize];
 	IncompleteText incompleteText = IncompleteText::NONE;
 
@@ -3562,10 +3549,8 @@ std::optional<unsigned int> WaveHeight::waveHeightFromStateOfSurfaceChar(char c)
 std::vector<WeatherPhenomena::Weather> WeatherPhenomena::weather() const 
 {
 	std::vector<Weather> result;
-	for (auto i=0u; i < wSize; i++) {
-		if (w[i] == Weather::OMITTED) break;
+	for (auto i=0u; i < wsz; i++)
 		result.push_back(w[i]);
-	}
 	return result;
 }
 
@@ -3587,7 +3572,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	if (s == "BLSN") return WeatherPhenomena(Weather::SNOW, Descriptor::BLOWING);
 	if (s == "BLPY") return WeatherPhenomena(Weather::SPRAY, Descriptor::BLOWING);
 	// Descriptor TS is allowed alone (or with precipitation)
-	if (s == "TS") return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM);
+	if (s == "TS") return WeatherPhenomena(Descriptor::THUNDERSTORM);
 	// Descriptor FZ is allowed only with FG (or with precipitation)
 	if (s == "FZFG") return WeatherPhenomena(Weather::FOG, Descriptor::FREEZING);
 	// Phenomena IC BR FG FU VA DU SA HZ PO SQ FC are allowed only when alone 
@@ -3612,11 +3597,11 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 		// Qualifier VC is allowed only with VCTS VCFG VCSH VCPO VCFC VCVA VCBLDU 
 		// VCBLSA VCBLSN VCDS VCSS
 		if (s == "VCTS") 
-			return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM, Qualifier::VICINITY);
+			return WeatherPhenomena(Descriptor::THUNDERSTORM, Qualifier::VICINITY);
 		if (s == "VCFG") 
 			return WeatherPhenomena(Weather::FOG, Descriptor::NONE, Qualifier::VICINITY);
 		if (s == "VCSH") 
-			return WeatherPhenomena(Weather::OMITTED, Descriptor::SHOWERS, Qualifier::VICINITY);
+			return WeatherPhenomena(Descriptor::SHOWERS, Qualifier::VICINITY);
 		if (s == "VCPO") 
 			return WeatherPhenomena(Weather::DUST_WHIRLS, Descriptor::NONE, Qualifier::VICINITY);
 		if (s == "VCVA") 
@@ -3648,7 +3633,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 				Descriptor::NONE, Qualifier::HEAVY);
 		// Qualifier RE is allowed with TS descriptor without any phenomena
 		if (s == "RETS") 
-			return WeatherPhenomena(Weather::OMITTED, Descriptor::THUNDERSTORM, Qualifier::RECENT);
+			return WeatherPhenomena(Descriptor::THUNDERSTORM, Qualifier::RECENT);
 	}
 	// Precipitation
 	WeatherPhenomena result;
@@ -3699,7 +3684,7 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	for (auto i = 0u; i < wSize; i++) {
 		if (precipStr.empty()) break; 
 		const auto ws = precipStr.substr(0,2);
-		Weather w = Weather::OMITTED;
+		std::optional<Weather> w;
 		if (ws == "DZ") w = Weather::DRIZZLE;
 		if (ws == "RA") w = Weather::RAIN;
 		if (ws == "SN") w = Weather::SNOW;
@@ -3708,12 +3693,13 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 		if (ws == "GR") w = Weather::HAIL;
 		if (ws == "GS") w = Weather::SMALL_HAIL;
 		if (ws == "UP") w = Weather::UNDETERMINED;
-		if (w == Weather::OMITTED) return error;
-		if (isDescriptorShAllowed(w)) allowShDecriptor = true;
-		if (isDescriptorFzAllowed(w)) allowFzDecriptor = true;
+		if (!w.has_value()) return error;
+		if (isDescriptorShAllowed(w.value())) allowShDecriptor = true;
+		if (isDescriptorFzAllowed(w.value())) allowFzDecriptor = true;
 		for (auto j = 0u; j < i ; j++)
-			if (result.w[j] == w) return error;
-		result.w[i] = w;
+			if (result.w[j] == w.value()) return error;
+		result.w[i] = w.value();
+		result.wsz = i + 1;
 		precipStr = precipStr.substr(2);
 	}
 	if (!precipStr.empty()) return error;
@@ -3787,10 +3773,8 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 
 bool WeatherPhenomena::isValid() const { 
 	// Empty weather phenomena is not valid 
-	if (qualifier() == Qualifier::NONE && 
-		descriptor() == Descriptor::NONE &&
-		w[0] == Weather::OMITTED) 
-			return false;
+	if (qualifier() == Qualifier::NONE && descriptor() == Descriptor::NONE && !wsz) 
+		return false;
 	// Event time must be valid if present
 	if (tm.has_value() && !tm->isValid()) return false;
 	// Descriptor FZ only makes sense with precipitation which
@@ -4897,6 +4881,65 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	return result;
 }
 
+unsigned int CloudGroup::amountToMaxOkta(Amount a) {
+	switch (a) {
+		case Amount::FEW:
+		return 2;
+
+		case Amount::SCATTERED:
+		case Amount::VARIABLE_FEW_SCATTERED:
+		return 4;
+		
+		case Amount::VARIABLE_SCATTERED_BROKEN:
+		case Amount::BROKEN:
+		return 7;
+		
+		case Amount::VARIABLE_BROKEN_OVERCAST:
+		case Amount::OVERCAST:
+		case Amount::OBSCURED:
+		return 8;
+
+		default:
+		return 0;
+	}
+}
+
+CloudType::Type CloudGroup::convectiveTypeToCloudTypeType(ConvectiveType t) {
+	switch (t) {
+		case ConvectiveType::NONE:
+		case ConvectiveType::NOT_REPORTED:
+		return CloudType::Type::NOT_REPORTED;
+
+		case ConvectiveType::TOWERING_CUMULUS:
+		return CloudType::Type::TOWERING_CUMULUS;
+		
+		case ConvectiveType::CUMULONIMBUS:
+		return CloudType::Type::CUMULONIMBUS;
+	}
+}
+
+std::optional<CloudType> CloudGroup::cloudType() const {
+	const auto cldConvType = convectiveTypeToCloudTypeType(convectiveType());
+	const auto cldOkta = amountToMaxOkta(amount());
+	switch (type()) {
+		case Type::CLOUD_LAYER:
+		case Type::CEILING:
+		return CloudType(cldConvType, height(), cldOkta);
+
+		case Type::VARIABLE_CEILING:
+		return CloudType(cldConvType, minHeight(), cldOkta);
+
+		case Type::OBSCURATION:
+		return CloudType();
+
+		case Type::NO_CLOUDS:
+		case Type::VERTICAL_VISIBILITY:
+		case Type::CHINO:
+		case Type::CLD_MISG:
+		return std::optional<CloudType>();
+	}
+}
+
 std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string & s) {
 	if (s == "FEW") return CloudGroup::Amount::FEW;
 	if (s == "SCT") return CloudGroup::Amount::SCATTERED;
@@ -4975,6 +5018,7 @@ std::optional<WeatherGroup> WeatherGroup::parse(const std::string & group,
 		if (const auto wp = parseWeatherWithoutEvent(group, reportPart); wp.has_value()) {
 			WeatherGroup result;
 			result.w[0] = wp.value();
+			result.wsz = 1;
 			if (wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) result.t = Type::RECENT;
 			return result;
 		}
@@ -5033,9 +5077,8 @@ AppendResult WeatherGroup::append(const std::string & group,
 
 inline std::vector<WeatherPhenomena> WeatherGroup::weatherPhenomena() const {
 	std::vector<WeatherPhenomena> result;
-	for (auto i=0u; i < wSize; i++) {
-		if (!w[i].isOmitted()) result.push_back(w[i]);
-	}
+	for (auto i=0u; i < wsz; i++) 
+		result.push_back(w[i]);
 	return result;
 }
 
@@ -5097,9 +5140,9 @@ std::optional<WeatherGroup> WeatherGroup::parseWeatherEvent(const std::string & 
 
 
 bool WeatherGroup::addWeatherPhenomena(const WeatherPhenomena & wp) {
-	for (auto i = 0u; i < wSize; i++)
-		if (w[i].isOmitted()) { w[i] = wp; return true; }
-	return false;
+	if (wsz >= wSize) return false;
+	w[wsz++] = wp;
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -5827,9 +5870,8 @@ AppendResult PressureTendencyGroup::append(const std::string & group,
 
 std::vector<CloudType> CloudTypesGroup::cloudTypes() const {
 	std::vector<CloudType> result;
-	for (auto i=0u; i < cldTpSize; i++) {
+	for (auto i=0u; i < cldTpSize; i++)
 		result.push_back(cldTp[i]);
-	}
 	return result;
 }
 
@@ -5879,9 +5921,8 @@ AppendResult CloudTypesGroup::append(const std::string & group,
 }
 
 bool CloudTypesGroup::isValid() const {
-	for (auto i=0u; i < cldTpSize; i++) {
+	for (auto i=0u; i < cldTpSize; i++)
 		if (!cldTp[i].isValid()) return false;
-	}
 	return true;
 }
 
@@ -6091,9 +6132,8 @@ std::vector<Direction> LightningGroup::directions() const {
 	for (const auto r2 : result2) {
 		// Check if r2 is already present in result
 		bool r2_alreadyPresent = false;
-		for (const auto r : result) {
+		for (const auto r : result)
 			if (r.cardinal() == r2.cardinal()) { r2_alreadyPresent = true; break;}
-		}
 		if (!r2_alreadyPresent) result.push_back(r2);
 	}
 	return result;
@@ -6229,9 +6269,8 @@ std::vector<Direction> VicinityGroup::directions() const {
 	for (const auto r2 : result2) {
 		// Check if r2 is already present in result
 		bool r2_alreadyPresent = false;
-		for (const auto r : result) {
+		for (const auto r : result)
 			if (r.cardinal() == r2.cardinal()) { r2_alreadyPresent = true; break;}
-		}
 		if (!r2_alreadyPresent) result.push_back(r2);
 	}
 	return result;
