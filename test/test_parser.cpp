@@ -126,6 +126,9 @@ TEST(Parser, RealDataParsingMETAR) {
 				metaf::ReportError::NONE) << "Report: " << data.metar;
 			EXPECT_EQ(parseResult.reportMetadata.type, 
 				metaf::ReportType::METAR) << "Report: " << data.metar;
+			EXPECT_EQ(parseResult.reportMetadata.icaoLocation, 
+				data.airportICAO)  << "Report: " << data.metar;
+
 		}
 	}
 }
@@ -140,6 +143,8 @@ TEST(Parser, RealDataParsingTAF) {
 				metaf::ReportError::NONE) << "Report: " << data.taf;
 			EXPECT_EQ(parseResult.reportMetadata.type,
 				metaf::ReportType::TAF) << "Report: " << data.taf;
+			EXPECT_EQ(parseResult.reportMetadata.icaoLocation, 
+				data.airportICAO)  << "Report: " << data.taf;
 		}
 	}
 }

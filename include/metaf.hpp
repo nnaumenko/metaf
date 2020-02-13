@@ -751,6 +751,7 @@ struct ReportMetadata {
 	ReportType type = ReportType::UNKNOWN;
 	ReportError error = ReportError::NONE;
 	std::optional<MetafTime> reportTime;
+	std::string icaoLocation;
 };
 
 static const inline ReportMetadata missingMetadata;
@@ -6889,8 +6890,13 @@ void Parser::Status::finalTransition() {
 }
 
 void Parser::updateMetadata(const Group & group, ReportMetadata & reportMetadata) {
-	if (std::holds_alternative<ReportTimeGroup>(group)) {
-		reportMetadata.reportTime = std::get<ReportTimeGroup>(group).time();
+
+	if (const auto reportTime = std::get_if<ReportTimeGroup>(&group); reportTime) {
+		reportMetadata.reportTime = reportTime->time();
+		return;
+	}
+	if (const auto location = std::get_if<LocationGroup>(&group); location) {
+		reportMetadata.icaoLocation = location->toString();
 		return;
 	}
 }
