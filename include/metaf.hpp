@@ -4906,15 +4906,14 @@ unsigned int CloudGroup::amountToMaxOkta(Amount a) {
 
 CloudType::Type CloudGroup::convectiveTypeToCloudTypeType(ConvectiveType t) {
 	switch (t) {
-		case ConvectiveType::NONE:
-		case ConvectiveType::NOT_REPORTED:
-		return CloudType::Type::NOT_REPORTED;
-
 		case ConvectiveType::TOWERING_CUMULUS:
 		return CloudType::Type::TOWERING_CUMULUS;
 		
 		case ConvectiveType::CUMULONIMBUS:
 		return CloudType::Type::CUMULONIMBUS;
+
+		default:
+		return CloudType::Type::NOT_REPORTED;
 	}
 }
 
@@ -4932,10 +4931,7 @@ std::optional<CloudType> CloudGroup::cloudType() const {
 		case Type::OBSCURATION:
 		return CloudType();
 
-		case Type::NO_CLOUDS:
-		case Type::VERTICAL_VISIBILITY:
-		case Type::CHINO:
-		case Type::CLD_MISG:
+		default:
 		return std::optional<CloudType>();
 	}
 }
