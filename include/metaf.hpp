@@ -4095,14 +4095,17 @@ std::optional<TrendGroup> TrendGroup::fromTrendTime(const std::string & s) {
 	TrendGroup result;
 	result.t = Type::NONE;
 	if (match.str(matchType) == "FM") {
+		result.t = Type::FROM;
 		result.tFrom = time;
 		return result;
 	}
 	if (match.str(matchType) == "TL") {
+		result.t = Type::TIME_SPAN;
 		result.tTill = time;
 		return result;
 	}
 	if (match.str(matchType) == "AT") {
+		result.t = Type::TIME_SPAN;
 		result.tAt = time;
 		return result;
 	}
