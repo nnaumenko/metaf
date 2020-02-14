@@ -161,7 +161,7 @@ RainfallGroup is reporting precipitation but PrecipitationGroup does pretty much
 
 This group is relatively rare and represents a very small amount of data; there is MiscGroup for this. ColourCodeGroup is to be integrated into MiscGroup.
 
-### After transition to vesion 5.0.0
+### After transition to version 5.0.0
 
 After version 5.0.0 the project is pretty much complete. Only bugfixes, test coverage improvements, and 'under the hood' optimisations will be introduced. No further groups to parser are planned, however if your region uses some group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
 
