@@ -10,13 +10,16 @@
 #include "metaf.hpp"
 
 static void checkAttribute(
-	const std::set<testdata::MetarTafRealData::Attribute> & attributes, 
+	const std::vector<testdata::MetarTafRealData::Attribute> & attributes, 
 	std::string & resultStr,
 	testdata::MetarTafRealData::Attribute attribute,
 	bool expectedValue,
 	const std::string & attributeName)
 {
-	const auto actualValue = (attributes.find(attribute) != attributes.end());
+	bool actualValue = false;
+	for (const auto attr : attributes) {
+		if (attr == attribute) actualValue = true;
+	}
 	if ((actualValue && !expectedValue) || (!actualValue && expectedValue)) {
 		if (!resultStr.empty()) resultStr += ", ";
 		resultStr += attributeName;
@@ -24,7 +27,7 @@ static void checkAttribute(
 }
 
 static std::string checkAttributesVsMetadata(
-	const std::set<testdata::MetarTafRealData::Attribute> & attributes, 
+	const std::vector<testdata::MetarTafRealData::Attribute> & attributes, 
 	const metaf::ReportMetadata & reportMetadata)
 {
 	std::string result;

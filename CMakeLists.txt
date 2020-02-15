@@ -4,7 +4,7 @@ project(metaf)
 
 set(CMAKE_CXX_STANDARD 17)
 enable_language(CXX)
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-c++11-extensions -O0")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-c++11-extensions -O3")
 
 message("EMSDK: " $ENV{EMSDK})
 

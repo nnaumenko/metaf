@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <string>
-#include <set>
 
 namespace testdata {
 
@@ -39,8 +38,8 @@ struct MetarTafRealData {
 	} date;
 	std::string metar;
 	std::string taf;
-	std::set<Attribute> metarAttributes;
-	std::set<Attribute> tafAttributes;
+	std::vector<Attribute> metarAttributes;
+	std::vector<Attribute> tafAttributes;
 	unsigned int correctionNumber = 0;
 };
 
