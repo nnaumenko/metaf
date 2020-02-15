@@ -10,10 +10,26 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 namespace testdata {
 
 struct MetarTafRealData {
+	enum class Attribute {
+		SPECI,
+		NOSPECI,
+		AUTO,
+		AO1,
+		AO1A,
+		AO2,
+		AO2A,
+		NIL,
+		CNL,
+		AMD,
+		COR,
+		MAINTENANCE_INDICATOR
+	};
+
 	std::string airportICAO;
 	std::string airportName;
 	struct {
@@ -23,6 +39,9 @@ struct MetarTafRealData {
 	} date;
 	std::string metar;
 	std::string taf;
+	std::set<Attribute> metarAttributes;
+	std::set<Attribute> tafAttributes;
+	unsigned int correctionNumber = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

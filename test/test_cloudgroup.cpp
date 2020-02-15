@@ -1824,4 +1824,3 @@ TEST(CloudGroup, isValidCld) {
 TEST(CloudGroup, isValidCldMisg) {
 	//TODO
 }
-

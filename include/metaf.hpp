@@ -16,6 +16,8 @@
 	#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 	// GCC gives numerous false positives in switch/return methods
 	#pragma GCC diagnostic ignored "-Wreturn-type"
+	// GCC gives false positives in Distance
+	#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
 #include <string>
@@ -644,7 +646,7 @@ private:
 	Descriptor d = Descriptor::NONE;
 	static const inline size_t wSize = 3;
 	size_t wsz = 0;
-	Weather w[wSize];
+	Weather w[wSize] = {Weather::NOT_REPORTED, Weather::NOT_REPORTED, Weather::NOT_REPORTED};
 	Event ev = Event::NONE;
 	std::optional<MetafTime> tm;
 
@@ -752,6 +754,19 @@ struct ReportMetadata {
 	ReportError error = ReportError::NONE;
 	std::optional<MetafTime> reportTime;
 	std::string icaoLocation;
+	bool isSpeci = false;
+	bool isNospeci = false;
+	bool isAutomated = false;
+	bool isAo1 = false;
+	bool isAo1a = false;
+	bool isAo2 = false;
+	bool isAo2a = false;
+	bool isNil = false;
+	bool isCancelled = false;
+	bool isAmended = false;
+	bool isCorrectional = false;
+	std::optional<unsigned int> correctionNumber = 0;
+	bool maintenanceIndicator = false;
 };
 
 static const inline ReportMetadata missingMetadata;
@@ -6890,14 +6905,68 @@ void Parser::Status::finalTransition() {
 }
 
 void Parser::updateMetadata(const Group & group, ReportMetadata & reportMetadata) {
+	if (const auto keyword = std::get_if<KeywordGroup>(&group); keyword)
+		switch (keyword->type()) {
+			case KeywordGroup::Type::SPECI: 
+			reportMetadata.isSpeci = true;
+			break;
+			
+			case KeywordGroup::Type::NOSPECI:
+			reportMetadata.isNospeci = true;
+			break;
 
-	if (const auto reportTime = std::get_if<ReportTimeGroup>(&group); reportTime) {
+			case KeywordGroup::Type::AUTO: reportMetadata.isAutomated = true;
+			break;
+
+			case KeywordGroup::Type::AO1:
+			reportMetadata.isAo1 = true;
+			break;
+
+			case KeywordGroup::Type::AO1A:
+			reportMetadata.isAo1a = true;
+			break;
+
+			case KeywordGroup::Type::AO2:
+			reportMetadata.isAo2 = true;
+			break;
+			
+			case KeywordGroup::Type::AO2A:
+			reportMetadata.isAo2a = true;
+			break;
+
+			case KeywordGroup::Type::NIL:
+			reportMetadata.isNil = true;
+			break;
+
+			case KeywordGroup::Type::CNL:
+			reportMetadata.isCancelled = true;
+			break;
+
+			case KeywordGroup::Type::AMD:
+			reportMetadata.isAmended = true;
+			break;
+
+			case KeywordGroup::Type::COR:
+			reportMetadata.isCorrectional = true;
+			break;
+			
+			case KeywordGroup::Type::MAINTENANCE_INDICATOR:
+			reportMetadata.maintenanceIndicator = true;
+			break;
+			
+			default:
+			break;
+		}
+	if (const auto reportTime = std::get_if<ReportTimeGroup>(&group); reportTime)
 		reportMetadata.reportTime = reportTime->time();
-		return;
-	}
-	if (const auto location = std::get_if<LocationGroup>(&group); location) {
+	if (const auto location = std::get_if<LocationGroup>(&group); location)
 		reportMetadata.icaoLocation = location->toString();
-		return;
+	if (const auto misc = std::get_if<MiscGroup>(&group); 
+		misc && 
+		misc->type() == MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION &&
+		misc->data().has_value()) {
+			reportMetadata.isCorrectional = true;
+			reportMetadata.correctionNumber = misc->data().value();
 	}
 }
 

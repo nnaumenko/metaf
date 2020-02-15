@@ -9,6 +9,76 @@
 #include "testdata_real.h"
 #include "metaf.hpp"
 
+static void checkAttribute(
+	const std::set<testdata::MetarTafRealData::Attribute> & attributes, 
+	std::string & resultStr,
+	testdata::MetarTafRealData::Attribute attribute,
+	bool expectedValue,
+	const std::string & attributeName)
+{
+	const auto actualValue = (attributes.find(attribute) != attributes.end());
+	if ((actualValue && !expectedValue) || (!actualValue && expectedValue)) {
+		if (!resultStr.empty()) resultStr += ", ";
+		resultStr += attributeName;
+	}
+}
+
+static std::string checkAttributesVsMetadata(
+	const std::set<testdata::MetarTafRealData::Attribute> & attributes, 
+	const metaf::ReportMetadata & reportMetadata)
+{
+	std::string result;
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::SPECI,
+		reportMetadata.isSpeci,
+		"SPECI");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::NOSPECI,
+		reportMetadata.isNospeci,
+		"NOSPECI");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AUTO,
+		reportMetadata.isAutomated,
+		"AUTO");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AO1,
+		reportMetadata.isAo1,
+		"AO1");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AO1A,
+		reportMetadata.isAo1a,
+		"AO1A");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AO2,
+		reportMetadata.isAo2,
+		"AO2");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AO2A,
+		reportMetadata.isAo2a,
+		"AO2A");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::NIL,
+		reportMetadata.isNil,
+		"NIL");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::CNL,
+		reportMetadata.isCancelled,
+		"CNL");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::AMD,
+		reportMetadata.isAmended,
+		"AMD");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::COR,
+		reportMetadata.isCorrectional,
+		"COR");
+	checkAttribute(attributes, result,
+		testdata::MetarTafRealData::Attribute::MAINTENANCE_INDICATOR,
+		reportMetadata.maintenanceIndicator,
+		"MAINTENANCE_INDICATOR");
+	return result;
+}
+
 static bool isUnknown(const metaf::Group & group) {
 	return std::holds_alternative<metaf::UnknownGroup>(group);
 }
@@ -127,8 +197,14 @@ TEST(Parser, RealDataParsingMETAR) {
 			EXPECT_EQ(parseResult.reportMetadata.type, 
 				metaf::ReportType::METAR) << "Report: " << data.metar;
 			EXPECT_EQ(parseResult.reportMetadata.icaoLocation, 
-				data.airportICAO)  << "Report: " << data.metar;
-
+				data.airportICAO) << "Report: " << data.metar;
+			const auto attrStr = checkAttributesVsMetadata(data.metarAttributes, 
+				parseResult.reportMetadata);
+			const auto attributesOk = attrStr.empty();
+			EXPECT_TRUE(attributesOk) << 
+				"Report: " << data.metar << ", attributes: " << attrStr;
+			EXPECT_EQ(parseResult.reportMetadata.correctionNumber.value_or(0), 
+				data.correctionNumber) << "Report: " << data.metar;;
 		}
 	}
 }
@@ -145,6 +221,11 @@ TEST(Parser, RealDataParsingTAF) {
 				metaf::ReportType::TAF) << "Report: " << data.taf;
 			EXPECT_EQ(parseResult.reportMetadata.icaoLocation, 
 				data.airportICAO)  << "Report: " << data.taf;
+			const auto attrStr = checkAttributesVsMetadata(data.tafAttributes, 
+				parseResult.reportMetadata);
+			const auto attributesOk = attrStr.empty();
+			EXPECT_TRUE(attributesOk) << 
+				"Report: " << data.taf << ", attributes: " << attrStr; 
 		}
 	}
 }
