@@ -1850,9 +1850,6 @@ std::string_view VisitorExplain::stateOfSeaSurfaceToString(
 
 std::string_view VisitorExplain::trendTypeToString(metaf::TrendGroup::Type type) {
 	switch (type) {
-		case metaf::TrendGroup::Type::NONE:
-		return "This group contains incomplete information";
-
 		case metaf::TrendGroup::Type::NOSIG:
 		return "No significant weather changes expected";
 
@@ -1868,8 +1865,17 @@ std::string_view VisitorExplain::trendTypeToString(metaf::TrendGroup::Type type)
 		case metaf::TrendGroup::Type::FROM:
 		return "All previous weather conditions are superseded by the following conditions";
 
+		case metaf::TrendGroup::Type::UNTIL:
+		return "The following weather conditions expected to last until specified time";
+
+		case metaf::TrendGroup::Type::AT:
+		return "The following weather conditions expected to occur at specified time";
+
 		case metaf::TrendGroup::Type::TIME_SPAN:
 		return "The following weather condition are expected within time span";
+
+		case metaf::TrendGroup::Type::PROB:
+		return "The weather conditions probability is as follows";
 	}
 }
 

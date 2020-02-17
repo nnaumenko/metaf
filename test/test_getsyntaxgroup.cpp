@@ -172,14 +172,32 @@ TEST(getSyntaxGroup, OTHER_INTER) {
 }
 
 TEST(getSyntaxGroup, OTHER_TrendFrom) {
-	const auto g = metaf::TrendGroup::parse("FM191445", metaf::ReportPart::TAF);
+	const auto g1 = metaf::TrendGroup::parse("FM191445", metaf::ReportPart::TAF);
+	ASSERT_TRUE(g1.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g1.value()), metaf::SyntaxGroup::OTHER);
+
+	const auto g2 = metaf::TrendGroup::parse("FM1445", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g2.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g2.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_TrendUntil) {
+	const auto g = metaf::TrendGroup::parse("TL1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_TrendTime) {
-	const auto g = metaf::TrendGroup::parse("TL1445", metaf::ReportPart::METAR);
+TEST(getSyntaxGroup, OTHER_TrendAt) {
+	const auto g = metaf::TrendGroup::parse("AT1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
+TEST(getSyntaxGroup, OTHER_TrendFromUntil) {
+	auto g = metaf::TrendGroup::parse("FM1230", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(g->append("TL1415", metaf::ReportPart::METAR), 
+		metaf::AppendResult::APPENDED);
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
@@ -189,10 +207,10 @@ TEST(getSyntaxGroup, OTHER_Probability) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
-TEST(getSyntaxGroup, OTHER_UnknownGroup) {
-	const auto g = metaf::UnknownGroup::parse("A1B2C3D4", metaf::ReportPart::METAR);
+TEST(getSyntaxGroup, OTHER_MetarTimeSpan_HHMM_HHMM) {
+	const auto g = metaf::TrendGroup::parse("0812/0824", metaf::ReportPart::METAR);
 	ASSERT_TRUE(g.has_value());
-	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::TIME_SPAN);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -340,3 +358,8 @@ TEST(getSyntaxGroup, OTHER_MiscGroup) {
 	//TODO: add more types of MiscGroup
 }
 
+TEST(getSyntaxGroup, OTHER_UnknownGroup) {
+	const auto g = metaf::UnknownGroup::parse("A1B2C3D4", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}

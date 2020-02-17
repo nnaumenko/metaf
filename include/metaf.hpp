@@ -910,13 +910,15 @@ private:
 class TrendGroup {
 public:
 	enum class Type {
-		NONE,		// Incomplete groups or their combination.
 		NOSIG,
 		BECMG,
 		TEMPO,
 		INTER,
 		FROM,
+		UNTIL,
+		AT,
 		TIME_SPAN,
+		PROB
 	};
 	enum class Probability {
 		NONE,		// Probability not specified.
@@ -929,10 +931,11 @@ public:
 	std::optional<MetafTime> timeTill() const { return tTill; }
 	std::optional<MetafTime> timeAt() const { return tAt; }
 	bool isValid() const {
+		if (type() == Type::PROB) return false; //PROBxx without time span, BECMG, TEMPO, INTER
 		if (tFrom.has_value() && !tFrom->isValid()) return false;
 		if (tTill.has_value() && !tTill->isValid()) return false;
 		if (tAt.has_value() && !tAt->isValid()) return false;
-		return (type() != Type::NONE); // Incomplete groups are considered invalid
+		return true;
 	}
 	inline bool isTimeSpanGroup() const;
 
@@ -947,9 +950,10 @@ public:
 
 private:
 	TrendGroup(Type type) : t(type) {}
-	TrendGroup(Probability p) : t(Type::NONE), prob(p) {}
+	TrendGroup(Probability p) : t(Type::PROB), prob(p) {}
 
 	static inline std::optional<TrendGroup> fromTimeSpan(const std::string & s);
+	static inline std::optional<TrendGroup> fromTimeSpanHHMM(const std::string & s);
 	static inline std::optional<TrendGroup> fromFm(const std::string & s);
 	static inline std::optional<TrendGroup> fromTrendTime(const std::string & s);
 
@@ -965,8 +969,9 @@ private:
 	inline bool isTrendTypeGroup() const;
 	inline bool isTrendTimeGroup() const;
 
-	Type t = Type::NONE;
+	Type t = Type::NOSIG;
 	Probability prob = Probability::NONE;
+	bool isTafTimeSpanGroup = false;
 	std::optional<MetafTime> tFrom; // Time span beginning.
 	std::optional<MetafTime> tTill;	// Time span end time.
 	std::optional<MetafTime> tAt;	// Precise time.
@@ -4001,9 +4006,11 @@ std::optional<TrendGroup> TrendGroup::parse(const std::string & group,
 	}
 	if (reportPart == ReportPart::METAR){
 		// Detect NOSIG trend type
-		if ( group == "NOSIG") return TrendGroup(Type::NOSIG);
+		if (group == "NOSIG") return TrendGroup(Type::NOSIG);
 		// Detect FMxxxx /TLxxxx /ATxxxx
 		if (auto trendTime = fromTrendTime(group); trendTime.has_value()) return trendTime;
+		// Detect time span in format HHMM/HHMM used in Australia
+		if (auto timeSpan = fromTimeSpanHHMM(group); timeSpan.has_value()) return timeSpan;
 	}
 	if (reportPart == ReportPart::HEADER || reportPart == ReportPart::TAF) {
 		// Detect time span
@@ -4018,6 +4025,7 @@ AppendResult TrendGroup::append(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
+	if (type() == Type::NOSIG) return AppendResult::NOT_APPENDED;
 	const auto nextGroup = parse(group, reportPart, reportMetadata);
 	if (!nextGroup.has_value()) return AppendResult::NOT_APPENDED;
 	if (combineProbAndTrendTypeGroups(nextGroup.value())) return AppendResult::APPENDED;
@@ -4039,6 +4047,25 @@ std::optional<TrendGroup> TrendGroup::fromTimeSpan(const std::string & s) {
 
 	TrendGroup result;
 	result.t = Type::TIME_SPAN;
+	result.isTafTimeSpanGroup = true;
+	result.tFrom = from;
+	result.tTill = till;
+	return result;
+}
+
+std::optional<TrendGroup> TrendGroup::fromTimeSpanHHMM(const std::string & s) {
+	static const std::optional<TrendGroup> notRecognised;
+	static const std::regex rgx("(\\d\\d\\d\\d)/(\\d\\d\\d\\d)");
+	static const auto matchFrom = 1, matchTill = 2;
+	std::smatch match;
+	if (!regex_match(s, match, rgx)) return notRecognised;
+	const auto from = MetafTime::fromStringDDHHMM(match.str(matchFrom));
+	const auto till = MetafTime::fromStringDDHHMM(match.str(matchTill));
+	if (!from.has_value() || !till.has_value()) return notRecognised;
+
+	TrendGroup result;
+	result.t = Type::TIME_SPAN;
+	result.isTafTimeSpanGroup = true;
 	result.tFrom = from;
 	result.tTill = till;
 	return result;
@@ -4067,16 +4094,18 @@ std::optional<TrendGroup> TrendGroup::fromTrendTime(const std::string & s) {
 	const auto time = MetafTime::fromStringDDHHMM(match.str(matchTime));
 	if (!time.has_value()) return notRecognised;
 	TrendGroup result;
-	result.t = Type::NONE;
 	if (match.str(matchType) == "FM") {
+		result.t = Type::FROM;
 		result.tFrom = time;
 		return result;
 	}
 	if (match.str(matchType) == "TL") {
+		result.t = Type::UNTIL;
 		result.tTill = time;
 		return result;
 	}
 	if (match.str(matchType) == "AT") {
+		result.t = Type::AT;
 		result.tAt = time;
 		return result;
 	}
@@ -4112,18 +4141,18 @@ bool TrendGroup::combineProbAndTimeSpanGroups(const TrendGroup & nextTrendGroup)
 }
 
 bool TrendGroup::combineIncompleteGroups(const TrendGroup & nextTrendGroup) {
-	if (type() != Type::NONE) return false;
-	if (probability() != Probability::NONE) return false;
-	if (!nextTrendGroup.isTrendTimeGroup()) return false;
-	if (!canCombineTime(*this, nextTrendGroup)) return false;
-	combineTime(nextTrendGroup);
+	if (probability() != Probability::NONE ||
+		type() != Type::FROM ||
+		nextTrendGroup.type() != Type::UNTIL) return false;
+	t = Type::TIME_SPAN;
+	tTill = nextTrendGroup.tTill;
 	return true;
 }
 
 bool TrendGroup::isProbabilityGroup() const {
 	// Probability group has format PROB30 or PROB40
 	// Probability must be reported and no time allowed
-	if (type() != Type::NONE) return false;
+	if (type() != Type::PROB) return false;
 	if (probability() == Probability::NONE) return false;
 	if (timeFrom().has_value() || timeTill().has_value()) return false;
 	if (timeAt().has_value()) return false;
@@ -4145,7 +4174,8 @@ bool TrendGroup::isTrendTypeGroup() const {
 bool TrendGroup::isTrendTimeGroup() const {
 	// Trend time group has format FMxxxx, TLxxxx, ATxxxx
 	// Only one time from timeFrom, timeTill or timeAt can be reported
-	if (type() != Type::NONE) return false;
+	if (type() != Type::FROM && type() != Type::UNTIL && type() != Type::AT) 
+		return false;
 	if (probability() != Probability::NONE) return false;
 	if (!timeFrom() && !timeTill() && !timeAt()) return false;
 	if (timeFrom() && timeTill()) return false;
@@ -4155,11 +4185,15 @@ bool TrendGroup::isTrendTimeGroup() const {
 }
 
 bool TrendGroup::isTimeSpanGroup() const {
-	// Time span group has format xxxx/xxxx,
+	// Time span group has format DDHH/DDHH,
 	// only time 'from' and 'till' must be reported
-	if (type() != Type::TIME_SPAN) return false;
-	if (probability() != Probability::NONE) return false;
-	if (!timeFrom().has_value() || !timeTill().has_value()) return false;
+	// isTafTimeSpanGroup guarantees that DDHH/DDHH group is 
+	// not confused with appended groups FMxxxx TLxxxx and HHMM/HHMM
+	if (type() != Type::TIME_SPAN ||
+		!isTafTimeSpanGroup ||
+		probability() != Probability::NONE ||
+		!timeFrom().has_value() || 
+		!timeTill().has_value()) return false;
 	if (timeAt().has_value()) return false;
 	return true;
 }
@@ -4171,10 +4205,10 @@ bool TrendGroup::canCombineTime(const TrendGroup & g1, const TrendGroup & g2) {
 	if (g1.timeAt().has_value() && g2.timeAt().has_value()) return false;
 	// Cannot combine time 'from' or 'till' with 'at'
 	if (g1.timeAt().has_value() &&
-		(g2.timeFrom().has_value() || g2.timeTill().has_value())) return false;
+	       (g2.timeFrom().has_value() || g2.timeTill().has_value())) return false;
 	if (g2.timeAt().has_value() &&
-		(g1.timeFrom().has_value() || g1.timeTill().has_value())) return false;
-	return true;
+	       (g1.timeFrom().has_value() || g1.timeTill().has_value())) return false;
+	return true;	
 }
 
 void TrendGroup::combineTime(const TrendGroup & nextTrendGroup) {

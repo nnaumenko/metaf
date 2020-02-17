@@ -4,7 +4,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/785c3536264b4a90bd8d94e1a799d275)](https://www.codacy.com/manual/nnaumenko/metaf?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nnaumenko/metaf&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://codecov.io/gl/nnaumenko/metaf/branch/master/graph/badge.svg)](https://codecov.io/gl/nnaumenko/metaf)
 [![MIT license](https://img.shields.io/github/license/nnaumenko/metaf)](LICENSE.md)
-[![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/NqVskzKVpZaQHasP)
+[![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/r7bS7MFoCu8UuIso)
 
 
 ## Introduction
@@ -21,13 +21,7 @@ Metaf can do the following:
 
 * Parse METAR or TAF report and autodetect its type.
 * Check the validity of the report syntax, detect malformed reports and report errors.
-* Convert METAR or TAF report into the vector of classes which represent individual chunks of info encoded in the weather report or forecast.
-
-## Documentation
-
-Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
-
-[Tutorial on basic usage of Metaf library](https://nnaumenko.gitlab.io/metaf/docs/getting_started.html).
+* Convert METAR or TAF report into the vector of classes; each of these classes represents individual chunk of information encoded in the weather report or forecast.
 
 ## Compatible compilers
 
@@ -43,11 +37,9 @@ The compatibility with the compilers above is routinely tested using Gitlab CI a
 
 Metaf requires C++17.
 
-No external dependencies for parser itself, only standard C++ libraries used. 
+Metaf library itself is dependency-free and requires only standard C++ library. Boost is not used.
 
 Unit tests included with the project use [Google Test](https://github.com/abseil/googletest) framework.
-
-Since this project focuses on metaf library usage with Webassembly, [Emscripten](emscripten.org) is required to build tests and examples. Running the tests and examples requires a www browser with Webassembly support.
 
 ## Limitations
 
@@ -55,7 +47,14 @@ Old TAF format, used before November 2008 employs different format for time span
 
 ## License
 
-This project is available under MIT license.
+Metaf is released under MIT license.
+
+## Documentation
+
+Please refer to [documentation](https://nnaumenko.gitlab.io/metaf/docs/index.html) for details.
+
+[Tutorial on basic usage of Metaf library](https://nnaumenko.gitlab.io/metaf/docs/tutorial.html).
+
 
 ## METAR and TAF
 
@@ -139,8 +138,8 @@ Unit tests included with the project use [Google Test](https://github.com/abseil
 
 METAR, TAF, and weather station data used in [weather summary example](https://nnaumenko.gitlab.io/metaf/examples/summary.html) are from [Aviation Weather Center Text Data Server](https://www.aviationweather.gov/dataserver). 
 
-Weather widget uses the following external content: [Weather Icons by Erik Flowers](http://weathericons.io) distributed under [SIL OFL 1.1 license](http://scripts.sil.org/OFL), [Source Sans Pro Font](https://fonts.google.com/specimen/Source+Sans+Pro) by Paul D. Hunt distributed under [Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web), ['eye-regular'](https://fontawesome.com/icons/eye?style=regular) and ['icicles-solid'](https://fontawesome.com/icons/icicles?style=solid) icons by Font Awesome distributed under [Creative Commons Attribution 4.0 International license](https://fontawesome.com/license). METAR, TAF, and weather station data are acquired from [Aviation Weather Center Text Data Server](https://www.aviationweather.gov/dataserver) using [CORS-anywhere](https://cors-anywhere.herokuapp.com/).
+Weather widget uses the following external content: [Weather Icons by Erik Flowers](http://weathericons.io) distributed under [SIL OFL 1.1 license](http://scripts.sil.org/OFL), [Source Sans Pro Font](https://fonts.google.com/specimen/Source+Sans+Pro) by Paul D. Hunt distributed under [Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web), ['eye-regular'](https://fontawesome.com/icons/eye?style=regular) and ['icicles-solid'](https://fontawesome.com/icons/icicles?style=solid) icons by Font Awesome distributed under [Creative Commons Attribution 4.0 International license](https://fontawesome.com/license). METAR, TAF, and weather station data are acquired using [CORS-anywhere](https://cors-anywhere.herokuapp.com/).
 
 The project repository is hosted on [Gitlab](https://about.gitlab.com/) and mirrored to [Github](https://github.com/).
 
-Thanks to [Ogimet](https://www.ogimet.com/) for providing the access to historical METAR and TAF data.
+Thanks to [Ogimet](https://www.ogimet.com/) for providing access to historical METAR and TAF data.

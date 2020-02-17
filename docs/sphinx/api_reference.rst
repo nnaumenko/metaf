@@ -1334,8 +1334,7 @@ CloudType
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of the cloud or obscuration or :cpp:enumerator:`Type::NOT_REPORTED`` if cloud type is not specified or 
-			cannot be included in this format.
+			:returns: Type of the cloud or obscuration or :cpp:enumerator:`Type::NOT_REPORTED` if cloud type is not specified or cannot be included in this format.
 
 		.. cpp:function:: Distance height() const
 
@@ -1531,9 +1530,7 @@ Example of this group is ``302330Z``.
 TrendGroup
 ^^^^^^^^^^
 
-See :doc:`basics` for more information on weather trends and how they are reported.
-
-.. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
+.. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends and cannot be decoded.
 
 .. cpp:class:: TrendGroup
 
@@ -1542,10 +1539,6 @@ See :doc:`basics` for more information on weather trends and how they are report
 	.. cpp:enum-class:: Type
 
 		Type of the stored trend group.
-
-		.. cpp:enumerator:: NONE
-
-			Indicates that this group stores a valid but incomplete trend group or combination of such groups.
 
 		.. cpp:enumerator:: NOSIG
 
@@ -1569,13 +1562,27 @@ See :doc:`basics` for more information on weather trends and how they are report
 
 		.. cpp:enumerator:: FROM
 
-			All previous weather conditions are superseded by the other weather conditions since the specified time.
+			All previous weather conditions are superseded by the other weather conditions since the specified time. This type of trend is coded as ``FM``, e.g. group ``FM092000`` in TAF or group ``FM2200`` in METAR.
+
+		.. cpp:enumerator:: UNTIL
+
+			The following weather conditions are expected to prevail until the specified time. This type of trend occurs only in METAR and is coded as ``TL``, e.g. group ``TL2215``.
+
+		.. cpp:enumerator:: AT
+
+			The following weather conditions are expected to occur at the specified time. This type of trend occurs only in METAR and is coded as ``AT``, e.g. group ``AT2000``.
 
 		.. cpp:enumerator:: TIME_SPAN
 
 			The following weather conditions are expected to prevail during the specified time period.
 
-			This group is only used in TAF report and must be included before TAF report body to indicate the period when the entire forecast is applicable.
+			When this group is used in TAF report and must be included before TAF report body to indicate the period when the entire forecast is applicable.
+
+			Altrenatively, time span may be coded in METAR report as a pair of 'FM' and 'TL' groups, e.g. ``FM1300 TL1445``, or as HHMM/HHMM group (only used in Australia), e.g. ``1345/1440``.
+
+		.. cpp:enumerator:: PROB
+
+			Represents groups ``PROB30`` or ``PROB40`` without following time span or ``BECMG`` or ``TEMPO`` or ``INTER``.
 
 	.. cpp:enum-class:: Probability
 
@@ -1629,7 +1636,7 @@ See :doc:`basics` for more information on weather trends and how they are report
 
 			:returns: ``true`` if all of the reported times (begin time / end time / expected event time) are valid (see :cpp:func:`MetafTime::isValid()`).
 
-				Alternatively returns ``false`` if any of the time values above are not valid.
+				Alternatively returns ``false`` if any of the time values above are not valid or the group type is :cpp:enumerator:``Type::PROB``.
 
 
 WindGroup
@@ -3433,11 +3440,9 @@ ReportError
 
 		.. note: This enumerator only means that the report overall syntax is correct and the report is not malformed. It does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
-
 	.. cpp:enumerator:: EMPTY_REPORT
 
 		The report source string is empty or contains only report end designator ``=``.
-
 
 	.. cpp:enumerator:: EXPECTED_REPORT_TYPE_OR_LOCATION
 
@@ -3454,18 +3459,13 @@ ReportError
 
 		AMD or COR groups are not allowed at the beginning of the report (i.e. if report type is missing).
 
-		See also :doc:`basics` for the complete METAR and TAF report format.
-
-
 	.. cpp:enumerator:: EXPECTED_LOCATION
 
 		The parser expects an ICAO location group (see :cpp:class:`metaf::LocationGroup`) in this position but encounters some other group.
 
-
 	.. cpp:enumerator:: EXPECTED_REPORT_TIME
 
 		The parser expects a report release time group (see :cpp:class:`metaf::ReportTimeGroup`) in this position but encounters some other group.
-
 
 	.. cpp:enumerator:: EXPECTED_TIME_SPAN
 
@@ -3473,25 +3473,21 @@ ReportError
 
 		This error occurs when the validity time is not specified for the TAF report.
 
-
 	.. cpp:enumerator:: UNEXPECTED_REPORT_END
 
-		The report should not end at this position, more groups are expected according to the report format (see :doc:`basics`) but actually are missing. This error occurs if either stray report end designator (``=``) is placed in the middle of the report or if only part of the report is included in the source string.
-
+		The report should not end at this position, more groups are expected according to the report format but actually are missing. This error occurs if either stray report end designator (``=``) is placed in the middle of the report or if only part of the report is included in the source string.
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_NIL
 
 		This error occurs if any group is encountered after NIL. (see :cpp:enumerator:`metaf::KeywordGroup::NIL`).
 
-		.. note: NIL means missing report, thus including groups in report body are not allowed.
-
+		.. note: NIL means missing report and must not be included in non-empty report.
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_CNL
 
 		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::KeywordGroup::CNL`).
 
-		.. note: CNL means canceled report, thus including groups in report body are not allowed.
-
+		.. note: CNL means canceled report and must not be included in non-empty report.
 
 	.. cpp:enumerator:: UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY
 
@@ -3499,13 +3495,11 @@ ReportError
 
 		.. note: NIL means missing report and CNL means canceled report; these groups must not be included is the report which contains any actual observation or forecast.
 
-
 	.. cpp:enumerator:: AMD_ALLOWED_IN_TAF_ONLY
 
 		Group AMD which designates amended report (see :cpp:enumerator:`metaf::KeywordGroup::AMD`) is only used in TAF reports. This error occurs if AMD is encountered in a METAR report.
 
 		.. note: COR (see :cpp:enumerator:`metaf::KeywordGroup::COR`) may be used in both METAR and TAF reports.
-
 
 	.. cpp:enumerator:: CNL_ALLOWED_IN_TAF_ONLY
 
@@ -3515,13 +3509,11 @@ ReportError
 
 		This error occurs if CNL is encountered in a METAR report in place of NIL.
 
-
 	.. cpp:enumerator:: MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
 
 		Maintenance indicator is used for weather reports produced by automated station and cannot be included in TAF.
 
 		This error occurs if maintenance indicator ($) is encountered in a TAF report.
-
 
 	.. cpp:enumerator:: GROUP_LIMIT_EXCEEDED
 
@@ -3541,15 +3533,15 @@ ReportPart
 
 		.. cpp:enumerator:: HEADER
 
-			METAR or TAF report header (see :doc:`basics` for format).
+			METAR or TAF report header.
 
 		.. cpp:enumerator:: METAR
 
-			METAR report body (see :doc:`basics` for format).
+			METAR report body and trends.
 
 		.. cpp:enumerator:: TAF
 
-			TAF report body (see :doc:`basics` for format).
+			TAF report body and trends.
 
 		.. cpp:enumerator:: RMK
 
@@ -3661,7 +3653,7 @@ Since the METAR or TAF report is parsed into the vector of type :cpp:type:`metaf
 
 The Group Visitor checks the type of an alternative in :cpp:type:`metaf::Group` and calls a corresponding virtual method for the concrete group type. The virtual methods are pure to make sure there is no risk of accidentally missing the handling of a particular group type.
 
-See :doc:`getting_started` for the tutorial which uses a Visitor.
+See :doc:`tutorial` for the tutorial which uses a Visitor.
 
 .. cpp:class:: template <typename T> Visitor
 
@@ -3723,4 +3715,4 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitUnknownGroup(const UnknownGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
+	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`tutorial` for minimalistic usage example.

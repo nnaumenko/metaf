@@ -18,7 +18,7 @@
 TEST(TrendGroup, parseProb30) {
 	const auto tg = metaf::TrendGroup::parse("PROB30", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeTill().has_value());
@@ -28,7 +28,7 @@ TEST(TrendGroup, parseProb30) {
 TEST(TrendGroup, parseProb40) {
 	const auto tg = metaf::TrendGroup::parse("PROB40", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_40);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeTill().has_value());
@@ -211,7 +211,7 @@ TEST(TrendGroup, parseFmWrongFormat) {
 // correctly and malformed groups are not parsed
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(TrendGroup, parseTimeSpan) {
+TEST(TrendGroup, parseTafTimeSpan) {
 	static const std::string gs("1221/1303");
 
 	const auto tg1 = metaf::TrendGroup::parse(gs, metaf::ReportPart::HEADER);
@@ -247,12 +247,28 @@ TEST(TrendGroup, parseTimeSpan) {
 	EXPECT_FALSE(tg2->timeAt().has_value());
 }
 
+TEST(TrendGroup, parseMetarTimeSpan) {
+	const auto tg = metaf::TrendGroup::parse("1221/1303", metaf::ReportPart::METAR);
+	ASSERT_TRUE(tg.has_value());
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::TIME_SPAN);
+	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
+	ASSERT_TRUE(tg->timeFrom().has_value());
+	EXPECT_FALSE(tg->timeFrom()->day().has_value());
+	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
+	EXPECT_EQ(tg->timeFrom()->minute(), 21u);
+	ASSERT_TRUE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeTill()->day().has_value());
+	EXPECT_EQ(tg->timeTill()->hour(), 13u);
+	EXPECT_EQ(tg->timeTill()->minute(), 03u);
+	EXPECT_FALSE(tg->timeAt().has_value());
+}
+
 TEST(TrendGroup, parseTimeSpanWrongReportPart) {
 	static const std::string gs("1221/1303");
-	ASSERT_TRUE(metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF));
-	ASSERT_TRUE(metaf::TrendGroup::parse(gs, metaf::ReportPart::HEADER));
+	EXPECT_TRUE(metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF));
+	EXPECT_TRUE(metaf::TrendGroup::parse(gs, metaf::ReportPart::HEADER));
+	EXPECT_TRUE(metaf::TrendGroup::parse(gs, metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse(gs, metaf::ReportPart::UNKNOWN));
-	EXPECT_FALSE(metaf::TrendGroup::parse(gs, metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::TrendGroup::parse(gs, metaf::ReportPart::RMK));
 }
 
@@ -279,7 +295,7 @@ TEST(TrendGroup, parseTrendTimeFm) {
 	static const std::string gs("FM1445");
 	const auto tg = metaf::TrendGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::FROM);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	ASSERT_TRUE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
@@ -302,7 +318,7 @@ TEST(TrendGroup, parseTrendTimeTl) {
 	static const std::string gs("TL0300");
 	const auto tg = metaf::TrendGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::UNTIL);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	ASSERT_TRUE(tg->timeTill().has_value());
@@ -325,7 +341,7 @@ TEST(TrendGroup, parseTrendTimeAt) {
 	static const std::string gs("AT1530");
 	const auto tg = metaf::TrendGroup::parse(gs, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::AT);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeTill().has_value());
@@ -437,20 +453,20 @@ TEST(TrendGroup, appendProbabilityFollowedByOther) {
 	EXPECT_EQ(tg->append("FM191445", metaf::ReportPart::TAF), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeTill().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
-TEST(TrendGroup, appendProbabilityFollowedByFixedGroup) {
+TEST(TrendGroup, appendProbabilityFollowedByKeywordGroup) {
 	auto tg = metaf::TrendGroup::parse("PROB30", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->append("NSW", metaf::ReportPart::TAF), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeTill().has_value());
@@ -508,6 +524,7 @@ TEST(TrendGroup, appendTrendFollowedByTrendTimeCompound) {
 	EXPECT_EQ(tg->append("TL1303", metaf::ReportPart::METAR), 
 		metaf::AppendResult::APPENDED);
 
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::BECMG);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	ASSERT_TRUE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
@@ -623,8 +640,9 @@ TEST(TrendGroup, appendNosig) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Appending tests: time FMxxxx and TLxxxx
-// Purpose: to confirm that FMxxxx and TLxxxx groups are appended correctly 
-// with each other
+// Purpose: to confirm that TLxxxx group can be appended to FMxxxx group, and
+// that any other combination of FMxxxx, TLxxxx and ATxxxx groups cannot be 
+// appended
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(TrendGroup, appendTrendTimeFromTill) {
@@ -633,23 +651,7 @@ TEST(TrendGroup, appendTrendTimeFromTill) {
 	EXPECT_EQ(tg->append("TL1445", metaf::ReportPart::METAR), 
 		metaf::AppendResult::APPENDED);
 
-	ASSERT_TRUE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeFrom()->day().has_value());
-	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
-	EXPECT_EQ(tg->timeFrom()->minute(), 30u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 14u);
-	EXPECT_EQ(tg->timeTill()->minute(), 45u);
-}
-
-TEST(TrendGroup, appendTrendTimeTillFrom) {
-	auto tg = metaf::TrendGroup::parse("TL1445", metaf::ReportPart::METAR);
-	ASSERT_TRUE(tg.has_value());
-
-	EXPECT_EQ(tg->append("FM1230", metaf::ReportPart::METAR), 
-		metaf::AppendResult::APPENDED);
-
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::TIME_SPAN);
 	ASSERT_TRUE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
@@ -670,8 +672,10 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 
 	EXPECT_EQ(tg->append(atStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tg->append(fromStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::FROM);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	ASSERT_TRUE(tg->timeFrom().has_value());
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
@@ -683,10 +687,14 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	auto tgTill = metaf::TrendGroup::parse(tillStr, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tgTill.has_value());
 
+	EXPECT_EQ(tgTill->append(fromStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(tgTill->append(atStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tgTill->append(tillStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tgTill->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tgTill->type(), metaf::TrendGroup::Type::UNTIL);
 	EXPECT_EQ(tgTill->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tgTill->timeFrom().has_value());
 	ASSERT_TRUE(tgTill->timeTill().has_value());
@@ -698,12 +706,14 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	auto tgAt = metaf::TrendGroup::parse(atStr, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tgAt.has_value());
 
-	EXPECT_EQ(tgAt->append(fromStr, metaf::ReportPart::METAR), 
-		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(tgAt->append(tillStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tgAt->append(atStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(tgAt->append(fromStr, metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tgAt->type(), metaf::TrendGroup::Type::NONE);
+	EXPECT_EQ(tgAt->type(), metaf::TrendGroup::Type::AT);
 	EXPECT_EQ(tgAt->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tgAt->timeFrom().has_value());
 	EXPECT_FALSE(tgAt->timeTill().has_value());
@@ -919,26 +929,26 @@ TEST(TrendGroup, isValidFalseInvalidTrendTime) {
 	EXPECT_FALSE(tg->isValid());
 }
 
-TEST(TrendGroup, isValidFalseTrendTimeSingle) {
+TEST(TrendGroup, isValidTrueTrendTimeSingle) {
 	const auto tg1 = metaf::TrendGroup::parse("FM1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg1.has_value());
-	EXPECT_FALSE(tg1->isValid());
+	EXPECT_TRUE(tg1->isValid());
 	
 	const auto tg2 = metaf::TrendGroup::parse("TL1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg2.has_value());
-	EXPECT_FALSE(tg2->isValid());
+	EXPECT_TRUE(tg2->isValid());
 
 	const auto tg3 = metaf::TrendGroup::parse("AT1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg3.has_value());
-	EXPECT_FALSE(tg3->isValid());
+	EXPECT_TRUE(tg3->isValid());
 }
 
-TEST(TrendGroup, isValidFalseTrendTimeCompound) {
+TEST(TrendGroup, isValidTrueTrendTimeAppended) {
 	auto tg = metaf::TrendGroup::parse("FM1445", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->append("TL1530", metaf::ReportPart::METAR), 
 		metaf::AppendResult::APPENDED);
-	EXPECT_FALSE(tg->isValid());
+	EXPECT_TRUE(tg->isValid());
 }
 
 TEST(TrendGroup, isValidFalseProbabilityGroup) {
