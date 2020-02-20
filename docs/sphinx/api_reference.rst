@@ -2616,7 +2616,7 @@ LayerForecastGroup
 
 			Light turbulence.
 
-		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL
 
 			Moderate turbulence in clear air, occasional.
 
@@ -2624,7 +2624,7 @@ LayerForecastGroup
 
 			Moderate turbulence in clear air, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL
 
 			Moderate turbulence in cloud, occasional.
 
@@ -2632,7 +2632,7 @@ LayerForecastGroup
 
 			Moderate turbulence in cloud, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL
 
 			Severe turbulence in clear air, occasional.
 
@@ -2640,7 +2640,7 @@ LayerForecastGroup
 
 			Severe turbulence in clear air, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL
 
 			Severe turbulence in cloud, occasional.
 
@@ -3453,7 +3453,7 @@ ReportError
 			- METAR or SPECI: the report type is METAR.
 			- TAF: the report type is TAF.
 
-		However in practice report type in both METARs and TAFs may be omitted.
+		However in practice this report type in both METARs and TAFs may be missing.
 
 		If the report type is missing then the report must begin with the ICAO location group (see :cpp:class:`metaf::LocationGroup`).
 
@@ -3515,9 +3515,9 @@ ReportError
 
 		This error occurs if maintenance indicator ($) is encountered in a TAF report.
 
-	.. cpp:enumerator:: GROUP_LIMIT_EXCEEDED
+	.. cpp:enumerator:: REPORT_TOO_LARGE
 
-		Too many groups included in the report. Group number limit is specified in the parameter ``groupLimit`` of :cpp:func:`Parser::parse()`.
+		Too many groups included in the report. Group number limit is specified in the argument ``groupLimit`` of :cpp:func:`Parser::parse()`.
 
 
 ReportPart

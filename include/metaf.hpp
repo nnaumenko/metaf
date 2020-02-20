@@ -1591,13 +1591,13 @@ public:
 		ICING_SEVERE_CLEAR_IN_PRECIPITATION,
 		TURBULENCE_NONE,
 		TURBULENCE_LIGHT,
-		TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL,
+		TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL,
 		TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT,
-		TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL,
+		TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL,
 		TURBULENCE_MODERATE_IN_CLOUD_FREQUENT,
-		TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL,
+		TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL,
 		TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT,
-		TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL,
+		TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL,
 		TURBULENCE_SEVERE_IN_CLOUD_FREQUENT,
 		TURBULENCE_EXTREME,
 	};
@@ -1754,7 +1754,7 @@ class LightningGroup {
 public:
 	enum class Frequency {
 		NONE,			// Not specified
-		OCCASSIONAL,	// Less than 1 flash/minute
+		OCCASIONAL,		// Less than 1 flash/minute
 		FREQUENT,		// 1 to 6 flashes/minute
 		CONSTANT		// More than 6 flashes/minute
 	};
@@ -5774,13 +5774,13 @@ std::optional<LayerForecastGroup::Type> LayerForecastGroup::typeFromStr(
 	if (s == "69") return Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION;
 	if (s == "50") return Type::TURBULENCE_NONE;
 	if (s == "51") return Type::TURBULENCE_LIGHT;
-	if (s == "52") return Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL;
+	if (s == "52") return Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL;
 	if (s == "53") return Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT;
-	if (s == "54") return Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL;
+	if (s == "54") return Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL;
 	if (s == "55") return Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT;
-	if (s == "56") return Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL;
+	if (s == "56") return Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL;
 	if (s == "57") return Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT;
-	if (s == "58") return Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL;
+	if (s == "58") return Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL;
 	if (s == "59") return Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT;
 	if (s == "5X") return Type::TURBULENCE_EXTREME;
 	return std::optional<Type>();
@@ -6078,7 +6078,7 @@ std::optional<LightningGroup> LightningGroup::parse(
 {
 	(void) reportMetadata;
 	if (reportPart != ReportPart::RMK) return std::optional<LightningGroup>();
-	if (group == "OCNL") return LightningGroup(Frequency::OCCASSIONAL);
+	if (group == "OCNL") return LightningGroup(Frequency::OCCASIONAL);
 	if (group == "FRQ") return LightningGroup(Frequency::FREQUENT);
 	if (group == "CONS") return LightningGroup(Frequency::CONSTANT);
 	return fromLtgGroup(group);

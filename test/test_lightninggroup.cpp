@@ -112,7 +112,7 @@ TEST(LightningGroup, parseOcnlLtg) {
 
 	EXPECT_EQ(lg->append("LTG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
-	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::OCCASSIONAL);
+	EXPECT_EQ(lg->frequency(), metaf::LightningGroup::Frequency::OCCASIONAL);
 	EXPECT_EQ(lg->distance().modifier(), metaf::Distance::Modifier::NONE);
 	EXPECT_FALSE(lg->isCloudGround());
 	EXPECT_FALSE(lg->isInCloud());

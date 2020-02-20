@@ -130,10 +130,10 @@ TEST(LayerForecastGroup, turbulenceLight) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT);
 }
 
-TEST(LayerForecastGroup, turbulenceModerateInClearAirOccassional) {
+TEST(LayerForecastGroup, turbulenceModerateInClearAirOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("520004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceModerateInClearAirFrequent) {
@@ -142,10 +142,10 @@ TEST(LayerForecastGroup, turbulenceModerateInClearAirFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceModerateInCloudOccassional) {
+TEST(LayerForecastGroup, turbulenceModerateInCloudOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("540004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceModerateInCloudFrequent) {
@@ -154,10 +154,10 @@ TEST(LayerForecastGroup, turbulenceModerateInCloudFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceSevereInClearAirOccassional) {
+TEST(LayerForecastGroup, turbulenceSevereInClearAirOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("560004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceSevereInClearAirFrequent) {
@@ -166,10 +166,10 @@ TEST(LayerForecastGroup, turbulenceSevereInClearAirFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceSevereInCloudOccassional) {
+TEST(LayerForecastGroup, turbulenceSevereInCloudOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("580004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceSevereInCloudFrequent) {

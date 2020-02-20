@@ -1016,7 +1016,7 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 		case metaf::LightningGroup::Frequency::NONE:
 		break;
 
-		case metaf::LightningGroup::Frequency::OCCASSIONAL:
+		case metaf::LightningGroup::Frequency::OCCASIONAL:
 		result << "Less than 1 strike per minute" << lineBreak;
 		break;
 
@@ -2263,25 +2263,25 @@ std::string_view VisitorExplain::layerForecastGroupTypeToString(
 		case metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT:
 		return "Light turbulence";
 
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL:
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL:
 		return "Occasional moderate turbulence in clear air";
 
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent moderate turbulence in clear air";
 
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL:
+		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL:
 		return "Occasional moderate turbulence in cloud";
 
 		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
 		return "Frequent moderate turbulence in cloud";
 
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL:
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL:
 		return "Occasional severe turbulence in clear air";
 
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent severe turbulence in clear air";
 
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL:
+		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL:
 		return "Occasional severe turbulence in cloud";
 
 		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
