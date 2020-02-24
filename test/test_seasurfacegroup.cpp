@@ -10,6 +10,13 @@
 
 static const auto margin = 0.1 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// State of sea surface group
+// Purpose: to confirm that group which contains descriptive state of sea 
+// surface is parsed correctly, that each descriptive sea surface state is 
+// identified correctly, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SeaSurfaceGroup, parseStateOfSeaSurface) {
 	const auto ssg = metaf::SeaSurfaceGroup::parse("W15/S4", metaf::ReportPart::METAR);
 	ASSERT_TRUE(ssg.has_value());
@@ -68,6 +75,13 @@ TEST(SeaSurfaceGroup, parseStateOfSeaSurfaceWrongFormat) {
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/S", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/S//", metaf::ReportPart::METAR));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Wave height group
+// Purpose: to confirm that group which contains wave height in decimeters is 
+// parsed correctly, that each descriptive sea surface state is identified 
+// correctly, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SeaSurfaceGroup, parseWaveHeightOneDigit) {
 	const auto ssg = metaf::SeaSurfaceGroup::parse("W16/H7", metaf::ReportPart::METAR);
@@ -156,6 +170,12 @@ TEST(SeaSurfaceGroup, parseWaveHeightWrongFormat) {
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/H//", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::SeaSurfaceGroup::parse("W15/H////", metaf::ReportPart::METAR));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that sea surface state and wave height groups cannot be
+// appended
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SeaSurfaceGroup, append) {
 	const std::string ssgStr1("W15/S4");
@@ -361,6 +381,11 @@ TEST(SeaSurfaceGroup, append) {
 	EXPECT_EQ(ssg8->append(tStr2, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method returns true for all values
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SeaSurfaceGroup, isValid) {
 	const auto ssg1 = metaf::SeaSurfaceGroup::parse("W16/H7", metaf::ReportPart::METAR);

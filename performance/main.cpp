@@ -43,8 +43,8 @@ constexpr size_t variant_index() {
 /// @return Name of the group in human-readable form.
 string_view groupName (size_t index) {
 	switch (index) {
-		case variant_index<metaf::Group, metaf::FixedGroup>():
-		return "FixedGroup";
+		case variant_index<metaf::Group, metaf::KeywordGroup>():
+		return "KeywordGroup";
 
 		case variant_index<metaf::Group, metaf::LocationGroup>():
 		return "LocationGroup";
@@ -70,29 +70,14 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::TemperatureGroup>():
 		return "TemperatureGroup";
 
-		case variant_index<metaf::Group, metaf::TemperatureForecastGroup>():
-		return "TemperatureForecastGroup";
-
 		case variant_index<metaf::Group, metaf::PressureGroup>():
 		return "PressureGroup";
-
-		case variant_index<metaf::Group, metaf::RunwayVisualRangeGroup>():
-		return "RunwayVisualRangeGroup";
 
 		case variant_index<metaf::Group, metaf::RunwayStateGroup>():
 		return "RunwayStateGroup";
 
-		case variant_index<metaf::Group, metaf::SecondaryLocationGroup>():
-		return "SecondaryLocationGroup";
-
-		case variant_index<metaf::Group, metaf::RainfallGroup>():
-		return "RainfallGroup";
-
 		case variant_index<metaf::Group, metaf::SeaSurfaceGroup>():
 		return "SeaSurfaceGroup";
-
-		case variant_index<metaf::Group, metaf::ColourCodeGroup>():
-		return "ColourCodeGroup";
 
 		case variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>():
 		return "MinMaxTemperatureGroup";
@@ -109,8 +94,8 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::CloudTypesGroup>():
 		return "CloudTypesGroup";
 
-		case variant_index<metaf::Group, metaf::CloudLayersGroup>():
-		return "CloudLayersGroup";
+		case variant_index<metaf::Group, metaf::LowMidHighCloudGroup>():
+		return "LowMidHighCloudGroup";
 
 		case variant_index<metaf::Group, metaf::LightningGroup>():
 		return "LightningGroup";
@@ -423,6 +408,7 @@ void printDataSize(){
 	printSize("SurfaceFriction", sizeof(metaf::SurfaceFriction));
 	printSize("WaveHeight", sizeof(metaf::WaveHeight));
 	printSize("WeatherPhenomena", sizeof(metaf::WeatherPhenomena));
+	printSize("CloudType", sizeof(metaf::CloudType));
 	cout << endl;
 	printSize("Group", sizeof(metaf::Group));
 	cout << endl;
@@ -446,6 +432,9 @@ void printDataSize(){
 	printSize(groupName(16), sizeof(variant_alternative_t<16, metaf::Group>));
 	printSize(groupName(17), sizeof(variant_alternative_t<17, metaf::Group>));
 	printSize(groupName(18), sizeof(variant_alternative_t<18, metaf::Group>));
+	printSize(groupName(19), sizeof(variant_alternative_t<19, metaf::Group>));
+	printSize(groupName(20), sizeof(variant_alternative_t<20, metaf::Group>));
+	printSize(groupName(21), sizeof(variant_alternative_t<21, metaf::Group>));
 	cout << endl;
 }
 

@@ -10,6 +10,12 @@
 
 static const auto margin = 0.1 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Speed unit string test
+// Purpose: to confirm that speed units included in the report are parsed
+// correctly and other strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Speed, unitToStringKnots) {
 	const auto unit = metaf::Speed::unitFromString("KT");
 	ASSERT_TRUE(unit.has_value());
@@ -35,6 +41,12 @@ TEST(Speed, unitToStringWrongUnit) {
 	EXPECT_FALSE(metaf::Speed::unitFromString("///").has_value());
 	EXPECT_FALSE(metaf::Speed::unitFromString("AA").has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Speed value parsing tests
+// Purpose: to confirm that speed values included in the report are parsed
+// correctly and other strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST (Speed, fromStringTwoDigit) {
 	const auto s = metaf::Speed::fromString("25", metaf::Speed::Unit::METERS_PER_SECOND);
@@ -78,6 +90,12 @@ TEST (Speed, fromStringWrongFormat) {
 TEST (Speed, speedNotReported) {
 	EXPECT_FALSE(metaf::Speed().speed().has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// toUnit() tests
+// Purpose: to confirm that toUnit() method correctly converts the data to 
+// various speed units and that non-reported values result in empty optional
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Speed, toUnitSameUnit) {
 	const auto speedKnots = 
@@ -207,6 +225,12 @@ TEST(Speed, toUnitMphToKmh) {
 	ASSERT_TRUE(s.has_value());
 	EXPECT_NEAR(s.value(), 16.1, margin);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// isReported() test
+// Purpose: to confirm that isReported() method correctly identifies reported
+// and non-reported speed values
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(Speed, isReported) {
 	const auto snr = metaf::Speed::fromString("//", metaf::Speed::Unit::KNOTS);

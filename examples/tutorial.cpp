@@ -1,41 +1,21 @@
-/*
-* Copyright (C) 2018-2020 Nick Naumenko (https://gitlab.com/nnaumenko)
-* All rights reserved.
-* This software may be modified and distributed under the terms
-* of the MIT license. See the LICENSE file for details.
-*/
-
-#include <iostream>
-
 #include "metaf.hpp"
 
 using namespace metaf;
+
+#include <iostream>
 
 std::string report = 
 	"KDDC 112052Z AUTO 19023G34KT 7SM CLR 33/16 A2992"
 	" RMK AO2 PK WND 20038/2033 SLP096 T03330156 58018";
 
-std::string reportTypeMessage(ReportType reportType) {
-	switch (reportType) {
-		case ReportType::UNKNOWN:
-		return "unable to detect";
-		
-		case ReportType::METAR:
-		return "METAR";
-		
-		case ReportType::TAF:
-		return "TAF";
-	}
-}
-
 std::string errorMessage(ReportError error) {
 	switch (error) {
 		case ReportError::NONE:
-		return "no error";
+		return "no error, parsed succesfully";
 
 		case ReportError::EMPTY_REPORT:
 		return "empty report";
-	
+
 		case ReportError::EXPECTED_REPORT_TYPE_OR_LOCATION:
 		return "expected report type or ICAO location";
 
@@ -70,18 +50,31 @@ std::string errorMessage(ReportError error) {
 		return "Maintenance indicator is allowed only in METAR reports";
 
 		case ReportError::REPORT_TOO_LARGE:
-		return "Report has too many groups and may be corrupted";
+		return "Report has too many groups and may be malformed";
+	}
+}
+
+std::string reportTypeMessage(ReportType reportType) {
+	switch (reportType) {
+		case ReportType::UNKNOWN:
+		return "unable to detect";
+		
+		case ReportType::METAR:
+		return "METAR";
+		
+		case ReportType::TAF:
+		return "TAF";
 	}
 }
 
 class MyVisitor : public Visitor<std::string> {
-	virtual std::string visitFixedGroup(
-		const FixedGroup & group,
+	virtual std::string visitKeywordGroup(
+		const KeywordGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		(void)group; (void)reportPart;  
-		return ("Fixed Text: " + rawString);
+		return ("Keyword: " + rawString);
 	}
 
 	virtual std::string visitLocationGroup(
@@ -156,15 +149,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Temperature and Dew Point: " + rawString);
 	}
 
-	virtual std::string visitTemperatureForecastGroup(
-		const TemperatureForecastGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Tempreature Forecast: " + rawString);
-	}
-
 	virtual std::string visitPressureGroup(
 		const PressureGroup & group,
 		ReportPart reportPart,
@@ -172,15 +156,6 @@ class MyVisitor : public Visitor<std::string> {
 	{
 		(void)group; (void)reportPart;
 		return ("Pressure: " + rawString);
-	}
-
-	virtual std::string visitRunwayVisualRangeGroup(
-		const RunwayVisualRangeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Runway Visual Range: " + rawString);
 	}
 
 	virtual std::string visitRunwayStateGroup(
@@ -192,24 +167,6 @@ class MyVisitor : public Visitor<std::string> {
 		return ("State of Runway:" + rawString);
 	}
 
-	virtual std::string visitSecondaryLocationGroup(
-		const SecondaryLocationGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Information on Secondary Location: " + rawString);
-	}
-
-	virtual std::string visitRainfallGroup(
-		const RainfallGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Rainfall: " + rawString);
-	}
-
 	virtual std::string visitSeaSurfaceGroup(
 		const SeaSurfaceGroup & group,
 		ReportPart reportPart,
@@ -217,15 +174,6 @@ class MyVisitor : public Visitor<std::string> {
 	{
 		(void)group; (void)reportPart;
 		return ("Sea Surface: " + rawString);
-	}
-
-	virtual std::string visitColourCodeGroup(
-		const ColourCodeGroup & group,
-		ReportPart reportPart,
-		const std::string & rawString)
-	{
-		(void)group; (void)reportPart;
-		return ("Colour Code: " + rawString);
 	}
 
 	virtual std::string visitMinMaxTemperatureGroup(
@@ -273,13 +221,13 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Cloud Types: " + rawString);
 	}
 
-	virtual std::string visitCloudLayersGroup(
-		const CloudLayersGroup & group,
+	virtual std::string visitLowMidHighCloudGroup(
+		const LowMidHighCloudGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString)
 	{
 		(void)group; (void)reportPart;
-		return ("Cloud Layers: " + rawString);
+		return ("Low, middle, and high cloud layers: " + rawString);
 	}
 
 	virtual std::string visitLightningGroup(
@@ -323,16 +271,14 @@ int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
 	std::cout << "Parsing report: " << report << "\n";
 	const auto result = Parser::parse(report);
-	std::cout << "Detected report type: " 
-		<< reportTypeMessage(result.reportMetadata.type) << "\n";
+	std::cout << "Parse error: "; 
+	std::cout << errorMessage(result.reportMetadata.error) << "\n";	
+	std::cout << "Detected report type: "; 
+	std::cout << reportTypeMessage(result.reportMetadata.type) << "\n";
 	std::cout << result.groups.size() << " groups parsed\n";
-	if (result.reportMetadata.error != ReportError::NONE) {
-		std::cout << "Detected error: " << 
-			errorMessage(result.reportMetadata.error) << "\n";	
-	}
 	MyVisitor visitor;
 	for (const auto groupInfo : result.groups) {
 		std::cout << visitor.visit(groupInfo) << "\n";
 	}
-	return 0;
+	return 0;	
 }

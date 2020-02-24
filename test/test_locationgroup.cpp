@@ -8,6 +8,12 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Parsing and validation
+// Purpose: to confirm that ICAO locations are parsed correctly, malformed
+// location groups cannot be parsed, and isValid() method always returns true
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LocationGroup, parseLocationWithoutNumber) {
 	static const char gs[] = "UKLL"; //UKLL = Lviv Danylo Halytskyi International Airport 
 	const auto lg = metaf::LocationGroup::parse(gs, metaf::ReportPart::HEADER);

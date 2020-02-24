@@ -8,6 +8,12 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Parsing tests
+// Purpose: to confirm that report release time is parsed correctly, and 
+// malformed report time groups cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(ReportTimeGroup, parseReportTime) {
 	const auto rtg = metaf::ReportTimeGroup::parse("201730Z", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(rtg.has_value());
@@ -45,6 +51,11 @@ TEST(ReportTimeGroup, parseWrongFormat) {
 		metaf::ReportTimeGroup::parse("FM122230", metaf::ReportPart::HEADER).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(ReportTimeGroup, isValidCorrect) {
 	const auto rtg1 = metaf::ReportTimeGroup::parse("312459Z", metaf::ReportPart::HEADER);
 	ASSERT_TRUE(rtg1.has_value());
@@ -76,6 +87,11 @@ TEST(ReportTimeGroup, isValidMinuteIncorrect) {
 	ASSERT_TRUE(rtg.has_value());
 	EXPECT_FALSE(rtg->isValid());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that no other group can be appended to report time group
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(ReportTimeGroup, append) {
 	auto rtg1 = metaf::ReportTimeGroup::parse("201700Z", metaf::ReportPart::HEADER);

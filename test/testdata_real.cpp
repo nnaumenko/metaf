@@ -7,6 +7,14 @@
 
 #include "testdata_real.h"
 
+///////////////////////////////////////////////////////////////////////////////
+// Data from real-life METAR/TAF reports produced by actual weather stations
+// This set has been put together to cover a maximum number of of METAR/TAF 
+// report structures and group formats.
+// Note: reference date is provided for every report allows to confirm that 
+// every reports is really produced by the specified station at specified time.
+///////////////////////////////////////////////////////////////////////////////
+
 const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 
 	{
@@ -19,7 +27,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0212/0215 15009G15MPS 1000 SA/TSRA SCT030CB SCT035 OVC090"
 		" TEMPO 0218/0303 14007G12MPS 3000 SA/TSRA SCT030CB SCT035 OVC090"
 		" TEMPO 0308/0318 15007G12MPS 3000 SA/TSRA SCT030CB SCT035 OVC090"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -32,7 +43,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1106/1109 25025G40KT 0900 DS FEW030"
 		" BECMG 1112/1114 5000 SHRA SCT025TCU BKN030"
 		" TEMPO 1114/1206 25025G40KT 3000 TSRA FEW015 SCT025CB BKN030 TX15/1111Z TN13/1204Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -45,7 +59,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM061200 01035G50KT 6SM -SHRA BKN030 BKN060 OVC080"
 		" FM061600 33045G65KT 6SM -SHRA BKN030 BKN060 OVC080"
 		" FM062300 27080G100KT 6SM -SHRA SCT015 BKN030 OVC060"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -56,7 +76,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF VIDP 020800Z 0209/0218 10008G18KT 4000 BLDU FEW035"
 		" TEMPO 0212/0218 11010G20KT 1000 DSTS SCT030 FEW035CB BKN090"
 		" BECMG 0214/0216 13006KT 3000 HZ BR"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{	
@@ -67,7 +90,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1803/1812 3000 -SHSN BKN012"
 		" PROB40"
 		" TEMPO 1803/1809 0400 +SHSN BKN004 BKN015TCU"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -79,7 +105,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2612/2619 3000 -SHSN BKN015"
 		" PROB30"
 		" TEMPO 2612/2619 1000 SHSN BKN003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -92,7 +121,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2806/2807 1200 SHSN BKN008"
 		" BECMG 2809/2812 07014KT"
 		" TEMPO 2812/2815 07018G28KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -100,7 +134,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EGYD 281050Z 11015KT 5000 -SHSN FEW004 BKN012CB BKN025 M04/M05 Q1020 BLACKGRN"
 		"=",
 		"TAF AMD EGYD 280939Z 2809/2818 CNL"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::CNL,
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -112,7 +152,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 2809/2818 0400 +SHSN VV///"
 		" BECMG 2810/2813 11016G26KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -123,7 +166,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0109/0118 09022G35KT 4000 BLSN BKN018"
 		" PROB30"
 		" TEMPO 0109/0112 3000 -SHSN SCT010"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -134,7 +180,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0109/0118 09020G30KT 3000 -SN FEW010"
 		" PROB30"
 		" TEMPO 0109/0115 1400 SN BKN006"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -145,7 +196,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1803/1812 3000 -SHSN BKN012"
 		" PROB40"
 		" TEMPO 1803/1809 0400 +SHSN BKN004 BKN015TCU"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -156,7 +210,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1806/1812 3000 -SHSN BKN01"
 		" PROB30"
 		" TEMPO 1806/1809 0700 SHSN SCT005 BKN015TCU"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -164,7 +221,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EGKB 182050Z 05007KT 6000 -SN SCT007 BKN017 M01/M02 Q1010 RESN R21/SNOCLO"
 		"=",
 		"TAF EGKB 182000Z NIL"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -174,7 +236,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF EGUW 030549Z 0306/0315 03005KT 0500 PRFG NSC"
 		" BECMG 0306/0308 9999 NSW"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -189,7 +254,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30 0306/0318 1/2SM FG VV003"
 		" FM032000 25015G25KT P6SM SCT012 BKN030"
 		" RMK NXT FCST BY 030600Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -199,14 +271,27 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF BGTL 060900Z 0609/0715 VRB06KT 8000 -SHRASN OVC003 610105 QNH2980INS"
 		" BECMG 0614/0615 VRB06KT 9999 NSW BKN005 OVC015 620105 QNH2983INS TX03/0620Z TNM02/0709Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
 		"ENLA", "Ula Platform(OIL)", {2018, 9, 6},
 		"METAR ENLA 061120Z AUTO 14008KT 9999NDV FEW018/// BKN044/// 15/11 Q1013 W///S2"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -218,7 +303,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM071300 23015KT P6SM BKN025 OVC060"
 		" TEMPO 0713/0719 6SM -SHRA BR BKN008 OVC015"
 		" BECMG 0717/0719 26015KT RMK NXT FCST BY 071300Z"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -229,14 +319,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF CYYB 070738Z 0708/0720 VRB03KT P6SM FEW050"
 		" BECMG 0714/0716 31010KT"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 071400Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"CWFD", "Cape Dyer Arpt", {2018, 9, 9}, 
 		"METAR CWFD 092000Z AUTO 22006KT ////SM //// NCD ///// A////"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -247,7 +347,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF YBAS 082312Z 0900/0924 10014KT CAVOK"
 		" FM090800 10005KT CAVOK"
 		" FM091500 07005KT CAVOK"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -256,7 +361,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF BGKK 091418Z 0915/0921 08008KT 9999 -RA BKN040"
 		" TEMPO 0915/0921 4000 RADZ BR BKN008"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -265,7 +375,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD BGJN 091907Z 0919/0922 VRB03KT 9999 BKN020"
 		" TEMPO 0919/0922 BKN010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -278,7 +395,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1004/1012 3000 -SNRA BKN003"
 		" BECMG 1012/1014 SCT030"
 		" TEMPO 1014/1024 BKN030"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -286,7 +410,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENNE 092050Z AUTO 13027KT 9999NDV NCD 14/11 Q1006 W///S4"
 		"=",
 		"ENNE 091100Z 0912/0917 11020KT 9999 FEW040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -298,7 +427,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0918/0920 1/2SM FG BKN004"
 		" FM100000 VRB05KT 1 1/2SM BR OVC003"
 		" FM101100 11011KT 1/2SM FG OVC003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -311,7 +443,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100800 02010KT P6SM OVC020"
 		" TEMPO 1008/1018 3SM -SN BR OVC008"
 		" RMK NXT FCST BY 100000Z"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -325,7 +462,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM092300 30010G20KT P6SM -RA OVC015"
 		" TEMPO 0923/1007 4SM -RA BR OVC006"
 		" RMK NXT FCST BY 100100Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -333,7 +473,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PABA 091952Z AUTO 28011KT 10SM BKN050 OVC060 06/03 A3003"
 		" RMK AO2 SLP156 T00560028 TSNO"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -344,7 +490,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF PASC 091734Z 0918/1018 22006KT P6SM BKN050 OVC070"
 		" FM092200 26010KT 4SM BR VCSH BKN007 OVC015"
 		" FM100800 08008KT 1 1/2SM BR VCSH OVC004"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -354,7 +505,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF CYMA 091738Z 0918/1006 VRB03KT P6SM FEW200"
 		" RMK NXT FCST BY 100000Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -366,7 +520,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0918/0921 2000 BR BKN005 BKN015"
 		" TEMPO 0921/1012 24006G11MPS SCT007 BKN020"
 		" TEMPO 1012/1018 1000 BR BKN005 BKN015"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -380,7 +537,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0922/0924 1000 BR VV003"
 		" TEMPO 1000/1006 19003G12MPS 3100 -SHRA BKN011 OVC015CB"
 		" TEMPO 1012/1022 0900 FG VV003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -391,7 +551,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UHMM 091702Z 0918/1024 11005G10MPS 9999 -SHRA BKN011 OVC025CB"
 		" TEMPO 0918/1021 14003G08MPS 4000 -SHRA BR FEW007 OVC011CB"
 		" BECMG 1021/1022 24003G08MPS"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -402,7 +565,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UHSS 091700Z 0918/1024 VRB01MPS 9999 SCT040CB"
 		" BECMG 0921/0923 25006MPS"
 		" BECMG 1007/1009 19003MPS"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -413,7 +579,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PASN 091818Z 0918/1018 04008KT P6SM OVC014"
 		" TEMPO 0918/0922 BKN006"
 		" FM100600 33010KT P6SM BKN014"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -421,7 +595,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR CWEU 092000Z VRB02KT 15SM FEW025 FEW060 FEW110 FEW250 01/M07 A2964"
 		" RMK SC1SC1AC1CI1 SC TR SC TR AC TR CI TR SLP039"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -437,7 +614,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1009/1015 SCT007 BKN020 OVC050"
 		" FM101500 12010KT P6SM -SHRA BKN020"
 		" RMK NXT FCST BY 092100Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -451,7 +633,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100300 08014G22KT P6SM SCT120"
 		" FM100600 08010KT P6SM SKC"
 		" FM101500 06006KT P6SM FEW100"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -464,7 +651,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100000 24005KT P6SM FEW025 SCT120"
 		" FM100300 VRB03KT P6SM FEW025 SCT250"
 		" FM101700 17007KT P6SM SCT050 SCT250"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -476,7 +669,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100400 21005KT 2SM SHRA OVC020"
 		" FM101100 24005KT P6SM VCSH OVC010"
 		" FM101300 24005KT P6SM OVC007"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -490,7 +688,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM101400 16008G17KT 3SM -RA OVC008"
 		" FM101700 18008G17KT P6SM VCSH OVC015"
 		" FM102200 20007KT P6SM OVC025"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -498,7 +702,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMFV 092035Z AUTO 09015G23KT 5SM -VCTSRA SCT009 OVC013 23/23 A2991"
 		" RMK AO2 LTG DSNT W P0009 T02320225"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -506,7 +716,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"MBPV 082000Z 13005KT 9999 SCT016 30/23 Q1011"
 		"=",
 		"TAF MBPV 091000Z 0912/1012 09005KT 9999 SCT015CB BKN250"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -520,7 +733,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0921/1007 6SM -SN BKN020 BKN040"
 		" BECMG 0921/0923 31015KT"
 		" RMK NXT FCST BY 100100Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -533,7 +751,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100500 17004KT P6SM VCSH BKN040"
 		" FM100800 18004KT P6SM BKN020"
 		" FM101500 18005KT P6SM BKN040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -542,7 +765,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF VRMM 091700Z 0918/1024 27005KT 9999 FEW018"
 		" TEMPO 0920/0924 FEW019CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{ 
@@ -556,7 +782,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1003/1008 4000 DU"
 		" BECMG 1010/1012 30010KT"
 		" BECMG 1016/1018 06008KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -568,7 +797,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30"
 		" TEMPO 0923/1003 34015G25KT -TSRA FEW017CB BKN025"
 		" TEMPO 1006/1010 34015G25KT 4000 -TSRA FEW018CB BKN028"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -579,7 +811,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0920/0922 VRB04KT"
 		" TEMPO 1003/1006 5000 BR"
 		" BECMG 1008/1010 33010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -591,7 +826,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0922/1006 2000 BR OVC002"
 		" PROB40"
 		" TEMPO 1002/1005 0400 FG VV///"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -600,7 +842,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF LSGG 092025Z 0921/1103 VRB03KT CAVOK TX28/1015Z TN11/1005Z"
 		" BECMG 1010/1012 04007KT 9999 FEW045"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -619,7 +864,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1011/1017 0800 FG BKN002"
 		" BECMG 1016/1018 24014KT 9999 SCT008 BKN020"
 		" TEMPO 1016/1018 24016G26KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		0
 	},
 
 	{
@@ -630,21 +880,34 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0921/1006 23018G28KT 4000 SHRA BKN008"
 		" PROB30"
 		" TEMPO 0921/0924 24025G38KT +SHRA"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"EGPU", "Tiree Island Arpt", {2018, 9, 9}, 
 		"METAR EGPU 092050Z AUTO 24025G35KT 210V270 9999 SCT021/// SCT033/// 12/11 Q1005 RERA"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"EGPL", "Benbecula Isl Arpt", {2018, 9, 9}, 
 		"METAR EGPL 092050Z AUTO 25027G37KT 9999 SCT012/// BKN017/// 13/11 Q1000 RERA"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -663,7 +926,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1014/1018 22015G25KT 3000 -RADZ BKN007"
 		" PROB30"
 		" TEMPO 1016/1018 2000 BR BKN003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -680,7 +946,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1014/1018 3000 -RADZ BKN003"
 		" PROB40"
 		" TEMPO 1015/1018 1200 BR BKN002"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -694,21 +963,36 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0921/1008 23023G36KT BKN014"
 		" TEMPO 1012/1018 7000 -RA BKN009"
 		" BECMG 1014/1017 19011KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"EGQK", "Kinloss(RAF)", {2018, 9, 9}, 
 		"METAR EGQK 092050Z AUTO 21011KT 9999 FEW048/// 12/06 Q1004"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"ENHM", "Heimdal(OIL)", {2018, 9, 9}, 
 		"METAR ENHM 092050Z AUTO 23019KT 9999NDV FEW017/// SCT026/// BKN087/// 14/12 Q1004 W15/S4"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -717,7 +1001,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF EDDT 091700Z 0918/1018 VRB03KT CAVOK"
 		" BECMG 1006/1009 24007KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -725,7 +1012,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EDDS 092050Z VRB04KT CAVOK 16/11 Q1022"
 		"=",
 		"TAF EDDS 091700Z 0918/1018 VRB03KT CAVOK"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -733,7 +1023,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ELLX 092050Z VRB02KT CAVOK 18/09 Q1022 NOSIG"
 		"=",
 		"TAF ELLX 091700Z 0918/1024 17005KT CAVOK"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -741,7 +1034,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"ZSSS 092100Z 34003MPS CAVOK 21/17 Q1018 NOSIG"
 		"=",
 		"TAF ZSSS 091512Z 0918/1018 03004MPS 6000 SCT030 TX28/1006Z TN22/0921Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -751,7 +1047,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF RPLL 091700Z 0918/1024 25008KT 9999 FEW023 SCT300 TX32/1006Z TN26/0921Z"
 		" TEMPO 0918/0924 24004KT FEW023 SCT250"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -762,7 +1061,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UIBB 092000Z 0921/1021 30003G08MPS 3100 -SHRA BR BKN016CB"
 		" PROB40"
 		" TEMPO 1003/1015 -TSRA"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -773,7 +1077,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100000 14012KT 9999 FEW035"
 		" FM101000 08008KT 9999 FEW030"
 		" FM101400 29008KT 9999 FEW030"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -783,7 +1090,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF EGYP 091921Z 0921/1015 27008KT 9999 FEW025"
 		" PROB30 1004/1012 1200 BR SCT002"
 		" BECMG 1012/1015 35015G25KT 520003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -794,7 +1104,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0919/0921 34015G30KT"
 		" BECMG 1003/1005 02010KT 2000 BR SCT003 BKN010"
 		" BECMG 1012/1014 36015KT 9999 NSW SCT030"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -805,7 +1118,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1000/1003 VRB05KT"
 		" BECMG 1003/1005 32010KT"
 		" BECMG 1009/1011 VRB05KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -816,7 +1132,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PMDY 091749Z 0918/1018 22010KT P6SM VCSH SCT020 SCT050 BKN100"
 		" FM100600 23015G20KT P6SM VCSH SCT015 BKN040"
 		" TEMPO 1008/1012 4SM SHRA BR BKN015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -832,7 +1154,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1011/1013 30005KT"
 		" BECMG 1015/1 017 27005KT BKN035 FEW040TCU"
 		" RMK PCQ"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -847,7 +1172,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1006/1009 05010KT"
 		" PROB30"
 		" TEMPO 1006/1010 FEW046TCU"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -857,7 +1185,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF LMML 091700Z 0918/1018 14007KT 9999 SCT016"
 		" PROB30 0918/1006 8000 BKN012"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -868,7 +1199,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0919/0922 32010KT FEW012"
 		" BECMG 1006/1009 03007KT FEW020"
 		" BECMG 1014/1016 35012KT CAVOK"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -877,7 +1211,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF LFBD 091700Z 0918/1024 30005KT CAVOK TX30/1015Z TN16/1006Z"
 		" PROB30 1004/1007 4000 MIFG BKN010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -886,7 +1225,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF EKCH 091657Z 0918/1018 18012KT 9999 SCT030"
 		" BECMG 1008/1010 25010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -896,7 +1238,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF ENTC 0918/1018 06005KT CAVOK"
 		" TEMPO 0924/1018 18010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -908,7 +1253,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1007/1009 VRB05KT"
 		" PROB40"
 		" TEMPO 0918/0924 BKN012"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -919,7 +1267,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0921/0923 VRB02KT"
 		" PROB40"
 		" TEMPO 1000/1006 BKN010 OVC013"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -927,14 +1278,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR FBMN 092100Z 16005KT CAVOK 14/M12 Q1022"
 		"=",
 		"TAF FBMN 091200Z 0915/0924 15010KT CAVOK"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"FALW", "Langebaanweg (S", {2018, 9, 9}, 
 		"METAR FALW 092100Z AUTO 20004KT //// // ////// 08/05 Q1022"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -946,7 +1305,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0918/0921 FEW040TCU"
 		" PROB30"
 		" TEMPO 0918/0921 VRB15G25KT 3000 TS SHRA FEW040CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -958,7 +1322,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0922/1007 05005KT"
 		" TEMPO 0921/1003 SCT020 FEW025CB"
 		" TEMPO 0921/1011 VRB15G25KT 3000 TSRA SCT018CB BKN020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -969,7 +1338,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 0919/0923 TSRA FEW030CB SCT035"
 		" BECMG 1012/1015 08007KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -981,7 +1355,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0912/0921 FEW030CB BKN040"
 		" PROB40"
 		" TEMPO 0912/0920 TSRA FEW030CB BKN040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -993,7 +1372,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1007/1009 34016KT"
 		" TEMPO 1014/1018 SCT050CB"
 		" BECMG 1016/1018 28006KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1004,7 +1386,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF CYVQ 091738Z 0918/1006 VRB03KT P6SM FEW003 SCT120 BKN210"
 		" FM092000 25006KT P6SM FEW080 BKN120 BKN210"
 		" RMK NXT FCST BY 100000Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1012,7 +1397,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
 		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1025,7 +1417,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100000 14006KT 3SM SHRA OVC050"
 		" FM100500 17006KT 6SM -RA BR OVC015"
 		" FM101200 23004KT 4SM -RA BR OVC003"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1033,7 +1431,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KIOB 092115Z AUTO 00000KT 7SM RA BKN004 BKN013 OVC033 21/21 A2981"
 		" RMK AO2 P0002"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1043,7 +1447,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF KJST 091757Z 0918/1018 09010G19KT 3SM RA BR BKN006 OVC012"
 		" FM100400 12013G23KT 3SM -RA BR OVC004"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1056,7 +1466,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100600 VRB04KT 3SM -SHRA BR BKN003 OVC015"
 		" FM101200 VRB04KT 3SM BR BKN003 OVC010"
 		" FM101400 25005KT P6SM BKN003 OVC008"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1068,7 +1484,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM092200 10007KT 6SM SHRA OVC040"
 		" FM100300 14008KT 5SM SHRA OVC010"
 		" FM101000 18004KT P6SM OVC006"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1081,7 +1504,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100300 13009G18KT 3SM -RA OVC008"
 		" FM101000 18006KT 3SM -RA OVC008"
 		" FM101400 21006KT P6SM VCSH OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1094,7 +1523,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM100200 11018G30KT 2SM RA OVC003"
 		" FM101100 12012G20KT 3SM -RA OVC006"
 		" FM101500 16010KT 6SM -RA OVC008"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1107,7 +1542,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM092200 08010KT 3SM RA OVC010"
 		" FM100900 08013KT 6SM -RA OVC008"
 		" FM101200 09013KT 4SM -SHRA OVC008"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1115,14 +1556,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KIDI 092135Z AUTO 09010G16KT 060V120 3SM BR SCT009 BKN014 OVC055 13/13 A3008"
 		" RMK A01"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"EGPI", "Islay Arpt", {2018, 9, 9}, 
 		"METAR EGPI 092120Z AUTO 24026G36KT 9999 FEW028/// 13/10 Q1010"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1130,7 +1581,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENBL 092050Z 18006KT 9999 VCSH SCT035 BKN040 13/10 Q1005"
 		"=",
 		"TAF ENBL 092300Z NIL"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -1138,7 +1594,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENOV 092050Z 06008KT 330V120 9999 -SHRA FEW030 BKN059 16/07 Q1004"
 		" RMK WIND 2175FT 13026KT"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1149,7 +1608,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 0918/0922 SHRA BKN035CB"
 		" BECMG 0918/0920 12010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1157,7 +1619,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR NZSP 091750Z 11009KT 9999 IC FEW015 M70/ A2823"
 		" RMK CLN AIR 10009KT ALL WNDS GRID"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1169,8 +1634,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1003/1004 1500 BR SCT011"
 		" BECMG 1004/1006 9999 NSW SCT011"
 		" BECMG 1006/1008 35003MPS SCT016"
-		"="
-
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1183,7 +1652,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40 1012/1014 4000 TSRA"
 		" PROB30 1022/1101 0500 FG VV002"
 		" TEMPO 1106/1112 6000 SHRA BKN012 SCT030CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1191,7 +1663,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENLE 101220Z 23029KT 9999 VCSH FEW020TCU BKN025 14/09 Q1013 W17/S5"
 		"=",
 		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1201,7 +1676,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF UKLI 101703Z 1018/1103 30006MPS 9999 BKN020CB"
 		" TEMPO 1018/1022 VRB10G15MPS 1100 TSRAGR BKN004 BKN010CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1213,7 +1691,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KTPA 102324Z 1100/1206 VRB04KT P6SM SCT035 BKN250"
 		" FM111500 25006KT P6SM VCTS SCT035CB BKN250"
 		" FM112200 29006KT P6SM SCT035 BKN250"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1224,7 +1708,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UKHH 111410Z 1115/1124 12007G13MPS 9999 SCT020CB BKN030"
 		" PROB40"
 		" TEMPO 1115/1118 10009G16MPS"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1235,7 +1722,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF COR EGDY 111703Z 1118/1203 33005KT 9999 FEW008 BKN015"
 		" TEMPO 1118/1120 4000 -DZ SCT008 BKN012"
 		" BECMG 1122/1203 SCT030"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		0
 	},
 
 	{
@@ -1243,7 +1737,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR NZSP 111750Z 10008KT 4000 IC BR FEW000 M62/ A2823"
 		" RMK BR FEW000 CLN AIR 10007KT ALL WNDS GRID"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1257,7 +1754,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM120300 00000KT P6SM FEW040 BKN250"
 		" FM121000 04002KT 4SM BR FEW002 FEW250"
 		" FM121400 04005KT P6SM FEW250"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1269,7 +1771,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1120/1122 OVC009"
 		" BECMG 1205/1207 04010KT"
 		" TEMPO 1208/1218 1500 DZ OVC005"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1286,7 +1793,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1201/1203 24018KT"
 		" TEMPO 1206/1215 25018G30KT"
 		" TEMPO 1215/1218 SCT030CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1296,7 +1806,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UKLL 111702Z 1118/1218 VRB01MPS 3000 BR BKN010"
 		" TEMPO 1122/1206 0400 FG VV002"
 		" BECMG 1206/1208 9999 NSW SCT030"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1313,7 +1826,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 1205/1215 6000 RADZ"
 		" PROB40 1220/1224 1200 BCFG"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1327,7 +1845,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1200/1203 30008KT"
 		" PROB40"
 		" TEMPO 1206/1210 4000 RADZ BKN009"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1340,7 +1865,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1122/1208 7000 -RA BKN010"
 		" PROB40"
 		" TEMPO 1205/1208 3000 RADZ BKN004"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1353,7 +1883,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM120400 17011KT P6SM BKN080"
 		" FM120900 14008KT P6SM BKN200"
 		" FM121200 15010KT P6SM SCT200"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1361,7 +1897,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ZBAA 111900Z 35002MPS 5000 BR NSC 17/16 Q1014 NOSIG"
 		"=",
 		"TAF ZBAA 111530Z 1118/1218 14004MPS 7000 NSC TX27/1207Z TN16/1121Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1374,7 +1913,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1203/1205 27005KT 3500 HZ/-RA SCT015 SCT025 BKN100"
 		" BECMG 1209/1211 4500 HZ/-RA SCT018 FEW030CB SCT100"
 		" BECMG 1216/1218 00000KT 3500 HZ/-RA"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1388,7 +1930,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1200/1205 5000 HZ"
 		" BECMG 1206/1208 35015G25KT"
 		" TEMPO 1210/1218 02025G35KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1397,7 +1942,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF UTST 111700Z 1118/1218 24010G20KT 6000 NSC TX38/1211Z"
 		" TEMPO 1202/1212 27012G22KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1410,7 +1958,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1204/1206 31008KT"
 		" BECMG 1209/1211 02016KT"
 		" TEMPO 1110/1114 02018G28KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1424,7 +1975,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30"
 		" TEMPO 1120/1123 1500 HZ FEW040CB"
 		" BECMG 1123/1202 12010KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		0
 	},
 
 	{
@@ -1435,7 +1991,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF GQNO 111700Z 1118/1224 25012KT 7000 FEW030CB SCT020"
 		" TEMPO 1118/1122 10012G30KT 3000 TSRA BKN010 FEW030CB"
 		" TEMPO 1201/1205 10012G35KT 3000 TSRA BKN010 FEW030CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1445,7 +2006,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF GQPP 111700Z 1118/1218 35015KT 6000 NSC"
 		" PROB30"
 		" TEMPO 1122/1204 10012G35KT 3000 TSRA BKN010 FEW030CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1464,7 +2028,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM121300 VRB03KT P6SM SCT020"
 		" TEMPO 1213/1215 BKN020"
 		" RMK NXT FCST BY 120000Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -1476,14 +2045,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1202/1204 05005KT"
 		" TEMPO 1203/1210 VRB02KT"
 		" BECMG 1215/1217 25008KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
 		"MHPL", "Puerto Lempira Arpt", {2018, 9, 11},
 		"METAR MHPL 111900Z 00000KT 9999 BKN030TCU 33/26 Q1012 TCU ALL HZ"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 
@@ -1497,7 +2074,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM112200 07006KT P6SM SHRA SCT020 BKN030 OVC080"
 		" TEMPO 1122/1124 5SM -RA BR OVC021"
 		" FM120600 06005KT P6SM VCSH OVC020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1507,7 +2091,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD EGYP 111758Z 1118/1212 32022G32KT 9999 FEW008"
 		" BECMG 1118/1121 29012KT"
 		" BECMG 1209/1212 33015G25KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1517,7 +2106,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF FABL 111600Z 1118/1218 VRB03KT CAVOK"
 		" BECMG 1210/1212 30008KT"
 		" BECMG 1216/1218 20006KT TX24/1213Z TN03/1204Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1525,7 +2119,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR FIMR 111800Z 08010KT 8000 VCSH BKN017 22/18 Q1022"
 		"=",
 		"TAF FIMR 111735Z 1118/1212 07015G25KT 9999 SCT018"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1537,7 +2134,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM112100 21004KT P6SM BKN100"
 		" FM120600 VRB03KT P6SM SCT100"
 		" PROB30 1216/1220 -RA BKN080"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1550,7 +2153,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 1206/1215 TS"
 		" TEMPO 1215/1218 16005MPS 3000 FU"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1565,7 +2171,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1200/1204 7000 -RA BKN010"
 		" PROB40"
 		" TEMPO 1208/1212 7000 RA BKN012"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::COR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1580,7 +2194,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1203/1205 BKN030"
 		" TEMPO 1205/1209 7000 -RADZ SCT010"
 		" TEMPO 1209/1211 SCT020"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1588,7 +2205,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KAIK 111935Z AUTO 16012G18KT 4SM +TSRA SCT015 BKN038 OVC070 25/22 A3006"
 		" RMK AO2 LTG DSNT E THRU SW"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1596,7 +2219,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR K2J3 111930Z AUTO 34012G17KT 7SM VCTSRA SCT029 OVC048 27/24 A3003"
 		" RMK AO2 LTG DSNT ALQDS P0003 T02730236"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1608,7 +2237,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM120100 VRB03KT P6SM SCT025"
 		" FM121400 06008KT P6SM BKN050"
 		" FM121700 10010KT P6SM BKN050"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1618,7 +2253,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF EKVG 111421Z 1115/1120 26008KT 9999 SCT007 BKN020"
 		" TEMPO 1115/1120 3000 SHRA BKN008 SCT015CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1628,7 +2268,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF EHGR 111750Z 1117/1205 24006KT CAVOK"
 		" BECMG 1122/1201 8000 BKN013"
 		" TEMPO 1202/1205 3000 DZ BR BKN005"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1640,7 +2285,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1121/1209 6000 RA BKN010"
 		" BECMG 1204/1206 25011KT"
 		" TEMPO 1206/1215 SCT020CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1652,7 +2302,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM112000 14007KT P6SM SCT040"
 		" FM120200 VRB03KT P6SM SCT040"
 		" FM121400 06008KT P6SM SCT040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1669,7 +2324,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM121200 32008KT P6SM OVC008"
 		" FM121500 35010KT P6SM OVC015"
 		" RMK NXT FCST BY 112100Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1682,7 +2340,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM120300 06005KT 1SM BR OVC003"
 		" FM121400 06007KT 4SM BR OVC008"
 		" FM121800 07007KT P6SM SCT010 BKN020 BKN120"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1696,7 +2359,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 1208/1214 5000 -TSRA FEW026CB"
 		" BECMG 1208/1212 10010KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		0
 	},
 
 	{
@@ -1707,7 +2375,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF URML 111700Z 1118/1203 31007G12MPS 9999 SCT050CB"
 		" TEMPO 1118/1124 VRB10G16MPS 6000 -TSRA SCT011 SCT020CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1717,7 +2388,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF UBBY 111700Z 1118/1203 31010KT 9999 SCT035CB BKN060"
 		" TEMPO 1118/1120 VRB16KT -TSRA"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1729,7 +2403,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF URMM 111658Z 1118/1218 28003G08MPS 9999 BKN030 TX26/1211Z TN15/1202Z"
 		" TEMPO 1118/1121 3100 -SHRA BKN011 BKN030CB"
 		" TEMPO 1121/1206 VRB01MPS 3100 BR BKN011"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1740,7 +2417,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF GQNO 111700Z 1118/1224 25012KT 7000 FEW030CB SCT020"
 		" TEMPO 1118/1122 10012G30KT 3000 TSRA BKN010 FEW030CB"
 		" TEMPO 1201/1205 10012G35KT 3000 TSRA BKN010 FEW030CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1755,14 +2437,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1200/1204 7000 -RA BKN010"
 		" PROB40"
 		" TEMPO 1208/1212 7000 RA BKN012"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
 		"EGUW", "Wattisham(RAF)", {2018, 9, 11},
 		"METAR EGUW 112250Z 25007KT 2500 RADZ FEW002 SCT003 BKN010 16/16 Q1019 YLO2"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1777,7 +2469,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1214/1217 BKN025"
 		" FM121800 15008KT P6SM BKN025"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 121200Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1789,7 +2487,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM130200 03008KT P6SM VCSH SCT025 SCT100"
 		" FM131000 01015G25KT P6SM VCSH OVC015"
 		" FM131600 01020G30KT P6SM VCSH OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1801,7 +2504,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM130200 03008KT P6SM VCSH SCT025 SCT100"
 		" FM131000 01015G25KT P6SM VCSH OVC015"
 		" FM131600 01020G30KT P6SM VCSH OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1813,7 +2522,26 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM130000 36010G20KT 9999 SCT030 BKN050 QNH3000INS"
 		" FM131500 VRB25G50KT 0800 +TSRA BR SCT025CB BKN030 QNH2950INS T30/1218Z T24/1306Z"
 		" LAST NO AMDS AFT 1215 NEXT 1709"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"RJTK", "Kisarazu (JGSDF)", {2018, 9, 13},
+		"SPECI RJTK 130029Z 02010KT 9999 FEW020 SCT040 BKN230 24/16 Q1021"
+		" RMK 1CU020 4SC040 5CI230 A3016"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -1825,7 +2553,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131400 00000KT P6SM SCT250"
 		" FM131500 00000KT P6SM SCT020"
 		" FM132000 10004KT P6SM SCT035"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1836,7 +2571,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM130100 31015KT 9999 SCT045"
 		" FM130900 33012KT 9999 SCT045"
 		" FM131200 35008KT 9999 SCT045"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1845,7 +2583,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF SAWH 122300Z 1300/1324 32018KT 9999 BKN025 BKN040 TX09/1319Z TN03/1310Z"
 		" TEMPO 1300/1306 34027KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1859,7 +2600,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1315/1317 29008KT"
 		" FM140000 VRB03KT P6SM FEW030"
 		" RMK NXT FCST BY 131200Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1871,7 +2615,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1403/1405 31025G40KT 3000 -SHSN BKN030"
 		" TEMPO 1410/1415 9999 NSW SCT030"
 		" BECMG 1415/1417 29020KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1879,7 +2626,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI EGVA 130810Z AUTO 00000KT 0400 R09/0500V0800 FG VV000 08/08 A3023"
 		" RMK AO2 SLP242 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -1892,7 +2647,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM132000 04045G60KT 3SM +SHRA OVC025"
 		" FM140300 07055G75KT 3SM +SHRA OVC025"
 		" FM141100 11053G70KT 3SM +SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -1907,7 +2669,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1322/1402 04015G25KT 3500 TSRA SCT015CB BKN030"
 		" TEMPO 1405/1409 02015G25KT 3500 TSRA SCT015CB BKN030"
 		" PROB30 1410/1414 02015G25KT -TSRA FEW017CB BKN025"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -1922,7 +2691,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 1402/1406 27013KT 2500 +SHRA"
 		" BECMG 1406/1409 30012KT 9999 NSW"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1936,7 +2708,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1317/1321 29015G25KT 4000 TSRA SCT040CB"
 		" PROB30"
 		" TEMPO 1414/1418 SHRA"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1946,7 +2723,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF LSMP 131625Z 1317/1423 VRB03KT 9999 FEW025 SCT050"
 		" PROB40"
-		" TEMPO 1317/1402 VRB15G25KT TSRA SCT040CB="
+		" TEMPO 1317/1402 VRB15G25KT TSRA SCT040CB=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1954,7 +2736,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"LIMH 131555Z /////KT 0200 FG VV/// 06/04 Q1031"
 		" RMK MON INVIS VAL INVIS VIS MIN 0200"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1964,7 +2749,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF OEGT 131100Z 1312/1418 18014KT 7000 SCT040"
 		" BECMG 1314/1316 30010G20KT"
 		" TEMPO 1314/1324 3500 BLDU TSRA FEW035CB BKN040"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1975,7 +2763,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF ORBD 131100Z 1311/1417 35010G15KT 9999 FEW200 QNH2979INS WND 290V040 WND 33009KT AFT 1315"
 		" TEMPO 1311/1314 34015G25KT 8000 BLDU 280V020"
 		" BECMG 1407/1408 33010G15KT 9999 FEW200 QNH2962INS WND 320V040 WND 33009KT AFT 1415 TX47/1412Z TN29/1402Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -1984,7 +2775,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF OODQ 130500Z 1306/1406 20020KT 8000 NSC"
 		" TEMPO 1316/1403 4900 HZ SCT010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -1996,14 +2792,20 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 1314/1320 4000 -TSRA FEW020CB SCT040"
 		" BECMG 1320/1323 6000 NSW"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"DRRT", "Tahoua Arpt", {2018, 9, 13}, 
 		"METAR DRRT 131600Z 12018KT 3000 SA FEW040 FEW050 CB 36/18 Q1009"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2014,7 +2816,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF DIAP 131100Z 1312/1418 22010KT 8000 SCT012"
 		" TEMPO 1312/1318 BKN012"
 		" TEMPO 1400/1406 4000 RA BKN012"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2022,7 +2827,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR YCIN 131630Z AUTO 35005KT 1600 // OVC003 21/21 Q1011 RF00.0/000.0"
 		"=",
 		"TAF AMD YCIN 131514Z 1315/1402 VRB05KT 0300 FG BKN001"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2031,7 +2843,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF UTTT 131100Z 1312/1412 06010KT 7000 NSC"
 		" TEMPO 1312/1316 34015KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2044,7 +2859,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1317/1318 30012G18KT 6000 HZ SKC QNH2953INS"
 		" BECMG 1322/1323 30009KT 9000 HZ SKC QNH2955INS"
 		" BECMG 1408/1409 11015G25KT 8000 HZ FEW120 QNH2952INS"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2053,7 +2875,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF BIHN 131329Z 1314/1323 22008KT 9999 FEW010 BKN025 OVC045"
 		" TEMPO 1314/1323 -RADZ BKN020"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2067,7 +2892,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1318/1323 6SM -SN SCT004 OVC010"
 		" PROB30 1318/1321 3/4SM -SHSN"
 		" RMK NXT FCST BY 131900Z"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2078,7 +2908,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD CYCB 131639Z 1316/1401 31020G30KT 6SM -SN SCT008 OVC025"
 		" TEMPO 1316/1401 11/2SM -SN BLSN SCT008 OVC015"
 		" RMK NXT FCST BY 131900Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2086,7 +2923,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PAGH 131656Z AUTO 00000KT 1/4SM FG OVC002 04/04 A3033"
 		" RMK AO2 SLP276 T00440044"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2094,7 +2937,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PATC 131655Z AUTO 26003KT 1/4SM FG VV003 07/07 A3025"
 		" RMK AO2 SLP245 T00690068"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2105,7 +2954,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UHMA 131333Z 1315/1415 11013G18MPS 4000 -RA BKN008 OVC015"
 		" TEMPO 1315/1321 05006MPS 1000 BR VV004"
 		" TEMPO 1321/1415 09018G23MPS 0500 DZ FG VV002"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2117,7 +2969,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1315/1321 0400 FG OVC001"
 		" BECMG 1404/1405 33015G20KT 4800 BR BKN007 QNH2934INS"
 		" BECMG 1410/1411 33030G35KT 4800 -RA BR BKN007 510003 QNH2947INS TX12/1401Z TN11/1315Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2132,7 +2991,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM132200 01007KT P6SM -SN FEW020 BKN040"
 		" FM140300 VRB03KT P6SM BKN020"
 		" RMK NXT FCST BY 131800Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2143,7 +3005,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD CYCB 131639Z 1316/1401 31020G30KT 6SM -SN SCT008 OVC025"
 		" TEMPO 1316/1401 11/2SM -SN BLSN SCT008 OVC015"
 		" RMK NXT FCST BY 131900Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2157,7 +3026,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1318/1323 2SM -SN BR OVC004"
 		" PROB30 1318/1323 3/4SM -FZDZ BR"
 		" RMK NXT FCST BY 131900Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2171,7 +3043,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1316/1324 6SM BR SCT002 BKN030"
 		" PROB30 1318/1324 1/2SM -SHSN FG VV001"
 		" RMK NXT FCST BY 131800Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2180,7 +3055,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK CB SW-N LTG W TCU OVHD/N"
 		"=",
 		"MYNN 131000Z 1312/1412 13006KT 9999 SCT018CB SCT050"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2188,7 +3066,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR COR MWCR 131800Z 02010G26KT 320V060 1000 TSRA BKN016CB 27/26 Q1013"
 		"=",
 		"TAF MWCR 131700Z 1318/1418 09005KT 9999 VCSH SCT018"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2201,7 +3084,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131700 36034G46KT 6SM -SHRA SCT012 OVC050"
 		" FM140000 35047G60KT 3SM SHRA SCT010 OVC025"
 		" FM140400 36060G70KT 2SM +SHRA SCT008 OVC018"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2213,7 +3103,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131500 06023G33KT 6SM -SHRA OVC025"
 		" FM132000 07028G38KT 4SM SHRA OVC025"
 		" FM140900 09025G35KT 4SM SHRA OVC020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2221,7 +3117,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI K2DP 131533Z AUTO 06013G19KT 10SM SCT013 24/23 A2992"
 		" RMK AO2 SHRAB1456E33 SLPNO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2229,7 +3133,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KHSE 131451Z AUTO 06016G29KT 7SM -RA FEW035 SCT065 BKN085 27/24 A2983"
 		" RMK AO2 PK WND 08039/1356 RAB1352 SLP102 P0005 60006 T02670244 56019"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2239,7 +3149,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2247,7 +3165,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KMRH 131549Z AUTO 03027G44KT 2SM -RA BR SCT025 BKN036 OVC048 26/24 A2972"
 		" RMK AO2 PK WND 04044/1546 P0011 T02610244 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2264,14 +3190,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30"
 		" TEMPO 1315/1403 VRB30G40KT 1000 TSRA BKN010CB"
 		" BECMG 1320/1324 14020G35KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"TDCF", "Canefield Arpt", {2018, 9, 13},
 		"METAR TDCF 131500Z 08002KT 9999 -TSRA BKN008 FEW///CB 26/25 Q1007"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2283,7 +3217,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1316/1412 SHRA"
 		" TEMPO 1318/1322 10020G32KT 4800 TSRA FEW011CB BKN012 BKN035"
 		" BECMG 1400/1412 13016KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2293,14 +3230,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF TBPB 131105Z 1312/1412 17014KT 9999 SCT016 SCT036"
 		" PROB30"
 		" TEMPO 1318/1324 17015G25KT 5000 SHRA SCT012CB BKN014"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"TNCE", "St Eustatius/Rooseve", {2018, 9, 13},
 		"METAR TNCE 131455Z AUTO 05021KT 030V090 //// // ///////// 30/24 Q1012 RE//"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -2312,7 +3257,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131800 05024G36KT P6SM SHRA VCTS SCT015 BKN050CB"
 		" TEMPO 1318/1322 FEW012 BKN016 OVC030CB"
 		" FM140600 09011KT P6SM VCSH SCT015 SCT040"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2324,7 +3272,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131400 06010KT P6SM FEW025 FEW040"
 		" FM131600 07015G25KT P6SM VCSH SCT025"
 		" FM132100 06016G24KT P6SM VCSH SCT025 SCT045"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2336,7 +3289,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131700 06018G28KT P6SM OVC015"
 		" FM132000 07020G30KT 4SM SHRA OVC025"
 		" FM140000 08022G33KT 4SM SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2344,7 +3302,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMFV 131555Z AUTO 06013G20KT 10SM OVC006 26/25 A3013"
 		" RMK AO2 T02620245"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2352,7 +3316,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KOXB 131553Z AUTO 06011G19KT 10SM OVC004 24/23 A3018"
 		" RMK AO2 SLP220 T02440228 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2360,7 +3331,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KHSE 131551Z AUTO 06016G36KT 5SM -RA BR FEW050 BKN110 27/24 A2981"
 		" RMK AO2 PK WND 06036/1545 SLP093 P0004 T02670244"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2373,7 +3350,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM132000 04045G60KT 3SM +SHRA OVC025"
 		" FM140300 07055G75KT 3SM +SHRA OVC025"
 		" FM141100 11053G70KT 3SM +SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2383,7 +3367,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2391,7 +3382,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KNCA 131556Z AUTO 03020G38KT 10SM SCT026 BKN036 BKN050 29/24 A2983"
 		" RMK AO2 PK WND 02038/1554 SLP105 T02890239"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2399,7 +3396,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMRH 131558Z AUTO 03025G41KT 6SM -RA SCT029 BKN043 OVC070 27/24 A2971"
 		" RMK AO2 PK WND 04044/1546 SLP062 P0011 T02670239 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2411,7 +3415,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1316/1412 SHRA"
 		" TEMPO 1318/1322 10020G32KT 4800 TSRA FEW011CB BKN012 BKN035"
 		" BECMG 1400/1412 13016KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2419,7 +3426,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KMRH 131705Z AUTO 03027G48KT 3SM RA BR SCT026 BKN034 OVC060 26/24 A2966"
 		" RMK AO2 PK WND 03047/1700 P0003 T02610244"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2427,7 +3441,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KHSE 131719Z AUTO 07026G42KT 2 1/2SM +RA BR FEW060 SCT080 BKN110 26/24 A2978"
 		" RMK AO2 PK WND 08043/1706 P0005 T02610239"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2437,7 +3458,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2445,7 +3473,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR K7W6 131825Z AUTO 04025G38KT 4SM -RA SCT018 BKN025 OVC080 26/25 A2983"
 		" RMK AO2 P0001 T02550245"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2458,7 +3492,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM131700 36034G46KT 6SM -SHRA SCT012 OVC050"
 		" FM140000 35047G60KT 3SM SHRA SCT010 OVC025"
 		" FM140400 36060G70KT 2SM +SHRA SCT008 OVC018"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2466,7 +3506,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2479,7 +3526,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM132300 35040G55KT 3SM SHRA SCT010 OVC025"
 		" FM140200 36055G65KT 2SM +SHRA SCT008 OVC018"
 		" FM140700 36065G80KT 2SM +SHRA BKN010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2489,7 +3542,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2499,7 +3560,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2507,7 +3577,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2515,7 +3592,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KHSE 131851Z AUTO 08022G43KT 2SM RA BR FEW034 BKN050 OVC070 26/24 A2975"
 		" RMK AO2 PK WND 08047/1826 SLP073 P0011 T02560239"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2526,7 +3609,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KEWN 131724Z 1318/1418 03037G51KT 3SM +SHRA OVC020"
 		" FM140000 05050G68KT 3SM +SHRA OVC020"
 		" FM141300 11053G70KT 2SM +SHRA OVC010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2534,7 +3623,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KNCA 131856Z AUTO 01024G40KT 6SM -RA BR FEW028 SCT060 OVC100 26/24 A2970"
 		" RMK AO2 PK WND 02045/1827 RAB06 SLP058 P0006 T02610239"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2546,7 +3641,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM140200 03048G63KT 3SM +SHRA OVC020"
 		" FM140900 06053G67KT 3SM +SHRA OVC020"
 		" FM141500 10053G66KT 2SM +SHRA OVC010 AMD LTD TO CLD VIS AND WIND"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2559,7 +3660,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM132300 35040G55KT 3SM SHRA SCT010 OVC025"
 		" FM140200 36055G65KT 2SM +SHRA SCT008 OVC018"
 		" FM140700 36065G80KT 2SM +SHRA BKN010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2569,7 +3676,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF RJBB 131709Z 1318/1500 06009KT 9999 FEW010 SCT025 BKN035"
 		" BECMG 1412/1415 22009KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -2579,7 +3691,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF RJFK 131711Z 1318/1500 12006KT 9999 FEW010 SCT025"
 		" BECMG 1412/1415 04003KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -2588,7 +3705,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD RJFK 132203Z 1322/1500 14007KT 9999 VA FEW010 SCT025"
 		" BECMG 1412/1415 0500S4KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2598,7 +3720,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2608,7 +3740,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2618,7 +3758,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD KNKT 1315/1415 02028G48KT 2400 +RA BR SCT022 BKN028 OVC250 QNH2957INS"
 		" BECMG 1316/1318 05035G60KT 1600 +TSRA BR BKN008CB OVC020 QNH2975INS T24/1321Z T28/1407Z AMD 1515"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2626,7 +3773,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KHSE 140451Z AUTO 12034G48KT 5SM -RA BR FEW120 27/25 A2976"
 		" RMK AO2 PK WND 12051/0440 SLP076 P0006 T02670250 402890239"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2638,7 +3791,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM140400 36040G50KT 2SM +SHRA SCT008 OVC018"
 		" FM141000 36050G65KT 1SM +SHRA BKN010"
 		" FM141600 03054G65KT 1SM +SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2646,7 +3806,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI K2DP 140516Z AUTO 10024G32KT 6SM -RA BKN014 OVC070 25/25 A2980"
 		" RMK AO2 CIG 014V070 SLPNO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2654,7 +3822,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KNCA 140514Z AUTO 03039G64KT RA FEW013 BKN024 OVC033 25/23 A2921"
 		" RMK AO2 PK WND 04064/0509 PRESFR P0007 T02500233 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2665,7 +3841,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KOAJ 140335Z 1404/1424 02035G50KT 3SM +SHRA BR OVC014"
 		" FM140900 04050G70KT 3SM +SHRA BR OVC003"
 		" FM141700 09045G60KT 2SM +SHRA BR OVC007 AMD LTD TO CLD VIS AND WIND"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2677,7 +3860,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM140700 05045G60KT 3SM +SHRA BR OVC007"
 		" FM141400 10042G55KT 2SM +SHRA BR OVC003"
 		" FM142200 10030G45KT 2SM +SHRA BR OVC007 AMD NOT SKED"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2685,7 +3874,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMRH 140958Z AUTO"
 		" RMK AO2 SLPNO PWINO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2696,7 +3892,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UKOO 141105Z 1412/1512 01005G11MPS 6000 BKN007 SCT020CB TX25/1412Z TN17/1503Z"
 		" PROB40 TEMPO 1412/1418 VRB08G16MPS 1000 TSRAGR SQ BKN003 BKN015CB"
 		" BECMG 1418/1419 2100 BR"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -2710,7 +3911,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM150000 12045G58KT 2400 +RA BR BKN005 OVC009 570001 590109 552009 552909 543802 QNH2966INS"
 		" BECMG 1507/1509 14038G55KT 3200 +RA BR FEW004 BKN006 OVC015 570001 590109 552009 552909 543802"
 		"QNH2974INS T26/1415Z T24/1515Z LAST NO AMDS 1715 AMD 1544"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2723,7 +3929,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1421/1424 1SM +SHRA OVC007"
 		" FM150200 07031G42KT 1SM +SHRA OVC015"
 		" FM151200 10029G40KT 1SM SHRA OVC015 WS020/08055KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2734,7 +3947,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KLBT 141947Z 1420/1518 36033G46KT 2SM +RA BR BKN012"
 		" FM150600 07030G45KT 3SM SHRA BKN010 OVC020"
 		" FM150900 08025G40KT 6SM -SHRA OVC020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2742,7 +3963,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KMRH 142126Z AUTO VCTS"
 		" RMK AO2 PWINO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2752,7 +3981,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF KILM 141720Z 1418/1518 10030G45KT 3SM RA BR OVC008"
 		" FM142100 14030G40KT 3SM SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2763,7 +3999,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KPOB 141700Z 1417/1523 03030G40KT 4800 RA OVC020 530002 580204 QNH2954INS"
 		" TEMPO 1417/1423 05040G55KT 1600 +RA OVC015"
 		" BECMG 1504/1505 05025G35KT 4800 RA OVC015 530002 550204 QNH2960INS"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2774,7 +4018,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMYR 141720Z 1418/1518 29023G38KT 2SM RA BR OVC013"
 		" FM142100 31030G45KT 1SM +SHRA OVC010"
 		" FM150600 17025G40KT 3SM SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2785,7 +4036,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KCRE 141720Z 1418/1518 28023G44KT 1 1/2SM +RA BR BKN013 OVC020"
 		" FM142100 31030G45KT 1SM +SHRA OVC010"
 		" FM150600 17025G40KT 3SM SHRA OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO1
+		},
+		{},
+		0
 	},
 
 	{
@@ -2793,7 +4051,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KEDE 142225Z AUTO 10012G19KT 7SM DZ OVC021 28/26 A2992"
 		" RMK AO2 P0001 T02750257"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2801,7 +4065,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI KHSE 142223Z AUTO 13020G29KT 4SM -RA BR SCT024 BKN050 OVC120 28/26 A2990"
 		" RMK AO2 PK WND 13031/2157 P0004 T02780256"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2809,7 +4080,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KASJ 142230Z AUTO 05007KT 10SM RA SCT015 SCT060 BKN110 25/25 A2991"
 		" RMK AO2 P0002 T02450245"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2817,7 +4094,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KHYW 142215Z AUTO 29013G31KT 230V330 2SM +RA OVC011 23/23 A2914"
 		" RMK AO2 P0003"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2825,7 +4108,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KJZI 142235Z AUTO 26017G28KT 8SM +RA SCT047 SCT055 BKN100 29/22 A2963"
 		" RMK AO2"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2833,7 +4122,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KLRO 142215Z AUTO 28018G29KT 10SM OVC038 29/22 A2958"
 		" RMK AO2"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2845,7 +4140,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM150100 29024G36KT 6SM SHRA SCT015 BKN025"
 		" FM150600 28026G38KT 4SM RA OVC015"
 		" FM151200 29025G35KT 2SM RA BR SCT010 OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -2857,7 +4158,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1420/1424 5000 SHRA SCT010TCU"
 		" PROB40 3000 TSRA FEW015CB"
 		" FM150900 11005KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2870,7 +4174,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1504/1506 03024KT"
 		" TEMPO 1506/1512 06028G38KT 3000 SHRA FEW008 BKN015"
 		" TEMPO 1512/1518 09012KT 4000 SHRA FEW012 BKN020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		0
 	},
 
 	{
@@ -2885,7 +4195,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1508/1509 22005KT 5000 DU SKC QNH2979INS"
 		" BECMG 1511/1512 VRB03KT 8000 DU SKC QNH2975INS"
 		" BECMG 1519/1520 00000KT 9999 NSW SKC QNH2975INS TX34/1509Z TN18/1501Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2897,7 +4214,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40 1423/1512 0200 FG BKN002"
 		" BECMG 1510/1512 27005KT FEW008"
 		" PROB30 1510/1518 BKN008"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -2905,7 +4225,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENSL 142250Z AUTO 29020KT 9999NDV -SHRA BKN043/// 11/08 Q1010 W10/S4"
 		"=",
 		"TAF ENSL 142000Z NIL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -2913,7 +4240,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ESSD 142250Z AUTO 20010KT 9999 DZ SCT017/// BKN024/// 12/11 Q1006"
 		"=",
 		"TAF ESSD 142000Z NIL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -2923,7 +4257,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD ESNU 142149Z 1421/1506 VRB02KT CAVOK"
 		" PROB40 1421/1505 0200 FG VV002"
 		" PROB40 1505/1506 RA"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2931,7 +4270,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ESNS 142250Z AUTO 25003KT 0700 R10/P1500N R28/P1500N FG NCD 03/03 Q1005"
 		"=",
 		"TAF ESNS 142000Z NIL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -2946,7 +4292,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1513/1515 RA"
 		" BECMG 1515/1517 15010KT 5000 BKN004 SCT020CB"
 		" BECMG 1519/1521 21017KT NSW BKN002"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -2954,7 +4307,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENRA 142120Z VRB01KT 9999 VCFG FEW005 SCT028 BKN045 06/06 Q1001"
 		"=",
 		"TAF ENRA 142000Z NIL"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -2965,7 +4323,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1421/1423 20012G22KT 4000 RA BKN010 SCT020CB"
 		" BECMG 1423/1502 25012KT 9999 NSW SCT020"
 		" TEMPO 1502/1512 6000 SHRA SCT020CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -2977,7 +4340,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1421/1506 0400 -SHRA FG BKN002 BKN020CB"
 		" BECMG 1506/1508 27004MPS 9999 NSW SCT030"
 		" TEMPO 1509/1518 2100 -TSRAGR BKN007 BKN030CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 	
 	{
@@ -2991,7 +4357,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM150600 17018KT P6SM VCSH BKN025"
 		" FM151200 21014KT 4SM -RA BR OVC015"
 		" FM151600 27012KT 5SM BR OVC025"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3002,7 +4373,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"KMYR 150607Z 1506/1606 17022G38KT 6SM -SHRA BKN008 OVC018"
 		" FM151400 16020G35KT 2SM +SHRA BKN008 OVC018"
 		" FM160400 16016G29KT 6SM -SHRA BKN020 OVC070"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3016,7 +4393,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1510/1513 1SM SHRA BR SCT008 OVC012"
 		" FM151800 06013G22KT 2SM SHRA BR OVC015"
 		" FM160000 06012G30KT 2SM -SHRA BR SCT009 OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3029,7 +4413,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM151330 VRB03KT P6SM BKN015"
 		" FM151800 08008KT P6SM VCTS SCT035CB OVC050"
 		" FM152300 07006KT P6SM BKN080"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -3044,7 +4435,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM151300 33006KT P6SM SCT035"
 		" FM160000 VRB03KT 6SM HZ BR SKC"
 		" FM160500 07004KT 4SM BR SKC"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -3063,7 +4461,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM151600 05010G20KT 4SM -RA -DZ BR BKN008 OVC015"
 		" TEMPO 1516/1520 6SM BR SCT008 BKN015"
 		" RMK NXT FCST BY 151400Z"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3072,7 +4475,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF DAUT 152000Z 1521/1606 32012KT 6000 SCT046"
 		" TEMPO 1521/1523 3000 HZ FEW040CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3082,7 +4488,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UKLL 151720Z 1518/1618 30003MPS 3000 BR BKN007"
 		" TEMPO 1518/1606 0400 -SHRA FG BKN002 BKN020CB"
 		" BECMG 1606/1607 9999 NSW BKN015"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3097,7 +4506,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1608/1609 21010KT 8000 FEW015 SCT030 BKN100"
 		" PROB30 1608/1612 VRB08KT 6000 -RA FEW025CB"
 		" BECMG 1614/1615 VRB03KT 6000 FEW010 SCT100"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3109,7 +4521,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1603/1604 14008G15MPS"
 		" TEMPO 1518/1522 2100 SHRA SCT015 SCT026CB BKN033"
 		" TEMPO 1523/1603 12015G20MPS 1200 +SHRA SCT012 SCT026CB BKN030"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3119,7 +4534,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF VTSG 151700Z 1518/1618 28010KT 8000 SCT020 BKN100"
 		" TEMPO 1518/1524 30015G35KT 5000 RA FEW018TCU SCT020 BKN100"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3129,7 +4547,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF WAOO 151700Z 1518/1618 00000KT 8000 FEW020"
 		" TEMPO 1520/1524 1000 FU"
 		" BECMG 1600/1602 15007KT 9999 SCT018"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3137,7 +4560,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR RJFK 152200Z 31002KT 9999 VCFG FEW020 23/23 Q1016"
 		"=",
 		"TAF RJFK 151706Z 1518/1700 29007KT 9999 FEW025"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3145,7 +4571,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR RJOB 152200Z 24004KT 8000 PRFG FEW000 BKN050 22/22 Q1014"
 		"=",
 		"TAF RJOB 151705Z 1518/1700 23005KT 9999 FEW015 SCT025"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3154,7 +4583,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF AMD RJOA 152208Z 1522/1700 24005KT 9999 FEW015 SCT025"
 		" TEMPO 1522/1600 3000 BR BCFG FEW000 SCT003 BKN008"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3166,14 +4600,20 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1522/1600 19009KT"
 		" TEMPO 1600/1604 1500 BR FEW001 BKN003"
 		" TEMPO 1604/1615 0500 FG VV001"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"GOOG", "Linguere Arpt", {2018, 9, 15},
 		"METAR GOOG 152200Z 00000KT DU NSC 30/24 Q////"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3181,7 +4621,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR UKKK 152200Z 33004MPS 310V010 9999 SCT013 19/17 Q1015 R26/CLRD70"
 		" TEMPO 31010G17MPS 2100 -TSRA SQ BKN007 BKN015CB"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3191,7 +4634,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF LPPR 151700Z 1518/1618 30005KT 5000 BR SCT002 BKN005"
 		" TEMPO 1518/1610 0200 FG VV001"
 		" BECMG 1518/1520 VRB03KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3202,7 +4648,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1501/1506 24025G35KT 1000 +SNSH OVC010"
 		" BECMG 1512/1514 26025KT BKN023 SCT040"
 		" BECMG 1517/1519 27012KT BKN025"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3211,7 +4660,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF LRSM 151400Z 1515/1524 23008KT 9999 SCT040"
 		" TEMPO 1515/1517 VRB15G25KT 3000 TSRA SCT010 SCT040CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3222,7 +4676,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF CYAB 151838Z 1519/1522 23012KT P6SM SCT015 SCT025 OVC040"
 		" TEMPO 1519/1522 P6SM -SN BKN015 OVC040"
 		" RMK NXT FCST WILL BE ISSUED AT 171245Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3233,7 +4690,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1600/1606 3000 BR"
 		" PROB30"
 		" TEMPO 1600/1606 0500 FG OVC002"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3243,7 +4703,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF EDDT 151700Z 1518/1618 28008KT CAVOK"
 		" BECMG 1518/1520 VRB02KT"
 		" BECMG 1608/1610 23007KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3253,7 +4716,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF URWW 151957Z 1521/1606 13007G13MPS 9999 BKN040CB BKN100"
 		" TEMPO 1521/1606 VRB09G16MPS 3100 -TSRAGR"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3268,7 +4734,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM160400 03010G20KT P6SM OVC050"
 		" TEMPO 1604/1607 VRB15G25KT 3SM -SHSNRA BR"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 160100Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3277,7 +4749,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK WIND 745FT 25029G41KT"
 		"=",
 		"TAF ENKB 152000Z NIL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -3290,7 +4769,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30 1606/1612 5000 BR BKN010"
 		" BECMG 1615/1617 SCT018"
 		" TEMPO 1621/1624 18008KT 7000 TSRA SCT20TCU FEW025CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3303,7 +4785,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM161500 07005KT P6SM FEW030"
 		" BECMG 1704/1706 18005KT"
 		" RMK NXT FCST BY 161200Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3315,7 +4802,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1619/1621 01006KT"
 		" BECMG 1703/1705 07010KT"
 		" BECMG 1709/1712 13004KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3325,7 +4815,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FG N-E VOLCANIC ASH CLOUD S"
 		"=",
 		"TAF RJFK 161706Z 1618/1800 34005KT 9999 FEW030"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3336,14 +4829,25 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1622/1700 35008KT 9999 NSW FEW015 SCT025"
 		" TEMPO 1704/1706 FEW008 BKN025 FEW025CB"
 		" BECMG 1709/1712 24005KT"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
 		"CYUS", "Shepherd Bay Arpt", {2018, 9, 16},
 		"SPECI CYUS 162147Z AUTO VRB13G28KT ////SM //// FEW009 BKN015 OVC065 M01/M02 A2987"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3359,7 +4863,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM170300 24015G25KT 1SM -SN BR VV004"
 		" TEMPO 1703/1706 6SM -SN SCT004 OVC012"
 		" RMK NXT FCST BY 170000Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3367,21 +4876,38 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EFMI 162150Z AUTO 27001KT 0500 BCFG SCT032 04/04 Q1011"
 		"=",
 		"TAF EFMI 162000Z NIL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
 		"EHDV", "D15-FA-1 Sea(OIL)", {2018, 9, 16},
 		"METAR EHDV 162155Z AUTO 26011KT 160V330 9999 DZ FEW023/// BKN027/// BKN033/// 17/15 Q1015 W///H///"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"CYSY", "Sachs Harbour Arpt", {2018, 9, 17},
 		"METAR CYSY NIL"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		{},
+		0
 	},
 
 	{
@@ -3389,7 +4915,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMNI 171315Z AUTO 18005KT 3/4SM BR OVC008 23/22 A2997"
 		" RMK AO2 VIS 1/2V1 3/4"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3397,7 +4929,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KMWN 171249Z 28023KT 1/16SM FG VV001 12/12"
 		" RMK"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3408,7 +4943,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KDSM 171120Z 1712/1812 20005KT P6SM BKN080"
 		" FM171500 23008KT P6SM FEW050 SCT150"
 		" FM180000 17005KT P6SM SCT100 BKN250"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3423,7 +4963,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1723/1801 2SM TSRA OVC015CB"
 		" FM180300 00000KT P6SM SCT020 BKN080"
 		" TEMPO 1812/1816 2SM BR BKN010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3436,7 +4983,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM171100 24005KT P6SM SCT020 BKN250"
 		" FM171800 26015KT P6SM SCT030"
 		" FM180200 24005KT P6SM SCT100"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3449,7 +5001,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1717/1724 5SM -SN BR SCT002 BKN012"
 		" PROB40 1717/1724 1/2SM FZFG VV002"
 		" RMK NXT FCST BY 171800Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3463,7 +5018,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM171500 34008KT P6SM BKN008 OVC015"
 		" FM171800 04010KT P6SM BKN015"
 		" RMK NXT FCST BY 171400Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3475,7 +5035,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1712/1713 BKN012CB"
 		" FM171300 06010KT P6SM VCSH OVC020"
 		" FM171600 07010KT P6SM BKN070"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -3483,7 +5050,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR ENSL 171450Z 17023KT CAVOK 13/12 Q1007 W11/S3"
 		"=",
 		"TAF ENSL 171400Z NIL"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
 	},
 
 	{
@@ -3496,7 +5068,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM172200 36025G35KT P6SM FEW005 OVC010"
 		" TEMPO 1722/1723 2SM -SN BR BKN008"
 		" RMK NXT FCST WILL BE ISSUED AT 181445Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3508,7 +5083,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1719/1723 3SM -SN BR BKN008 OVC012"
 		" PROB30 1719/1723 2SM -FZDZ BR OVC006"
 		" RMK NXT FCST WILL BE ISSUED AT 181445Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3519,7 +5099,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF CYHI 171838Z 1719/1724 34022G32KT P6SM -SN FEW012 BKN030"
 		" TEMPO 1719/1724 2SM -SN BLSN BR OVC012"
 		" RMK NXT FCST WILL BE ISSUED AT 181545Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		1
 	},
 
 	{
@@ -3527,7 +5112,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PABA 171852Z AUTO 09019KT 6SM BR OVC007 M02/M03 A3027"
 		" RMK AO2 PK WND 09028/1827 SNB26E37 SLP236 P0000 T10171028 FZRANO TSNO"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3536,7 +5127,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK SN6ST2 SLP084"
 		"=",
 		"TAF CYBB 171842Z 1719/1723 22015G25KT 1SM -SN OVC008"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3549,7 +5145,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1722/1724 22015G25KT"
 		" FM180000 34015G25KT 1SM -SN BLSN BKN005 OVC015"
 		" RMK NXT FCST BY 180000Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3563,7 +5164,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM181000 00000KT 5SM HZ BKN015 BKN220"
 		" TEMPO 1811/1815 3SM BR HZ"
 		" FM181600 00000KT 6SM HZ SCT020 BKN220"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3574,7 +5178,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KMMH 171720Z 1718/1818 13009KT P6SM SKC"
 		" FM172300 28010G18KT P6SM SKC"
 		" FM180300 VRB03KT P6SM SKC"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3582,7 +5192,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PAEC 171856Z 00000KT 1/2SM -DZ FG VV002 09/08 A3003"
 		" RMK NOSPECI"
 		"=",
-		""
+		"",
+		{MetarTafRealData::Attribute::NOSPECI},
+		{},
+		0
 	},
 
 	{
@@ -3594,7 +5207,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1718/1804 5000 HZ"
 		" BECMG 1809/1811 02010KT"
 		" BECMG 1816/1818 VRB02KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3610,7 +5226,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1806/1809 17014KT"
 		" TEMPO 1806/1809 -RA SCT008"
 		" TEMPO 1809/1812 SCT018"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3618,7 +5237,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EGDR 171850Z 17015G29KT 8000 HZ FEW005 SCT007 BKN014 17/16 Q1005 GRN"
 		" TEMPO 5000 -RA SCT005 YLO1"
 		"=",
-		""	
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3633,7 +5255,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM190200 09028G38KT 11/2SM -SN BLSN BKN008 OVC040"
 		" TEMPO 1902/1908 5SM -SN BLSN SCT008 OVC060"
 		" FM190800 08025G35KT 11/2SM -SN BLSN SCT008 BKN020 OVC120"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3644,7 +5271,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF VTSG 172300Z 1800/1824 26008KT 8000 SCT020 BKN100"
 		" TEMPO 1800/1804 26015G35KT 5000 RA FEW018TCU SCT020 BKN100"
 		" TEMPO 1806/1812 26015G35KT 3000 RA FEW018TCU SCT020 BKN100"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3654,14 +5284,35 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF KIWA 181720Z 1818/1918 27006KT P6SM FEW110"
 		" FM190600 12005KT P6SM SCT120 BKN250"
 		" FM191700 19006KT P6SM VCSH SCT080 BKN120"
-		"="
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"RJBD", "Nanki-Shirahama Arpt", {2018, 9, 20},
+		"SPECI RJBD 200732Z 12005KT 4500 -SHRA BR FEW006 SCT015 FEW025CB BKN060 22/22 Q1009"
+		" RMK 1ST006 3CU015 1CB025 6SC060 A2981 CB 25KM E MOV NE"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
 		"METAR ENSE 201620Z AUTO 24040KT 9999NDV FEW010/// SCT020/// BKN027/// 12/10 Q0988 W///S7"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3669,14 +5320,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"SPECI UKLL 202304Z 00000MPS 4800 1100SE R31/1900 BR NSC 11/10 Q1020 R31/CLRD//"
 		" TEMPO 0400 FG VV002"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
 		"METAR ENSE 202320Z AUTO 24014KT 9999NDV SCT044/// BKN051/// 11/07 Q0995 W///S6"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3692,7 +5353,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2103/2110 SCT022"
 		" PROB30"
 		" TEMPO 2110/2112 7000 SHRA SCT024TCU"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3703,7 +5371,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2112/2115 2000 RA BR BKN008"
 		" PROB30 "
 		" TEMPO 2115/2117 4000 SHRA BKN012"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3712,7 +5383,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF ENLE 211100Z 2112/2121 27060G72KT 8000 -SHRA SCT012 BKN025"
 		" TEMPO 2112/2115 2000 RA BR BKN009"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3727,7 +5401,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2123/2200 27012KT 9999 SCT030 QNH3000INS"
 		" BECMG 2210/2211 24012KT 9999 SCT020 QNH3006INS"
 		" BECMG 2217/2218 21009KT 8000 -SHRA BKN010 QNH3006INS TX18/2212Z TN08/2204Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -3739,14 +5419,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30"
 		" TEMPO 2112/2118 6000 SHRA FEW012 SCT020CB"
 		" BECMG 2118/2120 27010KT FEW035"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 21},
 		"METAR ENSE 211150Z AUTO 36028KT 9999NDV FEW030/// BKN130/// 09/04 Q0984 W///S4"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3754,8 +5442,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KRSP 211554Z AUTO 19010G14KT M1/4SM FG VV001 17/17 A3020"
 		" RMK AO2 SLP225 T01720172 $"
 		"=",
-		""
-	}, 
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
+	},
 
 	{
 		"WADL", "Lompoc Intl", {2018, 9, 21},
@@ -3764,7 +5459,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF WADL 211700Z 2118/2218 00000KT 7000 SCT016"
 		" BECMG 2123/2201 16010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3772,7 +5470,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR KADM 212155Z 31008KT 1 1/4SM +VCTSRA BKN007 OVC017 22/22 A2996"
 		" RMK LTG DSNT SE AND S"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3781,7 +5482,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0300 FG"
 		" RMK QBB060 QFE751/1001"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	}, 
 
 	{
@@ -3792,7 +5496,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2201/2204 05003KT NSC"
 		" TEMPO 2205/2208 3000E VCFG FEW002"
 		" BECMG 2212/2214 23005KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3804,7 +5511,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2204/2206 16003KT 9999 NSW SCT022 SCT070"
 		" BECMG 2210/2212 00000KT SCT020TCU BKN080"
 		" PROB30 2214/2216 35006KT 7000 TSVCSH SCT024CB BKN070"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3817,7 +5527,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2204/2206 19007G13MPS 9999 NSW"
 		" PROB40"
 		" TEMPO 2215/2221 -TSRA SCT030CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3831,7 +5544,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB30 2121/2122 VRB40G55KT 1/2SM FC TSGR BKN008 OVC040CB"
 		" FM220000 25020G35KT P6SM FEW020 SCT040"
 		" RMK NXT FCST WILL BE ISSUED AT 221245Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3840,21 +5560,34 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK SF1SC3SC4 FREEZING FOG IN VICINITY"
 		" -3.1/-5.5/TR/TRACE SNW CVR/ LAST STFD OB/NEXT 251200Z SLP135"
 		"=",
-		""
+		"",
+		{},
+		{},
+		0
 	},
 
 	{
 		"ENQC", "Troll-C(OIL)", {2018, 9, 22},
 		"METAR ENQC 220150Z AUTO 26036KT 9999NDV BKN023/// BKN099/// 10/05 Q0990 W///S/"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"ENSE", "Snorre A(OIL)", {2018, 9, 22},
 		"METAR ENSE 221020Z AUTO 28030KT 9999NDV FEW017/// SCT021/// BKN034/// 10/07 Q0993 W///S5"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3862,7 +5595,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR K5H4 221055Z AUTO 23005KT 10SM CLR 06/05 A3006"
 		" RMK AO2"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -3871,21 +5610,47 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG AT2000 2800 BR"
 		"=",
 		"TAF ZSOF 221900Z 2300/2324 09003MPS 4000 BR NSC TX29/2307Z TN19/2321Z"
-		"="
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"RJFY", "Kanoya (JMSDF)", {2018, 9, 24},
+		"SPECI RJFY 240332Z 05003KT 010V080 9999 -RA FEW005 SCT025 OVC035 22/20 Q1015"
+		" RMK 1ST005 3CU025 8NS035 A2999"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
 		"EHJR", "K13-a Sea(OIL)", {2018, 9, 24},
 		"METAR EHJR 241925Z AUTO 33015KT //// // ///////// 13/06 Q1036 RE// W17/H23"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
 		"EHJA", "J6-A Sea(OIL)", {2018, 9, 24},
 		"METAR EHJA 241955Z AUTO 31017KT 270V340 9999 FEW029/// 12/05 Q1036 W///H///"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3898,14 +5663,35 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2418/2424 26020G35KT SHRA BKN014CB"
 		" BECMG 2500/2502 23008KT"
 		" TEMPO 2506/2518 20020KT SHRA BKN014CB"
-		"="
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"RJNG", "Gifu (JASDF)", {2018, 9, 25},		
+		"SPECI RJNG 250349Z 33006KT 9999 FEW010 SCT070 OVC100 21/18 Q1014"
+		" RMK 1CU010 3AC070 8AS100 A2994"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
 		"EHSA", "Euro Platform(OIL)", {2018, 9, 25},
 		"METAR EHSA 252355Z AUTO 19012KT 9999 ///////// 15/07 Q1034 W16/H7"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3916,7 +5702,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM251800 15008KT 9999 -SHRA SCT020 BKN035"
 		" INTER 2506/2509 4000 SHRA BKN010 "
 		" INTER 2518/2524 5000 SHRA BKN010"
-		" PROB30 INTER 2506/2508 3000 TSRA BKN010 SCT040CB="
+		" PROB30 INTER 2506/2508 3000 TSRA BKN010 SCT040CB=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -3934,7 +5725,26 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM270300 29015G25KT P6SM BKN030"
 		" BECMG 2703/2705 29010KT"
 		" RMK NXT FCST BY 261200Z"
-		"="
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"RJAA", "Narita Intl", {2018, 9, 26},
+		"SPECI RJAA 261945Z 36020KT 4000 -SHRA BR FEW003 SCT004 BKN006 FEW020TCU 15/15 Q1014"
+		" RMK 1ST003 3ST004 5ST006 1TCU020 A2995 TCU 10KM N-NE MOV NE"
+		"=",
+		"TAF RJAA 261706Z 2618/2800 01015KT 8000 -SHRA FEW008 BKN012"
+		" TEMPO 2618/2623 3000 SHRA BR FEW002 BKN004"
+		" BECMG 2715/2718 34005KT"
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3942,7 +5752,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR EGDM 270050Z AUTO 17003KT 0050 FG NCD 08/07 Q1030"
 		"=",
 		"TAF EGDM 261557Z 2615/2618 CNL"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::CNL
+		},
+		0
 	},
 
 	{
@@ -3951,7 +5768,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF ESNQ 262030Z 2621/2623 34011KT 9999 -RASN BKN020"
 		" BECMG 2621/2623 35015G30KT 2000 SN VV009"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -3962,7 +5782,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD CYHA 261717Z 2617/2621 04012KT 2SM -DZSG BR OVC004"
 		" TEMPO 2617/2621 P6SM -DZ OVC012"
 		" RMK NXT FCST WILL BE ISSUED AT 271345Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -3977,7 +5804,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 3014/3018 19060G75KT 2000 +SHRA BR FEW005 BKN008"
 		" BECMG 3018/3020 21024G34KT"
 		" BECMG 0109/0112 21010KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -3991,7 +5823,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1005/1006 06025G35KT 4800 TSRA BKN010CB OVC100 QNH2957INS"
 		" BECMG 1012/1013 05030G50KT 3200 +TSRA OVC008CB QNH2945INS"
 		" BECMG 1015/1016 05035G64KT 3200 +TSRA OVC008CB QNH2945INS"
-		" TX30/0920Z TN22/1011Z LAST NO AMDS AFT 0917="
+		" TX30/0920Z TN22/1011Z LAST NO AMDS AFT 0917=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -4002,7 +5844,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF UKHH 082310Z 0900/0909 33002MPS 0200 FZFG OVC001 TX03/0909Z TNM03/0905Z"
 		" PROB40 TEMPO 0900/0907 -FZDZ"
 		" TEMPO 0907/0909 1200 BR SCT004"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4010,7 +5855,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PASV 010955Z AUTO 04019G23KT 10SM -SHRA OVC028 02/M05 A2877"
 		" RMK AO2 PK WND 09031/0935 WSHFT 0934 RAB0925E0930SHRASNB0944E0953SHSNB0953E0955 SLP759 P0000 T00151050 400351005"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4023,7 +5874,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM012200 34020G28KT 1 1/2SM -SN BLSN OVC015"
 		" FM020600 28018G26KT 2SM -SN BLSN OVC015"
 		" FM021500 26012G20KT 5SM -SN OVC020"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4038,7 +5894,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0323/0408 P6SM NSW OVC012"
 		" PROB30 0402/0408 1SM -FZDZ BR OVC004"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 040200Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4053,7 +5914,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 0417/0418 12010G20KT 1600 -SN OVC010 620109 QNH2885INS"
 		" BECMG 0500/0501 27025G35KT 9999 NSW BKN035 620359 520003 QNH2880INS"
 		" TEMPO 0501/0504 27035G45KT 530003 TX00/0322Z TNM04/0418Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4064,7 +5930,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PABE 042001Z 0420/0518 19006KT 3SM BR OVC006"
 		" TEMPO 0420/0422 1/2SM FZFG VV002"
 		" FM050300 15006KT P6SM OVC010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4077,7 +5949,41 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM060400 06012KT P6SM VCFG OVC050"
 		" FM061500 06013KT 5SM -SN BKN020 OVC035"
 		" FM061800 05012KT 3SM -SN BR SCT007 OVC015"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
+	},
+
+	{
+		"CYCQ", "Chetwynd Arpt", {2019, 1, 9},
+		"METAR CYCQ 090000Z CCB 00000KT 35SM FEW090 BKN170 OVC190 M14/M16 A3011"
+		" RMK AC2AS3CS3 CLIMAT -10.0/-31.0/-14.0/22 LAST STFD OBS/NEXT 091400Z SLP265"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		2
+	},
+
+	{
+		"CYCB", "Cambridge Bay Arpt", {2019, 1, 10},
+		"METAR CYCB 101800Z CCC 03006KT 10SM IC FEW030 M40/M44 A3068"
+		" RMK SC2 FG E DSIPTG SLP397"
+		"=",
+		"TAF CYCB 101838Z 1019/1107 03005KT P6SM IC FEW030"
+		" BECMG 1022/1024 06010KT RMK NXT FCST BY 110100Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		{},
+		3
 	},
 
 	{
@@ -4088,7 +5994,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF CYCA 111938Z 1120/1208 FCST NOT AVBL DUE NO OBS"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 120200Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4102,7 +6013,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1114/1121 4SM BR"
 		" PROB30 1114/1121 11/2SM BR"
 		" RMK FCST BASED ON AUTO OBS. NXT FCST BY 111400Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4111,7 +6027,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK AO2 SLP219 I1000 I3000 T1350 53004 PNO"
 		"=",
 		"TAF PABT 121125Z 1212/1312 VRB04KT P6SM FEW250"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4122,7 +6043,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"PAYA 131205Z 1312/1412 10005KT P6SM VCFG BKN050 BKN070"
 		" TEMPO 1312/1316 3SM BR SCT005"
 		" FM131800 06004KT P6SM SCT025 BKN100"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4135,7 +6063,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM150300 08003KT P6SM VCSH SCT010 BKN035 BKN060"
 		" FM150600 VRB03KT 6SM BR SCT001 SCT015 OVC035"
 		" FM151000 08006KT 4SM -RA BR BKN025 OVC040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4143,7 +6078,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PATO 160753Z AUTO 09008KT 10SM UP FEW019 BKN029 OVC037 00/M01 A2969"
 		" RMK AO2 FZRAB01E04SNB04E16 SLP055 P0001 I1000 T00001011 TSNO"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4155,7 +6096,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 1907/1908 04005MPS 3100 BR"
 		" TEMPO 1907/1912 27007MPS"
 		" FM191200 18004MPS 0600"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4163,7 +6107,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR CWLY 182200Z AUTO /////KT 07/03 A2998"
 		" RMK WND MISG CLD MISG WX MISG VIS MISG PCPN MISG ICG MISG SLP160"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4175,7 +6124,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 1922/1924 2SM BR BKN003"
 		" FM200000 VRB05KT P6SM VCFG SCT002 BKN010"
 		" FM200200 05007KT P6SM VCFG FEW002 SCT010"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4186,7 +6140,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF PAWG 181741Z 1818/1918 31005KT P6SM -SN OVC060"
 		" FM190100 08007KT 5SM -SN BKN025 OVC040"
 		" FM190800 08007KT P6SM VCSH SCT030 OVC060"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4194,7 +6154,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PAAK 231156Z AUTO 28007KT 10SM FEW027 SCT032 SCT045 00/M02 A2886"
 		" RMK AO2 SLP773 6//// 7//// T00001017 10017 21006 53015"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4205,7 +6171,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF PAJN 231740Z 2318/2418 00000KT P6SM VCFG OVC040"
 		" FM232100 09007KT 3SM -SNRA BR SCT010 OVC025"
 		" FM240300 09012KT P6SM -RA SCT025 OVC035"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4219,7 +6190,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2322/2401 1/2SM SN FG SCT004 BKN007"
 		" FM240100 02015G25KT 1 1/2SM -SN BR BKN007 OVC010"
 		" FM240600 VRB06KT 5SM -SN BR SCT007 BKN015 OVC025"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
     {
@@ -4233,7 +6209,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2411/2412 30010G15KT 9999 NSW OVC015 QNH2990INS"
 		" BECMG 2414/2415 30009KT 9999 SCT015 QNH2995INS"
 		" BECMG 2420/2421 27012G18KT 9999 BKN025 620252 QNH3003INS TX11/2321Z TNM02/2411Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AO2A,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
     },
 
 	{
@@ -4246,7 +6231,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM240300 30014KT 4SM -RASN BR OVC012"
 		" FM240700 30013KT P6SM OVC015"
 		" FM241300 29010KT P6SM BKN022"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4258,7 +6249,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM240100 18007KT 5SM -SN BR SCT020 BKN040"
 		" FM240600 16007KT P6SM VCSH SCT030 BKN060"
 		" FM241500 33006KT P6SM SCT070"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4271,7 +6267,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" PROB40"
 		" TEMPO 2400/2415 3000 TSRA SCT012 FEW018CB BKN020"
 		" BECMG 2407/2409 21015G25KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	}, 
 
 	{
@@ -4281,7 +6280,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF SKBG 232300Z 2400/2424 32006KT 9999 SCT015"
 		" TEMPO 2410/2415 16005KT"
 		" TX29/2419Z TN19/2411Z"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4292,7 +6294,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF PASC 232321Z 2400/2424 06013KT P6SM SCT005"
 		" TEMPO 2400/2404 4SM BLSN BKN005"
 		" FM241100 05009KT P6SM BKN150"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4300,7 +6307,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR YPKG 232300Z AUTO 26013KT 9999 // NCD 17/10 Q1010 RF00.0////./"
 		"=",
 		"TAF YPKG 232302Z 2400/2424 24012KT CAVOK FM241000 18010KT CAVOK"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4313,7 +6325,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2404/2407 1400 SHSN BKN006 BKN015CB"
 		" BECMG 2415/2417 28003MPS 3100 BR"
 		" TEMPO 2418/2424 0500 IC FZFG VV003"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4326,7 +6341,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2405/2408 1500 BKN006"
 		" BECMG 2412/2413 16003MPS 1200 BR FU"
 		" TEMPO 2412/2424 0300 -SN"
-		"="
+		"=",
+		{},
+		{},
+		0
 	}, 
 
 	{
@@ -4335,7 +6353,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" RMK AO2 SLP252 I1000 I3/// T01281006 56022 $"
 		"=",
 		"TAF KMEI 251723Z 2518/2618 VRB04KT P6SM BKN250 FM261600 19004KT P6SM BKN040"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4347,7 +6371,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2614/2615 06010G15KT 6000 -RASN FEW020 BKN040 620406 QNH2870INS"
 		" BECMG 2621/2622 01020G25KT 9999 VCSH FEW020 BKN040 620406 QNH2868INS"
 		" TX03/2614Z TNM02/2622Z"
-		"="		
+		"=",
+		{
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -4360,7 +6391,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM191100 00000KT 4SM BR OVC025"
 		" FM191500 00000KT 6SM BR OVC050"
 		" FM192200 VRB03KT P6SM SCT025 BKN050"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4372,7 +6408,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM262200 17003KT 2SM -SN BR FEW010 OVC025"
 		" FM270200 03004KT 6SM -SN BR FEW005 OVC025"
 		" FM271000 01003KT 3SM -SN BR BKN015 OVC030"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4383,7 +6424,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD PGUA 271220Z 2712/2816 02015G20KT 8000 -SHRA SCT001 BKN008 QNH2985INS"
 		" TEMPO 2712/2716 03020G25KT 3200 -SHRA BKN001 OVC007"
 		" BECMG 2721/2722 05020G25KT 9999 NSW BKN017 QNH2983INS TX29/2802Z TN23/2718Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -4394,14 +6443,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF PATA 271750Z 2718/2818 10010KT P6SM VCSH BKN050 OVC100"
 		" FM280600 09008KT P6SM -FZRASN SCT025 OVC050"
 		" FM280900 09010KT 5SM -SN BKN025"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
 		"EHSA", "(Euro Platform(OIL)", {2019, 1, 27},
 		"METAR EHSA 272355Z AUTO 29044KT 5000 -RADZ ///////// 05/03 Q0988 W05/H59"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4409,7 +6468,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PAMY 280156Z AUTO 17014KT 5SM -SN BR FEW010 OVC024 01/M01 A2980"
 		" RMK AO2 RAB01E20B49E51UPB10E13B47E49SNB20E47B51 SLP093 P0000 T00061006 FZRANO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4417,7 +6483,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR PAAK 292256Z AUTO 14012KT 3SM -RA BR SCT013 BKN017 OVC031 04/03 A2924"
 		" RMK AO2 RAB31 SLP903 T00440028 PNO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4425,7 +6498,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" METAR PAAK 300056Z AUTO 13013KT 3SM -RA BR OVC013 04/03 A2923"
 		" RMK AO2 RAE28B50 SLP899 T00440028 PNO $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4434,7 +6514,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF ENNE 161400Z 1615/1618 31038KT 9999 -SHRA FEW020TCU BKN035"
 		" BECMG 1616/1618 31028KT"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	},
 
 	{
@@ -4445,7 +6530,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2709/2718 4000 SHRA BKN014TCU"
 		" BECMG 2709/2711 26040KT"
 		" BECMG 2713/2715 33032KT"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4453,7 +6541,14 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"METAR K1GM 101558Z AUTO 36012KT 1 5/8SM -SN OVC003 M01/M01 A2997"
 		" RMK AO2 OVC V BKN SLP184 P0006 T10081008 $"
 		"=",
-		""
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
 	{
@@ -4464,7 +6559,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF AMD LRTR 101404Z 1014/1112 14006KT CAVOK"
 		" TEMPO 1014/1017 VRB15G25KT 5000 TSRA BKN015 SCT035C"
 		" BECMG 1108/1110 5000 -RA BR BKN015 OVC040"
-		"="
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
 	},
 
 	{
@@ -4478,7 +6578,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" BECMG 2405/2406 VRB06KT 9999 NSW FEW015 SCT025 BKN040 QNH2993INS"
 		" BECMG 2422/2423 08009KT 9999 SCT015 BKN030 QNH2993INS"
 		" TX27/2401Z TN23/2416Z"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	},
 
     {
@@ -4491,7 +6597,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     	" TEMPO 0221/0303 18018G28KT"
     	" TEMPO 0303/0306 25015G25KT"
     	" BECMG 0306/0309 26012KT"
-    	"="
+    	"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
     },
 
     {
@@ -4504,7 +6618,15 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     	" TEMPO 0221/0303 18018G28KT"
     	" TEMPO 0303/0306 25015G25KT"
     	" BECMG 0306/0309 26012KT"
-    	"="
+    	"=",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
     },
 
     {
@@ -4512,7 +6634,13 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     	"SPECI RJKI 152225Z AUTO 07018KT 9999 SCT011 SCT021 BKN024 //////CB 25/23 Q1017"
     	" RMK A3003 CB 40KM E MOV UNKNOWN TCU 40KM W MOV UNKNOWN"
     	"=",
-    	""
+    	"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
     },
 
     {
@@ -4524,7 +6652,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     	" FM221600 22014G24KT P6SM SCT080 BKN100"
     	" FM222100 25018G28KT P6SM SCT020 BKN040"
     	" FM230300 21011KT P6SM OVC006"
-    	"="
+    	"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
     },
 
 	{
@@ -4535,7 +6668,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"TAF MSLP 221525Z 2218/2318 21012KT 9999 BKN023 FEW033CB TX32/2218Z TN25/2312Z"
 		" TEMPO 2219/2222 5000 TSRA FM230000 VRB03KT 9999 FEW023 FEW037CB BKN070"
 		" TEMPO 2302/2305 06010KT 5000 TSRA BKN023 SCT033CB"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
 	},
 
 	{
@@ -4545,7 +6683,10 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"TAF MMPS 220508Z 2206/2306 02005KT 6SM HZ SKC FM221800 22010KT P6SM SCT020 SCT200"
 		" TEMPO 2222/2302 6SM -TSRA BKN015CB"
-		"="
+		"=",
+		{},
+		{},
+		0
 	},
 
 	{
@@ -4558,7 +6699,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" FM230100 17008KT 5SM -RA BR OVC035 WS020/15045KT"
 		" FM230600 00000KT 5SM -RA BR OVC016 WS020/15040KT"
 		" FM231100 00000KT P6SM VCSH OVC016"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4568,7 +6714,12 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"KSLC 221452Z 2215/2318 16007KT P6SM SCT060 BKN090"
 		" FM222000 30009KT P6SM FEW070 OVC100 FM230400 35007KT P6SM BKN070 BKN200"
-		"="
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
 	},
 
 	{
@@ -4579,6 +6730,21 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 0706/0806 4000 SHRA BKN012 BKN030"
 		" BECMG 0708/0710 14010KT"
 		" BECMG 0720/0722 36010KT"
-		"="
+		"=",
+		{},
+		{},
+		0
+	},
+	
+	{
+		"BGJN", "Ilulissat Arpt", {2020, 2, 2},		
+		"BGJN 022250Z AUTO 07002KT 8000NDV -SG SCT055/// BKN070/// M16/M19 Q1003"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
 	}
 };

@@ -8,387 +8,113 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
-//Format 1, e.g. BLSN1SC1SC1CI3
+static const auto heightMargin = 1.0 / 2;
 
-TEST(CloudTypesGroup, format1parseCumulonimbus) {
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse multiple cloud types / obscurations in single group
+// Purpose: to confirm that group with format which contains multiple cloud
+// layer or obscuration types with their octa (e.g. BLSN1SC1SC1CI3) are parsed
+// correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudTypesGroup, parseFormatWithoutHeightSingleLayer) {
 	const auto ctg = metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULONIMBUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::CUMULONIMBUS);
+	EXPECT_FALSE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].okta(), 5u);
 }
 
-TEST(CloudTypesGroup, format1parseToweringCumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("TCU3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::TOWERING_CUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseCumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("CU2", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 2u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseCumulusFractus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("CF1", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULUS_FRACTUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseStratocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("SC7", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 7u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseNimbostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("NS8", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::NIMBOSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseStratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("ST8", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseStratusFractus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("SF4", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATUS_FRACTUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 4u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseAltostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("AS8", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ALTOSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseAltocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("AC6", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ALTOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 6u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseAltocumulusCastellanus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("ACC6", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ALTOCUMULUS_CASTELLANUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 6u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseCirrus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("CI3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRRUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseCirrostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("CS8", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRROSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseCirrocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("CC5", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRROCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseBlowingSnow) {
-	const auto ctg = metaf::CloudTypesGroup::parse("BLSN4", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::BLOWING_SNOW);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 4u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseBlowingDust) {
-	const auto ctg = metaf::CloudTypesGroup::parse("BLDU3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::BLOWING_DUST);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseBlowingSand) {
-	const auto ctg = metaf::CloudTypesGroup::parse("BLSA3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::BLOWING_SAND);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseIceCrystals) {
-	const auto ctg = metaf::CloudTypesGroup::parse("IC2", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ICE_CRYSTALS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 2u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseRain) {
-	const auto ctg = metaf::CloudTypesGroup::parse("RA3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::RAIN);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseDrizzle) {
-	const auto ctg = metaf::CloudTypesGroup::parse("DZ1", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::DRIZZLE);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseSnow) {
-	const auto ctg = metaf::CloudTypesGroup::parse("SN6", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::SNOW);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 6u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseIcePellets) {
-	const auto ctg = metaf::CloudTypesGroup::parse("PL5", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ICE_PELLETS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseSmoke) {
-	const auto ctg = metaf::CloudTypesGroup::parse("FU8", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::SMOKE);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseFog) {
-	const auto ctg = metaf::CloudTypesGroup::parse("FG3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::FOG);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseMist) {
-	const auto ctg = metaf::CloudTypesGroup::parse("BR3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::MIST);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseHaze) {
-	const auto ctg = metaf::CloudTypesGroup::parse("HZ7", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::HAZE);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 7u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
-}
-
-TEST(CloudTypesGroup, format1parseSequenceTwoItems) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightObscurationAndCloudLayer) {
 	const auto ctg = metaf::CloudTypesGroup::parse("IC1SC3", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 2u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ICE_CRYSTALS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(1)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(1)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::ICE_CRYSTALS);
+	EXPECT_FALSE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].okta(), 1u);
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].okta(), 3u);
 }
 
-TEST(CloudTypesGroup, format1parseSequenceThreeItems) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightThreeLayers) {
 	const auto ctg = metaf::CloudTypesGroup::parse("SC1AC6CI1", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 3u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(1)), 
-		metaf::CloudTypesGroup::Type::ALTOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(1)), 6u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(2)), 
-		metaf::CloudTypesGroup::Type::CIRRUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(2)), 1u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].okta(), 1u);
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::ALTOCUMULUS);
+	EXPECT_FALSE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].okta(), 6u);
+	EXPECT_EQ(ctv[2].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ctv[2].height().isReported());
+	EXPECT_EQ(ctv[2].okta(), 1u);
 }
 
-TEST(CloudTypesGroup, format1parseSequenceFourItems) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightThreeLayersAndObscuration) {
 	const auto ctg = metaf::CloudTypesGroup::parse("BLSN1SC1SC1CI3", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 4u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::BLOWING_SNOW);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(1)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(1)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(2)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(2)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(3)), 
-		metaf::CloudTypesGroup::Type::CIRRUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(3)), 3u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::BLOWING_SNOW);
+	EXPECT_FALSE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].okta(), 1u);
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].okta(), 1u);
+	EXPECT_EQ(ctv[2].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctv[2].height().isReported());
+	EXPECT_EQ(ctv[2].okta(), 1u);
+	EXPECT_EQ(ctv[3].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ctv[3].height().isReported());
+	EXPECT_EQ(ctv[3].okta(), 3u);
 }
 
-TEST(CloudTypesGroup, format1parseSequenceFiveItems) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightFiveLayers) {
 	const auto ctg = metaf::CloudTypesGroup::parse("CF1CU3SC1CS1CI2", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 5u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULUS_FRACTUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(1)), 
-		metaf::CloudTypesGroup::Type::CUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(1)), 3u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(2)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(2)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(3)), 
-		metaf::CloudTypesGroup::Type::CIRROSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(3)), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(4)), 
-		metaf::CloudTypesGroup::Type::CIRRUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(4)), 2u);
-	EXPECT_FALSE(ctg->baseHeight().isReported());
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::CUMULUS_FRACTUS);
+	EXPECT_FALSE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].okta(), 1u);
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_FALSE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].okta(), 3u);
+	EXPECT_EQ(ctv[2].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctv[2].height().isReported());
+	EXPECT_EQ(ctv[2].okta(), 1u);
+	EXPECT_EQ(ctv[3].type(), metaf::CloudType::Type::CIRROSTRATUS);
+	EXPECT_FALSE(ctv[3].height().isReported());
+	EXPECT_EQ(ctv[3].okta(), 1u);
+	EXPECT_EQ(ctv[4].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ctv[4].height().isReported());
+	EXPECT_EQ(ctv[4].okta(), 2u);
 }
 
-TEST(CloudTypesGroup, format1parseSequenceTooLong) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightTooManyLayers) {
 	const auto ctg = 
 		metaf::CloudTypesGroup::parse("SC1SC1SC1SC1SC1SC1SC1SC1SC1", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 8u);
 }
 
-TEST(CloudTypesGroup, format1parseWrongReportPart) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightWrongReportPart) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CB5", metaf::ReportPart::TAF).has_value());
 }
 
-TEST(CloudTypesGroup, format1parseWrongFormat) {
+TEST(CloudTypesGroup, parseFormatWithoutHeightWrongFormat) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("AB5", metaf::ReportPart::RMK).has_value());
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("AC0", metaf::ReportPart::RMK).has_value());
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("AC9", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("AC/", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("//7", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("ACX", metaf::ReportPart::RMK).has_value());
@@ -398,220 +124,170 @@ TEST(CloudTypesGroup, format1parseWrongFormat) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2/CI3", metaf::ReportPart::RMK).has_value());
 }
 
-//Format 2, e.g. 8NS070
+///////////////////////////////////////////////////////////////////////////////
+// Parsing single cloud type with base height in single group
+// Purpose: to confirm that group with format which contains single cloud
+// layer type with base height and octa (e.g. 8NS035) are parsed correctly and 
+// malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
-TEST(CloudTypesGroup, format2parseCumulonimbus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::RMK);
+TEST(CloudTypesGroup, parseFormatWithHeight) {
+	const auto ctg = metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
+	const auto ctv = ctg->cloudTypes();
 	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULONIMBUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 1u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 2000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::NIMBOSTRATUS);
+	EXPECT_TRUE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[0].height().distance().has_value());
+	EXPECT_NEAR(ctv[0].height().distance().value(), 3500, heightMargin);
+	EXPECT_EQ(ctv[0].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[0].okta(), 8u);
+	EXPECT_TRUE(ctv[0].isValid());
 }
 
-TEST(CloudTypesGroup, format2parseToweringCumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("2TCU020", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::TOWERING_CUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 2u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 2000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
+TEST(CloudTypesGroup, parseFormatWithHeightWrongReportPart) {
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::TAF).has_value());
 }
 
-TEST(CloudTypesGroup, format2parseCumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("4CU010", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 4u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 1000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseStratocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("5SC060", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 6000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseNimbostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("8NS070", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::NIMBOSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 7000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseStratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("5ST007", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::STRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 700u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseAltostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("8AS100", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ALTOSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 8u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 10000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseAltocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("3AC070", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::ALTOCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 7000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseCirrus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("5CI230", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRRUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 5u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 23000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseCirrostratus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("3CS220", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRROSTRATUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 22000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseCirrocumulus) {
-	const auto ctg = metaf::CloudTypesGroup::parse("3CC210", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg.has_value());
-	const auto ctv = ctg->toVector();
-	ASSERT_EQ(ctv.size(), 1u);
-	EXPECT_EQ(std::get<metaf::CloudTypesGroup::Type>(ctv.at(0)), 
-		metaf::CloudTypesGroup::Type::CIRROCUMULUS);
-	EXPECT_EQ(std::get<unsigned int>(ctv.at(0)), 3u);
-	EXPECT_TRUE(ctg->baseHeight().isInteger());
-	ASSERT_TRUE(ctg->baseHeight().integer().has_value());
-	EXPECT_EQ(ctg->baseHeight().integer().value(), 21000u);
-	EXPECT_EQ(ctg->baseHeight().unit(), metaf::Distance::Unit::FEET);
-}
-
-TEST(CloudTypesGroup, format2parseWrongReportPart) {
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::UNKNOWN).has_value());
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::HEADER).has_value());
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::METAR).has_value());
-	EXPECT_FALSE(metaf::CloudTypesGroup::parse("1CB020", metaf::ReportPart::TAF).has_value());
-}
-
-TEST(CloudTypesGroup, format2parseWrongFormat) {
+TEST(CloudTypesGroup, parseFormatWithHeightWrongFormat) {
 	//TODO
 }
 
-// Miscellaneous
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that CloudTypesGroup without base height can not be 
+// appended to any group and any group cannot be appended to this kind of 
+// group; and that groups with height can be appended to each other providing
+// the number of groups does not exceed the limit
+///////////////////////////////////////////////////////////////////////////////
 
-TEST(CloudTypesGroup, append) {
-	auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg1.has_value());
+TEST(CloudTypesGroup, appendGroupsWithoutHeight) {
+	static const std::string strNoHeightMultiple = "AC4CI6";
+	static const std::string strNoHeightSingle = "SC3";
+	static const std::string strHeight = "3CU012";
 
-	auto ctg2 = metaf::CloudTypesGroup::parse("SC3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg2.has_value());
+	auto ctgNoHeightMultiple = 
+		metaf::CloudTypesGroup::parse(strNoHeightMultiple, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightMultiple.has_value());
 
-	auto ctg3 = metaf::CloudTypesGroup::parse("3CU012", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg3.has_value());
+	auto ctgNoHeightSingle = 
+		metaf::CloudTypesGroup::parse(strNoHeightSingle, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightSingle.has_value());
 
-	EXPECT_EQ(ctg1->append("AC1CI6", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("SC3", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("6SC009", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("RMK", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg1->append("TEST", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
+	auto ctgHeight = 
+		metaf::CloudTypesGroup::parse(strHeight, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctgNoHeightSingle.has_value());
 
-	EXPECT_EQ(ctg2->append("AC1CI6", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("SC3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("6SC009", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("RMK", metaf::ReportPart::RMK), 
-		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg2->append("TEST", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightSingle->append(strHeight, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(ctg3->append("AC1CI6", metaf::ReportPart::RMK), 
+	const auto ctvSingle = ctgNoHeightSingle->cloudTypes();	
+	ASSERT_EQ(ctvSingle.size(), 1u);
+	EXPECT_EQ(ctvSingle[0].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ctvSingle[0].height().isReported());
+	EXPECT_EQ(ctvSingle[0].okta(), 3u);
+
+	EXPECT_EQ(ctgNoHeightMultiple->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("SC3", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightMultiple->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("6SC009", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgNoHeightMultiple->append(strHeight, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("RMK", metaf::ReportPart::RMK), 
+
+	const auto ctvMultiple = ctgNoHeightMultiple->cloudTypes();	
+	ASSERT_EQ(ctvMultiple.size(), 2u);
+	EXPECT_EQ(ctvMultiple[0].type(), metaf::CloudType::Type::ALTOCUMULUS);
+	EXPECT_FALSE(ctvMultiple[0].height().isReported());
+	EXPECT_EQ(ctvMultiple[0].okta(), 4u);
+	EXPECT_EQ(ctvMultiple[1].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ctvMultiple[1].height().isReported());
+	EXPECT_EQ(ctvMultiple[1].okta(), 6u);
+
+	EXPECT_EQ(ctgHeight->append(strNoHeightSingle, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(ctg3->append("TEST", metaf::ReportPart::RMK), 
+	EXPECT_EQ(ctgHeight->append(strNoHeightMultiple, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+
+	const auto ctvHeight = ctgHeight->cloudTypes();	
+	ASSERT_EQ(ctvHeight.size(), 1u);
+	EXPECT_EQ(ctvHeight[0].type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_TRUE(ctvHeight[0].height().isReported());
+	EXPECT_EQ(ctvHeight[0].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctvHeight[0].height().distance().has_value());
+	EXPECT_NEAR(ctvHeight[0].height().distance().value(), 1200, heightMargin);
+	EXPECT_EQ(ctvHeight[0].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctvHeight[0].okta(), 3u);
 }
 
-TEST(CloudTypesGroup, isValid) {
+TEST(CloudTypesGroup, appendGroupsWithHeight) {
+	auto ctg = metaf::CloudTypesGroup::parse("1CU020", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg.has_value());
+
+	EXPECT_EQ(ctg->append("4SC040", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append("5CI230", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	const auto ctv = ctg->cloudTypes();
+	ASSERT_EQ(ctv.size(), 3u);
+
+	EXPECT_EQ(ctv[0].type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_TRUE(ctv[0].height().isReported());
+	EXPECT_EQ(ctv[0].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[0].height().distance().has_value());
+	EXPECT_NEAR(ctv[0].height().distance().value(), 2000, heightMargin);
+	EXPECT_EQ(ctv[0].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[0].okta(), 1u);
+
+	EXPECT_EQ(ctv[1].type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_TRUE(ctv[1].height().isReported());
+	EXPECT_EQ(ctv[1].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[1].height().distance().has_value());
+	EXPECT_NEAR(ctv[1].height().distance().value(), 4000, heightMargin);
+	EXPECT_EQ(ctv[1].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[1].okta(), 4u);
+
+	EXPECT_EQ(ctv[2].type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_TRUE(ctv[2].height().isReported());
+	EXPECT_EQ(ctv[2].height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ctv[2].height().distance().has_value());
+	EXPECT_NEAR(ctv[2].height().distance().value(), 23000, heightMargin);
+	EXPECT_EQ(ctv[2].height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ctv[2].okta(), 5u);
+}
+
+TEST(CloudTypesGroup, appendTooManyGroupsWithHeight) {
+	static const std::string groupStr = "3CU012";
+	auto ctg = metaf::CloudTypesGroup::parse(groupStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg.has_value());
+
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(ctg->append(groupStr, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	const auto ctv = ctg->cloudTypes();
+	ASSERT_EQ(ctv.size(), 8u);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudTypesGroup, isValidTrue) {
 	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI6", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg1.has_value());
 	EXPECT_TRUE(ctg1->isValid());
@@ -619,4 +295,34 @@ TEST(CloudTypesGroup, isValid) {
 	const auto ctg2 = metaf::CloudTypesGroup::parse("SC3", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg2.has_value());
 	EXPECT_TRUE(ctg2->isValid());
+
+	const auto ctg3 = metaf::CloudTypesGroup::parse("BLSN1SC1SC1CI3", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg3.has_value());
+	EXPECT_TRUE(ctg3->isValid());
+
+	const auto ctg4 = metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg4.has_value());
+	EXPECT_TRUE(ctg4->isValid());
+}
+
+TEST(CloudTypesGroup, isValidFalse) {
+	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI9", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg1.has_value());
+	EXPECT_FALSE(ctg1->isValid());
+
+	const auto ctg2 = metaf::CloudTypesGroup::parse("SC0", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg2.has_value());
+	EXPECT_FALSE(ctg2->isValid());
+
+	const auto ctg3 = metaf::CloudTypesGroup::parse("BLSN9SC1SC1CI3", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg3.has_value());
+	EXPECT_FALSE(ctg3->isValid());
+
+	const auto ctg4 = metaf::CloudTypesGroup::parse("0NS035", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg4.has_value());
+	EXPECT_FALSE(ctg4->isValid());
+
+	const auto ctg5 = metaf::CloudTypesGroup::parse("9NS035", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ctg5.has_value());
+	EXPECT_FALSE(ctg5->isValid());
 }

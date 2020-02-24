@@ -8,6 +8,13 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// UnknownGroup tests
+// Purpose: to confirm that any string can be parsed as UnknownGroup, any
+// string can be appended to UnknownGroup, and that isValid() method always 
+// returns true for UnknownGroup
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(UnknownGroup, parse) {
 	static const std::string str = "AAAAAAAA";
 	const auto ug1 = metaf::UnknownGroup::parse(str, metaf::ReportPart::UNKNOWN);

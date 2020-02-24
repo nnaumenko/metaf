@@ -10,6 +10,12 @@
 
 const auto margin = 0.1 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Pressure difference tests
+// Purpose: to confirm that pressure difference indicated in this group is 
+// parsed correctly 
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureTendencyGroup, pressureDifference) {
 	const auto ptg = metaf::PressureTendencyGroup::parse("52132", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ptg.has_value());
@@ -32,6 +38,12 @@ TEST(PressureTendencyGroup, notReported) {
 	EXPECT_FALSE(ptg->difference().pressure().has_value());
 	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::NOT_REPORTED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Pressure tendency type tests
+// Purpose: to confirm that each pressure tendency type is parsed and 
+// identified correctly 
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureTendencyGroup, typeIncreasingThenDecreasing) {
 	const auto ptg = metaf::PressureTendencyGroup::parse("50132", metaf::ReportPart::RMK);
@@ -87,6 +99,18 @@ TEST(PressureTendencyGroup, typeDecreasingMoreRapidly) {
 	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY);
 }
 
+TEST(PressureTendencyGroup, typeNotReported) {
+	const auto ptg = metaf::PressureTendencyGroup::parse("5/132", metaf::ReportPart::RMK);
+	ASSERT_TRUE(ptg.has_value());
+	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::NOT_REPORTED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PRESFR and PRESRR groups
+// Purpose: to confirm that groups indicating rapidly rising or falling 
+// atmospheric pressure are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureTendencyGroup, pressureRisingRapidly) {
 	const auto ptg = metaf::PressureTendencyGroup::parse("PRESRR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ptg.has_value());
@@ -101,11 +125,10 @@ TEST(PressureTendencyGroup, pressureFallingRapidly) {
 	EXPECT_FALSE(ptg->difference().isReported());
 }
 
-TEST(PressureTendencyGroup, typeNotReported) {
-	const auto ptg = metaf::PressureTendencyGroup::parse("5/132", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ptg.has_value());
-	EXPECT_EQ(ptg->type(), metaf::PressureTendencyGroup::Type::NOT_REPORTED);
-}
+///////////////////////////////////////////////////////////////////////////////
+// Incorrect groups
+// Purpose: to confirm that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureTendencyGroup, wrongReportPart) {
 	EXPECT_FALSE(
@@ -181,6 +204,12 @@ TEST(PressureTendencyGroup, wrongFormat) {
 		metaf::PressureTendencyGroup::parse("5203A", metaf::ReportPart::RMK).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Trends
+// Purpose: to confirm that pressure tendency trend is correctly produced based
+// on reported type 
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureTendencyGroup, trend) {
 	EXPECT_EQ(metaf::PressureTendencyGroup::trend(
 		metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING),
@@ -222,6 +251,11 @@ TEST(PressureTendencyGroup, trend) {
 		metaf::PressureTendencyGroup::Type::NOT_REPORTED),
 		metaf::PressureTendencyGroup::Trend::NOT_REPORTED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that pressure tendency groups cannot be appended
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureTendencyGroup, append) {
 	const std::string ptgStr1("56132");
@@ -353,6 +387,11 @@ TEST(PressureTendencyGroup, append) {
 	EXPECT_EQ(ptg6->append(tStr2, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureTendencyGroup, isValid) {
 	const auto ptg1 = metaf::PressureTendencyGroup::parse("56132", metaf::ReportPart::RMK);

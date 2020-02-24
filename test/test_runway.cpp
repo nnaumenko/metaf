@@ -8,6 +8,22 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// makeAllRunways() test
+// Purpose: to confirm that makeAllRunways() method initialises Runway instance 
+// with 'all runways' data.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(Runway, makeAllRunways) {
+	EXPECT_TRUE(metaf::Runway::makeAllRunways().isAllRunways());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Parsing tests
+// Purpose: to confirm that various formats of runway included in METAR and TAF
+// groups are parsed correctly, and other formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Runway, fromStringWithoutDesignator) {
 	const auto r = metaf::Runway::fromString("R00");
 	ASSERT_TRUE(r.has_value());
@@ -137,56 +153,64 @@ TEST(Runway, fromStringWrongFormatWithRwyOption){
 	EXPECT_FALSE(metaf::Runway::fromString("RWY0C", true).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isAllRunways() and isMessageRepetitionTrue()
+// Purpose: to confirm that isAllRunways() and isMessageRepetitionTrue() 
+// methods correctly identify 'all runways' and 'last message repetition' data
+// coded as R88 and R99 in the reports. 
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Runway, isAllRunwaysTrue) {
-	EXPECT_TRUE(metaf::Runway::fromString("R88").value().isAllRunways());
+	EXPECT_TRUE(metaf::Runway::fromString("R88")->isAllRunways());
 }
 
 TEST(Runway, isAllRunwaysFalse) {
-	EXPECT_FALSE(metaf::Runway::fromString("R25L").value().isAllRunways());
-	EXPECT_FALSE(metaf::Runway::fromString("R25").value().isAllRunways());
-	EXPECT_FALSE(metaf::Runway::fromString("R88C").value().isAllRunways());
-	EXPECT_FALSE(metaf::Runway::fromString("R99").value().isAllRunways());
+	EXPECT_FALSE(metaf::Runway::fromString("R25L")->isAllRunways());
+	EXPECT_FALSE(metaf::Runway::fromString("R25")->isAllRunways());
+	EXPECT_FALSE(metaf::Runway::fromString("R88C")->isAllRunways());
+	EXPECT_FALSE(metaf::Runway::fromString("R99")->isAllRunways());
 }
 
 TEST(Runway, isMessageRepetitionTrue) {
-	EXPECT_TRUE(metaf::Runway::fromString("R99").value().isMessageRepetition());
+	EXPECT_TRUE(metaf::Runway::fromString("R99")->isMessageRepetition());
 }
 
 TEST(Runway, isMessageRepetitionFalse) {
-	EXPECT_FALSE(metaf::Runway::fromString("R25L").value().isMessageRepetition());
-	EXPECT_FALSE(metaf::Runway::fromString("R25").value().isMessageRepetition());
-	EXPECT_FALSE(metaf::Runway::fromString("R99C").value().isMessageRepetition());
-	EXPECT_FALSE(metaf::Runway::fromString("R88").value().isMessageRepetition());
+	EXPECT_FALSE(metaf::Runway::fromString("R25L")->isMessageRepetition());
+	EXPECT_FALSE(metaf::Runway::fromString("R25")->isMessageRepetition());
+	EXPECT_FALSE(metaf::Runway::fromString("R99C")->isMessageRepetition());
+	EXPECT_FALSE(metaf::Runway::fromString("R88")->isMessageRepetition());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(Runway, isValidRunwayNumberCorrect) {
-	EXPECT_TRUE(metaf::Runway::fromString("R00").value().isValid());
-	EXPECT_TRUE(metaf::Runway::fromString("R21").value().isValid());
-	EXPECT_TRUE(metaf::Runway::fromString("R36").value().isValid());
-	EXPECT_TRUE(metaf::Runway::fromString("R00R").value().isValid());
-	EXPECT_TRUE(metaf::Runway::fromString("R36R").value().isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R00")->isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R21")->isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R36")->isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R00R")->isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R36R")->isValid());
 }
 
 TEST(Runway, isValidRunwayNumberIncorrect) {
-	EXPECT_FALSE(metaf::Runway::fromString("R37").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R72").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R37R").value().isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R37")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R72")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R37R")->isValid());
 }
 
 TEST(Runway, isValidSpecialCodes) {
-	EXPECT_TRUE(metaf::Runway::fromString("R88").value().isValid());
-	EXPECT_TRUE(metaf::Runway::fromString("R99").value().isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R88")->isValid());
+	EXPECT_TRUE(metaf::Runway::fromString("R99")->isValid());
 }
 
 TEST(Runway, isValidSpecialCodesIncorrectDesignator) {
-	EXPECT_FALSE(metaf::Runway::fromString("R88R").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R88C").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R88L").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R99R").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R99C").value().isValid());
-	EXPECT_FALSE(metaf::Runway::fromString("R99L").value().isValid());
-}
-
-TEST(Runway, makeAllRunways) {
-	EXPECT_TRUE(metaf::Runway::makeAllRunways().isAllRunways());
+	EXPECT_FALSE(metaf::Runway::fromString("R88R")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R88C")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R88L")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R99R")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R99C")->isValid());
+	EXPECT_FALSE(metaf::Runway::fromString("R99L")->isValid());
 }

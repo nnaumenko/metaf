@@ -8,6 +8,34 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+///////////////////////////////////////////////////////////////////////////////
+// Constructor tests
+// Purpose: to confirm that constructor correctly initialises the instances of 
+// MetafTime, even if constructor's arguments are not valid/consistent.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MetafTime, constructorHourMinute) {
+	const auto t = metaf::MetafTime(11, 25);
+	EXPECT_FALSE(t.day().has_value());
+	EXPECT_EQ(t.hour(), 11u);
+	EXPECT_EQ(t.minute(), 25u);
+	EXPECT_TRUE(t.isValid());
+}
+
+TEST(MetafTime, constructorHourMinuteInvalidTime) {
+	const auto t = metaf::MetafTime(25, 90);
+	EXPECT_FALSE(t.day().has_value());
+	EXPECT_EQ(t.hour(), 25u);
+	EXPECT_EQ(t.minute(), 90u);
+	EXPECT_FALSE(t.isValid());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Parsing tests
+// Purpose: to confirm that various date/time formats used in METAR and TAF 
+// reports are parsed correctly and other data formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(MetafTime, fromStringDDHHMMwithDay) {
 	const auto t = metaf::MetafTime::fromStringDDHHMM("120830");
 	ASSERT_TRUE(t.has_value());
@@ -54,6 +82,11 @@ TEST(MetafTime, fromStringDDHH_wrongFormat) {
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("12080").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("1208Z").has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MetafTime, isValidCorrect) {
 	const auto t1 = metaf::MetafTime::fromStringDDHHMM("312459");
@@ -111,6 +144,13 @@ TEST(MetafTime, isValidIncorrect) {
 	ASSERT_TRUE(t7.has_value());
 	EXPECT_FALSE(t7->isValid());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for is3hourlyReportTime() and is6hourlyReportTime()
+// Purpose: to confirm that the methods is3hourlyReportTime() and 
+// is6hourlyReportTime() correctly identify the time for 3-hourly and 6-hourly
+// reports as per FMH-1, section 12.4.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(MetafTime, is3hourlyReportTimeTrue) {
 	const auto t2 = metaf::MetafTime::fromStringDDHHMM("310258");
@@ -312,6 +352,15 @@ TEST(MetafTime, is6hourlyReportTimeFalse) {
 	EXPECT_FALSE(t22->is6hourlyReportTime());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Date tests
+// Purpose: to confirm that dateBeforeRef() method correctly calculates the 
+// date before provided reference date (e.g. to inher month and year of report
+// release time from reference data).
+// Note: month and year are not specified in METAR and TAF and must be inherred
+// from some reference date, e.g. for recent report use current date.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(MetafTime, dateBeforeRefSameMonthAndYear) {
 	const auto t = metaf::MetafTime::fromStringDDHHMM("201730");
 	ASSERT_TRUE(t.has_value());
@@ -342,18 +391,3 @@ TEST(MetafTime, dateBeforeRefDifferentMonthAndYear) {
 	EXPECT_EQ(tDate.day, 31u);
 }
 
-TEST(MetafTime, constructorHourMinute) {
-	const auto t = metaf::MetafTime(11, 25);
-	EXPECT_FALSE(t.day().has_value());
-	EXPECT_EQ(t.hour(), 11u);
-	EXPECT_EQ(t.minute(), 25u);
-	EXPECT_TRUE(t.isValid());
-}
-
-TEST(MetafTime, constructorHourMinuteInvalidTime) {
-	const auto t = metaf::MetafTime(25, 90);
-	EXPECT_FALSE(t.day().has_value());
-	EXPECT_EQ(t.hour(), 25u);
-	EXPECT_EQ(t.minute(), 90u);
-	EXPECT_FALSE(t.isValid());
-}

@@ -21,62 +21,55 @@ public:
 	static std::string_view reportErrorToString(metaf::ReportError reportError);
 
 private:
-	static const inline std::string lineBreak = "<br>"s;
 	static const inline std::string groupNotValidMessage = 
 		"Data in this group may be errorneous, incomplete or inconsistent"s;
 
-	virtual std::string visitFixedGroup(const metaf::FixedGroup & group,
+	virtual std::string visitKeywordGroup(
+		const metaf::KeywordGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitLocationGroup(const metaf::LocationGroup & group,
+	virtual std::string visitLocationGroup(
+		const metaf::LocationGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitReportTimeGroup(const metaf::ReportTimeGroup & group,
+	virtual std::string visitReportTimeGroup(
+		const metaf::ReportTimeGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitTrendGroup(const metaf::TrendGroup & group,
+	virtual std::string visitTrendGroup(
+		const metaf::TrendGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitWindGroup(const metaf::WindGroup & group,
+	virtual std::string visitWindGroup(
+		const metaf::WindGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitVisibilityGroup(const metaf::VisibilityGroup & group,
+	virtual std::string visitVisibilityGroup(
+		const metaf::VisibilityGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitCloudGroup(const metaf::CloudGroup & group,
+	virtual std::string visitCloudGroup(
+		const metaf::CloudGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitWeatherGroup(const metaf::WeatherGroup & group,
+	virtual std::string visitWeatherGroup(
+		const metaf::WeatherGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitTemperatureGroup(const metaf::TemperatureGroup & group,
+	virtual std::string visitTemperatureGroup(
+		const metaf::TemperatureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitTemperatureForecastGroup(
-		const metaf::TemperatureForecastGroup & group,
+	virtual std::string visitPressureGroup(
+		const metaf::PressureGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitPressureGroup(const metaf::PressureGroup & group,
+	virtual std::string visitRunwayStateGroup(
+		const metaf::RunwayStateGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitRunwayVisualRangeGroup(
-		const metaf::RunwayVisualRangeGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitSecondaryLocationGroup(
-		const metaf::SecondaryLocationGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitRainfallGroup(const metaf::RainfallGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
-		metaf::ReportPart reportPart,
-		const std::string & rawString);
-	virtual std::string visitColourCodeGroup(const metaf::ColourCodeGroup & group,
+	virtual std::string visitSeaSurfaceGroup(
+		const metaf::SeaSurfaceGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 	virtual std::string visitMinMaxTemperatureGroup(
@@ -99,8 +92,8 @@ private:
 		const metaf::CloudTypesGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
-	virtual std::string visitCloudLayersGroup(
-		const metaf::CloudLayersGroup & group,
+	virtual std::string visitLowMidHighCloudGroup(
+		const metaf::LowMidHighCloudGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 	virtual std::string visitLightningGroup(
@@ -120,39 +113,66 @@ private:
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
 
-	static std::string explainRunway(const metaf::Runway & runway);
-	static std::string explainMetafTime(const metaf::MetafTime & metafTime);
-	static std::string explainTemperature(const metaf::Temperature & temperature);
-	static std::string explainSpeed(const metaf::Speed & speed);
-	static std::string explainDistance(const metaf::Distance & distance);
-	static std::string explainDirection(const metaf::Direction & direction,
+	static std::string explainRunway(
+		const metaf::Runway & runway);
+	static std::string explainMetafTime(
+		const metaf::MetafTime & metafTime);
+	static std::string explainTemperature(
+		const metaf::Temperature & temperature);
+	static std::string explainSpeed(
+		const metaf::Speed & speed);
+	static std::string explainDistance(
+		const metaf::Distance & distance);
+	static std::string explainDirection(
+		const metaf::Direction & direction,
 		bool trueCardinalDirections = false);
-	static std::string explainPressure(const metaf::Pressure & pressure);
-	static std::string explainPrecipitation(const metaf::Precipitation & precipitation);
-	static std::string explainSurfaceFriction(const metaf::SurfaceFriction & surfaceFriction);
-	static std::string explainWaveHeight(const metaf::WaveHeight & waveHeight);
-	static std::string explainWeatherPhenomena(const metaf::WeatherPhenomena & weatherPhenomena);
+	static std::string explainPressure(
+		const metaf::Pressure & pressure);
+	static std::string explainPrecipitation(
+		const metaf::Precipitation & precipitation);
+	static std::string explainSurfaceFriction(
+		const metaf::SurfaceFriction & surfaceFriction);
+	static std::string explainWaveHeight(
+		const metaf::WaveHeight & waveHeight);
+	static std::string explainWeatherPhenomena(
+		const metaf::WeatherPhenomena & weatherPhenomena);
+	static std::string explainDirectionSector(
+		const std::vector<metaf::Direction> dir);
+	static std::string explainCloudType(const metaf::CloudType ct);
 
-	static std::string_view speedUnitToString(metaf::Speed::Unit unit);
-	static std::string_view distanceUnitToString(metaf::Distance::Unit unit);
-	static std::string_view cardinalDirectionToString(metaf::Direction::Cardinal cardinal);
+	static std::string_view speedUnitToString(
+		metaf::Speed::Unit unit);
+	static std::string_view distanceUnitToString(
+		metaf::Distance::Unit unit);
+	static std::string_view distanceMilesFractionToString(
+		metaf::Distance::MilesFraction f);
+	static std::string_view cardinalDirectionToString(
+		metaf::Direction::Cardinal cardinal);
 	static std::string_view brakingActionToString(
 		metaf::SurfaceFriction::BrakingAction brakingAction);
 	static std::string_view stateOfSeaSurfaceToString(
 		metaf::WaveHeight::StateOfSurface stateOfSurface);
-	static std::string_view trendTypeToString(metaf::TrendGroup::Type type);
-	static std::string_view cloudAmountToString(metaf::CloudGroup::Amount amount);
-	static std::string_view cloudTypeToString(metaf::CloudGroup::Type type);
-	static std::string_view weatherPhenomenaQualifierToString(metaf::WeatherPhenomena::Qualifier qualifier);
-	static std::string_view weatherPhenomenaDescriptorToString(metaf::WeatherPhenomena::Descriptor descriptor);
-	static std::string_view weatherPhenomenaWeatherToString(metaf::WeatherPhenomena::Weather weather);
-	static std::string_view specialWeatherPhenomenaToString(const metaf::WeatherPhenomena & wp);
-	static std::string_view rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend);
-	static std::string_view runwayStateDepositsToString(metaf::RunwayStateGroup::Deposits deposits);
-	static std::string_view runwayStateExtentToString(metaf::RunwayStateGroup::Extent extent);
-	static std::string_view colourCodeToString(metaf::ColourCodeGroup::Code code);
-	static unsigned int colourCodeVisibility(metaf::ColourCodeGroup::Code code);
-	static unsigned int colourCodeCeiling(metaf::ColourCodeGroup::Code code);
+	static std::string_view cloudAmountToString(
+		metaf::CloudGroup::Amount amount);
+	static std::string_view convectiveTypeToString(
+		metaf::CloudGroup::ConvectiveType type);
+	static std::string_view weatherPhenomenaQualifierToString(
+		metaf::WeatherPhenomena::Qualifier qualifier);
+	static std::string_view weatherPhenomenaDescriptorToString(
+		metaf::WeatherPhenomena::Descriptor descriptor);
+	static std::string_view weatherPhenomenaWeatherToString(
+		metaf::WeatherPhenomena::Weather weather);
+	static std::string_view specialWeatherPhenomenaToString(
+		const metaf::WeatherPhenomena & wp);
+
+	static std::string_view probabilityToString(
+		metaf::TrendGroup::Probability prob);
+	static std::string_view visTrendToString(
+		metaf::VisibilityGroup::Trend trend);
+	static std::string_view runwayStateDepositsToString(
+		metaf::RunwayStateGroup::Deposits deposits);
+	static std::string_view runwayStateExtentToString(
+		metaf::RunwayStateGroup::Extent extent);
 	static std::string_view precipitationGroupTypeToString(
 		metaf::PrecipitationGroup::Type type);
 	static std::string_view layerForecastGroupTypeToString(
@@ -162,206 +182,119 @@ private:
 	static std::string_view pressureTendencyTrendToString(
 		metaf::PressureTendencyGroup::Trend trend);
 	static std::string_view cloudTypeToString(
-		metaf::CloudTypesGroup::Type type);
+		metaf::CloudType::Type type);
 	static std::string_view cloudLowLayerToString(
-		metaf::CloudLayersGroup::LowLayer lowLayer);
+		metaf::LowMidHighCloudGroup::LowLayer lowLayer);
 	static std::string_view cloudMidLayerToString(
-		metaf::CloudLayersGroup::MidLayer midLayer);
+		metaf::LowMidHighCloudGroup::MidLayer midLayer);
 	static std::string_view cloudHighLayerToString(
-		metaf::CloudLayersGroup::HighLayer highLayer);
+		metaf::LowMidHighCloudGroup::HighLayer highLayer);
 
 	static std::string roundTo(float number, size_t digitsAfterDecimalPoint);
 };
 
-std::string VisitorExplain::visitFixedGroup(const metaf::FixedGroup & group,
+std::string VisitorExplain::visitKeywordGroup(
+	const metaf::KeywordGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
 	switch (group.type()) {
-		case metaf::FixedGroup::Type::METAR:
+		case metaf::KeywordGroup::Type::METAR:
 		result << "Report type: METAR (weather observation report)";
 		break;
 
-		case metaf::FixedGroup::Type::SPECI:
-		result << "Report type: unscheduled METAR (weather observation report)" << lineBreak;
-		result << "Unscheduled report is issued dut to sudden changes in weather ";
-		result << "conditions: wind shift, visibility decrease, severe weather, ";
-		result << "clouds formed or dissipated, etc.";
+		case metaf::KeywordGroup::Type::SPECI:
+		result << "Report type: unscheduled METAR ";
+		result << "(weather observation report)";
+		result << "\nUnscheduled report is issued due to sudden changes in ";
+		result << "weather conditions: wind shift, visibility decrease, ";
+		result << "severe weather, clouds formed or dissipated, etc.";
 		break;
 
-		case metaf::FixedGroup::Type::TAF:
+		case metaf::KeywordGroup::Type::TAF:
 		result << "Report type: TAF (terminal aerodrome forecast)";
 		break;
 
-		case metaf::FixedGroup::Type::AMD:
+		case metaf::KeywordGroup::Type::AMD:
 		result << "Amended report";
 		break;
 
-		case metaf::FixedGroup::Type::NIL:
+		case metaf::KeywordGroup::Type::NIL:
 		result << "Missing report";
 		break;
 
-		case metaf::FixedGroup::Type::CNL:
+		case metaf::KeywordGroup::Type::CNL:
 		result << "Cancelled report";
 		break;
 
-		case metaf::FixedGroup::Type::COR:
+		case metaf::KeywordGroup::Type::COR:
 		result << "Correctional report";
 		break;
 
-		case metaf::FixedGroup::Type::AUTO:
-		result << "Fully automated report with no human intervention or oversight";
+		case metaf::KeywordGroup::Type::AUTO:
+		result << "Fully automated report with no human intervention ";
+		result << "or oversight";
 		break;
 
-		case metaf::FixedGroup::Type::NSW:
-		result << "No significant weather" << lineBreak;
-		result << "Indicates end of significant weather phenomena";
-		break;
-
-		case metaf::FixedGroup::Type::R_SNOCLO:
-		result << "Aerodrome is closed due to snow accumulation";
-		break;
-
-		case metaf::FixedGroup::Type::CAVOK:
-		result << "Ceiling and visibility OK" << lineBreak;
-		result << "Visibility 10 km or more in all directions, ";
+		case metaf::KeywordGroup::Type::CAVOK:
+		result << "Ceiling and visibility OK";
+		result << "\nVisibility 10 km or more in all directions, ";
 		result << "no cloud below 5000 feet (1500 meters), ";
 		result << "no cumulonimbus or towering cumulus clouds, ";
 		result << "no significant weather phenomena";
 		break;
 
-		case metaf::FixedGroup::Type::WSCONDS:
-		result << "Potential wind shear conditions are present ";
-		result << "but there's not enough information to reliably forecast ";
-		result << "height, direction and speed of wind shear";
+		case metaf::KeywordGroup::Type::RMK:
+		result << "The remarks are as follows";
 		break;
 
-		case metaf::FixedGroup::Type::RMK:
-		result << "The remarks are as follows" << lineBreak;
-		break;
-
-		case metaf::FixedGroup::Type::MAINTENANCE_INDICATOR:
+		case metaf::KeywordGroup::Type::MAINTENANCE_INDICATOR:
 		result << "Automated station requires maintenance";
 		break;
 
-		case metaf::FixedGroup::Type::AO1:
-		result << "This automated station is not equipped with a precipitation discriminator";
+		case metaf::KeywordGroup::Type::AO1:
+		result << "This automated station is not equipped with a ";
+		result << "precipitation discriminator";
 		break;
 
-		case metaf::FixedGroup::Type::AO2:
-		result << "This automated station is equipped with a precipitation discriminator";
+		case metaf::KeywordGroup::Type::AO2:
+		result << "This automated station is equipped with a ";
+		result << "precipitation discriminator";
 		break;
 
-		case metaf::FixedGroup::Type::AO1A:
-		result << "This automated station is not equipped with a precipitation discriminator";
-		result << lineBreak;
-		result << "Automated observation is augmented by a human observer";
+		case metaf::KeywordGroup::Type::AO1A:
+		result << "This automated station is not equipped with a ";
+		result << "precipitation discriminator";
+		result << "\nAutomated observation is augmented by a human observer";
 		break;
 
-		case metaf::FixedGroup::Type::AO2A:
-		result << "This automated station is equipped with a precipitation discriminator";
-		result << lineBreak;
-		result << "Automated observation is augmented by a human observer";
+		case metaf::KeywordGroup::Type::AO2A:
+		result << "This automated station is equipped with a ";
+		result << "precipitation discriminator";
+		result << "\nAutomated observation is augmented by a human observer";
 		break;
 
-		case metaf::FixedGroup::Type::NOSPECI:
-		result << "This manual station does not issue SPECI (unscheduled) reports";
-		break;
-
-		case metaf::FixedGroup::Type::RVRNO:
-		result << "Runway visual range should be reported but is missing";
-		break;
-
-		case metaf::FixedGroup::Type::PWINO:
-		result << "This automated station is equipped with present weather identifier ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::PNO:
-		result << "This automated station is equipped with tipping bucket rain gauge ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::FZRANO:
-		result << "This automated station is equipped with freezing rain sensor ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::TSNO:
-		result << "This automated station is equipped with lightning detector ";
-		result << "and this sensor is not operating";
-		break;
-
-		case metaf::FixedGroup::Type::SLPNO:
-		result << "Mean sea-level pressure information is not available";
-		break;
-
-		case metaf::FixedGroup::Type::FROIN:
-		result << "Frost on the instrument (e.g. due to freezing fog depositing rime).";
-		break;
-
-		case metaf::FixedGroup::Type::CLD_MISG:
-		result << "Sky condition data (cloud data) is missing";
-		break;
-
-		case metaf::FixedGroup::Type::ICG_MISG:
-		result << "Icing data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::PCPN_MISG:
-		result << "Precipitation data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::PRES_MISG:
-		result << "Atmospheric pressure (altimeter) data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::RVR_MISG:
-		result << "Runway visual range data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::T_MISG:
-		result << "Temperature data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::TD_MISG:
-		result << "Dew point data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::VIS_MISG:
-		result << "Visibility data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::WND_MISG:
-		result << "Wind data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::WX_MISG:
-		result << "Weather phenomena data is missing";
-		break;
-
-		case metaf::FixedGroup::Type::TS_LTNG_TEMPO_UNAVBL:
-		result << "Thunderstorm / lightning data is missing";
-		break;
-
-		default:
-		result << "Unknown fixed group";
+		case metaf::KeywordGroup::Type::NOSPECI:
+		result << "This manual station does not issue SPECI (unscheduled) ";
+		result << "reports";
 		break;
 	}
 	return result.str();
 }
 
-std::string VisitorExplain::visitLocationGroup(const metaf::LocationGroup & group,
+std::string VisitorExplain::visitLocationGroup(
+	const metaf::LocationGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "ICAO code for location: " << group.toString();
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	result << "ICAO code of station: " << group.toString();
 	return result.str();
 }
 
@@ -372,438 +305,615 @@ std::string VisitorExplain::visitReportTimeGroup(
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Day and time of report issue: " << explainMetafTime(group.time());
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	result << "Day and time of report release: ";
+	result << explainMetafTime(group.time());
 	return result.str();
 }
 
-std::string VisitorExplain::visitTrendGroup(const metaf::TrendGroup & group,
+std::string VisitorExplain::visitTrendGroup(
+	const metaf::TrendGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << trendTypeToString(group.type()) << lineBreak;
-
-	switch (group.probability()) {
-		case metaf::TrendGroup::Probability::PROB_30:
-		result << "Trend probability is 30 percent" << lineBreak;;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	switch (group.type()) {
+		case metaf::TrendGroup::Type::NOSIG:
+		result << "No significant weather changes expected";
 		break;
 
-		case metaf::TrendGroup::Probability::PROB_40:
-		result << "Trend probability is 40 percent" << lineBreak;;
-		break;
-
-		case metaf::TrendGroup::Probability::NONE:
-		if (group.type() == metaf::TrendGroup::Type::BECMG ||
-			group.type() == metaf::TrendGroup::Type::TEMPO ||
-			group.type() == metaf::TrendGroup::Type::INTER)
-		{
-			result << "Trend probability is 50 percent or more" << lineBreak;;
+		case metaf::TrendGroup::Type::BECMG:
+		result << "Weather conditions are expected to gradually change ";
+		result << "as follows";
+		if (const auto timeFrom = group.timeFrom(); timeFrom) {
+			result << "\nFrom ";
+			result << explainMetafTime(*timeFrom);
+		}
+		if (const auto timeUntil = group.timeUntil(); timeUntil) {
+			result << "\nUntil ";
+			result << explainMetafTime(*timeUntil);
+		}
+		if (const auto timeAt = group.timeAt(); timeAt) {
+			result << "\nAt ";
+			result << explainMetafTime(*timeAt);
 		}
 		break;
 
-		default:
-		result << "[Unknown probability value]" << lineBreak;;
+		case metaf::TrendGroup::Type::TEMPO:
+		result << "The following temporary weather conditions may arise ";
+		result << " for less than 60 minutes";
+		if (const auto timeFrom = group.timeFrom(); timeFrom) {
+			result << "\nFrom ";
+			result << explainMetafTime(*timeFrom);
+		}
+		if (const auto timeUntil = group.timeUntil(); timeUntil) {
+			result << "\nUntil ";
+			result << explainMetafTime(*timeUntil);
+		}
+		if (const auto timeAt = group.timeAt(); timeAt) {
+			result << "\nAt ";
+			result << explainMetafTime(*timeAt);
+		}
+		if (group.probability() != metaf::TrendGroup::Probability::NONE) {
+			result << "\n";
+			result << probabilityToString(group.probability());
+		}
 		break;
-	}
-	if (const auto timeFrom = group.timeFrom(); timeFrom) {
-		result << "From " << explainMetafTime(*timeFrom) << lineBreak;
-	}
-	if (const auto timeTill = group.timeTill(); timeTill) {
-		result << "Until " << explainMetafTime(*timeTill) << lineBreak;
-	}
-	if (const auto timeAt = group.timeAt(); timeAt) {
-		result << "At " << explainMetafTime(*timeAt) << lineBreak;
+
+		case metaf::TrendGroup::Type::INTER:
+		result << "The following temporary weather conditions may arise ";
+		result << "for less than 30 minutes";
+		if (const auto timeFrom = group.timeFrom(); timeFrom) {
+			result << "\nFrom ";
+			result << explainMetafTime(*timeFrom);
+		}
+		if (const auto timeUntil = group.timeUntil(); timeUntil) {
+			result << "\nUntil ";
+			result << explainMetafTime(*timeUntil);
+		}
+		if (const auto timeAt = group.timeAt(); timeAt) {
+			result << "\nAt ";
+			result << explainMetafTime(*timeAt);
+		}
+		if (group.probability() != metaf::TrendGroup::Probability::NONE) {
+			result << "\n";
+			result << probabilityToString(group.probability());
+		}
+		break;
+
+		case metaf::TrendGroup::Type::FROM:
+		result << "Weather conditions are expected to change rapidly from ";
+		result << explainMetafTime(*group.timeFrom());
+		result << "\nAll previous weather conditions are superseded by ";
+		result << "the following conditions";
+		break;
+
+		case metaf::TrendGroup::Type::UNTIL:
+		result << "The following weather conditions expected to last until ";
+		result << explainMetafTime(*group.timeUntil());
+		break;
+
+		case metaf::TrendGroup::Type::AT:
+		result << "The following weather conditions expected to occur at ";
+		result << explainMetafTime(*group.timeAt());
+		break;
+
+		case metaf::TrendGroup::Type::TIME_SPAN:
+		result << "The following weather condition are expected within ";
+		result << "time span from ";
+		result << explainMetafTime(*group.timeFrom());
+		result << " until ";
+		result << explainMetafTime(*group.timeUntil());
+		if (group.probability() != metaf::TrendGroup::Probability::NONE) {
+			result << "\n";
+			result << probabilityToString(group.probability());
+		}
+		break;
+
+		case metaf::TrendGroup::Type::PROB:
+		result << "The weather conditions probability is as follows\n";
+		result << probabilityToString(group.probability());
+		break;
 	}
 	return result.str();
 }
 
-std::string VisitorExplain::visitWindGroup(const metaf::WindGroup & group,
+std::string VisitorExplain::visitWindGroup(
+	const metaf::WindGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	
 	switch (group.type()) {
 		case metaf::WindGroup::Type::SURFACE_WIND_CALM:
 		result << "No wind";
-		return result.str();
+		break;
 
 		case metaf::WindGroup::Type::SURFACE_WIND:
+		result << "Surface wind";
+		result << "\nWind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "\nWind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
+		break;
+
 		case metaf::WindGroup::Type::VARIABLE_WIND_SECTOR:
+		result << "Variable wind sector";
+		result << "\nVariable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin()); 
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd());
+		break;
+
 		case metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR:
-		result << "Surface wind:";
+		result << "Surface wind with variable with sector";
+		result << "\nWind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "\nWind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
+		result << "\nVariable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin()); 
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd());
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHEAR:
 		result << "Wind shear at height ";
-		result << explainDistance(group.height()) << ':';
+		result << explainDistance(group.height());
+		result << ":\n";
+		result << "Wind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "Wind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
 		break;
 
 		case metaf::WindGroup::Type::WIND_SHIFT:		
+		result << "Wind direction changed 45&deg; or more in less than ";
+		result << "15 minutes with sustained wind speed of 10 knots";
+		result << " (5.1 m/s / 18.5 km/h / 11.5 mph)";
+		if (group.eventTime()) {
+			result << "\nWind shift began at ";
+			result << explainMetafTime(*group.eventTime());
+		}
+		break;
+
 		case metaf::WindGroup::Type::WIND_SHIFT_FROPA:
-		result << "Wind direction changed 45&deg; or more in less than 15 minutes ";
-		result << "with sustained wind speed of 10 knots (5.1 m/s / 18.5 km/h / 11.5 mph)";
-		if (group.eventTime().has_value()) {
-			result << lineBreak << "Wind shift began at ";
-			result << explainMetafTime(group.eventTime().value());
+		result << "Wind direction changed 45&deg; or more in less than ";
+		result << "15 minutes with sustained wind speed of 10 knots";
+		result << " (5.1 m/s / 18.5 km/h / 11.5 mph)";
+		if (group.eventTime()) {
+			result << "\nWind shift began at ";
+			result << explainMetafTime(*group.eventTime());
 		}
-		if (group.type() == metaf::WindGroup::Type::WIND_SHIFT_FROPA) {
-			result << lineBreak << "This wind shift is associated with weather front passage";
-		}
-		return result.str();
+		result << "\nThis wind shift is associated with weather front passage";
+		break;
 
 		case metaf::WindGroup::Type::PEAK_WIND:
-		result << "Peak wind: ";
-		break;
-
-		default:
-		result << "[unknown wind group]:";
-		break;
-	}
-	result << lineBreak;
-
-	if (group.direction().status() != metaf::Direction::Status::OMMITTED || 
-		group.windSpeed().speed().has_value())
-	{
-		// General wind information present in this group
-		result << "Wind direction: " << explainDirection(group.direction(), true) << lineBreak;
-		result << "Wind speed: " << explainSpeed(group.windSpeed()) << lineBreak;
-		if (group.gustSpeed().speed().has_value()) {
-			result  << "Gust speed: " << explainSpeed(group.gustSpeed()) << lineBreak;
-		}
-	}
-	if (group.type() == metaf::WindGroup::Type::VARIABLE_WIND_SECTOR ||
-		group.type() == metaf::WindGroup::Type::SURFACE_WIND_WITH_VARIABLE_SECTOR) {
-			result << "Variable wind direction sector from ";
-			result << explainDirection(group.varSectorBegin()) << " clockwise to ";
-			result << explainDirection(group.varSectorEnd());
-	}
-	if (group.type() == metaf::WindGroup::Type::PEAK_WIND && 
-		group.eventTime().has_value()) 
-	{
 		result << "Peak wind was observed at ";
 		result << explainMetafTime(group.eventTime().value());
-	}
-
-	return result.str();
-}
-
-std::string VisitorExplain::visitVisibilityGroup(const metaf::VisibilityGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visibility (";
-	switch (group.type()) {
-		case metaf::VisibilityGroup::Type::PREVAILING:
-		case metaf::VisibilityGroup::Type::PREVAILING_NDV:
-		case metaf::VisibilityGroup::Type::PREVAILING_VARIABLE:
-		result << "prevailing";
+		result << "\nWind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "\nWind speed: ";
+		result << explainSpeed(group.windSpeed());
 		break;
 
-		case metaf::VisibilityGroup::Type::DIRECTIONAL:
-		case metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE:
-		result << explainDirection(group.direction());
-		break;
-
-		case metaf::VisibilityGroup::Type::SURFACE_VISIBILITY:
-		result << "at surface level";
-		break;
-
-		case metaf::VisibilityGroup::Type::TOWER_VISIBILITY:
-		result << "from air traffic control tower";
-		break;
-
-		case metaf::VisibilityGroup::Type::DATA_MISSING:
-		return "Visibility data missing";
-
-		default:
-		result << "[unknown visibility group]:";
-		break;
-	}
-	result << ") ";
-	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_VARIABLE ||
-		group.type() == metaf::VisibilityGroup::Type::DIRECTIONAL_VARIABLE)
-	{
-		result << "is variable" << lineBreak;
-		result << "from " << explainDistance(group.minVisibility()) << lineBreak;
-		result << "to " << explainDistance(group.maxVisibility()) << lineBreak;
-	} else {
-		result << explainDistance(group.visibility());
-	}
-	if (group.type() == metaf::VisibilityGroup::Type::PREVAILING_NDV) {
-		result << lineBreak;
-		result << "This station does not distinguish directional variation of visibility";
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitCloudGroup(const metaf::CloudGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << cloudAmountToString(group.amount());
-	if (const auto typeStr = cloudTypeToString(group.type()); !typeStr.empty()) {
-		result << ", type: " << typeStr;
-	}
-	result << lineBreak;
-	if (group.height().isValue()) {
-		result << "Base height " << explainDistance(group.height()) << lineBreak;
-	}
-	if (group.verticalVisibility().isValue()) {
-		result << "Vertical visibility " << explainDistance(group.verticalVisibility()) << lineBreak;
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitWeatherGroup(const metaf::WeatherGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch (group.type()) {
-		case metaf::WeatherGroup::Type::CURRENT: 
-		result << "Weather phenomena:";
-		break;
-		
-		case metaf::WeatherGroup::Type::RECENT: 
-		result << "Recent weather:"; break;
-		
-		case metaf::WeatherGroup::Type::EVENT: 
-		result << "Precipitation beginning/ending time:"; break;
-	}
-	result << lineBreak;
-
-	const auto phenomena = group.weatherPhenomena();
-	for (const auto p : phenomena) {
-		result << explainWeatherPhenomena(p) << lineBreak;
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitTemperatureGroup(const metaf::TemperatureGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Air temperature: " << explainTemperature(group.airTemperature()) << lineBreak;
-	result << "Dew point: " << explainTemperature(group.dewPoint()) << lineBreak;
-	if (const auto rh = group.relativeHumidity(); rh.has_value()) {
-			result << "Relative humidity: " << static_cast<int>(*rh) << " percent";
-			result << lineBreak; 
-	}
-	if (const auto heatIndex = metaf::Temperature::heatIndex(
-		group.airTemperature(), 
-		group.dewPoint());
-		heatIndex.temperature().has_value()) {
-			result << "Heat index: " << explainTemperature(heatIndex) << lineBreak;
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitTemperatureForecastGroup(
-	const metaf::TemperatureForecastGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch(group.point()) {
-		case metaf::TemperatureForecastGroup::Point::NOT_SPECIFIED:
-		result << "Temperature";
-		break;
-
-		case metaf::TemperatureForecastGroup::Point::MINIMUM: 
-		result << "Minimum temperature";
-		break;
-
-		case metaf::TemperatureForecastGroup::Point::MAXIMUM:
-		result << "Maximum temperature";
-		break;
-
-		default:
-		result << "[unknown temperature point]";
-		break;
-	}
-	result << " " << explainTemperature(group.airTemperature()) << ", ";
-	result << "expected on " << explainMetafTime(group.time());
-	return result.str();
-}
-
-std::string VisitorExplain::visitPressureGroup(const metaf::PressureGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch(group.type()) {
-		case metaf::PressureGroup::Type::OBSERVED_QNH:
-		result << "Observed mean atmospheric pressure (normalised to sea level)";
-		break;
-
-		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
-		result << "Forecast lowest sea level pressure";
-		break;
-
-		case metaf::PressureGroup::Type::OBSERVED_QFE:
-		result << "Observed actual atmospheric pressure";
-		break;
-
-		default:
-		result << "Unknown pressure value";
-		break;
-	}
-	result << ": " << explainPressure(group.atmosphericPressure());
-	return result.str();
-}
-
-std::string VisitorExplain::visitRunwayVisualRangeGroup(
-	const metaf::RunwayVisualRangeGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Visual range of " << explainRunway(group.runway()) << " is ";
-	if (group.isVariableVisualRange()) {
-		result << explainDistance(group.maxVisualRange());
-		result << " to " << explainDistance(group.maxVisualRange());
-	} else {
-		result << explainDistance(group.visualRange());
-	}
-	if (group.trend() != metaf::RunwayVisualRangeGroup::Trend::NONE) {
-		result << ", and the trend is " << rvrTrendToString(group.trend());
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "State of " << explainRunway(group.runway()) << ": ";
-	switch (group.status()) {
-		case metaf::RunwayStateGroup::Status::NORMAL:
-		result << runwayStateDepositsToString(group.deposits()) << lineBreak;
-		if (group.deposits() != metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY) {
-		    result << "Depth of deposits on runway: ";
-		    result << explainPrecipitation(group.depositDepth()) << lineBreak;
-			result << "Runway contamination extent: ";
-			result << runwayStateExtentToString(group.contaminationExtent()) << lineBreak;
-		}
-		result << "Surface friction: ";
-		result << explainSurfaceFriction(group.surfaceFriction());
-		break;
-
-		case metaf::RunwayStateGroup::Status::CLRD:
-		result << "deposits on runway were cleared or ceased to exist" << lineBreak;
-		result << "Surface friction: ";
-		result << explainSurfaceFriction(group.surfaceFriction());
-		break;
-
-		case metaf::RunwayStateGroup::Status::SNOCLO:
-		result << "closed due to snow accumulation";
-		break;
-
-		default:
-		result << "[unknown runway status]";
-		break;
-	}
-	return result.str();
-}
-
-std::string VisitorExplain::visitSecondaryLocationGroup(
-	const metaf::SecondaryLocationGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	switch (group.type()) {
-		case metaf::SecondaryLocationGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
+		case metaf::WindGroup::Type::WIND_SHEAR_IN_LOWER_LAYERS:
 		result << "Wind shear significant to aircraft operations ";
 		result << "is present along the take-off path or approach path ";
 		result << "between runway level and 500 metres (1 600 ft)";
+		if (const auto rw = group.runway(); rw.has_value())
+			result << " at " << explainRunway(*rw);
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::CEILING:
-		result << "Ceiling height " << explainDistance(group.height());
+		case metaf::WindGroup::Type::WSCONDS:
+		result << "Potential wind shear conditions are present ";
+		result << "but there's not enough information to reliably forecast ";
+		result << "height, direction and speed of wind shear";
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::VARIABLE_CEILING:
-		result << "Ceiling height is variable between ";
-		result << explainDistance(group.minHeight());
-		result << " and ";
-		result << explainDistance(group.maxHeight());
+		case metaf::WindGroup::Type::WND_MISG:
+		result << "Wind data is missing";
+		break;
+	}
+	return result.str();
+}
+
+std::string VisitorExplain::visitVisibilityGroup(
+	const metaf::VisibilityGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	switch (group.type()) {
+		case metaf::VisibilityGroup::Type::PREVAILING:
+		result << "Prevailing visibility is ";
+		result << explainDistance(group.visibility());
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::VISNO:
-		result << "Visibility data not awailable";
+		case metaf::VisibilityGroup::Type::PREVAILING_NDV:
+		result << "Prevailing visibility is "; 
+		result << explainDistance(group.visibility());
+		result << "\nThis station cannot differentiate the directional ";
+		result << "variation of visibility";
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::CHINO:
-		result << "Ceiling data not awailable";
+		case metaf::VisibilityGroup::Type::DIRECTIONAL:
+		result << "Directional visibility toward ";
+		result << explainDirection(group.direction().value());
+		result << " is " << explainDistance(group.visibility());
+		break;
+	
+		case metaf::VisibilityGroup::Type::RUNWAY:
+		result << "Visibility for ";
+		result << explainRunway(group.runway().value());
+		result << " is " << explainDistance(group.visibility());
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::VISIBILITY:
-		result << "Visibility " << explainDistance(group.visibility());
+		case metaf::VisibilityGroup::Type::RVR:
+		result << "Runway visual range for ";
+		result << explainRunway(group.runway().value()) << " is ";
+		result << explainDistance(group.visibility());
+		if (group.trend() != metaf::VisibilityGroup::Trend::NONE) {
+			result << ", and the trend is " << visTrendToString(group.trend());
+		}
 		break;
 
-		case metaf::SecondaryLocationGroup::Type::VARIABLE_VISIBILITY:
-		result << "Variable visibility from ";
+		case metaf::VisibilityGroup::Type::SURFACE:
+		result << "Visibility at surface level is ";
+		result << explainDistance(group.visibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::TOWER:
+		result << "Visibility from air traffic control tower is ";
+		result << explainDistance(group.visibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::SECTOR:
+		result << "Sector visibility is ";
+		result << explainDistance(group.visibility());
+		result << "\nIn the following directions: ";
+		result << explainDirectionSector(group.sectorDirections());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_PREVAILING:
+		result << "Prevailing visibility is variable from ";
 		result << explainDistance(group.minVisibility());
 		result << " to ";
 		result << explainDistance(group.maxVisibility());
 		break;
 
-		default:
-		result << "[unknown secondary location info]";
-	}
-	if (const auto rw = group.runway(); rw.has_value()) {
-		result << " at " << explainRunway(rw.value());
-	}
-	if (const auto d = group.direction(); d.has_value()) {
-		result << " towards " << explainDirection(d.value());
+		case metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL:
+		result << "Directional visibility toward ";
+		result << explainDirection(group.direction().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_RUNWAY:
+		result << "Visibility for ";
+		result << explainRunway(group.runway().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_RVR:
+		result << "Runway visual range for ";
+		result << explainRunway(group.runway().value());
+		result << " is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		if (group.trend() != metaf::VisibilityGroup::Trend::NONE) {
+			result << ", and the trend is " << visTrendToString(group.trend());
+		}
+		break;
+
+		case metaf::VisibilityGroup::Type::VARIABLE_SECTOR:
+		result << "Sector visibility is variable from ";
+		result << explainDistance(group.minVisibility());
+		result << " to ";
+		result << explainDistance(group.maxVisibility());
+		result << "\nIn the following directions: ";
+		result << explainDirectionSector(group.sectorDirections());
+		break;
+
+		case metaf::VisibilityGroup::Type::VIS_MISG:
+		result << "Visibility data missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::RVR_MISG:
+		result << "Runway visual range data is missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::RVRNO:
+		result << "Runway visual range should be reported but is missing";
+		break;
+
+		case metaf::VisibilityGroup::Type::VISNO:
+		result << "Visibility data not awailable";
+		if (const auto r = group.runway(); r.has_value()) {
+			result << " for " << explainRunway(*r);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " in the direction of " << explainDirection(*d);
+		}
+		break;
 	}
 	return result.str();
 }
 
-
-std::string VisitorExplain::visitRainfallGroup(const metaf::RainfallGroup & group,
+std::string VisitorExplain::visitCloudGroup(
+	const metaf::CloudGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Rainfall for last 10 minutes ";
-	result << explainPrecipitation(group.rainfallLast10Minutes()) << ", ";
-	if (group.rainfallLast60Minutes().isReported()) {
-		result << "for last 60 minutes ";
-		result << explainPrecipitation(group.rainfallLast60Minutes()) << ", ";
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	switch (group.type()) {
+		case metaf::CloudGroup::Type::NO_CLOUDS:
+		result << cloudAmountToString(group.amount());
+		break;
+
+		case metaf::CloudGroup::Type::CLOUD_LAYER:
+		result << "Cloud layer\n";
+		result << cloudAmountToString(group.amount());
+		result << "\nBase height ";
+		result << explainDistance(group.height());
+		if (group.convectiveType() != metaf::CloudGroup::ConvectiveType::NONE) {
+			result << "\nConvective type: ";
+			result << convectiveTypeToString(group.convectiveType());
+		}
+		break;
+
+		case metaf::CloudGroup::Type::VERTICAL_VISIBILITY:
+		result << "Sky is obscured, vertical visibility is ";
+		result << explainDistance(group.verticalVisibility());
+		break;
+
+		case metaf::CloudGroup::Type::CEILING:
+		result << "Ceiling height " << explainDistance(group.height());
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
+
+		case metaf::CloudGroup::Type::VARIABLE_CEILING:
+		result << "Ceiling height is variable between ";
+		result << explainDistance(group.minHeight());
+		result << " and ";
+		result << explainDistance(group.maxHeight());
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
+
+		case metaf::CloudGroup::Type::CHINO:
+		result << "Ceiling data not awailable";
+		if (const auto rw = group.runway(); rw.has_value()) {
+			result << " at " << explainRunway(*rw);
+		}
+		if (const auto d = group.direction(); d.has_value()) {
+			result << " towards " << explainDirection(*d);
+		}
+		break;
+
+		case metaf::CloudGroup::Type::CLD_MISG:
+		result << "Sky condition data (cloud data) is missing";
+		break;
+
+		case metaf::CloudGroup::Type::OBSCURATION:
+		result << "Ground-based or aloft obscuration";
+		break;
 	}
-	result << "total rainfall since 9:00 AM ";
-	result << explainPrecipitation(group.rainfallSince9AM());
+	return result.str();
+}
+
+std::string VisitorExplain::visitWeatherGroup(
+	const metaf::WeatherGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	switch (group.type()) {
+		case metaf::WeatherGroup::Type::CURRENT: 
+		result << "Weather phenomena:";
+		for (const auto p : group.weatherPhenomena()) {
+			result << "\n";
+			result << explainWeatherPhenomena(p);
+		}
+		break;
+		
+		case metaf::WeatherGroup::Type::RECENT: 
+		result << "Recent weather:";
+		for (const auto p : group.weatherPhenomena()) {
+			result << "\n";
+			result << explainWeatherPhenomena(p);
+		}
+		break;
+		
+		case metaf::WeatherGroup::Type::EVENT: 
+		result << "Precipitation beginning/ending time:";
+		for (const auto p : group.weatherPhenomena()) {
+			result << "\n";
+			result << explainWeatherPhenomena(p);
+		}
+		break;
+
+		case metaf::WeatherGroup::Type::NSW:
+		result << "Nil significant weather";
+		result << "\nIndicates end of significant weather phenomena";
+		break;
+
+		case metaf::WeatherGroup::Type::PWINO:
+		result << "This automated station is equipped with ";
+		result << "present weather identifier ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::WeatherGroup::Type::TSNO:
+		result << "This automated station is equipped with lightning detector ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::WeatherGroup::Type::WX_MISG:
+		result << "Weather phenomena data is missing";
+		break;
+
+		case metaf::WeatherGroup::Type::TS_LTNG_TEMPO_UNAVBL:
+		result << "Thunderstorm / lightning data is missing";
+		break;
+	}
+	return result.str();
+}
+
+std::string VisitorExplain::visitTemperatureGroup(
+	const metaf::TemperatureGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	switch (group.type()) {
+		case metaf::TemperatureGroup::Type::TEMPERATURE_AND_DEW_POINT:
+		result << "Ambient air temperature: ";
+		result << explainTemperature(group.airTemperature());
+		result << "\nDew point: ";
+		result << explainTemperature(group.dewPoint());
+		if (const auto rh = group.relativeHumidity(); rh.has_value()) {
+				result << "\nRelative humidity: ";
+				result << static_cast<int>(*rh);
+				result << " percent"; 
+		}
+		break;
+
+		case metaf::TemperatureGroup::Type::T_MISG:
+		result << "Temperature data is missing";
+		break;
+
+		case metaf::TemperatureGroup::Type::TD_MISG:
+		result << "Dew point data is missing";
+		break;
+	}
+	return result.str();
+}
+
+std::string VisitorExplain::visitPressureGroup(
+	const metaf::PressureGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	switch(group.type()) {
+		case metaf::PressureGroup::Type::OBSERVED_QNH:
+		result << "Observed mean atmospheric pressure ";
+		result << "(normalised to sea level): ";
+		result << explainPressure(group.atmosphericPressure());
+		break;
+
+		case metaf::PressureGroup::Type::FORECAST_LOWEST_QNH:
+		result << "Forecast lowest sea level pressure: ";
+		result << explainPressure(group.atmosphericPressure());
+		break;
+
+		case metaf::PressureGroup::Type::OBSERVED_QFE:
+		result << "Observed actual atmospheric pressure: ";
+		result << explainPressure(group.atmosphericPressure());
+		break;
+
+		case metaf::PressureGroup::Type::SLPNO:
+		result << "Mean sea-level pressure information is not available";
+		break;
+
+		case metaf::PressureGroup::Type::PRES_MISG:
+		result << "Atmospheric pressure (altimeter) data is missing";
+		break;
+	}
+	return result.str();
+}
+
+std::string VisitorExplain::visitRunwayStateGroup(
+	const metaf::RunwayStateGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	(void)reportPart; (void)rawString;
+	std::ostringstream result;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	result << "State of " << explainRunway(group.runway()) << ":\n";
+
+	switch (group.type()) {
+		case metaf::RunwayStateGroup::Type::RUNWAY_STATE:
+		result << runwayStateDepositsToString(group.deposits());
+		if (group.deposits() != 
+				metaf::RunwayStateGroup::Deposits::CLEAR_AND_DRY)
+		{
+		    result << "\nDepth of deposits on runway: ";
+		    result << explainPrecipitation(group.depositDepth());
+			result << "\nRunway contamination extent: ";
+			result << runwayStateExtentToString(group.contaminationExtent());
+		}
+		result << "\nSurface friction: ";
+		result << explainSurfaceFriction(group.surfaceFriction());
+		break;
+
+		case metaf::RunwayStateGroup::Type::RUNWAY_CLRD:
+		result << "Deposits on runway were cleared or ceased to exist";
+		result << "\nSurface friction: ";
+		result << explainSurfaceFriction(group.surfaceFriction());
+		break;
+
+		case metaf::RunwayStateGroup::Type::RUNWAY_SNOCLO:
+		result << "Runway closed due to snow accumulation";
+		break;
+
+		case metaf::RunwayStateGroup::Type::AERODROME_SNOCLO:
+		result << "Aerodrome closed due to snow accumulation";
+		break;
+
+		case metaf::RunwayStateGroup::Type::RUNWAY_NOT_OPERATIONAL:
+		result << "Runway is not operational";
+		break;
+	}
 	return result.str();
 }
 
@@ -813,36 +923,11 @@ std::string VisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & 
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Sea surface temperature " << explainTemperature(group.surfaceTemperature()) << ", ";
-	result << explainWaveHeight(group.waves());
-	return result.str();
-}
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
 
-std::string VisitorExplain::visitColourCodeGroup(const metaf::ColourCodeGroup & group,
-	metaf::ReportPart reportPart,
-	const std::string & rawString)
-{
-	(void)reportPart; (void)rawString;
-	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.isCodeBlack()) {
-		result << "Colour code BLACK: ";
-		result << "aerodrome closed due to snow accumulation or non-weather reasons" << lineBreak;
-	}
-	result << "Colour code " << colourCodeToString(group.code()) << ": ";
-	if (const auto [vis, ceiling] = 
-			std::pair(colourCodeVisibility(group.code()), colourCodeCeiling(group.code()));
-		vis && ceiling)
-	{
-		if (group.code() == metaf::ColourCodeGroup::Code::RED) {
-			result << "either visibility &lt; " << vis;
-			result << " or lowest cloud base height &lt; " << ceiling;
-		} else {
-			result << "visibility &gt;" << vis;
-			result << " and lowest cloud base height &gt;" << ceiling;
-		}
-	}
+	result << "Sea surface temperature ";
+	result << explainTemperature(group.surfaceTemperature()) << ", ";
+	result << explainWaveHeight(group.waves());
 	return result.str();
 }
 
@@ -852,35 +937,39 @@ std::string VisitorExplain::visitMinMaxTemperatureGroup(const metaf::MinMaxTempe
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	std::string periodStr;
-	switch(group.observationPeriod()) {
-		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS6:
-		periodStr = "6-hourly";
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	switch(group.type()) {
+		case metaf::MinMaxTemperatureGroup::Type::OBSERVED_6_HOURLY:
+		result << "Observed 6-hourly minimum/maximum temperature: ";
+		result << "\nMinimum ambient air temperature: ";
+		result << explainTemperature(group.minimum());
+		result << "\nMaximum ambient air temperature: ";
+		result << explainTemperature(group.maximum());
 		break;
 
-		case metaf::MinMaxTemperatureGroup::ObservationPeriod::HOURS24:
-		periodStr = "24-hourly";
+		case metaf::MinMaxTemperatureGroup::Type::OBSERVED_24_HOURLY:
+		result << "Observed 24-hourly minimum/maximum temperature: ";
+		result << "\nMinimum ambient air temperature: ";
+		result << explainTemperature(group.minimum());
+		result << "\nMaximum ambient air temperature: ";
+		result << explainTemperature(group.maximum());
 		break;
 
-		default:
-		periodStr = "Unknown period";
-		break; 
-	}
-	result << periodStr << " " << " minimum / maximum temperature";
-	if (!group.minimum().temperature().has_value() && 
-		!group.maximum().temperature().has_value()) {
-			result << " is not reported";
-			return result.str();
-	}
-	result << lineBreak;
-	if (group.minimum().temperature().has_value()) {
-		result << "Minimum temperature ";
-		result << explainTemperature(group.minimum()) << lineBreak;
-	}
-	if (group.maximum().temperature().has_value()) {
-		result << "Maximum temperature ";
-		result << explainTemperature(group.maximum()) << lineBreak;
+		case metaf::MinMaxTemperatureGroup::Type::FORECAST:
+		result << "Forecast minimum/maximum temperature";
+		if (group.minimum().isReported()) {
+			result << "\nMinimum ambient air temperature: ";
+			result << explainTemperature(group.minimum());
+			result << ", expected at ";
+			result << explainMetafTime(group.minimumTime().value());
+		}
+		if (group.maximum().isReported()) {
+			result << "\nMaximum ambient air temperature: ";
+			result << explainTemperature(group.maximum());
+			result << ", expected at ";
+			result << explainMetafTime(group.maximumTime().value());
+		}
+		break;
 	}
 	return result.str();
 }
@@ -892,24 +981,108 @@ std::string VisitorExplain::visitPrecipitationGroup(
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.type() == metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY) {
-		result << "Snow increasing rapidly" << lineBreak;
-		result << "Snow increased by ";
-		result << explainPrecipitation(group.tendency());
-		result << " for the last hour, total snowfall is ";
-		result << explainPrecipitation(group.amount());
-		return result.str();
-	};
-	if (group.amount().precipitation().has_value() && 
-		!group.amount().precipitation().value())
-	{
-		result << "Trace amount of ";
-		result << precipitationGroupTypeToString(group.type());
-	} else {
-		result << "Amount of ";
-		result << precipitationGroupTypeToString(group.type()) << " is ";
-		result << explainPrecipitation(group.amount());
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	switch(group.type()) {
+		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
+		result << "Total precipitation for the past hour: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
+		result << "Snow depth on ground: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
+		result << "Water equivalent of frozen precipitation ";
+		result << "for the last 3 or 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
+		result << "Water equivalent of frozen precipitation";
+		result << " for the last 3 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
+		result << "Water equivalent of frozen precipitation"; 
+		result << "for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+	
+		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
+		result << "Water equivalent of frozen precipitation ";
+		result << "for the last 24 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
+		result << "Snowfall for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
+		result << "Water equivalent of snow on ground: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
+		result << "Ice accretion for the last hour: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
+		result << "Ice accretion for the last 3 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
+		result << "Ice accretion for the last 6 hours: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::
+				PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
+		result << "Precipitation accumulation since last report: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::SNOW_INCREASING_RAPIDLY:
+		result << "Snow increasing rapidly";
+		result << "\nFor the last hour snow increased by ";
+		result << explainPrecipitation(group.recent());
+		result << "\nTotal snowfall: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::RAINFALL_9AM_10MIN:
+		result << "Rainfall for the last 10 minutes before ";
+		result << "report release time: ";
+		result << explainPrecipitation(group.recent());
+		result << "\nRainfall since 9AM (9:00) local time: ";
+		result << explainPrecipitation(group.total());
+		break;
+
+		case metaf::PrecipitationGroup::Type::PNO:
+		result << "This automated station is equipped with ";
+		result << "tipping bucket rain gauge ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::PrecipitationGroup::Type::FZRANO:
+		result << "This automated station is equipped with ";
+		result << "freezing rain sensor ";
+		result << "and this sensor is not operating";
+		break;
+
+		case metaf::PrecipitationGroup::Type::ICG_MISG:
+		result << "Icing data is missing";
+		break;
+
+		case metaf::PrecipitationGroup::Type::PCPN_MISG:
+		result << "Precipitation data is missing";
+		break;
 	}
 	return result.str();
 }
@@ -921,10 +1094,12 @@ std::string VisitorExplain::visitLayerForecastGroup(
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
 	result << layerForecastGroupTypeToString(group.type());
-	result << " at heights from " << explainDistance(group.baseHeight());
-	result << " to " << explainDistance(group.topHeight());
+	result << " at heights from ";
+	result << explainDistance(group.baseHeight());
+	result << " to ";
+	result << explainDistance(group.topHeight());
 	return result.str();	
 }
 
@@ -935,31 +1110,33 @@ std::string VisitorExplain::visitPressureTendencyGroup(
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	if (group.type() == metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY) {
-		return "Pressure is rapidly falling at a rate of at least 0.06 inch of mercury "
-			"(2.03 hectopascal) per hour and the pressure change totals "
-			"0.02 inch of mercury (0.68 hectopascal) or more "
-			"at the time of the observation";
-	}
-	if (group.type() == metaf::PressureTendencyGroup::Type::RISING_RAPIDLY) {
-		return "Pressure is rapidly rising at a rate of at least 0.06 inch of mercury "
-			"(2.03 hectopascal) per hour and the pressure change totals "
-			"0.02 inch of mercury (0.68 hectopascal) or more "
-			"at the time of the observation";
-	}
-	if (group.type() != metaf::PressureTendencyGroup::Type::NOT_REPORTED) {
+
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	switch (group.type()) {
+		case metaf::PressureTendencyGroup::Type::NOT_REPORTED:
+		result << "3-hourly pressure tendency is not reported";
+		result << "\nAbsolute pressure change is ";
+		result << explainPressure(group.difference());
+		break;
+
+		case metaf::PressureTendencyGroup::Type::RISING_RAPIDLY:
+		case metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY:
+		result << "Atmospheric pressure is ";
+		result << pressureTendencyTypeToString (group.type());
+		break;
+
+		default:
 		result << "During last 3 hours the atmospheric pressure was ";
-		result << pressureTendencyTypeToString (group.type()) << lineBreak;
-		result << "Now pressure is ";
+		result << pressureTendencyTypeToString (group.type());
+		result << "\nNow the atmospheric pressure is ";
 		result << pressureTendencyTrendToString(
 			metaf::PressureTendencyGroup::trend(group.type()));
 		result << " 3 hours ago";
-	} else {
-		result << "3-hourly pressure tendency is not reported";
+		result << "\nAbsolute pressure change is ";
+		result << explainPressure(group.difference());
+		break;
 	}
-	result << ", absolute pressure change is ";
-	result << explainPressure(group.difference());
 	return result.str();
 }
 
@@ -970,71 +1147,63 @@ std::string VisitorExplain::visitCloudTypesGroup(
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	const auto clouds = group.toVector();
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	const auto clouds = group.cloudTypes();
+	result << "Obscuration / cloud layers: ";
 	for (auto i = 0u; i < clouds.size(); i++) {
-		if (i == 0u) {
-			result << "Lowest cloud layer or obscuration: ";
-		} else {
-			result << "Next cloud layer: ";
-		}
-		result << cloudTypeToString(std::get<metaf::CloudTypesGroup::Type>(clouds.at(i)));
-		result << ", covering " << std::get<unsigned int>(clouds.at(i)) << "/8 of sky";
-		result << lineBreak;
-	}
-	if (group.baseHeight().isReported()) {
-		result << "Base height is ";
-		result << explainDistance(group.baseHeight());
+		result << "\n";
+		result << explainCloudType(clouds.at(i));
 	}
 	return result.str();
 }
 
-std::string VisitorExplain::visitCloudLayersGroup(
-	const metaf::CloudLayersGroup & group,
+std::string VisitorExplain::visitLowMidHighCloudGroup(
+	const metaf::LowMidHighCloudGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
-	result << "Low cloud layer: " << lineBreak;
-	result << cloudLowLayerToString(group.lowLayer()) << lineBreak;
-	result << "Mid cloud layer: " << lineBreak;
-	result << cloudMidLayerToString(group.midLayer()) << lineBreak;
-	result << "High cloud layer: " << lineBreak;
-	result << cloudHighLayerToString(group.highLayer()) << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	result << "Low cloud layer:\n";
+	result << cloudLowLayerToString(group.lowLayer());
+	result << "\nMid cloud layer:\n";
+	result << cloudMidLayerToString(group.midLayer());
+	result << "\nHigh cloud layer:\n";
+	result << cloudHighLayerToString(group.highLayer());
 	return result.str();
 }
 
-std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & group,
+std::string VisitorExplain::visitLightningGroup(
+	const metaf::LightningGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
 
 	result << "Lightning strikes observed";
 	if (group.distance().isReported())
 	{
-		result << " at distance " << explainDistance(group.distance());
+		result << " at distance ";
+		result << explainDistance(group.distance());
 	}
-	result << lineBreak;
 
 	switch(group.frequency()) {
 		case metaf::LightningGroup::Frequency::NONE:
 		break;
 
-		case metaf::LightningGroup::Frequency::OCCASSIONAL:
-		result << "Less than 1 strike per minute" << lineBreak;
+		case metaf::LightningGroup::Frequency::OCCASIONAL:
+		result << "\nLess than 1 strike per minute";
 		break;
 
 		case metaf::LightningGroup::Frequency::FREQUENT:
-		result << "1 to 6 strikes per minute" << lineBreak;
+		result << "\n1 to 6 strikes per minute";
 		break;
 
 		case metaf::LightningGroup::Frequency::CONSTANT:
-		result << "More than 6 strikes per minute" << lineBreak;
+		result << "\nMore than 6 strikes per minute";
 		break;
 	}
 
@@ -1043,136 +1212,123 @@ std::string VisitorExplain::visitLightningGroup(const metaf::LightningGroup & gr
 		group.isCloudCloud() ||
 		group.isCloudAir()) 
 	{
-		result << "The following lightning types are observed: ";
+		result << "\nThe following lightning types are observed: ";
+		if (group.isCloudGround()) result << "\ncloud-to-ground";
+		if (group.isInCloud()) result << "\nin-cloud";
+		if (group.isCloudCloud()) result << "\ncloud-to-cloud";
+		if (group.isCloudAir()) 
+			result << "\ncloud-to-air without strike to ground";
 	}
-	if (group.isCloudGround()) {
-		result << "cloud-to-ground";
-		if (group.isInCloud() || group.isCloudCloud() || group.isCloudAir()) result << ", ";
-	}
-	if (group.isInCloud()) {
-		result << "in-cloud";
-		if (group.isCloudCloud() || group.isCloudAir()) result << ", ";
-	}
-	if (group.isCloudCloud()) {
-		result << "cloud-to-cloud";
-		if (group.isCloudAir()) result << ", ";
-	}
-	if (group.isCloudAir()) {
-		result << "cloud-to-air (without strike to ground)";
-	}
-	if (group.isCloudGround() || 
-	 	group.isInCloud() ||
-		group.isCloudCloud() ||
-		group.isCloudAir()) 
-	{
-		result << lineBreak;
-	}
-
 	if (group.isUnknownType()) 
 	{
-		result << "Some lightning types specified in this group ";
-		result << "were not recognised by parser" << lineBreak; 
+		result << "\nSome lightning strike types specified in this group ";
+		result << "were not recognised by parser"; 
 	}
-
-	const auto directions = group.directions();
-	if (directions.size()) {
-		result << "Lightning strikes observed in the following directions: ";
-		for (auto i=0u; i<directions.size(); i++) {
-			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i]);
-		}
-		result << lineBreak;
+	if (const auto directions = group.directions(); directions.size()) {
+		result << "\nLightning strikes observed in the following directions: ";
+		result << explainDirectionSector(directions);
 	}
 	return result.str();
 }
 
-std::string VisitorExplain::visitVicinityGroup(const metaf::VicinityGroup & group,
+std::string VisitorExplain::visitVicinityGroup(
+	const metaf::VicinityGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
 	switch (group.type()) {
 		case metaf::VicinityGroup::Type::THUNDERSTORM:
-		result << "Thunderstorm"; break;
+		result << "Thunderstorm";
+		break;
 
 		case metaf::VicinityGroup::Type::CUMULONIMBUS:
-		result << "Cumulonimbus cloud(s)"; break;
+		result << "Cumulonimbus cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::CUMULONIMBUS_MAMMATUS:
-		result << "Cumulonimbus cloud(s) with mammatus"; break;
+		result << "Cumulonimbus cloud(s) with mammatus";
+		break;
 
 		case metaf::VicinityGroup::Type::TOWERING_CUMULUS:
-		result << "Towering cumulus cloud(s)"; break;
+		result << "Towering cumulus cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::ALTOCUMULUS_CASTELLANUS:
-		result << "Altocumulus cloud(s)"; break;
+		result << "Altocumulus cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::STRATOCUMULUS_STANDING_LENTICULAR:
-		result << "Stratocumulus standing lenticular cloud(s)"; break;
+		result << "Stratocumulus standing lenticular cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::ALTOCUMULUS_STANDING_LENTICULAR:
-		result << "Altocumulus standing lenticular cloud(s)"; break;
+		result << "Altocumulus standing lenticular cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::CIRROCUMULUS_STANDING_LENTICULAR:
-		result << "Cirrocumulus standing lenticular cloud(s)"; break;
+		result << "Cirrocumulus standing lenticular cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::ROTOR_CLOUD:
-		result << "Rotor cloud(s)"; break;
+		result << "Rotor cloud(s)";
+		break;
 
 		case metaf::VicinityGroup::Type::VIRGA:
-		result << "Virga"; break;
+		result << "Virga";
+		break;
 
 		case metaf::VicinityGroup::Type::PRECIPITATION_IN_VICINITY:
-		result << "Precipitation"; break;
+		result << "Precipitation";
+		break;
 
 		case metaf::VicinityGroup::Type::FOG:
-		result << "Fog"; break;
+		result << "Fog";
+		break;
 
 		case metaf::VicinityGroup::Type::FOG_SHALLOW:
-		result << "Shallow fog"; break;
+		result << "Shallow fog";
+		break;
 
 		case metaf::VicinityGroup::Type::FOG_PATCHES:
-		result << "Patches of fog"; break;
+		result << "Patches of fog";
+		break;
 
 		case metaf::VicinityGroup::Type::HAZE:
-		result << "Haze"; break;
+		result << "Haze";
+		break;
 
 		case metaf::VicinityGroup::Type::SMOKE:
-		result << "Smoke"; break;
+		result << "Smoke";
+		break;
 
 		case metaf::VicinityGroup::Type::BLOWING_SNOW:
-		result << "Blowing snow"; break;
+		result << "Blowing snow";
+		break;
 
 		case metaf::VicinityGroup::Type::BLOWING_SAND:
-		result << "Blowing sand"; break;
+		result << "Blowing sand";
+		break;
 
 		case metaf::VicinityGroup::Type::BLOWING_DUST:
-		result << "Blowing dust"; break;
-
+		result << "Blowing dust";
+		break;
 	}
 	result << " observed";
 	if (group.distance().isReported())
 	{
-		result << " at distance " << explainDistance(group.distance());
+		result << " at distance ";
+		result << explainDistance(group.distance());
+	}	
+	if (const auto directions = group.directions(); directions.size()) {
+		result << "\nObserved in the following directions: ";
+		result << explainDirectionSector(directions);
 	}
-	result << lineBreak;
-
-	const auto directions = group.directions();
-	if (directions.size()) {
-		result << "Observed in the following directions: ";
-		for (auto i=0u; i<directions.size(); i++) {
-			if (i) result << ", ";
-			result << cardinalDirectionToString(directions[i]);
-		}
-		result << lineBreak;
-	}
-
-	if (group.movingDirection() != metaf::Direction::Cardinal::NONE) {
-		result << "Moving towards ";
-		result << cardinalDirectionToString(group.movingDirection());
-		result << lineBreak;
+	if (group.movingDirection().isReported()) {
+		result << "\nMoving towards ";
+		result << cardinalDirectionToString(group.movingDirection().cardinal());
 	}
 
 	return result.str();
@@ -1185,68 +1341,136 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
+
+	static const std::string colourCodeBlack = "Colour code BLACK: "
+		"aerodrome closed due to snow accumulation or non-weather reasons";
+
 	switch (group.type()) {
 		case metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES:
-		if (const auto duration = group.value(); duration.has_value()) {
-			if (!duration.value()) {
-				result << "No sunshine occurred the previous calendar day";
-			} else {
-				result << "Duration of sunshine ";
-				result << "that occurred the previous calendar day is ";
-				result << duration.value() << " minutes";
-			}
+		if (const auto duration = group.data(); *duration) {
+			result << "Duration of sunshine ";
+			result << "that occurred the previous calendar day is ";
+			result << *duration;
+			result << " minutes";
+		} else {
+			result << "No sunshine occurred the previous calendar day";
 		}
 		break;
 
 		case metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION:
-		if (const auto correctionNo = group.value(); correctionNo.has_value()) {
-			result << "This report is the corrected weather observation, ";
-			result << "correction number is " << static_cast<int>(correctionNo.value());
-		}
+		result << "This report is the corrected weather observation, ";
+		result << "correction number is ";
+		result << static_cast<int>(*group.data());
 		break;
 
 		case metaf::MiscGroup::Type::DENSITY_ALTITUDE:
-			result << "Density altitude ";
-			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << group.value().value() << " feet";
-			break;
+		result << "Density altitude ";
+		if (!group.data().has_value()) {
+			result << "data missing";
+		} else {
+			result << " is ";
+			result << *group.data() << " feet";
+		}
+		break;
 
 		case metaf::MiscGroup::Type::HAILSTONE_SIZE:
-			result << "Largest hailstone size ";
-			if (!group.value().has_value()) { result << "data missing"; break; }
-			result << " is " << group.value().value() << " inches";
-			break;
+		result << "Largest hailstone size is ";
+		result << *group.data();
+		result << " inches";
+		break;
 
-		default:
-		result << "[unknown miscellaneous group type]";
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE:
+		result << "Colour code BLUE: ";
+		result << "visibility &gt;8000 m and ";
+		result << "lowest cloud base height &gt;2500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKWHITE:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_WHITE:
+		result << "Colour code WHITE: ";
+		result << "visibility &gt;5000 m and ";
+		result << "lowest cloud base height &gt;1500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKGREEN:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_GREEN:
+		result << "Colour code GREEN: ";
+		result << "visibility &gt;3700 m and ";
+		result << "lowest cloud base height &gt;700 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW1:
+		result << "Colour code YELLOW 1: ";
+		result << "visibility &gt;2500 m and ";
+		result << "lowest cloud base height &gt;500 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW2:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW2:
+		result << "Colour code YELLOW 2: ";
+		result << "visibility &gt;1600 m and ";
+		result << "lowest cloud base height &gt;300 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKAMBER:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_AMBER:
+		result << "Colour code AMBER: ";
+		result << "visibility &gt;800 m and ";
+		result << "lowest cloud base height &gt;200 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKRED:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_RED:
+		result << "Colour code RED: ";
+		result << "either visibility &lt;800 m or ";
+		result << "lowest cloud base height &lt;200 ft ";
+		result << "or both";
+		break;
+
+		case metaf::MiscGroup::Type::FROIN:
+		result << "Frost on the instrument ";
+		result << "(e.g. due to freezing fog depositing rime).";
 		break;
 	}
 	return result.str();
 }
 
 
-std::string VisitorExplain::visitUnknownGroup(const metaf::UnknownGroup & group,
+std::string VisitorExplain::visitUnknownGroup(
+	const metaf::UnknownGroup & group,
 	metaf::ReportPart reportPart,
 	const std::string & rawString)
 {
-	(void)reportPart;
+	(void)group;(void)reportPart;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << lineBreak;
+	if (!group.isValid()) result << groupNotValidMessage << "\n";
 	result << "Not recognised by parser: " << rawString;
 	return result.str();
 }
 
-std::string_view VisitorExplain::reportTypeToString(metaf::ReportType reportType) {
+std::string_view VisitorExplain::reportTypeToString(
+	metaf::ReportType reportType)
+{
 	switch (reportType) {
 		case metaf::ReportType::UNKNOWN:	return "unable to detect";
 		case metaf::ReportType::METAR:		return "METAR (weather observation)";
 		case metaf::ReportType::TAF:		return "TAF (weather forecast)";
-		default: return "unknown report type";
 	}
 }
 
-std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportError) {
+std::string_view VisitorExplain::reportErrorToString(
+	metaf::ReportError reportError)
+{
 	switch (reportError) {
 		case metaf::ReportError::NONE:
 		return "no error";
@@ -1289,57 +1513,61 @@ std::string_view VisitorExplain::reportErrorToString(metaf::ReportError reportEr
 
 		case metaf::ReportError::REPORT_TOO_LARGE:
 		return "Report has too many groups";
-
-		default: 
-		return "unknown error";
 	}
 }
 
 std::string VisitorExplain::explainRunway(const metaf::Runway & runway) {
 	if (runway.isAllRunways()) return "all runways";
-	if (runway.isMessageRepetition()) return "same runway (repetition of last message)"; 
+	if (runway.isMessageRepetition()) 
+		return "same runway (repetition of last message)"; 
 	std::ostringstream result;
 	result << "runway ";
-	result << (runway.number() < 10 ? "0"s : ""s) << std::to_string(runway.number());
+	result << (runway.number() < 10 ? "0"s : ""s);
+	result << runway.number();
 	std::string designatorStr;
 	switch(runway.designator()) {
 		case metaf::Runway::Designator::NONE: 	break;
-		case metaf::Runway::Designator::LEFT: 	designatorStr = "LEFT"; break;
-		case metaf::Runway::Designator::CENTER:	designatorStr = "CENTER"; break;
-		case metaf::Runway::Designator::RIGHT:  designatorStr = "RIGHT"; break;
-		default: designatorStr = "(unknown runway designator)"; break;
+		case metaf::Runway::Designator::LEFT: 	result << " LEFT"; break;
+		case metaf::Runway::Designator::CENTER:	result << " CENTER"; break;
+		case metaf::Runway::Designator::RIGHT:  result << " RIGHT"; break;
 	}
-	if (!designatorStr.empty()) result << " " << designatorStr;
 	return result.str();
 }
 
-std::string VisitorExplain::explainMetafTime(const metaf::MetafTime & metafTime) {
-	static const std::string hourMinuteSeparator(":");
+std::string VisitorExplain::explainMetafTime(
+	const metaf::MetafTime & metafTime)
+{
 	std::ostringstream result;
 	if (const auto day = metafTime.day(); day.has_value()) {
 		result << "day " << *day << ", ";
 	}
 	result << (metafTime.hour() < 10 ? "0"s : ""s) << metafTime.hour();
-	result << hourMinuteSeparator;
+	result << ":";
 	result << (metafTime.minute() < 10 ? "0"s : ""s) << metafTime.minute();
 	result << " GMT";
 	return result.str();
 }
 
-std::string VisitorExplain::explainTemperature(const metaf::Temperature & temperature) {
+std::string VisitorExplain::explainTemperature(
+	const metaf::Temperature & temperature)
+{
 	if (!temperature.temperature().has_value()) return "not reported";
 	std::ostringstream result;
-	if (!temperature.temperature().value() && !temperature.isPrecise()) {
+	if (!(*temperature.temperature()) && !temperature.isPrecise()) {
 		if (temperature.isFreezing()) result << "slightly less than ";
 		if (!temperature.isFreezing()) result << "slightly more than ";
 	}
-	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::C); t.has_value()) {
+	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::C);
+			t.has_value())
+	{
 		result << roundTo(*t, 1) << " &deg;C";
 	} else {
 		result << "[unable to convert temperature to &deg;C]";
 	}
 	result << " / ";
-	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::F); t.has_value()) {
+	if (const auto t = temperature.toUnit(metaf::Temperature::Unit::F);
+			t.has_value())
+	{
 		result << roundTo(*t, 1) << " &deg;F";
 	} else {
 		result << "[unable to convert temperature to &deg;F]";
@@ -1356,36 +1584,46 @@ std::string VisitorExplain::explainSpeed(const metaf::Speed & speed) {
 	}
 	result << " (";
 	if (speed.unit() != metaf::Speed::Unit::KNOTS) {
-		if (const auto s = speed.toUnit(metaf::Speed::Unit::KNOTS); s.has_value()) {
-			result << roundTo(*s, 1);
-			result << " " << speedUnitToString(metaf::Speed::Unit::KNOTS);
+		if (const auto s = speed.toUnit(metaf::Speed::Unit::KNOTS); 
+				s.has_value())
+		{
+			result << roundTo(*s, 1) << " ";
+			result << speedUnitToString(metaf::Speed::Unit::KNOTS);
 		} else {
 			result << "[unable to convert speed to knots]";
 		}
 		result << " / ";
 	}
 	if (speed.unit() != metaf::Speed::Unit::METERS_PER_SECOND) {
-		if (const auto s = speed.toUnit(metaf::Speed::Unit::METERS_PER_SECOND); s.has_value()) {
-			result << roundTo(*s, 1);
-			result << " " << speedUnitToString(metaf::Speed::Unit::METERS_PER_SECOND);
+		if (const auto s = speed.toUnit(metaf::Speed::Unit::METERS_PER_SECOND); 
+				s.has_value())
+		{
+			result << roundTo(*s, 1) << " ";
+			result << speedUnitToString(metaf::Speed::Unit::METERS_PER_SECOND);
 		} else {
 			result << "[unable to convert speed to m/s]";
 		}
 		result << " / ";
 	}
 	if (speed.unit() != metaf::Speed::Unit::KILOMETERS_PER_HOUR) {
-		if (const auto s = speed.toUnit(metaf::Speed::Unit::KILOMETERS_PER_HOUR); s.has_value()) {
-			result << roundTo(*s, 1);
-			result << " " << speedUnitToString(metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+		if (const auto s = 
+				speed.toUnit(metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+				s.has_value())
+		{
+			result << roundTo(*s, 1) << " ";
+			result << 
+				speedUnitToString(metaf::Speed::Unit::KILOMETERS_PER_HOUR);
 		} else {
 			result << "[unable to convert speed to km/h]";
 		}
 		if (speed.unit() != metaf::Speed::Unit::MILES_PER_HOUR) result << " / ";
 	}
 	if (speed.unit() != metaf::Speed::Unit::MILES_PER_HOUR) {
-		if (const auto s = speed.toUnit(metaf::Speed::Unit::MILES_PER_HOUR); s.has_value()) {
-			result << roundTo(*s, 1);
-			result << " " << speedUnitToString(metaf::Speed::Unit::MILES_PER_HOUR);
+		if (const auto s = speed.toUnit(metaf::Speed::Unit::MILES_PER_HOUR);
+				s.has_value())
+		{
+			result << roundTo(*s, 1) << " ";
+			result << speedUnitToString(metaf::Speed::Unit::MILES_PER_HOUR);
 		} else {
 			result << "[unable to convert speed to mph]";
 		}
@@ -1418,42 +1656,66 @@ std::string VisitorExplain::explainDistance(const metaf::Distance & distance) {
 		result << "5 to 10 nautical miles "; 
 		result << "(9 to 19 km, 6 to 12 statue miles)";
 		break;
-
-		default: 
-		result << "unknown modifier, "; 
-		break;
 	}
+
 	if (!distance.isValue()) return result.str();
 
-	const auto d = distance.toUnit(distance.unit());
-	if (!d.has_value()) return "[unable to get distance's floating-point value]";
 	if (distance.unit() == metaf::Distance::Unit::STATUTE_MILES) {
-		result << roundTo(*d, 3);
+		const auto d = distance.miles();
+		if (!d.has_value()) return "[unable to get distance value in miles]";
+		const auto integer = std::get<unsigned int>(d.value());
+		const auto fraction = 
+			std::get<metaf::Distance::MilesFraction>(d.value());
+		if (integer || fraction == metaf::Distance::MilesFraction::NONE)
+			result << integer;
+		if (integer && fraction != metaf::Distance::MilesFraction::NONE)
+			result << " ";
+		if (fraction != metaf::Distance::MilesFraction::NONE)
+			result << distanceMilesFractionToString(fraction);
 	} else {
+		const auto d = distance.toUnit(distance.unit());
+		if (!d.has_value())
+			return "[unable to get distance's floating-point value]";
 		result << static_cast<int>(*d);
 	}
 	result << " " << distanceUnitToString(distance.unit());
 	result << " (";
 	if (distance.unit() != metaf::Distance::Unit::METERS) {
-		if (const auto d = distance.toUnit(metaf::Distance::Unit::METERS); d.has_value()) {
+		if (const auto d = distance.toUnit(metaf::Distance::Unit::METERS); 
+			d.has_value())
+		{
 			result << static_cast<int>(*d);
-			result << " " << distanceUnitToString(metaf::Distance::Unit::METERS);
+			result << " ";
+			result << distanceUnitToString(metaf::Distance::Unit::METERS);
 		} else {
 			result << "[unable to convert distance to meters]";
 		}
 		result << " / ";
 	}
 	if (distance.unit() != metaf::Distance::Unit::STATUTE_MILES) {
-		if (const auto d = distance.toUnit(metaf::Distance::Unit::STATUTE_MILES); d.has_value()) {
-			result << roundTo(*d, 3);
-			result << " " << distanceUnitToString(metaf::Distance::Unit::STATUTE_MILES);
+		if (const auto d = distance.miles(); d.has_value()) {
+			if (!d.has_value())
+				return "[unable to get distance value in miles]";
+			const auto integer = std::get<unsigned int>(d.value());
+			const auto fraction = 
+				std::get<metaf::Distance::MilesFraction>(d.value());
+			if (integer || fraction == metaf::Distance::MilesFraction::NONE)
+				result << integer;
+			if (integer && fraction != metaf::Distance::MilesFraction::NONE)
+				result << " ";
+			if (fraction != metaf::Distance::MilesFraction::NONE)
+				result << distanceMilesFractionToString(fraction);
+			result << " ";
+			result << distanceUnitToString(metaf::Distance::Unit::STATUTE_MILES);
 		} else {
 			result << "[unable to convert distance to statute miles]";
 		}
 		if (distance.unit() != metaf::Distance::Unit::FEET) result << " / ";
 	}
 	if (distance.unit() != metaf::Distance::Unit::FEET) {
-		if (const auto d = distance.toUnit(metaf::Distance::Unit::FEET); d.has_value()) {
+		if (const auto d = distance.toUnit(metaf::Distance::Unit::FEET); 
+			d.has_value())
+		{
 			result << static_cast<int>(*d);
 			result << " " << distanceUnitToString(metaf::Distance::Unit::FEET);
 		} else {
@@ -1468,46 +1730,50 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 	bool trueCardinalDirections)
 {
 	std::ostringstream result;
-	switch (direction.status()) {
-		case metaf::Direction::Status::OMMITTED:
-		return std::string();
+	switch (direction.type()) {
+		case metaf::Direction::Type::NOT_REPORTED:
+		result << "not reported";
+		break;
 
-		case metaf::Direction::Status::NOT_REPORTED:
-		return "not reported";
+		case metaf::Direction::Type::VARIABLE:
+		result << "variable";
+		break;
 
-		case metaf::Direction::Status::VARIABLE:
-		return "variable";
+		case metaf::Direction::Type::NDV:
+		result << "no directional variation";
+		break;
 
-		case metaf::Direction::Status::NDV:
-		return "no directional variation";
-
-		case metaf::Direction::Status::VALUE_DEGREES:
+		case metaf::Direction::Type::VALUE_DEGREES:
 		if (const auto d = direction.degrees(); d.has_value()) {
 			result << *d << " degrees";
 		} else {
 			result << "[unable to produce value in &deg;]";
-		}
-		
-		case metaf::Direction::Status::VALUE_CARDINAL:
-		if (const auto c = cardinalDirectionToString(direction.cardinal(trueCardinalDirections)); 
-			!c.empty()) {
-				if (direction.status() == metaf::Direction::Status::VALUE_DEGREES) result << "(";
+		}		
+		case metaf::Direction::Type::VALUE_CARDINAL:
+		if (const auto c = 
+				cardinalDirectionToString(
+					direction.cardinal(trueCardinalDirections)); 
+			!c.empty())
+		{
+			if (direction.type() == metaf::Direction::Type::VALUE_DEGREES) {
+				result << "(" << c << ")";
+			} else {
 				result << c; 
-				if (direction.status() == metaf::Direction::Status::VALUE_DEGREES) result << ")";
+			}
 		}
 		break;
 
-		case metaf::Direction::Status::OVERHEAD:
-		return "overhead";
+		case metaf::Direction::Type::OVERHEAD:
+		result << "overhead";
+		break;
 
-		case metaf::Direction::Status::ALQDS:
-		return "all quadrants (all directions)";
+		case metaf::Direction::Type::ALQDS:
+		result << "all quadrants (all directions)";
+		break;
 
-		case metaf::Direction::Status::UNKNOWN:
-		return "unknown direction";
-
-		default:
-		return "[unknown direction status]";
+		case metaf::Direction::Type::UNKNOWN:
+		result << "unknown direction";
+		break;
 	}
 	return result.str();
 }
@@ -1515,37 +1781,50 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 std::string VisitorExplain::explainPressure(const metaf::Pressure & pressure) {
 	if (!pressure.pressure().has_value()) return "not reported";
 	std::ostringstream result;
-	if (const auto phpa = pressure.toUnit(metaf::Pressure::Unit::HECTOPASCAL); phpa.has_value()) {
+	if (const auto phpa = pressure.toUnit(metaf::Pressure::Unit::HECTOPASCAL);
+		phpa.has_value())
+	{
 		result << roundTo(*phpa, 1) << " hPa";
 	} else {
 		result << "[unable to convert pressure to hPa]";
 	}
 	result << " / ";
-	if (const auto pinhg = pressure.toUnit(metaf::Pressure::Unit::INCHES_HG); pinhg.has_value()) {
+	if (const auto pinhg = pressure.toUnit(metaf::Pressure::Unit::INCHES_HG);
+		pinhg.has_value())
+	{
 		result << roundTo(*pinhg, 2) << " inHg";
 	} else {
 		result << "[unable to convert pressure to inHg]";
 	}
 	result << " / ";
-	if (const auto pmmhg = pressure.toUnit(metaf::Pressure::Unit::MM_HG); pmmhg.has_value()) {
+	if (const auto pmmhg = pressure.toUnit(metaf::Pressure::Unit::MM_HG);
+		pmmhg.has_value())
+	{
 		result << roundTo(*pmmhg, 1) << " mmHg";
 	} else {
 		result << "[unable to convert pressure to mmHg]";
 	}
-
 	return result.str();
 }
 
-std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & precipitation) {
+std::string VisitorExplain::explainPrecipitation(
+	const metaf::Precipitation & precipitation)
+{
 	std::ostringstream result;
 	if (!precipitation.isReported()) return "not reported";
-	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM); p.has_value()) {
+	if (const auto p = precipitation.amount(); p.has_value() && !*p) 
+		return "trace amount";
+	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::MM);
+		p.has_value())
+	{
 		result << roundTo(*p, 1) << " mm";
 	} else {
 		result << "[unable to convert precipitation to mm]";
 	}
 	result << " / ";
-	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::INCHES); p.has_value()) {
+	if (const auto p = precipitation.toUnit(metaf::Precipitation::Unit::INCHES);
+		p.has_value())
+	{
 		result << roundTo(*p, 2) << " inches";
 	} else {
 		result << "[unable to convert precipitation to inches]";
@@ -1556,45 +1835,50 @@ std::string VisitorExplain::explainPrecipitation(const metaf::Precipitation & pr
 std::string VisitorExplain::explainSurfaceFriction(
 	const metaf::SurfaceFriction & surfaceFriction)
 {
-	switch (surfaceFriction.status()) {
-		case metaf::SurfaceFriction::Status::NOT_REPORTED:
+	switch (surfaceFriction.type()) {
+		case metaf::SurfaceFriction::Type::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED:
+		case metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED:
 		if (const auto c = surfaceFriction.coefficient(); c.has_value()) {
 			return ("friction coefficient "s + roundTo(*c, 2));
 		}
 		return "[unable to produce a friction coefficient]";
 		
-		case metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED:
+		case metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED:
 		return ("braking action "s + 
-			std::string(brakingActionToString(surfaceFriction.brakingAction())));
+		   std::string(brakingActionToString(surfaceFriction.brakingAction())));
 
-		case metaf::SurfaceFriction::Status::UNRELIABLE:
+		case metaf::SurfaceFriction::Type::UNRELIABLE:
 		return "unreliable or unmeasurable";
-
-		default:
-		return "[unknown surface friction status]";
 	}
 }
 
-std::string VisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeight) {
+std::string VisitorExplain::explainWaveHeight(
+	const metaf::WaveHeight & waveHeight)
+{
 	switch (waveHeight.type()) {
 		case metaf::WaveHeight::Type::STATE_OF_SURFACE:
 		return ("state of sea surface: "s + 
-			std::string(stateOfSeaSurfaceToString(waveHeight.stateOfSurface())));
+		   std::string(stateOfSeaSurfaceToString(waveHeight.stateOfSurface())));
 
 		case metaf::WaveHeight::Type::WAVE_HEIGHT:
 		if (waveHeight.isReported()) {
 			std::ostringstream result;
 			result << "wave height: ";
-			if (const auto h = waveHeight.toUnit(metaf::WaveHeight::Unit::METERS); h.has_value()) {
+			if (const auto h = 
+					waveHeight.toUnit(metaf::WaveHeight::Unit::METERS); 
+					h.has_value())
+			{
 				result << roundTo(*h, 1) << " meters";
 			} else {
 				result << "[unable to convert wave height to meters]";
 			}
 			result << " / ";
-			if (const auto h = waveHeight.toUnit(metaf::WaveHeight::Unit::FEET); h.has_value()) {
+			if (const auto h = 
+					waveHeight.toUnit(metaf::WaveHeight::Unit::FEET); 
+					h.has_value())
+			{
 				result << roundTo(*h, 1) << " feet";
 			} else {
 				result << "[unable to convert wave height to feet]";
@@ -1602,13 +1886,12 @@ std::string VisitorExplain::explainWaveHeight(const metaf::WaveHeight & waveHeig
 			return result.str();
 		}
 		return "wave height not reported";
-
-		default:
-		return "[unknown wave height status]";
 	}
 }
 
-std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomena & wp) {
+std::string VisitorExplain::explainWeatherPhenomena(
+	const metaf::WeatherPhenomena & wp)
+{
 	std::ostringstream result;
 
 	if (const auto weatherStr = specialWeatherPhenomenaToString(wp); 
@@ -1624,9 +1907,16 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 	const bool thunderstorm = 
 		(wp.descriptor() == metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
 	
-	if (const auto q = weatherPhenomenaQualifierToString(wp.qualifier()); !q.empty()) result << q << " ";
-	if (const auto d = weatherPhenomenaDescriptorToString(wp.descriptor()); !d.empty()) result << d << " ";
-
+	if (const auto q = weatherPhenomenaQualifierToString(wp.qualifier());
+		!q.empty()) 
+	{
+		result << q << " ";
+	}
+	if (const auto d = weatherPhenomenaDescriptorToString(wp.descriptor());
+		!d.empty()) 
+	{
+		result << d << " ";
+	}
 	metaf::WeatherPhenomena::Weather previous = 
 		metaf::WeatherPhenomena::Weather::NOT_REPORTED;
 	const auto weather = wp.weather();
@@ -1655,13 +1945,13 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 		case metaf::WeatherPhenomena::Event::BEGINNING:
 		if (!time.has_value()) break;
 		result << " began: ";
-		result << explainMetafTime(wp.time().value());
+		result << explainMetafTime(*wp.time());
 		break;
 
 		case metaf::WeatherPhenomena::Event::ENDING:
 		if (!time.has_value()) break;
 		result << " ended: ";
-		result << explainMetafTime(wp.time().value());
+		result << explainMetafTime(*wp.time());
 		break;
 
 		case metaf::WeatherPhenomena::Event::NONE:
@@ -1671,44 +1961,158 @@ std::string VisitorExplain::explainWeatherPhenomena(const metaf::WeatherPhenomen
 	return result.str();
 }
 
+std::string VisitorExplain::explainDirectionSector(
+	const std::vector<metaf::Direction> dir)
+{
+	std::string result;
+	for (auto i=0u; i<dir.size(); i++) {
+		if (i) result += ", ";
+		result += cardinalDirectionToString(dir[i].cardinal());
+	}
+	return result;
+}
+
+std::string VisitorExplain::explainCloudType(const metaf::CloudType ct) {
+	std::ostringstream result;
+	result << cloudTypeToString(ct.type());
+	result << " covering ";
+	result << ct.okta();
+	result << "/8 of the sky";
+	if (const auto h = ct.height(); h.isReported()) {
+		result << ", base height ";
+		result << explainDistance(ct.height());
+	}
+	return result.str();
+}
+
 std::string_view VisitorExplain::speedUnitToString(metaf::Speed::Unit unit) {
 	switch (unit) {	
-		case metaf::Speed::Unit::KNOTS: 				return "knots";
-		case metaf::Speed::Unit::METERS_PER_SECOND:		return "m/s";
-		case metaf::Speed::Unit::KILOMETERS_PER_HOUR:	return "km/h";
-		case metaf::Speed::Unit::MILES_PER_HOUR:		return "mph";
-		default: 										return "[unknown speed unit]";
+		case metaf::Speed::Unit::KNOTS:
+		return "knots";
+
+		case metaf::Speed::Unit::METERS_PER_SECOND:
+		return "m/s";
+		
+		case metaf::Speed::Unit::KILOMETERS_PER_HOUR:
+		return "km/h";
+		
+		case metaf::Speed::Unit::MILES_PER_HOUR:
+		return "mph";
 	}
 }
 
-std::string_view VisitorExplain::distanceUnitToString(metaf::Distance::Unit unit) {
+std::string_view VisitorExplain::distanceUnitToString(
+	metaf::Distance::Unit unit)
+{
 	switch (unit) {
-		case metaf::Distance::Unit::METERS:			return "meters";
-		case metaf::Distance::Unit::STATUTE_MILES:	return "statute miles";
-		case metaf::Distance::Unit::FEET:			return "feet";
-		default: 									return "[unknown distance unit]";
+		case metaf::Distance::Unit::METERS:
+		return "meters";
+		
+		case metaf::Distance::Unit::STATUTE_MILES:
+		return "statute miles";
+		
+		case metaf::Distance::Unit::FEET:
+		return "feet";
 	}
 }
 
-std::string_view VisitorExplain::cardinalDirectionToString(metaf::Direction::Cardinal cardinal) {
+std::string_view VisitorExplain::distanceMilesFractionToString(
+	metaf::Distance::MilesFraction f)
+{
+	switch (f) {
+		case metaf::Distance::MilesFraction::NONE:
+		return "";
+		
+		case metaf::Distance::MilesFraction::F_1_16:
+		return "1/16";
+		
+		case metaf::Distance::MilesFraction::F_1_8:
+		return "1/8";
+		
+		case metaf::Distance::MilesFraction::F_3_16:
+		return "3/16";
+		
+		case metaf::Distance::MilesFraction::F_1_4:
+		return "1/4";
+		
+		case metaf::Distance::MilesFraction::F_5_16:
+		return "5/16";
+		
+		case metaf::Distance::MilesFraction::F_3_8:
+		return "3/8";
+		
+		case metaf::Distance::MilesFraction::F_1_2:
+		return "1/2";
+		
+		case metaf::Distance::MilesFraction::F_5_8:
+		return "5/8";
+		
+		case metaf::Distance::MilesFraction::F_3_4:
+		return "3/4";
+		
+		case metaf::Distance::MilesFraction::F_7_8:
+		return "7/8";
+	}
+}
+
+
+std::string_view VisitorExplain::cardinalDirectionToString(
+	metaf::Direction::Cardinal cardinal)
+{
 	switch(cardinal) {
-		case metaf::Direction::Cardinal::NONE:		return std::string();
-		case metaf::Direction::Cardinal::N:			return "north";
-		case metaf::Direction::Cardinal::S: 		return "south";
-		case metaf::Direction::Cardinal::W: 		return "west";
-		case metaf::Direction::Cardinal::E: 		return "east";
-		case metaf::Direction::Cardinal::NW: 		return "northwest";
-		case metaf::Direction::Cardinal::NE: 		return "northeast";
-		case metaf::Direction::Cardinal::SW: 		return "southwest";
-		case metaf::Direction::Cardinal::SE: 		return "southeast";
-		case metaf::Direction::Cardinal::TRUE_N: 	return "true north";
-		case metaf::Direction::Cardinal::TRUE_W: 	return "true west";
-		case metaf::Direction::Cardinal::TRUE_S: 	return "true south";
-		case metaf::Direction::Cardinal::TRUE_E: 	return "true east";
-		case metaf::Direction::Cardinal::NDV:		return "no directional variations";
-		case metaf::Direction::Cardinal::OHD:		return "overhead";
-		case metaf::Direction::Cardinal::ALQDS:		return "all quadrants (in all directions)";
-		default: 									return "[unknown cardinal direction]";
+		case metaf::Direction::Cardinal::NOT_REPORTED:
+		return "not reported";
+		
+		case metaf::Direction::Cardinal::N:
+		return "north";
+		
+		case metaf::Direction::Cardinal::S:
+		return "south";
+		
+		case metaf::Direction::Cardinal::W:
+		return "west";
+		
+		case metaf::Direction::Cardinal::E:
+		return "east";
+		
+		case metaf::Direction::Cardinal::NW:
+		return "northwest";
+		
+		case metaf::Direction::Cardinal::NE:
+		return "northeast";
+		
+		case metaf::Direction::Cardinal::SW:
+		return "southwest";
+		
+		case metaf::Direction::Cardinal::SE:
+		return "southeast";
+		
+		case metaf::Direction::Cardinal::TRUE_N:
+		return "true north";
+		
+		case metaf::Direction::Cardinal::TRUE_W:
+		return "true west";
+		
+		case metaf::Direction::Cardinal::TRUE_S:
+		return "true south";
+		
+		case metaf::Direction::Cardinal::TRUE_E:
+		return "true east";
+		
+		case metaf::Direction::Cardinal::NDV:
+		return "no directional variations";
+		
+		case metaf::Direction::Cardinal::VRB:
+		return "variable";
+		
+		case metaf::Direction::Cardinal::OHD:
+		return "overhead";
+		
+		case metaf::Direction::Cardinal::ALQDS:
+		return "all quadrants (in all directions)";
+		
+		case metaf::Direction::Cardinal::UNKNOWN:
+		return "unknown direction";
 	}
 }
 
@@ -1733,9 +2137,6 @@ std::string_view VisitorExplain::brakingActionToString(
 
 		case metaf::SurfaceFriction::BrakingAction::GOOD:
 		return "good (friction coefficient 0.40 to 1.00)";
-
-		default:
-		return "unknown braking action";
 	}
 }
 
@@ -1775,37 +2176,6 @@ std::string_view VisitorExplain::stateOfSeaSurfaceToString(
 
 		case metaf::WaveHeight::StateOfSurface::PHENOMENAL:
 		return "phenomenal, wave height >14 meters / &gt;46 feet";
-
-		default:
-		return "unknown state of sea surface";
-	}
-}
-
-std::string_view VisitorExplain::trendTypeToString(metaf::TrendGroup::Type type) {
-	switch (type) {
-		case metaf::TrendGroup::Type::NONE:
-		return "This group contains incomplete information";
-
-		case metaf::TrendGroup::Type::NOSIG:
-		return "No significant weather changes expected";
-
-		case metaf::TrendGroup::Type::BECMG:
-		return "Weather conditions are expected to gradually change as follows";
-
-		case metaf::TrendGroup::Type::TEMPO:
-		return "The following temporary weather conditions may arise for less than 60 minutes";
-
-		case metaf::TrendGroup::Type::INTER:
-		return "The following temporary weather conditions may arise for less than 30 minutes";
-
-		case metaf::TrendGroup::Type::FROM:
-		return "All previous weather conditions are superseded by the following conditions";
-
-		case metaf::TrendGroup::Type::TIME_SPAN:
-		return "The following weather condition are expected within time span";
-
-		default:
-		return "Unknown trend type";
 	}
 }
 
@@ -1857,28 +2227,24 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 
 		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
 		return "Sky cover variable between broken clouds and overcast (sky coverage variable between 5/8 and 8/8)";
-
-		default: 
-		return "Unknown cloud amound";
 	}
 }
 
-std::string_view VisitorExplain::cloudTypeToString(metaf::CloudGroup::Type type) {
+std::string_view VisitorExplain::convectiveTypeToString(
+	metaf::CloudGroup::ConvectiveType type)
+{
 	switch (type) {
-		case metaf::CloudGroup::Type::NONE:
+		case metaf::CloudGroup::ConvectiveType::NONE:
 		return std::string_view();
 
-		case metaf::CloudGroup::Type::NOT_REPORTED:
+		case metaf::CloudGroup::ConvectiveType::NOT_REPORTED:
 		return "not reported";
 
-		case metaf::CloudGroup::Type::TOWERING_CUMULUS:
+		case metaf::CloudGroup::ConvectiveType::TOWERING_CUMULUS:
 		return "towering cumulus";
 
-		case metaf::CloudGroup::Type::CUMULONIMBUS:
+		case metaf::CloudGroup::ConvectiveType::CUMULONIMBUS:
 		return "cumulonimbus";
-
-		default: 
-		return "undefined";
 	}
 }
 
@@ -1886,13 +2252,23 @@ std::string_view VisitorExplain::weatherPhenomenaQualifierToString(
 	metaf::WeatherPhenomena::Qualifier qualifier)
 {
 	switch (qualifier) {
-		case metaf::WeatherPhenomena::Qualifier::NONE:	  	return std::string_view();
-		case metaf::WeatherPhenomena::Qualifier::RECENT: 	return std::string_view();
-		case metaf::WeatherPhenomena::Qualifier::VICINITY: 	return std::string_view();
-		case metaf::WeatherPhenomena::Qualifier::LIGHT: 	return "light";
-		case metaf::WeatherPhenomena::Qualifier::MODERATE:	return "moderate";
-		case metaf::WeatherPhenomena::Qualifier::HEAVY:		return "heavy";
-		default: return "[unknown intensity/proximity qualifier];";
+		case metaf::WeatherPhenomena::Qualifier::NONE:
+		return std::string_view();
+		
+		case metaf::WeatherPhenomena::Qualifier::RECENT:
+		return std::string_view();
+		
+		case metaf::WeatherPhenomena::Qualifier::VICINITY:
+		return std::string_view();
+		
+		case metaf::WeatherPhenomena::Qualifier::LIGHT:
+		return "light";
+		
+		case metaf::WeatherPhenomena::Qualifier::MODERATE:
+		return "moderate";
+		
+		case metaf::WeatherPhenomena::Qualifier::HEAVY:
+		return "heavy";
 	}
 }
 
@@ -1900,16 +2276,32 @@ std::string_view VisitorExplain::weatherPhenomenaDescriptorToString(
 	metaf::WeatherPhenomena::Descriptor descriptor)
 {
 	switch(descriptor) {
-		case metaf::WeatherPhenomena::Descriptor::NONE:			return std::string();
-		case metaf::WeatherPhenomena::Descriptor::SHALLOW:		return "shallow";
-		case metaf::WeatherPhenomena::Descriptor::PARTIAL:		return "partial";
-		case metaf::WeatherPhenomena::Descriptor::PATCHES:		return "patches of ";
-		case metaf::WeatherPhenomena::Descriptor::LOW_DRIFTING:	return "low drifting";
-		case metaf::WeatherPhenomena::Descriptor::BLOWING:		return "blowing";
-		case metaf::WeatherPhenomena::Descriptor::SHOWERS:		return std::string();
-		case metaf::WeatherPhenomena::Descriptor::THUNDERSTORM:	return std::string();
-		case metaf::WeatherPhenomena::Descriptor::FREEZING:		return "freezing";
-		default: return "[unknown weather descriptor];";
+		case metaf::WeatherPhenomena::Descriptor::NONE:
+		return std::string();
+		
+		case metaf::WeatherPhenomena::Descriptor::SHALLOW:
+		return "shallow";
+		
+		case metaf::WeatherPhenomena::Descriptor::PARTIAL:
+		return "partial";
+		
+		case metaf::WeatherPhenomena::Descriptor::PATCHES:
+		return "patches of ";
+		
+		case metaf::WeatherPhenomena::Descriptor::LOW_DRIFTING:
+		return "low drifting";
+		
+		case metaf::WeatherPhenomena::Descriptor::BLOWING:
+		return "blowing";
+		
+		case metaf::WeatherPhenomena::Descriptor::SHOWERS:
+		return std::string();
+		
+		case metaf::WeatherPhenomena::Descriptor::THUNDERSTORM:
+		return std::string();
+		
+		case metaf::WeatherPhenomena::Descriptor::FREEZING:
+		return "freezing";
 	}
 }
 
@@ -1917,79 +2309,74 @@ std::string_view VisitorExplain::weatherPhenomenaWeatherToString(
 	metaf::WeatherPhenomena::Weather weather)
 {
 	switch (weather) {
-			case metaf::WeatherPhenomena::Weather::OMMITTED:
-			return "not specified";
-			
 			case metaf::WeatherPhenomena::Weather::NOT_REPORTED:
 			return "not reported";
-			
+
 			case metaf::WeatherPhenomena::Weather::DRIZZLE:
 			return "drizzle";
-			
+
 			case metaf::WeatherPhenomena::Weather::RAIN:
 			return "rain";
-			
+
 			case metaf::WeatherPhenomena::Weather::SNOW:
 			return "snow";
-			
+
 			case metaf::WeatherPhenomena::Weather::SNOW_GRAINS:
 			return "snow grains";
-			
+
 			case metaf::WeatherPhenomena::Weather::ICE_CRYSTALS:
 			return "ice crystals";
-			
+
 			case metaf::WeatherPhenomena::Weather::ICE_PELLETS:
 			return "ice pellets";
-			
+
 			case metaf::WeatherPhenomena::Weather::HAIL:
 			return "hail";
-			
+
 			case metaf::WeatherPhenomena::Weather::SMALL_HAIL:
 			return "small hail (graupel)";
-			
+
 			case metaf::WeatherPhenomena::Weather::UNDETERMINED:
 			return "undetermined precipitation";
-			
+
 			case metaf::WeatherPhenomena::Weather::MIST:
 			return "mist";
-			
+
 			case metaf::WeatherPhenomena::Weather::FOG:
 			return "fog";
-			
+
 			case metaf::WeatherPhenomena::Weather::SMOKE:
 			return "smoke";
-			
+
 			case metaf::WeatherPhenomena::Weather::VOLCANIC_ASH:
 			return "volcanic ash";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUST:
 			return "dust";
-			
+
 			case metaf::WeatherPhenomena::Weather::SAND:
 			return "sand";
-			
+
 			case metaf::WeatherPhenomena::Weather::HAZE:
 			return "haze";
-			
+
 			case metaf::WeatherPhenomena::Weather::SPRAY:
 			return "spray";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUST_WHIRLS:
 			return "dust or sand whirls";
-			
+
 			case metaf::WeatherPhenomena::Weather::SQUALLS:
 			return "squalls";
-			
+
 			case metaf::WeatherPhenomena::Weather::FUNNEL_CLOUD:
 			return "funnel cloud";
-			
+
 			case metaf::WeatherPhenomena::Weather::SANDSTORM:
 			return "sand storm";
-			
+
 			case metaf::WeatherPhenomena::Weather::DUSTSTORM:
 			return "dust storm";
-			
-			default: return "[unknown weather phenomena]";
 	}
 }
 
@@ -2025,7 +2412,8 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 				metaf::WeatherPhenomena::Qualifier::NONE,
 				metaf::WeatherPhenomena::Descriptor::NONE,
 				{ metaf::WeatherPhenomena::Weather::UNDETERMINED },
-				"undetermined precipitation (automated system cannot identify precipitation)"
+				"undetermined precipitation "
+				"(automated system cannot identify precipitation)"
 			),
 			SpecialWeatherPhenomena(
 				metaf::WeatherPhenomena::Qualifier::NONE,
@@ -2066,8 +2454,10 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 	};
 
 	for (const auto w : specialWeatherPhenomena) {
-		if (wp.qualifier() == std::get<metaf::WeatherPhenomena::Qualifier>(w) &&
-			wp.descriptor() == std::get<metaf::WeatherPhenomena::Descriptor>(w) &&
+		if (wp.qualifier() == 
+				std::get<metaf::WeatherPhenomena::Qualifier>(w) &&
+			wp.descriptor() == 
+				std::get<metaf::WeatherPhenomena::Descriptor>(w) &&
 			wp.weather() == std::get<WeatherVector>(w))
 		{
 			return std::get<std::string_view>(w);
@@ -2076,14 +2466,39 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 	return std::string();
 }
 
-std::string_view VisitorExplain::rvrTrendToString(metaf::RunwayVisualRangeGroup::Trend trend) {
+std::string_view VisitorExplain::probabilityToString(
+	metaf::TrendGroup::Probability prob)
+{
+	switch (prob) {
+		case metaf::TrendGroup::Probability::PROB_30:
+		return "Trend probability is 30 percent";
+
+		case metaf::TrendGroup::Probability::PROB_40:
+		return "Trend probability is 40 percent";
+
+		case metaf::TrendGroup::Probability::NONE:
+		return "";
+	}
+}
+
+std::string_view VisitorExplain::visTrendToString(
+	metaf::VisibilityGroup::Trend trend)
+{
 	switch(trend) {
-		case metaf::RunwayVisualRangeGroup::Trend::NONE:		return std::string_view();
-		case metaf::RunwayVisualRangeGroup::Trend::NOT_REPORTED:return "not reported";
-		case metaf::RunwayVisualRangeGroup::Trend::UPWARD:		return "upward";
-		case metaf::RunwayVisualRangeGroup::Trend::NEUTRAL:		return "neutral";
-		case metaf::RunwayVisualRangeGroup::Trend::DOWNWARD:	return "downward";
-		default: 												return "[unknown trend]";
+		case metaf::VisibilityGroup::Trend::NONE:
+		return std::string_view();
+		
+		case metaf::VisibilityGroup::Trend::NOT_REPORTED:
+		return "not reported";
+		
+		case metaf::VisibilityGroup::Trend::UPWARD:
+		return "upward";
+		
+		case metaf::VisibilityGroup::Trend::NEUTRAL:
+		return "neutral";
+		
+		case metaf::VisibilityGroup::Trend::DOWNWARD:
+		return "downward";
 	}
 }
 
@@ -2123,9 +2538,6 @@ std::string_view VisitorExplain::runwayStateDepositsToString(
 
 		case metaf::RunwayStateGroup::Deposits::FROZEN_RUTS_OR_RIDGES:
 		return "frozen ruts or ridges";
-
-		default:
-		return "[unknown runway deposits]";
 	}
 }
 
@@ -2165,93 +2577,6 @@ std::string_view VisitorExplain::runwayStateExtentToString(
 
 		case metaf::RunwayStateGroup::Extent::RESERVED_8:
 		return "[reserved_extent_value 8]";
-
-		default:
-		return "[unknown extent value]";
-	}
-}
-
-std::string_view VisitorExplain::colourCodeToString(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:		return "BLUE";
-		case metaf::ColourCodeGroup::Code::WHITE:		return "WHITE";
-		case metaf::ColourCodeGroup::Code::GREEN:		return "GREEN";
-		case metaf::ColourCodeGroup::Code::YELLOW1:		return "YELLOW1";
-		case metaf::ColourCodeGroup::Code::YELLOW2:		return "YELLOW2";
-		case metaf::ColourCodeGroup::Code::AMBER:		return "AMBER";
-		case metaf::ColourCodeGroup::Code::RED:			return "RED";
-		default:										return "[unknown colour code]";
-	}
-}
-
-unsigned int VisitorExplain::colourCodeVisibility(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:	return 8000;
-		case metaf::ColourCodeGroup::Code::WHITE:	return 5000;
-		case metaf::ColourCodeGroup::Code::GREEN:	return 3700;
-		case metaf::ColourCodeGroup::Code::YELLOW1: return 2500;
-		case metaf::ColourCodeGroup::Code::YELLOW2:	return 1600;
-		case metaf::ColourCodeGroup::Code::AMBER:	return 800;
-		case metaf::ColourCodeGroup::Code::RED:		return 800;
-		default:									return 0;
-	}
-}
-
-unsigned int VisitorExplain::colourCodeCeiling(metaf::ColourCodeGroup::Code code) {
-	switch(code) {
-		case metaf::ColourCodeGroup::Code::BLUE:	return 2500;
-		case metaf::ColourCodeGroup::Code::WHITE:	return 1500;
-		case metaf::ColourCodeGroup::Code::GREEN:	return 700;
-		case metaf::ColourCodeGroup::Code::YELLOW1:	return 500;
-		case metaf::ColourCodeGroup::Code::YELLOW2:	return 300;
-		case metaf::ColourCodeGroup::Code::AMBER:	return 200;
-		case metaf::ColourCodeGroup::Code::RED:		return 200;
-		default:									return 0;
-	}
-}
-
-std::string_view VisitorExplain::precipitationGroupTypeToString(
-	metaf::PrecipitationGroup::Type type)
-{
-	switch (type) {
-		case metaf::PrecipitationGroup::Type::TOTAL_PRECIPITATION_HOURLY:
-		return "total precipitation for the past hour";
-
-		case metaf::PrecipitationGroup::Type::SNOW_DEPTH_ON_GROUND:
-		return "snow depth on ground";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_OR_6_HOURLY:
-		return "water equivalent of frozen precipitation for the last 3 or 6 hours";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_3_HOURLY:
-		return "water equivalent of frozen precipitation for the last 3 hours";
-
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_6_HOURLY:
-		return "water equivalent of frozen precipitation for the last 6 hours";
-	
-		case metaf::PrecipitationGroup::Type::FROZEN_PRECIP_24_HOURLY:
-		return "water equivalent of frozen precipitation for the last 24 hours";
-
-		case metaf::PrecipitationGroup::Type::SNOW_6_HOURLY:
-		return "snowfall for the last 6 hours";
-
-		case metaf::PrecipitationGroup::Type::WATER_EQUIV_OF_SNOW_ON_GROUND:
-		return "water equivalent of snow on ground";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_HOUR:
-		return "ice accretion for the last hour";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_3_HOURS:
-		return "ice accretion for the last 3 hours";
-
-		case metaf::PrecipitationGroup::Type::ICE_ACCRETION_FOR_LAST_6_HOURS:
-		return "ice accretion for the last 6 hours";
-
-		case metaf::PrecipitationGroup::Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT:
-		return "precipitation accumulation since last report";
-
-		default:
-		return "[unknown precipitation type]";
 	}
 }
 
@@ -2264,66 +2589,74 @@ std::string_view VisitorExplain::layerForecastGroupTypeToString(
 
 		case metaf::LayerForecastGroup::Type::ICING_LIGHT_MIXED:
 		return "Light mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_LIGHT_RIME_IN_CLOUD:
 		return "Light rime icing in cloud";
-		
-		case metaf::LayerForecastGroup::Type::ICING_LIGHT_CLEAR_IN_PRECIPITATION:
+
+		case metaf::LayerForecastGroup::Type::
+			ICING_LIGHT_CLEAR_IN_PRECIPITATION:
 		return "Light clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_MODERATE_MIXED:
 		return "Moderate mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_MODERATE_RIME_IN_CLOUD:
 		return "Moderate rime icing in cloud";
-		
-		case metaf::LayerForecastGroup::Type::ICING_MODERATE_CLEAR_IN_PRECIPITATION:
+
+		case metaf::LayerForecastGroup::Type::
+			ICING_MODERATE_CLEAR_IN_PRECIPITATION:
 		return "Moderate clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_SEVERE_MIXED:
 		return "Severe mixed icing";
-		
+
 		case metaf::LayerForecastGroup::Type::ICING_SEVERE_RIME_IN_CLOUD:
 		return "Severe rime icing in cloud";
-		
-		case metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION:
+
+		case metaf::LayerForecastGroup::Type::
+			ICING_SEVERE_CLEAR_IN_PRECIPITATION:
 		return "Severe clear icing in precipitation";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_NONE:
 		return "No turbulence";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT:
 		return "Light turbulence";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL:
 		return "Occasional moderate turbulence in clear air";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent moderate turbulence in clear air";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL:
 		return "Occasional moderate turbulence in cloud";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_MODERATE_IN_CLOUD_FREQUENT:
 		return "Frequent moderate turbulence in cloud";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL:
 		return "Occasional severe turbulence in clear air";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT:
 		return "Frequent severe turbulence in clear air";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL:
 		return "Occasional severe turbulence in cloud";
-		
-		case metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
+
+		case metaf::LayerForecastGroup::Type::
+			TURBULENCE_SEVERE_IN_CLOUD_FREQUENT:
 		return "Frequent severe turbulence in cloud";
-		
+
 		case metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME:
 		return "Extreme turbulence";
-		
-		default:
-		return "[unknown atmospheric layer type]";
 	}
 }
 
@@ -2334,41 +2667,61 @@ std::string_view VisitorExplain::pressureTendencyTypeToString(
 	switch(type) {
 		case metaf::PressureTendencyGroup::Type::INCREASING_THEN_DECREASING:
 		return "increasing, then decreasing";
-		
+
 		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_SLOWLY:
-		return "increasing, then steady, or increasing then increasing more slowly";
+		return "increasing, then steady, "
+			"or increasing then increasing more slowly";
 
 		case metaf::PressureTendencyGroup::Type::INCREASING:
 		return "increasing steadily or unsteadily";
 
 		case metaf::PressureTendencyGroup::Type::INCREASING_MORE_RAPIDLY:
-		return "decreasing or steady, then increasing; or increasing then increasing more rapidly";
-		
+		return "decreasing or steady, then increasing; "
+			"or increasing then increasing more rapidly";
+
 		case metaf::PressureTendencyGroup::Type::STEADY:
 		return "steady";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING_THEN_INCREASING:
 		return "decreasing, then increasing";
-		
+
 		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_SLOWLY:
-		return "decreasing then steady; or decreasing then decreasing more slowly";
-		
+		return "decreasing then steady; "
+			"or decreasing then decreasing more slowly";
+
 		case metaf::PressureTendencyGroup::Type::DECREASING:
 		return "decreasing steadily or unsteadily";
-		
-		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
-		return "steady or increasing, then decreasing; or decreasing then decreasing more rapidly";
-		
-		default:
-		return "[unknown pressure tendency]";
-	}
 
+		case metaf::PressureTendencyGroup::Type::DECREASING_MORE_RAPIDLY:
+		return "steady or increasing, then decreasing; "
+			"or decreasing then decreasing more rapidly";
+
+		case metaf::PressureTendencyGroup::Type::NOT_REPORTED:
+		return "not reported";
+
+		case metaf::PressureTendencyGroup::Type::RISING_RAPIDLY:
+		return "rising rapidly at a rate of "
+			"at least 0.06 inch of mercury (2.03 hectopascal) per hour "
+			"and the pressure change totals "
+			"0.02 inch of mercury (0.68 hectopascal) or more "
+			"at the time of the observation";
+
+		case metaf::PressureTendencyGroup::Type::FALLING_RAPIDLY:
+		return "falling rapidly at a rate of "
+			"at least 0.06 inch of mercury (2.03 hectopascal) per hour "
+			"and the pressure change totals "
+			"0.02 inch of mercury (0.68 hectopascal) or more "
+			"at the time of the observation";
+	}
 }
 
 std::string_view VisitorExplain::pressureTendencyTrendToString(
 	metaf::PressureTendencyGroup::Trend trend)
 {
 	switch(trend) {
+		case metaf::PressureTendencyGroup::Trend::NOT_REPORTED:
+		return "not reported";
+
 		case metaf::PressureTendencyGroup::Trend::HIGHER:
 		return "higher than";
 
@@ -2383,269 +2736,290 @@ std::string_view VisitorExplain::pressureTendencyTrendToString(
 
 		case metaf::PressureTendencyGroup::Trend::LOWER:
 		return "lower than";
-
-		default:
-		return "[unknown pressure trend]";
 	}	
 }
 
-std::string_view VisitorExplain::cloudTypeToString(metaf::CloudTypesGroup::Type type) {
+std::string_view VisitorExplain::cloudTypeToString(
+	metaf::CloudType::Type type)
+{
 	switch(type) {
-		case metaf::CloudTypesGroup::Type::CUMULONIMBUS:
+		case metaf::CloudType::Type::NOT_REPORTED:
 		return "cumulonimbus";
-
-		case metaf::CloudTypesGroup::Type::TOWERING_CUMULUS:
+		
+		case metaf::CloudType::Type::CUMULONIMBUS:
+		return "cumulonimbus";
+		
+		case metaf::CloudType::Type::TOWERING_CUMULUS:
 		return "towering cumulus";
-
-		case metaf::CloudTypesGroup::Type::CUMULUS:
+		
+		case metaf::CloudType::Type::CUMULUS:
 		return "cumulus";
-
-		case metaf::CloudTypesGroup::Type::CUMULUS_FRACTUS:
+		
+		case metaf::CloudType::Type::CUMULUS_FRACTUS:
 		return "cumulus fractus";
-
-		case metaf::CloudTypesGroup::Type::STRATOCUMULUS:
+		
+		case metaf::CloudType::Type::STRATOCUMULUS:
 		return "stratocumulus";
-
-		case metaf::CloudTypesGroup::Type::NIMBOSTRATUS:
+		
+		case metaf::CloudType::Type::NIMBOSTRATUS:
 		return "nimbostratus";
-
-		case metaf::CloudTypesGroup::Type::STRATUS:
+		
+		case metaf::CloudType::Type::STRATUS:
 		return "stratus";
-
-		case metaf::CloudTypesGroup::Type::STRATUS_FRACTUS:
+		
+		case metaf::CloudType::Type::STRATUS_FRACTUS:
 		return "stratus fractus";
-
-		case metaf::CloudTypesGroup::Type::ALTOSTRATUS:
+		
+		case metaf::CloudType::Type::ALTOSTRATUS:
 		return "altostratus";
 		
-		case metaf::CloudTypesGroup::Type::ALTOCUMULUS:
+		case metaf::CloudType::Type::ALTOCUMULUS:
 		return "altocumulus";
-
-		case metaf::CloudTypesGroup::Type::ALTOCUMULUS_CASTELLANUS:
+		
+		case metaf::CloudType::Type::ALTOCUMULUS_CASTELLANUS:
 		return "altocumulus castellanus";
 		
-		case metaf::CloudTypesGroup::Type::CIRRUS:
+		case metaf::CloudType::Type::CIRRUS:
 		return "cirrus";
 		
-		case metaf::CloudTypesGroup::Type::CIRROSTRATUS:
+		case metaf::CloudType::Type::CIRROSTRATUS:
 		return "cirrostratus";
 		
-		case metaf::CloudTypesGroup::Type::BLOWING_SNOW:
+		case metaf::CloudType::Type::CIRROCUMULUS:
+		return "cirrocumulus";
+		
+		case metaf::CloudType::Type::BLOWING_SNOW:
 		return "blowing snow";
-
-		case metaf::CloudTypesGroup::Type::BLOWING_DUST:
+		
+		case metaf::CloudType::Type::BLOWING_DUST:
 		return "blowing dust";
-
-		case metaf::CloudTypesGroup::Type::BLOWING_SAND:
+		
+		case metaf::CloudType::Type::BLOWING_SAND:
 		return "blowing sand";
-
-		case metaf::CloudTypesGroup::Type::ICE_CRYSTALS:
+		
+		case metaf::CloudType::Type::ICE_CRYSTALS:
 		return "ice crystals";
-
-		case metaf::CloudTypesGroup::Type::RAIN:
+		
+		case metaf::CloudType::Type::RAIN:
 		return "rain";
-
-		case metaf::CloudTypesGroup::Type::DRIZZLE:
+		
+		case metaf::CloudType::Type::DRIZZLE:
 		return "drizzle";
-
-		case metaf::CloudTypesGroup::Type::SNOW:
+		
+		case metaf::CloudType::Type::SNOW:
 		return "snow";
-
-		case metaf::CloudTypesGroup::Type::ICE_PELLETS:
+		
+		case metaf::CloudType::Type::ICE_PELLETS:
 		return "ice pellets";
-
-		case metaf::CloudTypesGroup::Type::SMOKE:
+		
+		case metaf::CloudType::Type::SMOKE:
 		return "smoke";
-
-		case metaf::CloudTypesGroup::Type::FOG:
+		
+		case metaf::CloudType::Type::FOG:
 		return "fog";
-
-		case metaf::CloudTypesGroup::Type::MIST:
+		
+		case metaf::CloudType::Type::MIST:
 		return "mist";
-
-		case metaf::CloudTypesGroup::Type::HAZE:
+		
+		case metaf::CloudType::Type::HAZE:
 		return "haze";
-
-		default:
-		return "[unknown cloud type]";
 	}
 }
 
-std::string_view VisitorExplain::cloudLowLayerToString(metaf::CloudLayersGroup::LowLayer lowLayer) {
+std::string_view VisitorExplain::cloudLowLayerToString(
+	metaf::LowMidHighCloudGroup::LowLayer lowLayer)
+{
 	switch(lowLayer) {
-		case metaf::CloudLayersGroup::LowLayer::NONE:
+		case metaf::LowMidHighCloudGroup::LowLayer::NONE:
 		return "No low layer clouds";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_HU_CU_FR:
+		case metaf::LowMidHighCloudGroup::LowLayer::CU_HU_CU_FR:
 		return "Cumulus clouds showing little vertical extent "
 			"(Cumulus humilis or Cumulus fractus of dry weather or both)";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_MED_CU_CON:
+		case metaf::LowMidHighCloudGroup::LowLayer::CU_MED_CU_CON:
 		return "Cumulus clouds showing moderate or significant vertical extent "
 			"(Cumulus mediocris or Cumulus congestus, with or without Cumulus "
-			"humilis or Cumulus fractus or stratocumulus, all having their bases on "
-			"the same level)";
+			"humilis or Cumulus fractus or stratocumulus, "
+			"all having their bases on the same level)";
 
-		case metaf::CloudLayersGroup::LowLayer::CB_CAL:
-		return "Cumulonimbus clouds without fibrous or striated parts at summit "
-			"(Cumulonimbus calvus with or without Cumulus, Stratocumulus or Stratus)";
+		case metaf::LowMidHighCloudGroup::LowLayer::CB_CAL:
+		return "Cumulonimbus clouds without fibrous or striated parts at "
+			"summit (Cumulonimbus calvus with or without Cumulus, "
+			"Stratocumulus or Stratus)";
 
-		case metaf::CloudLayersGroup::LowLayer::SC_CUGEN:
-		return "Stratocumulus clouds resulting from the spreading out of Cumulus "
-			"(Stratocumulus cumulogenitus; Cumulus may also be present)";
+		case metaf::LowMidHighCloudGroup::LowLayer::SC_CUGEN:
+		return "Stratocumulus clouds resulting from "
+			"the spreading out of Cumulus (Stratocumulus cumulogenitus; "
+			"Cumulus may also be present)";
 
-		case metaf::CloudLayersGroup::LowLayer::SC_NON_CUGEN:
-		return "Stratocumulus clouds not resulting from the spreading out of Cumulus "
-			"(Stratocumulus non-cumulogenitus)";
+		case metaf::LowMidHighCloudGroup::LowLayer::SC_NON_CUGEN:
+		return "Stratocumulus clouds not resulting from "
+			"the spreading out of Cumulus (Stratocumulus non-cumulogenitus)";
 
-		case metaf::CloudLayersGroup::LowLayer::ST_NEB_ST_FR:
-		return "Stratus clouds which consist of a continuous single sheet or layer "
-			"with a fairly uniform base, or transitory stage during the formation "
-			"or the dissipation of such clouds "
+		case metaf::LowMidHighCloudGroup::LowLayer::ST_NEB_ST_FR:
+		return "Stratus clouds which consist of a continuous "
+			"single sheet or layer with a fairly uniform base, or "
+			"transitory stage during the formation or "
+			"the dissipation of such clouds "
 			"(Stratus nebulosus or Stratus fractus of dry weather, or both)";
 
-		case metaf::CloudLayersGroup::LowLayer::ST_FR_CU_FR_PANNUS:
+		case metaf::LowMidHighCloudGroup::LowLayer::ST_FR_CU_FR_PANNUS:
 		return "Ragged grey clouds which form below precipitating clouds "
-			"(Stratus fractus or Cumulus fractus of wet weather, or both (pannus) )";
+			"(Stratus fractus or Cumulus fractus of wet weather, "
+			"or both (pannus) )";
 
-		case metaf::CloudLayersGroup::LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS:
+		case metaf::LowMidHighCloudGroup::LowLayer::
+			CU_SC_NON_CUGEN_DIFFERENT_LEVELS:
 		return "Cumulus and Stratocumulus not formed by spreading of Cumulus "
 			"with bases at different levels";
 
-		case metaf::CloudLayersGroup::LowLayer::CB_CAP:
-		return "Cumulonimbus clouds with fibrous or striated summits, often with an anvil "
-			"(Cumulonimbus capillatus or Cumulonimbus capillatus incus)";
+		case metaf::LowMidHighCloudGroup::LowLayer::CB_CAP:
+		return "Cumulonimbus clouds with fibrous or striated summits, "
+			"often with an anvil (Cumulonimbus capillatus or "
+			"Cumulonimbus capillatus incus)";
 
-		case metaf::CloudLayersGroup::LowLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::LowLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
 			"or other similar phenomena";
-
-		default:
-		return "[unknown low-layer cloud type]";
 	}
 }
 
-std::string_view VisitorExplain::cloudMidLayerToString(metaf::CloudLayersGroup::MidLayer midLayer) {
+std::string_view VisitorExplain::cloudMidLayerToString(
+	metaf::LowMidHighCloudGroup::MidLayer midLayer)
+{
 	switch(midLayer) {
-		case metaf::CloudLayersGroup::MidLayer::NONE:
+		case metaf::LowMidHighCloudGroup::MidLayer::NONE:
 		return "No mid-layer clouds";
 
-		case metaf::CloudLayersGroup::MidLayer::AS_TR:
+		case metaf::LowMidHighCloudGroup::MidLayer::AS_TR:
 		return "A veil of greyish or bluish colour translucent enough "
 			"to reveal the position of the Sun or Moon "
 			"(Altostratus translucidus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AS_OP_NS:
-		return "A veil of a darker grey or a darker bluish grey dense enough to "
-			"completely mask the Sun or Moon "
+		case metaf::LowMidHighCloudGroup::MidLayer::AS_OP_NS:
+		return "A veil of a darker grey or a darker bluish grey dense enough "
+			"to completely mask the Sun or Moon "
 			"(Altostratus opacus or Nimbostratus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR:
-		return "Altocumulus (mackerel sky) clouds in patches or sheets at the same "
-			"level or in a single layer "
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR:
+		return "Altocumulus (mackerel sky) clouds in patches or sheets at "
+			"the same level or in a single layer "
 			"(Altocumulus translucidus at a single level)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR_LEN_PATCHES:
-		return "Patches, often lenticular (lens or almond-shaped), of Altocumulus "
-			"translucidus, continually changing and occurring at one or more levels";
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR_LEN_PATCHES:
+		return "Patches, often lenticular (lens or almond-shaped), "
+			"of Altocumulus translucidus, continually changing and "
+			"occurring at one or more levels";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_TR_AC_OP_SPREADING:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_TR_AC_OP_SPREADING:
 		return "Altocumulus translucidus in bands, or one or more layers of "
 			"Altocumulus translucidus or Altocumulus opacus, "
 			"progressively invading the sky";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_CUGEN_AC_CBGEN:
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_CUGEN_AC_CBGEN:
 		return "Altocumulus resulting generally from the spreading "
-			"out of the summits of Cumulus; or Alcocumulus clouds acompanying Cumulonimbus "
-			"(Altocumulus cumulogenitus or Altocumulus cumulonimbogenitus)";
+			"out of the summits of Cumulus; or Alcocumulus clouds "
+			"acompanying Cumulonimbus (Altocumulus cumulogenitus or "
+			"Altocumulus cumulonimbogenitus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS:
-		return "Altocumulus duplicatus, or Altocumulus opacus in a single layer, not "
-			"progressively invading the sky, or Altocumulus with Altostratus or "
-			"Nimbostratus.";
+		case metaf::LowMidHighCloudGroup::MidLayer::
+			AC_DU_AC_OP_AC_WITH_AS_OR_NS:
+		return "Altocumulus duplicatus, or Altocumulus opacus in a single "
+			"layer, not progressively invading the sky, or Altocumulus "
+			"with Altostratus or Nimbostratus.";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_CAS_AC_FLO:
-		return "Turrets at appear to be arranged in lines with a common horizontal "
-			"base or scattered tufts with rounded and slightly bulging upper parts"
-			"(Altocumulus castellanus or Altocumulus floccus)";
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_CAS_AC_FLO:
+		return "Turrets at appear to be arranged in lines with a "
+			"common horizontal base or scattered tufts with rounded and "
+			"slightly bulging upper parts (Altocumulus castellanus or "
+			"Altocumulus floccus)";
 		
-		case metaf::CloudLayersGroup::MidLayer::AC_OF_CHAOTIC_SKY:
-		return "Sky of chaotic, heavy and stagnant appearance, which consist of "
-			"superposed, more or less broken cloud sheets of ill-defined species "
-			"or varieties";
+		case metaf::LowMidHighCloudGroup::MidLayer::AC_OF_CHAOTIC_SKY:
+		return "Sky of chaotic, heavy and stagnant appearance, "
+			"which consists of superposed, more or less broken cloud sheets "
+			"of ill-defined species or varieties";
 
-		case metaf::CloudLayersGroup::MidLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::MidLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
-			"or other similar phenomena or because of a continuous layer of lower clouds";
-
-		default:
-		return "[unknown mid-layer cloud type]";
+			"or other similar phenomena "
+			"or because of a continuous layer of lower clouds";
 	}
 }
 
-std::string_view VisitorExplain::cloudHighLayerToString(metaf::CloudLayersGroup::HighLayer highLayer) {
+std::string_view VisitorExplain::cloudHighLayerToString(
+	metaf::LowMidHighCloudGroup::HighLayer highLayer)
+{
 	switch(highLayer) {
-		case metaf::CloudLayersGroup::HighLayer::NONE:
+		case metaf::LowMidHighCloudGroup::HighLayer::NONE:
 		return "No high-layer clouds";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_FIB_CI_UNC:
 		return "Nearly straight or more or less curved filaments; more rarely, "
 			"they are shaped like commas topped with either a hook or a tuft "
 			"that is not rounded "
 			"(Cirrus fibratus and sometimes Cirrus uncinus, not "
 			"progressively invading the sky)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CI_CAS_CI_FLO:
-		return "Cirrus spissatus, in patches or entangled sheaves, that usually "
-			"do not increase and sometimes appear to be the remains of the upper "
-			"part of a Cumulonimbus; or Cirrus clouds with small fibrous turrets "
-			"rising from common base; or more or less isolated tufts, often with trails "
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_SPI_CI_CAS_CI_FLO:
+		return "Cirrus spissatus, in patches or entangled sheaves, "
+			"that usually do not increase and sometimes appear to be "
+			"the remains of the upper part of a Cumulonimbus; or "
+			"Cirrus clouds with small fibrous turrets rising from common base; "
+			"or more or less isolated tufts, often with trails "
 			"(Cirrus spissatus or Cirrus castellanus or Cirrus floccus)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_SPI_CBGEN:
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_SPI_CBGEN:
 		return "Cirrus clouds originated from a Cumulonimbus cloud(s) "
 			"(Cirrus spissatus cumulonimbogenitus)";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_FIB_CI_UNC_SPREADING:
-		return "Cirrus uncinus, Cirrus fibratus or both, progressively invading the sky; "
-			"they generally thicken as a whole";
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_FIB_CI_UNC_SPREADING:
+		return "Cirrus uncinus, Cirrus fibratus or both, "
+			"progressively invading the sky; they generally thicken as a whole";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
-		return "Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
-			"progressively invading the sky; they generally thicken as a whole, "
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_CS_LOW_ABOVE_HORIZON:
+		return "Cirrus (often in bands) and Cirrostratus, "
+			"or Cirrostratus alone, progressively invading the sky; "
+			"they generally thicken as a whole, "
 			"but the continuous veil does not reach 45&deg; above the horizon";
 
-		case metaf::CloudLayersGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
-		return "Cirrus (often in bands) and Cirrostratus, or Cirrostratus alone, "
-			"progressively invading the sky; they generally thicken as a whole; "
-			"the continuous veil extends more than 45&deg; above the horizon, without "
-			"the sky being totally covered";
+		case metaf::LowMidHighCloudGroup::HighLayer::CI_CS_HIGH_ABOVE_HORIZON:
+		return "Cirrus (often in bands) and Cirrostratus, "
+			"or Cirrostratus alone, progressively invading the sky; "
+			"they generally thicken as a whole; "
+			"the continuous veil extends more than 45&deg; above the horizon, "
+			"without the sky being totally covered";
 
-		case metaf::CloudLayersGroup::HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
+		case metaf::LowMidHighCloudGroup::HighLayer::
+			CS_NEB_CS_FIB_COVERING_ENTIRE_SKY:
 		return "Light, uniform and nebulous veil showing no distinct details"
-			"or a white and fibrous veil with more or less clear-cut striations, "
-			"covering the whole sky"
-			"(Cirrostratus nebulosus or Cirrostratus fibratus covering the whole sky)";
+			"or a white and fibrous veil with more "
+			"or less clear-cut striations, covering the whole sky"
+			"(Cirrostratus nebulosus or "
+			"Cirrostratus fibratus covering the whole sky)";
 
-		case metaf::CloudLayersGroup::HighLayer::CS:
-		return "A veil of Cirrostratus that is not (or no longer) invading the sky "
-			"progressively and that does not completely cover the whole sky";
+		case metaf::LowMidHighCloudGroup::HighLayer::CS:
+		return "A veil of Cirrostratus that is not (or no longer) "
+			"invading the sky progressively "
+			"and that does not completely cover the whole sky";
 
-		case metaf::CloudLayersGroup::HighLayer::CC:
-		return "Cirrocumulus alone, or predominant among the high-layer clouds; when "
-			"alone, its elements are frequently grouped into more or less extensive "
-			"patches with very characteristic small wavelets";
+		case metaf::LowMidHighCloudGroup::HighLayer::CC:
+		return "Cirrocumulus alone, or "
+			"predominant among the high-layer clouds; "
+			"when alone, its elements are frequently grouped into more or less "
+			"extensive patches with very characteristic small wavelets";
 
-		case metaf::CloudLayersGroup::HighLayer::NOT_OBSERVABLE:
+		case metaf::LowMidHighCloudGroup::HighLayer::NOT_OBSERVABLE:
 		return "Clouds are not observable due to fog, blowing dust or sand, "
-			"or other similar phenomena or because of a continuous layer of lower clouds";
-
-		default:
-		return "[unknown high-layer cloud type]";
+			"or other similar phenomena "
+			"or because of a continuous layer of lower clouds";
 	}
 }
 
-std::string VisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint) {
+std::string VisitorExplain::roundTo(
+	float number, 
+	size_t digitsAfterDecimalPoint)
+{
 	static const char decimalPoint = '.';
 	std::string numStr = std::to_string(number);
 	const auto decimalPointPos = numStr.find(decimalPoint);
@@ -2659,6 +3033,8 @@ std::string VisitorExplain::roundTo(float number, size_t digitsAfterDecimalPoint
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef __EMSCRIPTEN__
+
 static std::string result;
 
 extern "C" void EMSCRIPTEN_KEEPALIVE freeMemory(){
@@ -2670,17 +3046,21 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 	const auto parseResult = metaf::Parser::parse(std::string(input));
 	VisitorExplain visitor;
 	//Table header
-	result += "<thead><tr><th>Group</th><th>Explanation</th></tr></thead><tbody>";
+	result += "<thead><tr><th>Group</th>";
+	result += "<th>Explanation</th></tr></thead>";
+	result += "<tbody>";
 	//Detected report type
 	result += "<tr><td>&nbsp;</td><td>";
 	result += "Detected report type: ";
-	result += VisitorExplain::reportTypeToString(parseResult.reportMetadata.type);
+	result += VisitorExplain::reportTypeToString(
+		parseResult.reportMetadata.type);
 	result += "</td></tr>";
 	//Error (if present)
 	if (parseResult.reportMetadata.error != metaf::ReportError::NONE) {
 		result += "<tr><td>&nbsp;</td><td>";
 		result += "Parsing error: ";
-		result += VisitorExplain::reportErrorToString(parseResult.reportMetadata.error);
+		result += VisitorExplain::reportErrorToString(
+			parseResult.reportMetadata.error);
 		result += "</td></tr>";
 	}
 	//Report groups
@@ -2688,7 +3068,18 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 		result += "<tr><td>";
 		result += groupInfo.rawString;
 		result += "</td><td>";
-		result += visitor.visit(groupInfo.group, groupInfo.reportPart, groupInfo.rawString);
+		std::string str = visitor.visit(
+			groupInfo.group, 
+			groupInfo.reportPart, 
+			groupInfo.rawString);
+		static const std::string lineBreakN("\n");
+		static const std::string lineBreakBr("<br>");
+		size_t pos = str.find(lineBreakN);
+		while(pos != std::string::npos) {
+         str.replace(pos, lineBreakN.length(), lineBreakBr);
+         pos = str.find(lineBreakN, lineBreakBr.length());
+    	}
+    	result += str;
 		result += "</td></tr>";
 	}
 	//Terminate table
@@ -2701,3 +3092,7 @@ int main(int argc, char ** argv) {
 	//Using EM_ASM_ because EM_ASM(explain()); gives a warning
 	EM_ASM_(explain(), 0); 
 }
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////

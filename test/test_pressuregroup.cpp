@@ -10,6 +10,12 @@
 
 static const auto margin = 0.01/2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Observed atmospheric pressure groups
+// Purpose: to confirm that SLP-normalised observed atmospheric pressure groups 
+// are parsed correctly, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureGroup, parseObservedInHg) {
 	const auto pg1 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg1.has_value());
@@ -92,6 +98,12 @@ TEST(PressureGroup, parseObservedWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("Q/////", metaf::ReportPart::METAR).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Forecast lowest atmospheric pressure
+// Purpose: to confirm that forecast lowest atmospheric pressure groups are 
+// parsed correctly, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureGroup, parseForecast) {
 	const auto pg = metaf::PressureGroup::parse("QNH2957INS", metaf::ReportPart::TAF);
 	ASSERT_TRUE(pg.has_value());
@@ -115,6 +127,12 @@ TEST(PressureGroup, parseForecastWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("QNH02979INS", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("QNH////INS", metaf::ReportPart::TAF).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Auxiliary sea level pressure groups
+// Purpose: to confirm that auxiliary sea-level pressure groups included in 
+// the remarks are parsed correctly, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureGroup, parseSlpRemark) {
 	const auto pg = metaf::PressureGroup::parse("SLP982", metaf::ReportPart::RMK);
@@ -143,6 +161,13 @@ TEST(PressureGroup, parseSlpRemarkWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("SLP21", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::PressureGroup::parse("SLP0215", metaf::ReportPart::RMK).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Actual non-normalised atmospheric pressure groups
+// Purpose: to confirm that groups indicating non-normalised to sea level 
+// atmospheric pressure (i.e. actual barometer readings) are parsed correctly, 
+// and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(PressureGroup, parseQfeRemark) {
 	const auto pg1 = metaf::PressureGroup::parse("QFE750", metaf::ReportPart::RMK);
@@ -193,6 +218,82 @@ TEST(PressureGroup, parseQfeRemarkWrongFormat) {
 	EXPECT_FALSE(metaf::PressureGroup::parse("QFE761/1015Q", metaf::ReportPart::RMK).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SLPNO group
+// Purpose: to confirm that SLPNO group is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(PressureGroup, parseSlpno) {
+	const auto pg = metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_FALSE(pg->atmosphericPressure().isReported());
+	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::SLPNO);
+}
+
+TEST(PressureGroup, parseSlpnoWrongReportPart) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::TAF).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// PRES MISG groups
+// Purpose: to confirm that PRES MISG groups are parsed and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(PressureGroup, parsePresMisg) {
+	auto pg = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_EQ(pg->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(pg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::PRES_MISG);
+	EXPECT_FALSE(pg->atmosphericPressure().isReported());
+}
+
+TEST(PressureGroup, parsePresWrongReportPart) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("PRES", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("PRES", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("PRES", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("PRES", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(PressureGroup, parseMisg) {
+	EXPECT_FALSE(metaf::PressureGroup::parse("MISG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("MISG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("MISG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("MISG", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::PressureGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(PressureGroup, appendOtherToPres) {
+	auto pg1 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg1.has_value());
+	EXPECT_EQ(pg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto pg2 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg2.has_value());
+	EXPECT_EQ(pg2->append("A2974", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto pg3 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg3.has_value());
+	EXPECT_EQ(pg3->append("Q0991", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto pg4 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg4.has_value());
+	EXPECT_EQ(pg4->append("QFE750", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto pg5 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg5.has_value());
+	EXPECT_EQ(pg5->append("PRES", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that no other group can be appended to complete groups.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(PressureGroup, append) {
 	const std::string pgStr1("A2724");
 	const std::string pgStr2("Q1033");
@@ -201,106 +302,164 @@ TEST(PressureGroup, append) {
 	const std::string pgStr5("QNH2957INS");
 	const std::string pgStr6("QFE750");
 	const std::string pgStr7("QFE761/1015");
+	const std::string pgStr8("SLPNO");
+	const std::string pgStr9("PRES");
+	const std::string pgStr10("MISG");
 	const std::string tStr1("RMK");
 	const std::string tStr2("TEST");
 
-	const metaf::ReportPart metarRp = metaf::ReportPart::METAR;
-	const metaf::ReportPart tafRp = metaf::ReportPart::TAF;
-	const metaf::ReportPart rmkRp = metaf::ReportPart::RMK;
-
-	auto pg1 = metaf::PressureGroup::parse(pgStr1, metarRp);
+	auto pg1 = metaf::PressureGroup::parse(pgStr1, metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg1.has_value());
 
-	auto pg2 = metaf::PressureGroup::parse(pgStr2, metarRp);
+	auto pg2 = metaf::PressureGroup::parse(pgStr2, metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg2.has_value());
 
-	auto pg3 = metaf::PressureGroup::parse(pgStr3, metarRp);
+	auto pg3 = metaf::PressureGroup::parse(pgStr3, metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg3.has_value());
 
-	auto pg4 = metaf::PressureGroup::parse(pgStr4, metarRp);
+	auto pg4 = metaf::PressureGroup::parse(pgStr4, metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg4.has_value());
 
-	auto pg5 = metaf::PressureGroup::parse(pgStr5, tafRp);
+	auto pg5 = metaf::PressureGroup::parse(pgStr5, metaf::ReportPart::TAF);
 	ASSERT_TRUE(pg5.has_value());
 
-	auto pg6 = metaf::PressureGroup::parse(pgStr6, rmkRp);
+	auto pg6 = metaf::PressureGroup::parse(pgStr6, metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg6.has_value());
 
-	auto pg7 = metaf::PressureGroup::parse(pgStr7, rmkRp);
+	auto pg7 = metaf::PressureGroup::parse(pgStr7, metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg7.has_value());
 
-	EXPECT_EQ(pg1->append(pgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(pgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg1->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	auto pg8 = metaf::PressureGroup::parse(pgStr8, metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg8.has_value());
 
-	EXPECT_EQ(pg2->append(pgStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr3, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr4, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr5, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr6, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(pgStr7, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(tStr1, metarRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg2->append(tStr2, metarRp), metaf::AppendResult::NOT_APPENDED);
+	auto pg9 = metaf::PressureGroup::parse(pgStr9, metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg9.has_value());
+	ASSERT_EQ(pg9->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
-	EXPECT_EQ(pg3->append(pgStr1, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr2, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr3, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr4, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr5, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr6, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(pgStr7, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(tStr1, tafRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg3->append(tStr2, tafRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr1, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr2, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr3, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr4, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr5, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr6, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr7, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr8, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr9, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(pgStr10, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(tStr1, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg1->append(tStr2, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(pg4->append(pgStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr3, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr4, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr5, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr6, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(pgStr7, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(tStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg4->append(tStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr1, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr2, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr3, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr4, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr5, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr6, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr7, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr8, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr9, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(pgStr10, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(tStr1, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg2->append(tStr2, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(pg5->append(pgStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr3, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr4, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr5, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr6, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(pgStr7, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(tStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg5->append(tStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr3, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr4, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr5, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr6, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr7, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr8, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr9, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(pgStr10, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(tStr1, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg3->append(tStr2, metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(pg6->append(pgStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr3, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr4, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr5, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr6, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(pgStr7, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(tStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg6->append(tStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr8, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr9, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg4->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(pg7->append(pgStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr3, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr4, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr5, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr6, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(pgStr7, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(tStr1, rmkRp), metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(pg7->append(tStr2, rmkRp), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr8, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr9, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg5->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg6->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr8, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr9, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg6->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg7->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr8, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr9, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(pgStr10, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg7->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg8->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr8, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr9, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg8->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(pg9->append(pgStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr3, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr4, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr5, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr6, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr7, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr8, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr9, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(pgStr10, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(tStr1, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(pg9->append(tStr2, metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
-TEST(PressureGroup, isValid) {
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(PressureGroup, isValidTrue) {
 	const auto pg1 = metaf::PressureGroup::parse("A2724", metaf::ReportPart::METAR);
 	ASSERT_TRUE(pg1.has_value());
 	EXPECT_TRUE(pg1->isValid());
@@ -332,4 +491,19 @@ TEST(PressureGroup, isValid) {
 	const auto pg8 = metaf::PressureGroup::parse("SLP982", metaf::ReportPart::RMK);
 	ASSERT_TRUE(pg8.has_value());
 	EXPECT_TRUE(pg8->isValid());
+
+	const auto pg9 = metaf::PressureGroup::parse("SLPNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg9.has_value());
+	EXPECT_TRUE(pg9->isValid());
+
+	auto pg10 = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg10.has_value());
+	EXPECT_EQ(pg10->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(pg10->isValid());
+}
+
+TEST(PressureGroup, isValidFalsePres) {
+	auto pg = metaf::PressureGroup::parse("PRES", metaf::ReportPart::RMK);
+	ASSERT_TRUE(pg.has_value());
+	EXPECT_FALSE(pg->isValid());
 }

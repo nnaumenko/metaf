@@ -269,7 +269,6 @@ Weather phenomenaFromWeatherGroup(
 	metaf::WeatherPhenomena::Weather weather) 
 {
 	switch (weather) {
-		case metaf::WeatherPhenomena::Weather::OMMITTED:
 		case metaf::WeatherPhenomena::Weather::NOT_REPORTED:
 		return Weather::NOT_SPECIFIED;
 
@@ -470,8 +469,8 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 	metaf::Speed windSpeed;
 	for (const auto & metarGroupInfo : metarGroups) {
 		const auto & metarGroup = metarGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::FixedGroup>(&metarGroup); gr) {
-			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
+		if (const auto gr = std::get_if<metaf::KeywordGroup>(&metarGroup); gr) {
+			if (gr->type() == metaf::KeywordGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
 				if (v.has_value()) result.visibility = v.value();	
 				result.cloud = Cloud::MOSTLY_CLEAR;
@@ -490,7 +489,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 				if (const auto dir = gr->direction().degrees(); dir.has_value()) {
 					result.windDirection = dir.value();
 				}
-				if (gr->direction().status() == metaf::Direction::Status::VARIABLE) {
+				if (gr->direction().type() == metaf::Direction::Type::VARIABLE) {
 					result.isWindVariable = true;
 				}
 				windSpeed = gr->windSpeed();
@@ -517,7 +516,7 @@ CurrentWeather currentWeatherFromMetar(const GroupVector & metarGroups, bool isI
 		if (const auto gr = std::get_if<metaf::CloudGroup>(&metarGroup); gr) {
 			result.cloud = 
 				cloudFromCloudGroupAmount(static_cast<Cloud>(result.cloud), gr->amount());
-			if (gr->type() == metaf::CloudGroup::Type::CUMULONIMBUS) {
+			if (gr->convectiveType() == metaf::CloudGroup::ConvectiveType::CUMULONIMBUS) {
 				result.isStormClouds = true;
 			}
 		}
@@ -580,8 +579,8 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 	int trendCounter = 0;
 	for (const auto & tafGroupInfo : tafGroups) {
 		const auto & tafGroup = tafGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::FixedGroup>(&tafGroup); gr) {
-			if (gr->type() == metaf::FixedGroup::Type::CAVOK) {
+		if (const auto gr = std::get_if<metaf::KeywordGroup>(&tafGroup); gr) {
+			if (gr->type() == metaf::KeywordGroup::Type::CAVOK) {
 				const auto v = metaf::Distance::cavokVisibility().toUnit(visUnit); 
 				if (v.has_value()) result.visibility = v.value();	
 				result.cloud = Cloud::MOSTLY_CLEAR;
@@ -595,7 +594,7 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 			if (const auto dir = gr->direction().degrees(); dir.has_value()) {
 				result.windDirection = dir.value();
 			}
-			if (gr->direction().status() == metaf::Direction::Status::VARIABLE) {
+			if (gr->direction().type() == metaf::Direction::Type::VARIABLE) {
 				result.isWindVariable = true;
 			}
 			windSpeed = gr->windSpeed();
@@ -614,7 +613,7 @@ CurrentWeather currentWeatherFromTaf(const GroupVector & tafGroups, bool isImper
 		if (const auto gr = std::get_if<metaf::CloudGroup>(&tafGroup); gr) {
 			result.cloud = 
 				cloudFromCloudGroupAmount(static_cast<Cloud>(result.cloud), gr->amount());
-			if (gr->type() == metaf::CloudGroup::Type::CUMULONIMBUS) {
+			if (gr->convectiveType() == metaf::CloudGroup::ConvectiveType::CUMULONIMBUS) {
 				result.isStormClouds = true;
 			}
 		}
@@ -643,19 +642,9 @@ void temperatureForecastFromTaf(
 	metaf::Temperature minTemp, maxTemp;
 	for (const auto & tafGroupInfo : tafGroups) {
 		const auto & tafGroup = tafGroupInfo.group;
-		if (const auto gr = std::get_if<metaf::TemperatureForecastGroup>(&tafGroup); gr) {
-			switch(gr->point()) {
-				case metaf::TemperatureForecastGroup::Point::MINIMUM:
-				minTemp = gr->airTemperature();
-				break;
-
-				case metaf::TemperatureForecastGroup::Point::MAXIMUM:
-				maxTemp = gr->airTemperature();
-				break;
-
-				default:
-				break;
-			}
+		if (const auto gr = std::get_if<metaf::MinMaxTemperatureGroup>(&tafGroup); gr) {
+			minTemp = gr->minimum();
+			maxTemp = gr->maximum();
 		}
 	}
 	if (const auto t = minTemp.toUnit(tempUnit); t.has_value()) {

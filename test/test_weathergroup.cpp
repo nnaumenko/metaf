@@ -8,7 +8,11 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
-
+///////////////////////////////////////////////////////////////////////////////
+// Parsing current, recent or forecast weather 
+// Purpose: to confirm that current weather specified in METAR, forecast
+// weather specified in METAR or TAF trend, and recent weather specified in
+// METAR are parsed correctly and that malformed groups are not parsed
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherGroup, parseWeatherMetar) {
@@ -113,6 +117,13 @@ TEST(WeatherGroup, parseNonReportedRecentMetar) {
 TEST(WeatherGroup, parseNonReportedRecentTaf) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RE//", metaf::ReportPart::TAF).has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Recent weather events with time 
+// Purpose: to confirm that recent weather events specified in remarks are 
+// parsed and appended correctly, and that malformed groups are not parsed or
+// appended
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherGroup, parseRecentWeatherEventSingle) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
@@ -322,6 +333,13 @@ TEST(WeatherGroup, parseWrongFormat) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RAB000", metaf::ReportPart::METAR, reportMetadata).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Current, recent, and forecast weather phenomena appending tests 
+// Purpose: to confirm that current or forecast weather phenomena specified in 
+// METAR or TAF report body or trend are appended correctly, and that groups
+// or different types cannot be appended
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(WeatherGroup, appendCurrentWeather) {
 	const std::string wgStr1("VCTS");
 	const std::string wgStr2("SQ");
@@ -485,3 +503,304 @@ TEST(WeatherGroup, appendOther) {
 	//TODO:append other to event
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// NSW, PWINO, and TSNO
+// Purpose: to confirm that NSW, PWINO, and TSNO groups are parsed correctly,
+// and that no other group can be appended to them
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WeatherGroup, parseNsw) {
+	const auto wg1 = metaf::WeatherGroup::parse("NSW", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->type(), metaf::WeatherGroup::Type::NSW);
+	ASSERT_EQ(wg1->weatherPhenomena().size(), 0u);
+	EXPECT_TRUE(wg1->isValid());
+
+	const auto wg2 = metaf::WeatherGroup::parse("NSW", metaf::ReportPart::TAF);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->type(), metaf::WeatherGroup::Type::NSW);
+	ASSERT_EQ(wg2->weatherPhenomena().size(), 0u);
+	EXPECT_TRUE(wg2->isValid());
+}
+
+TEST(WeatherGroup, parseNswWrongReportPart) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("NSW", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("NSW", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("NSW", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(WeatherGroup, appendToNsw) {
+	// TODO
+}
+
+TEST(WeatherGroup, parsePwino) {
+	const auto wg1 = metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->type(), metaf::WeatherGroup::Type::PWINO);
+	ASSERT_EQ(wg1->weatherPhenomena().size(), 0u);
+	EXPECT_TRUE(wg1->isValid());
+}
+
+TEST(WeatherGroup, parsePwinoWrongReportPart) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WeatherGroup, appendToPwino) {
+	// TODO
+}
+
+TEST(WeatherGroup, parseTsno) {
+	const auto wg = metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::TSNO);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 0u);
+	EXPECT_TRUE(wg->isValid());
+}
+
+TEST(WeatherGroup, parseTsnoWrongReportPart) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WeatherGroup, appendToTsno) {
+	// TODO
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// WX MISG and TS/LTNG TEMPO UNAVBL groups
+// Purpose: to confirm that WX MISG and TS/LTNG TEMPO UNAVBL groups are parsed
+// and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WeatherGroup, parseWxMisg) {
+	auto wg = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_FALSE(wg->isValid());
+	EXPECT_EQ(wg->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg->isValid());
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::WX_MISG);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 0u);
+}
+
+TEST(WeatherGroup, parseWxWrongReportPart) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("WX", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("WX", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("WX", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("WX", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WeatherGroup, appendToWxMisg) {
+	// TODO
+}
+
+TEST(WeatherGroup, appendOtherToWx) {
+	auto wg1 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("WX", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("TSNO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg5 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	EXPECT_EQ(wg5->append("RAB1031", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg6 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg6.has_value());
+	EXPECT_EQ(wg6->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg7 = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg7.has_value());
+	EXPECT_EQ(wg7->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WeatherGroup, parseMisg) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("MISG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("MISG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("MISG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("MISG", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("MISG", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(WeatherGroup, parseTsLtngTempoUnavbl) {
+	auto wg = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_FALSE(wg->isValid());
+	EXPECT_EQ(wg->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg->isValid());
+	EXPECT_EQ(wg->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg->isValid());
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::TS_LTNG_TEMPO_UNAVBL);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 0u);
+}
+
+TEST(WeatherGroup, parseTsLtngWrongReportPart) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WeatherGroup, appendOtherToTsLtng) {
+	auto wg1 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("WX", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("TSNO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg5 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	EXPECT_EQ(wg5->append("RAB1031", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg6 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg6.has_value());
+	EXPECT_EQ(wg6->append("TS/LTNG", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg7 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg7.has_value());
+	EXPECT_EQ(wg7->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg8 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg8.has_value());
+	EXPECT_EQ(wg8->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WeatherGroup, appendOtherToTsLtngTempo) {
+	auto wg1 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	ASSERT_EQ(wg1->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	ASSERT_EQ(wg2->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("WX", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	ASSERT_EQ(wg3->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("TSNO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	ASSERT_EQ(wg4->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg4->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg5 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	ASSERT_EQ(wg5->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg5->append("RAB1031", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg6 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg6.has_value());
+	ASSERT_EQ(wg6->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg6->append("TS/LTNG", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg7 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg7.has_value());
+	ASSERT_EQ(wg7->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg7->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg8 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg8.has_value());
+	ASSERT_EQ(wg8->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg8->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WeatherGroup, appendToTsLtngTempoUnavbl) {
+	auto wg1 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	ASSERT_EQ(wg1->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg1->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg2 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	ASSERT_EQ(wg2->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg2->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("WX", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg3 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	ASSERT_EQ(wg3->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg3->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("TSNO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg4 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	ASSERT_EQ(wg4->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg4->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg4->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg5 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	ASSERT_EQ(wg5->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg5->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg5->append("RAB1031", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg6 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg6.has_value());
+	ASSERT_EQ(wg6->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg6->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg6->append("TS/LTNG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg7 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg7.has_value());
+	ASSERT_EQ(wg7->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg7->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg7->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg8 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg8.has_value());
+	ASSERT_EQ(wg8->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg8->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg8->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto wg9 = metaf::WeatherGroup::parse("TS/LTNG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg9.has_value());
+	ASSERT_EQ(wg9->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_EQ(wg9->append("UNAVBL", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg9->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+}
+
+TEST(WeatherGroup, parseTempo) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TEMPO", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TEMPO", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TEMPO", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TEMPO", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("TEMPO", metaf::ReportPart::RMK).has_value());
+}
+
+TEST(WeatherGroup, parseUnavbl) {
+	EXPECT_FALSE(metaf::WeatherGroup::parse("UNAVBL", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("UNAVBL", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("UNAVBL", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("UNAVBL", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("UNAVBL", metaf::ReportPart::RMK).has_value());
+}

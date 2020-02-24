@@ -1,48 +1,44 @@
 About Metaf
 ===========
 
-.. index:: single: Metaf
-
 Metaf is a header-only, dependency-free modern C++ library for parsing METAR weather reports and TAF weather forecasts used in aviation. 
 
-.. index:: single: Metaf;License
 
-.. index:: single: License
+What Metaf can and cannot do?
+-----------------------------
+
+Metaf can:
+
+- Parse METAR or TAF report and autodetect its type.
+- Check the validity of the report syntax, detect malformed reports and report errors.
+- Convert METAR or TAF report into the vector of classes; each of these classes represents individual chunk of information encoded in the weather report or forecast.
+
+Metaf cannot:
+
+- Parse old TAFs used before November 2008 since it uses obsolete format for time spans and trends.
+
+
+Compatible compilers
+--------------------
+
+The following compiler are compatible (with C++17 standard enabled) and routinely tested using Gitlab CI after each commit.
+
+- emscripten emcc 1.38.28 (based on clang)
+- gcc 7.4.0
+- clang 8.0.0
+
+
+Prerequisites and dependencies
+------------------------------
+
+Metaf requires C++17.
+
+Metaf library itself is dependency-free and requires only standard C++ library. Boost is not used.
+
+Unit tests included with the project use `Google Test <https://github.com/abseil/googletest>`_ framework.
+
+
+License
+-------
 
 Metaf is released under MIT license.
-
-This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no external dependencies and can be used in other environments.
-
-Metaf library requires C++17.
-
-.. index:: single: METAR
-
-What is METAR?
---------------
-
-METAR is current weather report format used in aviation. Typical METAR report contains information such as location, report issue time, wind, visibility, clouds, weather phenomena, temperature, dewpoint and atmospheric pressure. 
-
-METAR in raw form is human-readable though it might look cryptic for untrained person.
-
-Example of a simple METAR report is as follows: :: 
-
-	METAR EICK 092100Z 23007KT 9999 FEW038 BKN180 11/08 Q1019 NOSIG=
-
-This report includes type (METAR), location (Cork Airport / Ireland), report issue time (day-of-month 9 at 21:00 GMT, actually issued on 9th September 2018 but month and year are not included), wind (southwest wind, wind speed 7 knots), visibility (more than 10KM), cloud layers (few clouds at 3800 feet and broken clouds at 18000 feet), temperature and dew point (temperature 11 centigrade, dewpoint 8 centrigrade), atmospheric pressure (1019 hPa) and weather trend (no significant changes expected).
-
-METAR may also contain additional information such as runway visual range, state of the runway, remarks, trends of weather change, etc. Some locations include METAR reports include specific information, e.g.: oil platforms typically report sea surface temperature and wave height, Australian aeroports often report recent rainfall, NATO militaries report so called colour codes for quick assessment of visibility and ceiling conditions.
-
-.. index:: single: TAF
-
-What is TAF?
-------------
-
-TAF (Terminal Aerodrome Forecast) is a weather forecast report format used in aviation. TAF report format is quite similar to METAR and reports trends and changes in visibility, wind, clouds, weather, etc over periods of time.
-
-TAF in raw form is also human-readable but requires training to decode.
-
-Example of a TAF report is as follows: ::
-
-	TAF EICK 091700Z 0918/1018 27012KT 9999 BKN025 BECMG 0920/0923 24007KT BECMG 1002/1005 21007KT BECMG 1009/1012 21015KT TEMPO 1010/1013 -RA BKN012 TEMPO 1010/1018 21018G28KT BECMG 1013/1016 6000 -RA SCT003 BKN010 TEMPO 1014/1018 3000 -RADZ BKN003 PROB40 TEMPO 1015/1018 1200 BR BKN002=
-
-Information included in this report is similar to METAR but focuses on forecast and weather trends rathern than present conditions.

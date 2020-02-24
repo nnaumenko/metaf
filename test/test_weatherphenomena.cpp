@@ -9,10 +9,11 @@
 #include "metaf.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
-// Tests for fromString()
+// fromString() tests: descriptors applicable to obscurations
+// Purpose: to confirm that weather phenomena which contain descriptors used
+// only with obscurations are parsed correctly, and incorrect strings are not
+// parsed
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptors applicable to obscurations
 
 TEST(WeatherPhenomena_fromString, obscurations_descriptorMI) {
 	const auto wp = metaf::WeatherPhenomena::fromString("MIFG");
@@ -216,8 +217,10 @@ TEST(WeatherPhenomena_fromString, obscurations_descriptorFZ_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Obscurations
+// fromString() tests: obscurations
+// Purpose: to confirm that obscuration weather phenomena are parsed correctly,
+// and incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, obscurations_BR) {
 	const auto wp = metaf::WeatherPhenomena::fromString("BR");
@@ -333,8 +336,10 @@ TEST(WeatherPhenomena_fromString, obscurations_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptors which can be used alone without weather phenomena
+// fromString() tests: descriptors used alone
+// Purpose: to confirm that descriptors which can be used alone, without any 
+// weather phenomena are parsed correctly, and incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, other_descriptorTS) {
 	const auto wp = metaf::WeatherPhenomena::fromString("TS");
@@ -406,8 +411,11 @@ TEST(WeatherPhenomena_fromString, obscurations_descriptorSH_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Miscellaneous phenomena
+// fromString() tests: other phenomena
+// Purpose: to confirm that 'other' weather phenomena (dust or sand whirls, 
+// squalls, funnel cloud) are parsed correctly, and incorrect strings are not 
+// parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, other_PO) {
 	const auto wp = metaf::WeatherPhenomena::fromString("PO");
@@ -486,8 +494,10 @@ TEST(WeatherPhenomena_fromString, other_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Sandstorm and duststrorm
+// fromString() tests: sandstorm and duststorm
+// Purpose: to confirm that sandstorm and duststorm weather phenomena are 
+// parsed correctly, and incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, other_DS) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("DS");
@@ -617,9 +627,12 @@ TEST(WeatherPhenomena_fromString, DS_SS_qualifier_vc) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Ice crystals
-// IC is technically precipitation but used in the same way as obscurations
+// fromString() tests: ice crystals
+// Purpose: to confirm that 'ice crystals' weather phenomena are parsed 
+// correctly, and incorrect strings are not parsed
+// Note: Ice Crystals is technically precipitation but used in the same way as 
+// obscurations
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_IC) {
 	const auto wp = metaf::WeatherPhenomena::fromString("IC");
@@ -642,8 +655,10 @@ TEST(WeatherPhenomena_fromString, fromString_precipitation_IC_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Precipitation when used alone without any mixed precipitation
+// fromString() tests: non-mixed precipitation
+// Purpose: to confirm that single precipitation weather phenomena, with or 
+// without intensity qualifier are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_DZ) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("DZ");
@@ -950,8 +965,11 @@ TEST(WeatherPhenomena_fromString, precipitation_UP) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Mixed precipitation
+// fromString() tests: mixed precipitation
+// Purpose: to confirm that mixed precipitation weather phenomena without 
+// intensity qualifier (e.g. rain and snow mix) are parsed correctly, and 
+// incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_mixed) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("DZSG");
@@ -1056,8 +1074,10 @@ TEST(WeatherPhenomena_fromString, precipitation_mixed_incorrect_descriptor) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Mixed precipitation with qualifier
+// fromString() tests: mixed precipitation with intensity qualifier
+// Purpose: to confirm that mixed precipitation weather phenomena with 
+// intensity qualifier (e.g. light rain and snow mix) are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_mixed_qualifier_moderate) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("DZSG", true);
@@ -1312,8 +1332,11 @@ TEST(WeatherPhenomena_fromString, precipitation_mixed_qualifier_recent) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor TS when used with precipitation (i.e. not used alone)
+// fromString() tests: precipitation with TS descriptor
+// Purpose: to confirm that precipitation weather phenomena with thunderstorm
+// descriptor and without intensity qualifier are parsed correctly, and 
+// incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_ts) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("TSRA");
@@ -1423,8 +1446,10 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_ts_mixed) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor SH when used with precipitation with qualifier
+// fromString() tests: precipitation with TS descriptor and intensity qualifier
+// Purpose: to confirm that precipitation weather phenomena with thunderstorm
+// descriptor and with intensity qualifier are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_ts_qualifier) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("TSRA");
@@ -1543,8 +1568,11 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_ts_mixed_qualifier) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor SH when used with precipitation
+// fromString() tests: precipitation with SH descriptor
+// Purpose: to confirm that precipitation weather phenomena with showery 
+// precipitation descriptor and without intensity qualifier are parsed 
+// correctly, and incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_sh) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("SHRA");
@@ -1629,8 +1657,10 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptorSH_mixed) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor SH when used with precipitation with qualifier
+// fromString() tests: precipitation with SH descriptor and intensity qualifier
+// Purpose: to confirm that precipitation weather phenomena with showery
+// precipitation descriptor and with intensity qualifier are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_sh_qualifier) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("SHRA", true);
@@ -1759,8 +1789,11 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_sh_mixed_qualifier) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor FZ when used with precipitation
+// fromString() tests: precipitation with FZ descriptor
+// Purpose: to confirm that precipitation weather phenomena with freezing 
+// precipitation descriptor and without intensity qualifier are parsed 
+// correctly and incorrect strings are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_fz) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("FZRA", true);
@@ -1831,8 +1864,10 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_fz_incorrect) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Descriptor FZ when used with precipitation with qualifier
+// fromString() tests: precipitation with FZ descriptor and intensity qualifier
+// Purpose: to confirm that precipitation weather phenomena with freezing
+// precipitation descriptor and with intensity qualifier are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_fz_qualifier) {
 	const auto wp1 = metaf::WeatherPhenomena::fromString("FZRA");
@@ -1960,8 +1995,10 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_fz_mixed_qualifier) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Incorrect combination of descriptors and qualifiers used with precipitation
+// fromString() tests: incorrect combinations of descriptors and qualifiers
+// Purpose: to confirm that incorrect combinations of descriptors and 
+// qualifiers used with precipitation weather phenomena are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromString, precipitation_descriptor_qualifier_incorrect) {
 	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TSSHRA").has_value());
@@ -1973,13 +2010,12 @@ TEST(WeatherPhenomena_fromString, precipitation_descriptor_qualifier_incorrect) 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Tests for fromWeatherBeginEndString()
-///////////////////////////////////////////////////////////////////////////////
-
+// fromWeatherBeginEndString() tests: first event (e.g. RAB1456)
+// Purpose: to confirm that first weather event in a group (i.e. with time, 
+// event type, and weather phenomena specified) are parsed correctly
 // Note: fromWeatherBeginEndString() relies on fromString(), here assuming
 // that fromString() is fully tested
-
-// First event (e.g. RAB1456)
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena_fromWeatherBeginEndString, first_event) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
@@ -2034,7 +2070,13 @@ TEST(WeatherPhenomena_fromWeatherBeginEndString, first_event) {
 	EXPECT_EQ(wp3->time()->minute(), 25u);
 }
 
-// Subsequent events for the same phenomena (e.g. E0812)
+///////////////////////////////////////////////////////////////////////////////
+// fromWeatherBeginEndString() tests: subsequent event (e.g. E0812)
+// Purpose: to confirm that subsequent weather events in a group (i.e. with 
+// time and event type specified only) are parsed correctly
+// Note: fromWeatherBeginEndString() relies on fromString(), here assuming
+// that fromString() is fully tested
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena, fromWeatherBeginEndString_subsequent) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
@@ -2079,7 +2121,11 @@ TEST(WeatherPhenomena, fromWeatherBeginEndString_subsequent) {
 	EXPECT_EQ(wp2->time()->minute(), 12u);
 }
 
-// Incorrect parameters reportTime and previous
+///////////////////////////////////////////////////////////////////////////////
+// fromWeatherBeginEndString() tests: incorrect groups 
+// Purpose: to confirm that incorrect groups which cannot be parsed together
+// or groups with incorrect formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectPrevious) {
 	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
@@ -2102,8 +2148,6 @@ TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectPrevious) {
 			reportTime.value(), 
 			metaf::WeatherPhenomena()).has_value());
 }
-
-// Incorrect string format
 
 TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectFormat) {
 	const auto rt = metaf::MetafTime::fromStringDDHHMM("120830");
@@ -2152,10 +2196,9 @@ TEST(WeatherPhenomena, fromWeatherBeginEndString_incorrectFormat) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Miscellaneous tests
-///////////////////////////////////////////////////////////////////////////////
-
 // Tests for isValid()
+// Purpose: to confirm that isValid() method correctly validates the data
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(WeatherPhenomena, isValidTrueOther) {
 	EXPECT_TRUE(metaf::WeatherPhenomena::fromString("MIFG", true)->isValid());
@@ -2217,108 +2260,4 @@ TEST(WeatherPhenomena, isValidTrueOther) {
 
 TEST(WeatherPhenomena, isValidFalseEmpty) {
 	EXPECT_FALSE(metaf::WeatherPhenomena().isValid());
-}
-
-// Tests for isOmmitted()
-
-TEST(WeatherPhenomena, isOmmittedTrueEmpty) {
-	EXPECT_TRUE(metaf::WeatherPhenomena().isOmmitted());
-}
-
-TEST(WeatherPhenomena, isOmmittedFalseFromString) {
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("MIFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PRFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BCFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DRSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BLPY", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("IC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("BR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("HZ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PO", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SQ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("FC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DSSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SSDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+FC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+DSSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+SSDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSH", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCTS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCVA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCFC", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCPO", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLDU", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCBLSN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCDS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("VCSS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RA", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SN", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("DZ", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SG", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("PL", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("GS", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("UP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("+TSRAGR", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("-SHRAPL", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("SHUP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("TSUP", true)->isOmmitted());
-	EXPECT_FALSE(metaf::WeatherPhenomena::fromString("RERAPL", true)->isOmmitted());
-}
-
-TEST(WeatherPhenomena, isOmmittedFalseFromBeginEndString) {
-	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("120830");
-	ASSERT_TRUE(reportTime.has_value());
-
-	const auto wp1 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
-		"RAB1456", 
-		metaf::MetafTime(), 
-		metaf::WeatherPhenomena());
-	ASSERT_TRUE(wp1.has_value());
-	EXPECT_FALSE(wp1->isOmmitted());
-
-	const auto wp2 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
-		"SHRASNE0212", 
-		metaf::MetafTime(), 
-		metaf::WeatherPhenomena());
-	ASSERT_TRUE(wp2.has_value());
-	EXPECT_FALSE(wp2->isOmmitted());
-
-	const auto wp3 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
-		"TSB25", 
-		reportTime.value(), 
-		metaf::WeatherPhenomena());
-	ASSERT_TRUE(wp3.has_value());
-	EXPECT_FALSE(wp3->isOmmitted());
-
-	const auto wp4 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
-		"E0812",
-		metaf::MetafTime(), 
-		wp3.value());
-	ASSERT_TRUE(wp4.has_value());
-	EXPECT_FALSE(wp4->isOmmitted());
-
-	const auto wp5 = metaf::WeatherPhenomena::fromWeatherBeginEndString(
-		"E12", 
-		reportTime.value(),
-		wp3.value());
-	ASSERT_TRUE(wp5.has_value());
-	EXPECT_FALSE(wp5->isOmmitted());
 }

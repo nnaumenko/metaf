@@ -5,8 +5,6 @@ API Reference
 
 This section describes the APIs related to parsing METAR or TAF report and reading the data from parsed results.
 
-See Extending Metaf Functionality section for APIs related to adding additional features and new groups.
-
 Data Types
 ----------
 
@@ -321,9 +319,7 @@ Distance
 
 .. cpp:class:: Distance
 
-	Stores a distance or height value. The value may be expressed as integer (e.g. 3500) or rational (e.g. 2 1/4) number.
-
-	The value consists of integer and fraction components, fraction component in turn consists of numerator and denominator. Integer or fraction parts can be optionally not reported (i.e. no value).
+	Stores a distance or height value. The value may be expressed as meters, feet (e.g. 3500 or 1500) or in statute miles (e.g. 2 1/4 or 2.25). The value in statute miles may contain integer and/or fraction parts.
 
 	.. cpp:enum-class:: Unit
 
@@ -365,19 +361,61 @@ Distance
 
 			The distance is 5 to 10 nautical miles (coded ``VC`` in remark groups). The exact value is not reported.
 
+	.. cpp:enum-class:: MilesFraction
+
+		Identifies reportable values for the fraction of mile, as per Table 6-1 of Field Meteorology Handbook Number 1.
+
+		.. cpp:enumerator:: NONE
+
+			The value is integer; no fraction.
+
+		.. cpp:enumerator:: F_1_16
+
+			Fraction value of 1/16.
+
+		.. cpp:enumerator:: F_1_8
+
+			Fraction value of 1/8.
+
+		.. cpp:enumerator:: F_3_16
+
+			Fraction value of 3/16.
+
+		.. cpp:enumerator:: F_1_4
+
+			Fraction value of 1/4.
+
+		.. cpp:enumerator:: F_5_16
+
+			Fraction value of 5/16.
+
+		.. cpp:enumerator:: F_3_8
+
+			Fraction value of 3/8.
+
+		.. cpp:enumerator:: F_1_2
+
+			Fraction value of 1/2.
+
+		.. cpp:enumerator:: F_5_8
+
+			Fraction value of 5/8.
+
+		.. cpp:enumerator:: F_3_4
+
+			Fraction value of 3/4.
+
+		.. cpp:enumerator:: F_7_8
+
+			Fraction value of 7/8.
+
 	**Acquiring the data**
 
-		.. cpp:function:: std::optional<unsigned int> integer() const
+		.. cpp:function:: std::optional<float> distance() const
 
-			:returns: Integer component of stored distance value or empty ``std::optional`` if there is no integer component or the value is not reported.
+			:returns: Stored distance value in the units specified by :cpp:func:`Distance::unit()` or empty ``std::optional`` if the value is not reported.
 
-		.. cpp:function:: std::optional<unsigned int> numerator() const
-
-			:returns: Numerator of fraction component of stored distance value or empty ``std::optional`` if there is no fraction part or the value is not reported.
-
-		.. cpp:function:: std::optional<unsigned int> denominator() const
-
-			:returns: Denominator of fraction component of stored distance value or empty ``std::optional`` if there is no fraction part or the value is not reported.
+			.. note:: This method returns a decimal value in statute miles (e.g. 2.5). If instead an integer & fraction value in statute miles is required, use :cpp:func:`Distance::miles()`.
 
 		.. cpp:function:: Modifier modifier() const
 
@@ -386,24 +424,6 @@ Distance
 		.. cpp:function:: Unit unit() const
 
 			:returns: Distance measurement unit which was used with stored value.
-
-	**Integer & fraction components**
-
-		.. cpp:function:: bool isInteger() const
-
-			:returns: ``true`` if the stored value has only integer component, and ``false`` if the stored value does not have an integer component or has fraction component or is not reported.
-
-		.. cpp:function:: bool hasInteger() const
-
-			:returns: ``true`` if the stored value has integer component, and ``false`` if the stored value does not have an integer component or is not reported. Presence or absence of fraction component is ignored.
-
-		.. cpp:function:: bool isFraction() const
-
-			:returns: ``true`` if the stored value has only fraction component, and ``false`` if the stored value does not have a fraction component or has integer component or is not reported.
-
-		.. cpp:function:: bool hasFraction() const
-
-			:returns: ``true`` if the stored value has fraction component, and ``false`` if the stored value does not have a fraction component or is not reported. Presence or absence of integer component is ignored.
 
 	**Miscellaneous**
 
@@ -414,6 +434,26 @@ Distance
 		.. cpp:function:: bool isReported()
 
 			:returns: ``true`` if the conditions for :cpp:func:`isValue()` are met, or the modifier is either :cpp:enumerator:`Modifier::DISTANT` or :cpp:enumerator:`Modifier::VICINITY`; ``false`` otherwise.
+
+		.. cpp:function:: std::optional<std::pair<unsigned int, MilesFraction>> miles() const
+
+			:returns: Value in statute miles in the form of integer and fraction.
+
+				If the value is not reported, an empty ``std::optional`` is returned.
+
+				For the reported values, the ``std::pair`` is returned where ``unsigned int`` component is an integer part, and :cpp:enum:`MilesFraction` component is a fraction part. For example, for the value of ``2 3/4 statute miles``, an ``unsigned int`` component contains ``2`` and :cpp:enum:`MilesFraction` component contains :cpp:enumerator:`MilesFraction::F_3_4`.
+
+					.. note:: This method may only return the following values (as per Table 6-1 of Field Meteorology Handbook Number 1):
+
+						Below 1/2 statute mile: increments of 1/16 statute mile (0, 1/16, 1/8, 3/16, 1/4, 5/16, 3/8).
+
+						From 1/2 to 2 statute miles: increments of 1/8 statute mile (1/2, 5/8, 3/4, 7/8, 1, 1 1/8, 1 1/4, 1 3/8, 1 1/2, 1 5/8, 1 3/4, 1 7/8).
+
+						From 2 to 3 statute miles: increments of 1/4 statute mile (2, 2 1/4 2 1/2, 2 3/4).
+
+						From 3 to 15 statute miles: increments of 1 statute mile (3, 4, 5, etc).
+
+						Above 15 statute miles: increments of 5 statute miles (15, 20, 25, etc).
 
 	**Converting to other measurement units**
 
@@ -446,9 +486,13 @@ Direction
 		
 		Specifies a cardinal or intercardinal direction. No secondary intercardinal directions can be specified. Alternatively may specify No Directional Variation or No Value.
 
-		.. cpp:enumerator:: NONE
+		.. cpp:enumerator:: NOT_REPORTED
 
-			No value or no corresponding cardinal direction can be found.
+			The direction is not reported or not specified.
+
+		.. cpp:enumerator:: VRB
+
+			Direction is Variable.
 
 		.. cpp:enumerator:: NDV
 
@@ -514,18 +558,13 @@ Direction
 
 			Unknown direction.
 
+	.. cpp:enum-class:: Type
 
-	.. cpp:enum-class:: Status
-
-		The status of the direction value reported. If the status is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
-
-		.. cpp:enumerator:: OMMITTED
-
-			Direction is omitted (i.e. no direction specified at all).
+		The type of the direction value reported. If the type is other than :cpp:enumerator:`VALUE_DEGREES` or :cpp:enumerator:`VALUE_CARDINAL`, then no numerical direction value is provided.
 
 		.. cpp:enumerator:: NOT_REPORTED
 
-			Direction is specified as 'not reported'.
+			Direction is specified as 'not reported' or not specified.
 
 		.. cpp:enumerator:: VARIABLE
 
@@ -557,9 +596,9 @@ Direction
 
 	**Acquiring the data**
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			::returns:: Status of stored direction value.
+			::returns:: Type of stored direction value.
 
 		.. cpp:function:: Cardinal cardinal(bool trueDirections = false) const
 
@@ -567,19 +606,15 @@ Direction
 
 			:returns: Cardinal direction corresponding to the stored direction value.
 
-				- If the status of the stored value is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE`, then :cpp:enumerator:`Cardinal::NONE` is returned. 
-
-				- If the status is :cpp:enumerator:`Status::NDV` then :cpp:enumerator:`Cardinal::NDV` is returned.
-
-				- If the direction value in degrees is reported (i.e. status is :cpp:enumerator:`Status::VALUE_DEGREES`) and the value exceeds 360 degrees then :cpp:enumerator:`Cardinal::NONE` is returned.
+				.. note:: If the direction value in degrees is reported (i.e. value type is :cpp:enumerator:`Type::VALUE_DEGREES`) the corresponding cardinal direction is returned; if the value exceeds 360 degrees then :cpp:enumerator:`Cardinal::NOT_REPORTED` is returned.
 
 		.. cpp:function:: std::optional<unsigned int> degrees() const
 
 			:returns: Stored value in degrees. If cardinal value was stored, then the middle value of the corresponding directional sector is returned as follows:
 
-				================== ==============
-				Cardinal direction Returned value
-				================== ==============
+				================== ====================
+				Cardinal direction Direction in degrees
+				================== ====================
 				North              360
 				Northeast          45
 				East               90
@@ -588,25 +623,29 @@ Direction
 				Southwest          225
 				West               270
 				Northwest          315
-				================== ==============
+				================== ====================
 
-				If the status of the stored value is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`, then an empty ``std::optional`` is returned.
-
+				If the type of the stored value is other than :cpp:enumerator:`Type::VALUE_DEGREES` or :cpp:enumerator:`Type::VALUE_CARDINAL` then an empty ``std::optional`` is returned.
 
 	**Miscellaneous**
+
+		.. cpp:function:: bool isReported() const
+
+			:returns: ``true`` if any directional value is stored in this group (i.e. NDV, VRB, OHD, ALQDS, UNKNOWN or value in degrees or cardinal direction); or ``false`` if non-reported direction is stored in this group.
 
 		.. cpp:function:: bool isValue() const
 
 			:returns: ``true`` if the stored direction contains a value, and ``false`` if the stored direction does not contain a concrete value.
 
-				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Status::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Status::VALUE_DEGREES`) is stored.
+				- ``true`` is returned if ether cardinal direction (:cpp:enumerator:`Type::VALUE_CARDINAL`) or value in degrees (:cpp:enumerator:`Type::VALUE_DEGREES`) is stored.
 
-				- ``false`` is returned if the status is :cpp:enumerator:`Status::OMMITTED`, :cpp:enumerator:`Status::NOT_REPORTED`, :cpp:enumerator:`Status::VARIABLE` or :cpp:enumerator:`Status::NDV`.
+				- ``false`` is returned if the type of the value is :cpp:enumerator:`Type::NOT_REPORTED`, :cpp:enumerator:`Type::VARIABLE`, :cpp:enumerator:`Type::NDV`, :cpp:enumerator:`Type::OVERHEAD`, :cpp:enumerator:`Type::ALQDS`, or :cpp:enumerator:`Type::UNKNOWN`.
 
-		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction &dir2)
+		.. cpp:function:: static std::vector<Direction> sectorDirectionsToVector(const Direction & dir1, const Direction & dir2)
 
-			:returns: ``std::vector`` if the stored
+			:returns: ``std::vector`` of the all directions included in the direction sector.
 
+				.. note:: Direction sector is defined clockwise from dir1 to dir2.
 
 
 	**Validating**
@@ -728,9 +767,9 @@ SurfaceFriction
 
 	.. note:: Surface friction coefficient is a dimensionless value and has no associated measurement units.
 
-	.. cpp:enum-class:: Status
+	.. cpp:enum-class:: Type
 
-		The status of surface friction value.
+		The type of surface friction value.
 
 		.. cpp:enumerator:: NOT_REPORTED
 
@@ -778,9 +817,9 @@ SurfaceFriction
 
 	**Acquiring the data**
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			:returns: Status of surface friction value.
+			:returns: Type of surface friction value.
 
 		.. cpp:function:: std::optional<float> coefficient() const
 
@@ -799,12 +838,12 @@ SurfaceFriction
 
 		.. cpp:function:: bool isReported() const
 
-			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:`Status::NOT_REPORTED`.
+			:returns: ``true`` if the actual value is stored or ``false`` if non-reported value is stored. Corresponds to :cpp:enumerator:`Type::NOT_REPORTED`.
 
 
 		.. cpp:function:: bool isUnreliable() const
 
-			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:`Status::UNRELIABLE`.
+			:returns: ``true`` if the stored value is unmeasurable or the measurement result is unreliable, and ``false`` otherwise. When the value is not reported, ``false`` is returned. Corresponds to :cpp:enumerator:`Type::UNRELIABLE`.
 
 
 WaveHeight
@@ -1004,7 +1043,7 @@ WeatherPhenomena
 
 		Describes precipitation, obscuration and other weather phenomena.
 
-		.. cpp:enumerator:: OMMITTED
+		.. cpp:enumerator:: OMITTED
 
 			The weather information is omitted (i.e. not specified at all)..
 
@@ -1153,7 +1192,7 @@ WeatherPhenomena
 
 	**Miscellaneous**
 
-		.. cpp:function:: bool isOmmitted() const
+		.. cpp:function:: bool isOmitted() const
 
 			:returns: ``true`` if no qualifier, no descriptor, no weather phenomena, no event and no event time is stored in this instance, ``false`` if any of these conditions is not met.
 
@@ -1170,11 +1209,152 @@ WeatherPhenomena
 					 - if descriptor FZ (freezing) is present, the weather phenomena must contain FG (fog), or the precipitation type which is potentially may freeze: UP (undetermined precipitation), or RA(rain), or DZ (drizzle); other precipitation may be present alone with specified above, e.g. ``FZRASN`` (freezing rain and snow) is valid, while ``FZSNPL`` (freezing snow and ice pellets) is not valid;
 
 
+CloudType
+^^^^^^^^^
+
+.. cpp:class:: CloudType
+
+	Specifies type of the cloud in the layer, base height, and sky coverage (okta).
+
+	.. cpp:enum-class:: Type
+
+		Type/genus of clouds.
+
+		.. note:: Also includes weather phenomena causing obscuration such as rain, fog, blowing snow, etc. used in Canada in addition to clouds.
+
+		.. cpp:enumerator:: NOT_REPORTED
+
+			Type of the cloud is not reported or not known.
+
+		.. cpp:enumerator:: CUMULONIMBUS
+
+			Cumulonimbus clouds.
+
+		.. cpp:enumerator:: TOWERING_CUMULUS
+
+			Towering Cumulus clouds.
+
+		.. cpp:enumerator:: CUMULUS
+
+			Cumulus clouds.
+
+		.. cpp:enumerator:: CUMULUS_FRACTUS
+
+			Cumulus fractus clouds.
+
+		.. cpp:enumerator:: STRATOCUMULUS
+
+			Stratocumulus clouds.
+
+		.. cpp:enumerator:: NIMBOSTRATUS
+
+			Nimbostratus clouds.
+
+		.. cpp:enumerator:: STRATUS
+
+			Stratus clouds.
+
+		.. cpp:enumerator:: STRATUS_FRACTUS
+
+			Stratus fractus clouds.
+
+		.. cpp:enumerator:: ALTOSTRATUS
+
+			Altostratus clouds clouds.
+
+		.. cpp:enumerator:: ALTOCUMULUS
+
+			Altocumulus clouds clouds.
+
+		.. cpp:enumerator:: ALTOCUMULUS_CASTELLANUS
+
+			Altostratus castellanus clouds.
+
+		.. cpp:enumerator:: CIRRUS
+
+			Cirrus clouds.
+
+		.. cpp:enumerator:: CIRROSTRATUS
+
+			Cirrostratus clouds.
+
+		.. cpp:enumerator:: CIRROCUMULUS
+
+			Cirrostratus clouds.
+
+		.. cpp:enumerator:: BLOWING_SNOW
+
+			Blowing snow (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_DUST
+
+			Blowing dust (used only in Canada).
+
+		.. cpp:enumerator:: BLOWING_SAND
+
+			Blowing sand (used only in Canada).
+
+		.. cpp:enumerator:: ICE_CRYSTALS
+
+			Ice crystals (used only in Canada).
+
+		.. cpp:enumerator:: RAIN
+
+			Rain (used only in Canada).
+
+		.. cpp:enumerator:: DRIZZLE
+
+			Drizzle (used only in Canada).
+
+		.. cpp:enumerator:: SNOW
+
+			Snow falling from the clouds (used only in Canada).
+
+		.. cpp:enumerator:: ICE_PELLETS
+
+			Ice pellets (used only in Canada).
+
+		.. cpp:enumerator:: SMOKE
+
+			Smoke (used only in Canada).
+
+		.. cpp:enumerator:: FOG
+
+			Fog (used only in Canada).
+
+		.. cpp:enumerator:: MIST
+
+			Mist (used only in Canada).
+
+		.. cpp:enumerator:: HAZE
+
+			Haze (used only in Canada).
+
+	**Acquiring the data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of the cloud or obscuration or :cpp:enumerator:`Type::NOT_REPORTED` if cloud type is not specified or cannot be included in this format.
+
+		.. cpp:function:: Distance height() const
+
+			:returns: Height of the cloud base; may be a non-reported value if the base height is not reported or cannot be included in this format.
+
+		.. cpp:function:: unsigned int okta() const
+
+			:returns: Sky coverage in 1/8th (e.g. 3 okta means that this cloud covers 3/8 of the sky).
+
+	**Validating**
+
+		.. cpp:function:: bool isValid() const
+
+			:returns: ``true`` if the octa value is in range 1 to 8, and ``false`` otherwise.
+
 
 Group
 -----
 
-.. cpp:type:: Group = std::variant<FixedGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, TemperatureForecastGroup, PressureGroup, RunwayVisualRangeGroup, RunwayStateGroup, SecondaryLocationGroup, RainfallGroup, SeaSurfaceGroup, ColourCodeGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, CloudLayersGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, LowMidHighCloudGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
 
 	Group is an ``std::variant`` which holds all group classes. It is used by :cpp:class:`metaf::Parser` to return the results of report parsing (see :cpp:class:`metaf::ParseResult`).
 
@@ -1186,26 +1366,18 @@ Group types
 This section contains the information on each group class which stores information on individual types of METAR/TAF groups.
 
 
-FixedGroup
-^^^^^^^^^^
+KeywordGroup
+^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
+.. cpp:class:: KeywordGroup
 
-.. image:: fixedgroup.svg
-
-The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
-
-.. image:: fixedgrouprmk.svg
-
-.. cpp:class:: FixedGroup
-
-	Fixed group represent a text which is never modified if it is included in the report.
+	KeywordGroup represents a group with a standardised keyword significant for report syntax.
 
 	For example, report types METAR, SPECI or TAF at the beginning of the report or CAVOK in the report body are always spelled exactly the same way and have no modifications.
 
 	.. cpp:enum-class:: Type
 
-		Designates the fixed text which is represented by this group.
+		Designates the keyword which is represented by this group.
 
 		.. cpp:enumerator:: METAR
 
@@ -1251,12 +1423,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			This group is only used in METAR reports.
 
-		.. cpp:enumerator:: R_SNOCLO
-
-			Aerodrome is closed due to snow accumulation.
-
-			This group may be used in form of ``SNOCLO`` or ``R/SNOCLO``.
-
 		.. cpp:enumerator:: CAVOK
 
 			Ceiling and visibility OK; all of the following conditions are met:
@@ -1268,16 +1434,6 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 				- No cumulonimbus or towering cumulus clouds.
 
 				- no significant weather phenomena.
-
-		.. cpp:enumerator:: NSW
-
-			Nil significant weather.
-
-			This group is only used in trends and indicates the end of a significant weather phenomena.
-
-		.. cpp:enumerator:: WSCONDS
-
-			This group indicates that potential wind shear conditions are present but there's not enough information to reliably forecast height, direction and speed of wind shear.
 
 		.. cpp:enumerator:: RMK
 
@@ -1309,102 +1465,21 @@ The following syntax corresponds to this group in METAR/TAF reports (in remarks 
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.
 
-		.. cpp:enumerator:: RVRNO
-
-			Runway visual range should be reported but is missing.
-
-		.. cpp:enumerator:: PWINO
-
-			Indicates that automated station is equipped with present weather identifier and this sensor is not operating.
-
-		.. cpp:enumerator:: PNO
-
-			Indicates that automated station is equipped with tipping bucket rain gauge and this sensor is not operating.
-
-		.. cpp:enumerator:: FZRANO
-
-			Indicates that automated station is equipped with freezing rain sensor and this sensor is not operating.
-
-		.. cpp:enumerator:: TSNO
-
-			Indicates that automated station is equipped with lightning detector and this sensor is not operating.
-
-		.. cpp:enumerator:: SLPNO
-
-			Mean sea-level pressure information is not available.
-
-		.. cpp:enumerator:: FROIN
-
-			Frost on the instrument (e.g. due to fog depositing rime).
-
-		.. cpp:enumerator:: CLD_MISG
-
-			Sky condition data (cloud data) is missing.
-
-		.. cpp:enumerator:: ICG_MISG
-
-			Icing data is missing.
-
-		.. cpp:enumerator:: PCPN_MISG
-
-			Precipitation data is missing.
-
-		.. cpp:enumerator:: PRES_MISG
-
-			Atmospheric pressure (altimeter) data is missing.
-
-		.. cpp:enumerator:: RVR_MISG
-
-			Runway visual range data is missing.
-
-		.. cpp:enumerator:: T_MISG
-
-			Temperature data is missing.
-
-		.. cpp:enumerator:: TD_MISG
-
-			Dew point data is missing.
-
-		.. cpp:enumerator:: VIS_MISG
-   
-   			.. deprecated:: 4.1.0
-
-   				Not used anymore since version 4.1.0 and exists for compatibility only. :cpp:enumerator:`metaf::VisibilityGroup::Type::DATA_MISSING` is used instead.
-
-		.. cpp:enumerator:: WND_MISG
-
-			Wind data is missing.
-
-		.. cpp:enumerator:: WX_MISG
-
-			Weather phenomena data is missing.
-
-		.. cpp:enumerator:: TS_LTNG_TEMPO_UNAVBL
-
-			Thunderstorm/lightning data is missing.
-
-
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of the fixed text group.
+			:returns: Type of the keyword group.
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: This method is for compatibility only and always returns ``true`` for this group.
+			:returns: Always returns ``true``.
 
 
 LocationGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: locationgroup.svg
-
-Examples of the raw report data are ``UKLL`` and ``K2J3``.
 
 .. cpp:class:: LocationGroup
 
@@ -1430,10 +1505,6 @@ Examples of the raw report data are ``UKLL`` and ``K2J3``.
 ReportTimeGroup
 ^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: reporttimegroup.svg
-
 Example of this group is ``302330Z``.
 
 .. cpp:class:: ReportTimeGroup
@@ -1458,17 +1529,7 @@ Example of this group is ``302330Z``.
 TrendGroup
 ^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: trendgroup.svg
-
-.. note:: Spaces between sequential groups in METAR/TAF report are not shown. 
-
-See :doc:`basics` for more information on weather trends and how they are reported.
-
-Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, ``3100/3124``, ``FM311000``, ``BECMG AT2000``, ``BECMG TL0040``, ``TEMPO FM2200 TL2215``, ``BECMG 3100/3107``, ``PROB30 3100/3104``, ``PROB30 TEMPO 3107/3109``, ``INTER 3100/3102``, etc.
-
-.. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends; the current version does not decode this old format.
+.. warning:: Old TAF format (before November 2008) uses different format (time without date) for time spans and trends and cannot be decoded.
 
 .. cpp:class:: TrendGroup
 
@@ -1477,10 +1538,6 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 	.. cpp:enum-class:: Type
 
 		Type of the stored trend group.
-
-		.. cpp:enumerator:: NONE
-
-			Indicates that this group stores a valid but incomplete trend group or combination of such groups.
 
 		.. cpp:enumerator:: NOSIG
 
@@ -1504,13 +1561,27 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 
 		.. cpp:enumerator:: FROM
 
-			All previous weather conditions are superseded by the other weather conditions since the specified time.
+			All previous weather conditions are superseded by the other weather conditions since the specified time. This type of trend is coded as ``FM``, e.g. group ``FM092000`` in TAF or group ``FM2200`` in METAR.
+
+		.. cpp:enumerator:: UNTIL
+
+			The following weather conditions are expected to prevail until the specified time. This type of trend occurs only in METAR and is coded as ``TL``, e.g. group ``TL2215``.
+
+		.. cpp:enumerator:: AT
+
+			The following weather conditions are expected to occur at the specified time. This type of trend occurs only in METAR and is coded as ``AT``, e.g. group ``AT2000``.
 
 		.. cpp:enumerator:: TIME_SPAN
 
 			The following weather conditions are expected to prevail during the specified time period.
 
-			This group is only used in TAF report and must be included before TAF report body to indicate the period when the entire forecast is applicable.
+			When this group is used in TAF report and must be included before TAF report body to indicate the period when the entire forecast is applicable.
+
+			Altrenatively, time span may be coded in METAR report as a pair of 'FM' and 'TL' groups, e.g. ``FM1300 TL1445``, or as HHMM/HHMM group (only used in Australia), e.g. ``1345/1440``.
+
+		.. cpp:enumerator:: PROB
+
+			Represents groups ``PROB30`` or ``PROB40`` without following time span or ``BECMG`` or ``TEMPO`` or ``INTER``.
 
 	.. cpp:enum-class:: Probability
 
@@ -1548,7 +1619,7 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 
 			:returns: Begin time of trend's time span or empty ``std::optional`` if no time span or no begin time were specified.
 
-		.. cpp:function:: std::optional<MetafTime> timeTill() const
+		.. cpp:function:: std::optional<MetafTime> timeUntil() const
 
 			:returns: End time of trend's time span or empty ``std::optional`` if no time span or no end time were specified.
 
@@ -1564,61 +1635,65 @@ Examples of the raw report data are ``NOSIG``, ``BECMG``, ``TEMPO``, ``INTER``, 
 
 			:returns: ``true`` if all of the reported times (begin time / end time / expected event time) are valid (see :cpp:func:`MetafTime::isValid()`).
 
-				Alternatively returns ``false`` if any of the time values above are not valid.
+				Alternatively returns ``false`` if any of the time values above are not valid or the group type is :cpp:enumerator:``Type::PROB``.
 
 
 WindGroup
 ^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports (in METAR or TAF report body).
-
-.. image:: windgroup.svg
-
-The following syntax corresponds to this group in METAR/TAF reports (in remarks section).
-
-.. image:: windgrouprmk.svg
-
-Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, ``00000KT``, ``/////KT``, ``29003KT 260V330``, ``WS020/05065KT``, ``WSHFT 1851``, ``WSHFT 30 FROPA``, and ``PK WND 29026/2204``.
-
 .. cpp:class:: WindGroup
 
-	Stores information about surface wind (including variable wind direction sector if reported), wind shear, wind shift, and peak wind.
+	Stores information about surface wind (including variable wind direction sector if reported), wind shear, wind shift, and peak wind, and missing wind data.
 
 	.. cpp:enum-class:: Type
 
-		Group type which specifies what kind of data stored within this group.
+		Specifies what kind of information is stored within this group.
 
 		.. cpp:enumerator:: SURFACE_WIND
 
-			Surface wind information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`gustSpeed()`.
+			Surface wind information. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, and :cpp:func:`gustSpeed()` for gust speed.
 
 		.. cpp:enumerator:: SURFACE_WIND_CALM
 
-			Surface wind calm (i.e. no wind) information is stored. :cpp:func:`windSpeed()` is always zero.
+			Indicates surface wind calm (i.e. no wind). :cpp:func:`windSpeed()` is always zero.
 
 		.. cpp:enumerator:: VARIABLE_WIND_SECTOR
 
-			Only variable wind sector information is stored. Use :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+			Only variable wind direction sector information. Use :cpp:func:`varSectorBegin()` for beginning direction of the sector, and :cpp:func:`varSectorEnd()` for ending direction.
+
+			.. note::Wind direction sector is defined from beginning direction clockwise to the ending direction.
 
 		.. cpp:enumerator:: SURFACE_WIND_WITH_VARIABLE_SECTOR
 
-			Surface wind information with variable wind sector information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, :cpp:func:`varSectorBegin()`, and :cpp:func:`varSectorEnd()`.
+			Surface wind with variable wind sector. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, :cpp:func:`varSectorBegin()` for beginning direction of the sector, and :cpp:func:`varSectorEnd()` for ending direction.
 
 		.. cpp:enumerator:: WIND_SHEAR
 
-			Wind shear information is stored. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, :cpp:func:`gustSpeed()`, and :cpp:func:`height()`.
+			Wind shear at certain height. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, and :cpp:func:`height()` for the height where wind shear occurs.
+
+		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
+
+			Indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways. Use :cpp:func:`runway()` for runway for which wind shear in the lower layers is indicated; :cpp:func:`runway()` may also return 'all runways'.
 
 		.. cpp:enumerator:: WIND_SHIFT
 
-			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Use :cpp:func:`eventTime()`.
+			Wind shift; wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Use :cpp:func:`eventTime()` for the time when wind shift began.
 
 		.. cpp:enumerator:: WIND_SHIFT_FROPA
 
-			Wind shift information is stored, which means that wind direction changed 45 degrees or more in less than 15 minutes with sustained wind speed of 10 knots. Wind shift is associated with frontal passage. Use :cpp:func:`eventTime()`.
+			Same as :cpp:enumerator:`metaf::WindGroup::Type::WIND_SHIFT` but indicates that wind shift is associated with frontal passage. Use :cpp:func:`eventTime()` for the time when wind shift began.
 
 		.. cpp:enumerator:: PEAK_WIND
 
-			Information on peak wind since last METAR is stored in this group. Use :cpp:func:`direction()`, :cpp:func:`windSpeed()`, and :cpp:func:`eventTime()`.
+			Peak wind information since last METAR. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for peak wind speed, and :cpp:func:`eventTime()` for the time when peak wind was observed.
+
+		.. cpp:enumerator:: WSCONDS
+
+			Indicates that potential wind shear conditions are present but there's not enough information to reliably forecast height, direction and speed of wind shear.
+
+		.. cpp:enumerator:: WND_MISG
+
+			Indicates that wind data is missing. No further details are provided.
 
 
 	**Acquiring group data**
@@ -1629,7 +1704,7 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 
 		.. cpp:function:: Direction direction() const
 
-			:returns: Wind direction; typicaly a direction value in degrees but also can be variable or non-reported.
+			:returns: Mean wind direction.
 
 		.. cpp:function:: Speed windSpeed() const
 		
@@ -1673,21 +1748,11 @@ Examples of the raw report data are ``11003KT``, ``23007G14KT``, ``VRB01MPS``, `
 VisibilityGroup
 ^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: visibilitygroup.svg
-
-.. image:: visibilitygroup_rmk.svg
-
-.. note:: Spaces between sequential groups in METAR/TAF report are not shown.
-
-Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, ``1100W``, ``3SM``, ``25SM``, ``1/4SM``, ``2 1/4SM``, ``M1/4SM``, ``P6SM``, ``////SM``, ``VIS 1V3``, ``VIS W 1/4``, ``SFC VIS 3``, ``TWR VIS 2 1/2``.
-
 .. cpp:class:: VisibilityGroup
 
-	Stores information about prevailing visibility or visibility towards cardinal direction.
+	Stores information about prevailing visibility, visibility towards cardinal direction, visibility for runway, visibility at surface level, visibility from air trafic control tower, runway visual range, etc.
 
-	See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
+	See also CAVOK (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) which may be used to specify visibility of 10 km or more in all directions.
 
 	.. cpp:enum-class:: Type
 
@@ -1695,35 +1760,72 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 		.. cpp:enumerator:: PREVAILING
 
-			Prevailing visibility information is stored. Use :cpp:func:`visibility()`.
+			Prevailing visibility. Use :cpp:func:`visibility()`.
 
 		.. cpp:enumerator:: PREVAILING_NDV
 
-			Prevailing visibility information is stored and this station cannot differentiate the directional variation of visibility. Use :cpp:func:`visibility()`.
+			Prevailing visibility; indicates that this station cannot differentiate the directional variation of visibility. Use :cpp:func:`visibility()`. :cpp:func:`direction()` will return direction of type :cpp:enumerator:`Direction::Type::NDV`.
 
 		.. cpp:enumerator:: DIRECTIONAL
 
-			Additional directional visibility information is stored. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
+			Additional visibility value for a single cardinal direction. Use :cpp:func:`visibility()` and :cpp:func:`direction()`.
 
-		.. cpp:enumerator:: PREVAILING_VARIABLE
+		.. cpp:enumerator:: RUNWAY
 
-			Variable prevailing visibility information is stored. Use :cpp:func:`minVisibility()` and :cpp:func:`maxVisibility()`. This information may be included in remarks in North America.
+			Additional visibility value for a runway. Use :cpp:func:`visibility()` and :cpp:func:`runway()`.
 
-		.. cpp:enumerator:: SURFACE_VISIBILITY
+		.. cpp:enumerator:: RVR
 
-			Visibility at surface level is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
+			Runway visual range. Use :cpp:func:`visibility()`, :cpp:func:`trend()` and :cpp:func:`runway()`.
 
-		.. cpp:enumerator:: TOWER_VISIBILITY
+		.. cpp:enumerator:: SURFACE
 
-			Visibility from aerodrome's air traffic control tower is stored. Use :cpp:func:`visibility()`. This information may be included in remarks in North America.
+			Visibility at surface level. Use :cpp:func:`visibility()`.
 
-		.. cpp:enumerator:: DIRECTIONAL_VARIABLE
+		.. cpp:enumerator:: TOWER
 
-			Variable directional visibility information is stored. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`. This information may be included in remarks in North America.
+			Visibility from aerodrome's air traffic control tower. Use :cpp:func:`visibility()`.
 
-		.. cpp:enumerator:: DATA_MISSING
+		.. cpp:enumerator:: SECTOR
 
-			Visibility data is missing (coded ``VIS MISG`` in the remarks), all data methods will return non-reported values.
+			Sector visibility for a range of cardinal directions. Use :cpp:func:`visibility()` and :cpp:func:`sectorDirections()`.
+
+		.. cpp:enumerator:: VARIABLE_PREVAILING
+
+			Variable prevailing visibility. Use :cpp:func:`minVisibility()` and :cpp:func:`maxVisibility()`.
+
+		.. cpp:enumerator:: VARIABLE_DIRECTIONAL
+
+			Variable directional visibility. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, and :cpp:func:`direction()`.
+
+		.. cpp:enumerator:: VARIABLE_RUNWAY
+
+			Variable visibility for a runway. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, :cpp:func:`trend()` and :cpp:func:`runway()`.
+
+		.. cpp:enumerator:: VARIABLE_RVR
+
+			Variable runway visual range. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()`, :cpp:func:`trend()`, and :cpp:func:`runway()`.
+
+		.. cpp:enumerator:: VARIABLE_SECTOR
+
+			Sector visibility for a range of cardinal directions. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()` and :cpp:func:`sectorDirections()`.
+
+		.. cpp:enumerator:: VIS_MISG
+
+			Indicates that visibility data is missing (coded ``VIS MISG`` in the remarks), no further details are specified.
+
+		.. cpp:enumerator:: RVR_MISG
+
+			Indicates that runway visual range data is missing (coded ``RVR MISG`` in the remarks), no further details are specified.
+
+		.. cpp:enumerator:: RVRNO
+
+			Indicates that runway visual range should be reported but is missing, no further details are specified.
+
+		.. cpp:enumerator:: VISNO
+
+			Indicates that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no further details were specified.
+
 
 	**Acquiring group data**
 
@@ -1743,28 +1845,13 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 
 			:returns: Maximum visibility value if variable visibility is reported.
 
-		.. cpp:function:: Direction direction() const
+		.. cpp:function:: std::optional<Direction> direction() const
 
-			:returns:  Cardinal direction if directional visibility is specified or omitted value if prevailing visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+			:returns:  Cardinal direction if directional visibility is specified or empty ``std::optional`` if no directional visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
 
-		.. cpp:function:: Direction sectorBegin() const
+		.. cpp:function:: std::vector<Direction> sectorDirections() const
 
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
-
-		.. cpp:function:: Direction sectorEnd() const
-
-			:returns: Cardinal direction if sector of directions is specified. Currently always returns an ommitted value.
-
-
-	**Miscellaneous**
-
-		.. cpp:function:: bool isPrevailing() const
-
-			:returns: ``true`` if the group contains prevailing visibility.
-
-		.. cpp:function:: bool isDirectional() const
-
-			:returns: ``true`` if the group contains directional visibility.
+			:returns: Cardinal direction vector if sector of directions is specified. Currently always returns an empty ``std::vector<Direction>``.
 
 	**Validating**
 
@@ -1780,25 +1867,61 @@ Examples of the raw report data are ``3600``, ``9999``, ``0050``, ``9999NDV``, `
 CloudGroup
 ^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudgroup.svg
-
-Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250``, ``FEW019TCU``, ``FEW013///``, ``//////CB``, ``//////``, ``CLR``, ``SKC``, ``NCD``, ``NSC``, ``VV002``, and ``VV///``.
-
 .. cpp:class:: CloudGroup
 
 	Stores information about a single cloud layer, cloud-like obscuration, lack of cloud cover or vertical visibility.
+
+	.. cpp:enum-class:: Type
+
+		Specifies what kind of information is stored within this group.
+
+		.. cpp:enumerator::	NO_CLOUDS
+
+			Clear sky condition, no clouds detected, or no significant clouds. Use :cpp:func:`amount()` for exact condition; the possible values are :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, or :cpp:enumerator:`Amount::NSC`.
+
+		.. cpp:enumerator:: CLOUD_LAYER
+
+			Cloud layer specified in METAR report, trend or remarks.
+
+			Use :cpp:func:`amount()` for cloud amount, :cpp:func:`height()` for base height, and :cpp:func:`convectiveType()` for significant convective type.
+
+		.. cpp:enumerator:: VERTICAL_VISIBILITY
+
+			Sky is obscured and vertical visibility is indicated instead of cloud data. Use :cpp:func:`verticalVisibility()` for vertical visibility value. :cpp:func:`amount()` will return  :cpp:enumerator:`Amount::OBSCURED`.
+
+		.. cpp:enumerator:: CEILING
+
+			Ceiling height. Use :cpp:func:`height()` for ceiling height value. Use :cpp:func:`runway()` and :cpp:func:`direction()` for the location where ceiling is reported.
+
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+
+		.. cpp:enumerator:: VARIABLE_CEILING
+
+			Ceiling height is variable. Use :cpp:func:`minHeight()` and :cpp:func:`maxHeight()` for ceiling height range. Use :cpp:func:`runway()` or :cpp:func:`direction()` for the location where ceiling is reported.
+
+		.. cpp:enumerator:: CHINO
+
+			Indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``.
+
+		.. cpp:enumerator:: CLD_MISG
+
+			Indicates the that cloud data are missing. No further details are provided.
+
+		.. cpp:enumerator:: OBSCURATION
+
+			Indicates the that instead of cloud data, a ground-based or aloft obscuration data is specified.
+
+			Use :cpp:func:`amount()` for obscuration amount, :cpp:func:`height()` for base height (or zero height for ground-based obscuration), and :cpp:func:`cloudType()` for type of obscuration.
 
 	.. cpp:enum-class:: Amount
 
 		Amount (cover) of the cloud layer.
 
-		See also CAVOK (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) which may be used to specify no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+		See also CAVOK (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) which may be used to specify no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator::	NOT_REPORTED
 
-			Cloud cover (amount of cloud) is not reported.
+			Amount of cloud (cloud cover) is not reported or not applicable for this type of group.
 
 		.. cpp:enumerator:: NCD
 
@@ -1808,7 +1931,7 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			Nil significant clouds: no cloud below 5000 feet (1500 meters), no cumulonimbus or towering cumulus, and no vertical visibility restriction.
 
-			.. note:: CAVOK group (:cpp:enumerator:`metaf::FixedGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
+			.. note:: CAVOK group (:cpp:enumerator:`metaf::KeywordGroup::Type::CAVOK`) is also used to indicate no cloud below 5000 feet (1500 meters) and no cumulonimbus or towering cumulus clouds.
 
 		.. cpp:enumerator:: NONE_CLR
 
@@ -1853,25 +1976,25 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 			Cloud cover is variable between :cpp:enumerator:`BROKEN` and  :cpp:enumerator:`OVERCAST`.
 
 
-	.. cpp:enum-class:: Type
+	.. cpp:enum-class:: ConvectiveType
 
-		Significant convective type of the cloud.
+		Significant convective type of the cloud in the layer.
+
+		.. cpp:enumerator::NONE
+
+			No cloud type specified or not applicable.
 
 		.. cpp:enumerator::NOT_REPORTED
 
 			Convective cloud type is not reported.
 
-		.. cpp:enumerator::NONE
-
-			No significant convective cloud type.
-
 		.. cpp:enumerator::TOWERING_CUMULUS
 
-			Towering cumulus clouds.
+			Convective cloud: towering cumulus.
 
 		.. cpp:enumerator::CUMULONIMBUS
 
-			Cumulonimbus clouds.
+			Convective cloud: cumulonimbus.
 
 	**Acquiring group data**
 
@@ -1879,39 +2002,39 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 			:returns: Amount (cover) of clouds in layer or clear sky conditions.
 
-		Type type() const
+		.. cpp:function:: ConvectiveType type() const
 
-			:returns: Significant convective type of cloud layer.
+			:returns: Convective type of the cloud in the layer.
 
 		.. cpp:function:: Distance height() const
 
-			:returns: Cloud base height in the cloud layer. For clear sky, no cloud detected, nil significant cloud conditions returns a non-reported value. When sky is obscured, returns a non-reported value (use :cpp:func:`verticalVisibility()` instead).
+			:returns: Cloud base or ceiling height or non-reported value if height is not applicable for this group.
+
+			.. note:: When the sky is obscured use :cpp:func:`verticalVisibility()`.
+
+			.. note:: When variable ceiling height is reported use :cpp:func:`minHeight()` or :cpp:func:`maxHeight()`.
 
 		.. cpp:function:: Distance verticalVisibility() const
 
-			:returns: When sky is obscured returns a vertical visibility value (if reported). For any other condition returns a non-reported value.
+			:returns: Vertical visibility or value if sky is obscured; non-reported value otherwise.
 
-		.. cpp::function:: WeatherPhenomena obscuration() const
+		.. cpp:function:: Distance minHeight() const
 
-			:returns: Currently always returns an empty value.
+			:returns: Minimum ceiling height if variable ceiling height is reported; non-reported value otherwise.
+
+		.. cpp:function:: Distance maxHeight() const
+
+			:returns: Maximum ceiling height if variable ceiling height is reported; non-reported value otherwise.
+
+		.. cpp::function:: std::optional<Runway> runway() const
+
+			:returns: For location-specific data such as ceiling, .
 
 	**Miscellaneous**
 
-		.. cpp:function:: bool isVerticalVisibility() const
+		.. cpp:function: std::optional<CloudType> cloudType() const
 
-			:returns: ``true`` if this group contains a vertical visibility information (including non-reported vertical visibility value) rather than cloud layer information or 'no clouds' condition, and ``false`` otherwise.
-
-		.. cpp:function:: bool isNoClouds() const
-
-			:returns: ``true`` if this group contains an information related to 'no clouds' conditions, i.e. amount value is :cpp:enumerator:`Amount::NONE_CLR`, :cpp:enumerator:`Amount::NONE_SKC`, :cpp:enumerator:`Amount::NCD`, :cpp:enumerator:`Amount::NSC`. For any other amount value returns ``false``.
-
-		.. cpp:function:: bool isCloudLayer() const
-
-			:returns: ``true`` if this group contains a cloud layer information (including non-reported amount, height or type) rather than vertical visibility information or 'no clouds' condition, and ``false`` otherwise.
-
-		.. cpp::function:: bool isObscuration() const
-
-			:returns: Currently always returns ``false``.
+			:returns: :cpp:class:`CloudType` corresponding to the information stored in the group (maximum okta value, convective type, and cloud base height or minimum height if variable), or empty std::optional if 'no clouds' conditions or vertical visibility or missing data groups.
 
 	**Validating**
 
@@ -1922,12 +2045,6 @@ Examples of the raw report data are ``FEW001``, ``SCT000``, ``BKN300``, ``OVC250
 
 WeatherGroup
 ^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: weathergroup.svg
-
-Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU``, ``VCTS``, ``RESHRA``, ``-FZDZ``, ``MIFG``, ``BLDU``, ``HZ``, ``-SHPL``, ``+TSRAGR``, ``SHRAGS``, ``//``, ``RE//``, ``RAB12``, ``RAB1153E1158DZB04``, ``RAE31SNB04PLB04E15`` etc.
 
 .. cpp:class:: WeatherGroup
 
@@ -1951,6 +2068,28 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 			Time of beginning or ending of weather phenomena is stored in this group.
 
+		.. cpp:enumerator:: NSW
+
+			Nil significant weather.
+
+			This group is only used in trends and indicates the end of a significant weather phenomena. No further information is provided.
+
+		.. cpp:enumerator:: PWINO
+
+			Indicates that automated station is equipped with present weather identifier and this sensor is not operating. No further information is provided.
+
+		.. cpp:enumerator:: TSNO
+
+			Indicates that automated station is equipped with lightning detector and this sensor is not operating. No further information is provided.
+
+		.. cpp:enumerator:: WX_MISG
+
+			Weather phenomena data is missing. No further information is provided.
+
+		.. cpp:enumerator:: TS_LTNG_TEMPO_UNAVBL
+
+			Thunderstorm/lightning data is missing. No further information is provided.
+
 
 	**Acquiring group data**
 
@@ -1967,23 +2106,41 @@ Examples of the raw report data are ``+RA``, ``IC``, ``-SHRASN``, ``VCSH``, ``FU
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: This method is for compatibility only and always returns ``true`` for this group. All groups that are not valid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) are not recognised as a WeatherGroup.
+			:returns: ``true`` if all weather phenomena included in this group are valid; ``false`` otherwise.
+
+				Invalid weather phenomena (or invalid combinations or descriptor / qualifier / phenomena) may be not recognised as a WeatherGroup.
+
+				For ``WX`` not followed by ``MISG`` and for ``TS/LTNG`` not followed by ``TEMPO`` and ``UNAVBL`` returns ``false``.
 
 
 TemperatureGroup
 ^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: temperaturegroup.svg
-
-Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02``, ``M00/M00``, ``00/M00``, ``/////``, ``T02330206``, ``T10171028``, and ``T0261``.
-
 .. cpp:class:: TemperatureGroup
 
 	Stores information about current ambient air temperature and dew point. Group which reports values rounded to integer of degrees Celsius (e.g. ``10/M00``) is included in METAR report body. Group which reports values in tength of degrees Celsius (e.g. ``T02330206``) is used in North America and is included in remarks.
 
+	.. cpp:enum-class:: Type
+
+		Group type which specifies what kind of data stored within this group.
+
+		.. cpp:enumerator:: TEMPERATURE_AND_DEW_POINT
+
+			Temperature and dew point. Use :cpp:func:`airTemperature()` and :cpp:func:`dewPoint()` for ambient air temperature and dew point.
+
+		.. cpp:enumerator:: T_MISG
+
+			Temperature data is missing. No further details provided.
+
+		.. cpp:enumerator:: TD_MISG
+
+			Dew point data is missing. No further details provided.
+
 	**Acquiring group data**
+
+		.. cpp:function:: Type type() const
+
+			:returns: Type of the group.
 
 		.. cpp:function:: Temperature airTemperature() const
 
@@ -1997,80 +2154,23 @@ Examples of the raw report data are ``12/10``, ``20/M07``, ``10/M00``, ``00/M02`
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: ``true`` if stored ambient air temperature and dew point information is valid, and ``false`` otherwise. The information is considered valid if the dew point is less or equal than ambient air temperature.
+			:returns: ``true`` if stored ambient air temperature and dew point information is valid and the group is complete; ``false`` otherwise. 
 
+				The information is considered valid if the dew point is less or equal than ambient air temperature.
 
-TemperatureForecastGroup
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: temperatureforecastgroup.svg
-
-Examples of the raw report data are ``TX15/3111Z``, ``TN00/3103Z``, and ``T30/1218Z``.
-
-.. cpp:class:: TemperatureForecastGroup
-
-	Stores information about forecast ambient air temperature along with the time when it is expected.
-
-		.. cpp:enum-class:: Point
-
-			Temperature point for which the forecast is reported.
-			
-			.. cpp:enumerator:: NOT_SPECIFIED
-
-				Forecast temperature point is not specified; temperature expected at certain time is reported.
-
-			.. cpp:enumerator:: MINIMUM
-
-				Forecast for minimum temperature is reported.
-
-			.. cpp:enumerator:: MAXIMUM
-
-				Forecast for maximum temperature is reported.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Point point() const
-
-			Temperature point for which the forecast is reported.
-
-		.. cpp:function:: Temperature airTemperature() const
-
-			Forecast ambient air temperature.
-
-		.. cpp:function:: MetafTime time() const
-
-			Time when the forecast temperature is expected.
-
-	**Additional data**
-
-		.. cpp:function:: std::optional<float> relativeHumidity()
-
-			:returns: Relative humidity value based on ambient air temperature and dew point stored in this group, or empty ``std::optional`` if ambient air temperature and/or dew point is not reported.
-
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``true`` if forecast ambient air temperature information is valid, and ``false`` otherwise. The information is considered valid if the time is a valid value.
+				Groups ``TD`` and ``T`` not followed by ``MISG`` are incomplete; ``false`` is returned for such groups.
 
 
 PressureGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: pressuregroup.svg
-
-Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, ``QNH2981INS``, ``SLP960``, ``QFE761/1015``, and ``QFE741``.
 
 .. cpp:class:: PressureGroup
 
 	Stores information about observed or forecast atmospheric pressure.
 
 	.. cpp:enum-class:: Type
+
+		Group type which specifies what kind of data stored within this group.
 
 		.. cpp:enumerator:: OBSERVED_QNH
 
@@ -2084,11 +2184,19 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, 
 
 			Indicates that group contains an observed actual atmospheric pressure (e.g. remark ``QFE761/1015`` or ``QFE741``). This group is used by some countries which were part of Soviet Union.
 
+		.. cpp:enumerator:: SLPNO
+
+			Mean sea-level pressure information is not available. No further details are provided.
+
+		.. cpp:enumerator:: PRES_MISG
+
+			Atmospheric pressure (altimeter) data is missing. No further details are provided.
+
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
 
-			:returns: Type of the pressure value (observed or forecast).
+			:returns: Type of the pressure value (observed, forecast, and data missing).
 
 		.. cpp:function:: Pressure atmosphericPressure() const
 
@@ -2098,115 +2206,44 @@ Examples of the raw report data are ``Q1020``, ``A2981``, ``Q////``, ``A////``, 
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: Always returns ``true``.
+			:returns: Always returns ``true`` for all groups except ``PRES`` not followed by ``MISG``.
 
-
-RunwayVisualRangeGroup
-^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: runwayvisualrangegroup.svg
-
-Examples of the raw report data are ``R24/P6000FT``, ``R31/0200N``, ``R26/0325N``, ``R23/3000V4500FT/D``, etc.
-
-.. cpp:class:: RunwayVisualRangeGroup
-
-	Stores information about visual range of a single runway.
-
-	.. cpp:enum-class:: Trend
-
-		Trend of runway visual range variation.
-
-		.. cpp:enumerator:: NONE
-
-			Trend is not specified in group.
-
-		.. cpp:enumerator:: NOT_REPORTED
-
-			Trend is specified as not reported.
-
-		.. cpp:enumerator:: UPWARD
-
-			Trend is upward (runway visual range increases / improves).
-
-		.. cpp:enumerator:: NEUTRAL
-
-			Trend is neutral (no significant changes to runway visual range).
-
-		.. cpp:enumerator:: DOWNWARD
-
-			Trend is downward (runway visual range decreases / deteriorates).
-
-	**Acquiring group data**
-
-		.. cpp:function:: Runway runway() const
-
-			:returns: Runway the visual range is provided for.
-
-		.. cpp:function:: Distance visualRange() const
-
-			:returns: Runway visual range value (if reported) or non-reported value if variable visual range is reported.
-
-		.. cpp:function:: Distance minVisualRange() const
-
-			:returns: Low limit of variable visual range or non-reported value if no variable visual range is reported.
-
-		.. cpp:function:: Distance maxVisualRange() const
-
-			:returns: High limit of variable visual range or non-reported value if no variable visual range is reported.
-
-		.. cpp:function:: Trend trend() const
-
-			:returns: Trend of runway visual range variation.
-
-		.. cpp:function:: bool isVariableVisualRange() const
-
-			:returns: ``true`` if variable visual range is reported and ``false`` otherwise.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``true`` if runway visual range information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid, and visual range / variable visual range are valid distance values (if reported).
 
 
 RunwayStateGroup
 ^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: runwaystategroup.svg
-
-Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60``, ``R21/SNOCLO``, ``R34L/CLRD70``, etc.
-
 .. cpp:class:: RunwayStateGroup
 
 	Stores information about the state of runway surface and/or accumulation of deposits for a single runway. Alternatively may store information that the deposits of runway ceased to exist or that runway is closed due to snow accumulation.
 
-	.. cpp:enum-class:: Status
+	.. cpp:enum-class:: Type
 
-		Option for the type of runway state reported: normal group with all values, CLRD group with surface friction value only, and SNOCLO group without any values.
+		Type of information about runway state.
 
-		.. cpp:enumerator:: NORMAL
+		.. cpp:enumerator:: RUNWAY_STATE
 
-			Normal type of runway state group. Runway deposits, runway contamination extent, deposit depth, and surface friction are specified in this group (any value or values may be non-reported).
+			Runway state group. Use :cpp:func:`deposits()` for type of deposits on runway (e.g. water patches, snow, slush, etc.),  :cpp:func:`contaminationExtent()` for the percentage of runway contamination by deposits, :cpp:func:`depositDepth()` for the depth of the deposits, and :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
 		.. cpp:enumerator:: RUNWAY_NOT_OPERATIONAL
 
-			Runway state group indicating that the runway is not operational. Runway deposits, runway contamination extent, and surface friction may be specified in this group (any value or values may be non-reported).
+			Runway state group indicating that the runway is not operational. Use :cpp:func:`deposits()` for type of deposits on runway (e.g. water patches, snow, slush, etc.),  :cpp:func:`contaminationExtent()` for the percentage of runway contamination by deposits, and :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
-		.. cpp:enumerator:: CLRD
+		.. cpp:enumerator:: RUNWAY_CLRD
 
-			Runway state group indicating that previously present deposits on runway were cleared or ceased to exist. Only surface friction is specified (as an actual value or non-reported value).
+			Runway state group indicating that previously present deposits on runway were cleared or ceased to exist. Use :cpp:func:`surfaceFriction()` for the surface friction or braking action.
 
-		.. cpp:enumerator:: SNOCLO
+		.. cpp:enumerator:: RUNWAY_SNOCLO
 
-			Runway state group indicating that the runway is closed due to snow accumulation. No further values are specified.
+			Runway state group indicating that the runway is closed due to snow accumulation (e.g. ``R27/SNOCLO``). No further details are specified. 
+
+		.. cpp:enumerator:: AERODROME_SNOCLO
+
+			Aerodrome is closed due to snow accumulation, coded as  ``SNOCLO`` or ``R/SNOCLO`` in the METAR report. No further details are specified. :cpp:func:`runway()` always returns 'all runways' value.
 
 	.. cpp:enum-class:: Deposits
 
-		Deposits on the runway.
+		Type of deposits on the runway.
 
 		.. cpp:enumerator:: CLEAR_AND_DRY
 
@@ -2306,33 +2343,25 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 
 			:returns: Runway for which the state is provided.
 
-		.. cpp:function:: Status status() const
+		.. cpp:function:: Type type() const
 
-			:returns: Status of runway state group. 
-
-			If the status is :cpp:enumerator:`Status::NORMAL` then group reports runway state and Deposits, Contamination Extent, Deposit Depth and Surface Friction may be reported or non-reported.
-
-			If the status is :cpp:enumerator:`Status::RUNWAY_NOT_OPERATIONAL` then group reports runway state and Deposits, Contamination Extent, and Surface Friction may be reported or non-reported; Deposit Depth is always not reported.
-
-			If the status is :cpp:enumerator:`Status::CLRD` then group indicates that deposits on the runway were cleared or ceased to exist; only Surface Friction may be reported; Deposits, Contamination Extent and Deposit Depth are never reported.
-
-			If the status is :cpp:enumerator:`Status::SNOCLO` then group indicates that runway is closed due to snow accumulation. All parameters (Deposits, Contamination Extent, Deposit Depth and Surface Friction) are never reported.
+			:returns: Type of runway state group. 
 
 		.. cpp:function:: Deposits deposits() const
 
-			:returns: Deposits on the runway. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Deposits on the runway.
 
 		.. cpp:function:: Extent contaminationExtent() const
 
-			:returns: Extent (percentage) of runway contamination with deposits. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Extent (percentage) of runway contamination with deposits.
 
 		.. cpp:function:: Precipitation depositDepth() const
 
-			:returns: Depth of the deposits on the runway or non-reported value. Not reported if the status is :cpp:enumerator:`Status::CLRD` or :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Depth of the deposits on the runway or non-reported value.
 
 		.. cpp:function:: SurfaceFriction surfaceFriction() const
 
-			:returns: Surface friction or braking action or not reported value. Not reported if the status is :cpp:enumerator:`Status::SNOCLO`.
+			:returns: Surface friction or braking action or not reported value.
 
 	**Validating**
 
@@ -2341,120 +2370,8 @@ Examples of the raw report data are ``R36/090060``, ``R01/810365``, ``R10/91//60
 		:returns: ``true`` if runway state information is valid, and ``false`` otherwise. The information is considered valid if the specified runway is valid and :cpp:enum:`Extent` returned by :cpp:func:`contaminationExtent()` is not a reserved value.
 
 
-
-SecondaryLocationGroup
-^^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR reports.
-
-.. image:: secondarylocationgroup.svg
-
-Examples of the raw report data are ``WS R32``, ``WS R27C``, ``WS ALL RWY``, ``CIG 025 RWY05``, ``CIG 006V012``, ``VISNO RWY05``, ``CHINO RWY05``, and ``CHINO E``.
-
-.. cpp:class:: SecondaryLocationGroup
-
-	Stores additional info details in the secondary locations (e.g. runway).
-
-	.. cpp:enum-class::  Type
-
-		Type of information actually stored. 
-
-		.. cpp:enumerator:: WIND_SHEAR_IN_LOWER_LAYERS
-
-			This group indicates existence of wind shear along the take-off path or approach path between runway level and 500 metres (1 600 ft) significant to aircraft operations, for the particlar runway or all runways.
-
-		.. cpp:enumerator:: CEILING
-
-			This group indicates the ceiling height. Use :cpp:func:``height()`` to get ceiling height and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
-
-		.. cpp:enumerator:: VARIABLE_CEILING
-
-			This group indicates the variable ceiling height. Use :cpp:func:``minHeight()`` and :cpp:func:``maxHeight()`` to get lowest and highest ceiling height observed, and :cpp:func:``runway()`` to get the location (may return non-reported value if no details were specified).
-
-		.. cpp:enumerator:: CHINO
-
-			This group indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
-
-		.. cpp:enumerator:: VISNO
-
-			This group indicates the that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no details were specified.
-
-
-	**Acquiring group data**
-
-	.. cpp:function:: Runway runway() const
-
-		:returns: Runway data if this secondary location is runway, and empty ``std::optional`` otherwise.
-
-	.. cpp:function:: Direction direction() const
-
-		:returns: Direction data if this secondary location is a cardinal direction, and empty ``std::optional`` otherwise.
-
-	.. cpp:function:: Distance height() const
-
-		:returns: Height (e.g. ceiling height for a runway or aerodrome). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance minHeight() const
-
-		:returns: Minimum height (e.g. minimum ceiling height for a variable ceiling). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance maxHeight() const
-
-		:returns: Maximum height (e.g. maximum ceiling height for a variable ceiling). Currently always returns a non-reported value.
-
-	.. cpp:function:: Distance visibility() const
-
-		:returns: Currently always return a non-reported Distance value.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: ``false`` for incomplete groups. For complete groups returns ``true`` if the specified runway or direction is valid, and ``false`` otherwise.
-
-
-RainfallGroup
-^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: rainfallgroup.svg
-
-Examples of the raw report data are ``RF00.0/000.0``, ``RF00.2/011.2``, ``RF00.0////./``, and ``RF21.5/112.4/031.8``.
-
-.. cpp:class:: RainfallGroup
-
-	Stores information about recent rainfall. This group is only used in Australia.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Precipitation rainfallLast10Minutes() const
-
-			:returns: Rainfall for the last 10 minutes (or non-reported value).
-
-		.. cpp:function:: Precipitation rainfallLast60Minutes() const
-
-			:returns: Rainfall for the last 60 minutes or non-reported value.
-
-		.. cpp:function:: Precipitation rainfallSince9AM() const
-
-			:returns: Rainfall since 9:00AM (09:00) or non-reported value.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: Always returns ``true``.
-
-
 SeaSurfaceGroup
 ^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: seasurfacegroup.svg
-
-Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6``, ``W///S/``, ``W04/H///``, and ``W///H///``.
 
 .. cpp:class:: SeaSurfaceGroup
 
@@ -2477,124 +2394,70 @@ Examples of the raw report data are ``W02/S6``, ``W08/H5``, ``W04/S/``, ``W///S6
 			:returns: Always returns ``true``.
 
 
-ColourCodeGroup
-^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: colourcodegroup.svg
-
-Examples of the raw report data are ``BLU``, ``WHT``, ``GRN``, ``YLO1``, ``YLO2``, ``AMB``, ``RED``, ``BLACKBLU``, ``BLACKWHT``, ``BLACKGRN``, ``BLACKYLO1``, ``BLACKYLO2``, ``BLACKAMB``, and ``BLACKRED``. 
-
-.. cpp:class:: ColourCodeGroup
-
-	Stores colour code information which allows quick assess of visibility and ceiling conditions. This group is used by military aerodromes of NATO countries.
-
-	.. cpp:enum-class:: Code
-
-		.. cpp:enumerator:: BLUE
-
-			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet.
-
-		.. cpp:enumerator:: WHITE
-
-			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
-
-		.. cpp:enumerator:: GREEN
-
-			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
-
-		.. cpp:enumerator:: YELLOW1
-
-			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
-
-		.. cpp:enumerator:: YELLOW2
-
-			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
-
-		.. cpp:enumerator:: AMBER
-
-			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
-
-		.. cpp:enumerator:: RED
-
-			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
-
-	**Acquiring group data**
-
-		.. cpp:function:: Code code() const
-
-			:returns: Colour code.
-
-		.. cpp:function:: bool isCodeBlack() const
-
-			:returns: ``true`` if code BLACK (which means that aerodrome is closed e.g. due to snow accumulation) was specified additionally to main colour code, ``false`` otherwise.
-
-	**Validating**
-
-		.. cpp:function:: bool isValid() const
-
-			:returns: Always returns ``true``.
-
-
 MinMaxTemperatureGroup
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: minmaxtemperaturegroup.svg
-
-Examples of the raw report data are ``401120084``, ``20012``, and ``11021``. 
-
 .. cpp:class:: MinMaxTemperatureGroup
 
-	Stores information about 24-hourly or 6-hourly minimum and/or maximum temperature. This group is only used in North America and included in remarks.
+	Stores information about observed or forecast minimum and/or maximum temperature.
 
-	.. cpp:enum-class:: ObservationPeriod
+	.. cpp:enum-class:: Type
 
-		Indicates the period of observation for which the minimum and/or maximum value is reported.
+		Group type which specifies what kind of data stored in this group.
 
-		.. cpp:enumerator:: HOURS6
+		.. cpp:enumerator:: OBSERVED_24_HOURLY
 
-			Indicates that group stores information about 6-hourly minimum/maximum temperatuer.
+			Observed 24-hourly minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values.
 
-		.. cpp:enumerator:: HOURS24
+		.. cpp:enumerator:: OBSERVED_6_HOURLY
 
-			Indicates that group stores information about 24-hourly minimum/maximum temperatuer.
+			Observed 6-hourly minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values; one or both of the values may be non-reported.
+
+		.. cpp:enumerator:: FORECAST
+
+			Forecast minimum and maximum temperature. Use :cpp:func:`minimum()` and :cpp:func:`maximum()` for observed minimum and maximum temperature values. Use :cpp:func:`minimumTime()` and :cpp:func:`maximumTime()` for the time when the specified temperature is forecast to occur.
+
+			.. note:: If only one temperature point was reported without further specifying whether it is a minimum or maximum value, then both :cpp:func:`minimum()` and :cpp:func:`maximum()` will return the same value; also :cpp:func:`minimumTime()` and :cpp:func:`maximumTime()` will return the same value.
+
 
 	**Acquiring group data**
 
-		.. cpp:function:: ObservationPeriod observationPeriod() const
+		.. cpp:function:: Type type() const
 
-			:returns: Period of observation for which the minimum and/or maximum value is reported.
+			:returns: Minimum/maximum temperature group type which specifies what kind of data is stored in this group.
 
 		.. cpp:function:: Temperature minimum() const
 
-			:returns: Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if minimum temperature was not specified in this group.
+			:returns: Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
 
 		.. cpp:function:: Temperature maximum() const
 
-			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value if maximum temperature was not specified in this group.
+			:returns: Maximum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
+
+		.. cpp:function:: std::optional<MetafTime> minimumTime() const
+
+			:returns: Time when the minimum temperature is forecast to occur, or empty ``std::optional`` if the group stores data other than forecast.
+
+			Minimum temperature for the specified period (with precision to tenth of degrees Celsius). May return non-reported value.
+
+		.. cpp:function:: std::optional<MetafTime> maximumTime() const
+
+			:returns: Time when the maximum temperature is forecast to occur, or empty ``std::optional`` if the group stores data other than forecast.
+
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: Always returns ``true``.
+			:returns: ``true`` if the minimum temperature is greater or equal to maximum temperature, and ``false`` otherwise.
 
 
 PrecipitationGroup
 ^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: precipitationgroup.svg
-
-Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, ``6////``, ``70021``, ``931011``, ``933021``, ``I1001``, ``I1////``, ``I3008``, ``I6012``, and ``SNINCR 2/12``.
-
 .. cpp:class:: PrecipitationGroup
 
-	Stores various information about precipitation, snowfall, snow depth, and icing (typically caused by freezing precipitation). This group is only used in North America and included in remarks.
+	Stores various information about precipitation, rainfall, snowfall, snow depth, and icing (typically caused by freezing precipitation). This group is used regionally and may be included in METAR report body or in remarks.
 
 	.. cpp:enum-class:: Type
 
@@ -2646,12 +2509,31 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 		.. cpp:enumerator:: SNOW_INCREASING_RAPIDLY
 
-			Indicates that snow is increasing rapidly; use :cpp:func:`amount()` for total snowfall, and :cpp:func:`tendency()` for snow increase during last hour.
+			Indicates that snow is increasing rapidly; use :cpp:func:`total()` for total snowfall, and :cpp:func:`recent()` for snow increase during last hour.
 
 		.. cpp:enumerator:: PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT
 
 			Accumulation of precipitation since previous released weather report.
 
+		.. cpp:enumerator:: RAINFALL_9AM_10MIN
+
+			Amount of rainfall; use :cpp:func:`total()` for rainfall since 9AM (9:00) local time, and :cpp:func:`recent()` for rainfall in the last 10 minutes.
+
+		.. cpp:enumerator:: PNO
+
+			Indicates that automated station is equipped with tipping bucket rain gauge and this sensor is not operating. No further details are provided.
+
+		.. cpp:enumerator:: FZRANO
+
+			Indicates that automated station is equipped with freezing rain sensor and this sensor is not operating. No further details are provided.
+
+		.. cpp:enumerator:: ICG_MISG
+
+			Icing data is missing.
+
+		.. cpp:enumerator:: PCPN_MISG
+
+			Precipitation data is missing.
 
 	**Acquiring group data**
 
@@ -2659,13 +2541,13 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 			:returns: Type of value reported in this group.
 
-		.. cpp:function:: Precipitation amount() const
+		.. cpp:function:: Precipitation total() const
 
-			:returns: Amount of precipitation of specified type. May be a non-reported value.
+			:returns: Total amount of precipitation of specified type. May be a non-reported value.
 
-		.. cpp:function:: Precipitation tendency() const
+		.. cpp:function:: Precipitation recent() const
 
-			:returns: Increase of decrease of precipitation during recent period.
+			:returns: Amount or increase of precipitation during recent period.
 
 	**Validating**
 
@@ -2676,12 +2558,6 @@ Examples of the raw report data are ``P0009``, ``P////``, ``4/010``, ``60217``, 
 
 LayerForecastGroup
 ^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: layerforecastgroup.svg
-
-Examples of the raw report data are ``520004``, and ``620304``. 
 
 .. cpp:class:: LayerForecastGroup
 
@@ -2739,7 +2615,7 @@ Examples of the raw report data are ``520004``, and ``620304``.
 
 			Light turbulence.
 
-		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL
 
 			Moderate turbulence in clear air, occasional.
 
@@ -2747,7 +2623,7 @@ Examples of the raw report data are ``520004``, and ``620304``.
 
 			Moderate turbulence in clear air, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL
 
 			Moderate turbulence in cloud, occasional.
 
@@ -2755,7 +2631,7 @@ Examples of the raw report data are ``520004``, and ``620304``.
 
 			Moderate turbulence in cloud, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL
 
 			Severe turbulence in clear air, occasional.
 
@@ -2763,7 +2639,7 @@ Examples of the raw report data are ``520004``, and ``620304``.
 
 			Severe turbulence in clear air, frequent.
 
-		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL
+		.. cpp:enumerator:: TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL
 
 			Severe turbulence in cloud, occasional.
 
@@ -2799,12 +2675,6 @@ Examples of the raw report data are ``520004``, and ``620304``.
 
 PressureTendencyGroup
 ^^^^^^^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: pressuretendencygroup.svg
-
-Example of the raw report data is ``52032``, ``5////``, ``PRESRR``, and ``PRESFR``. 
 
 .. cpp:class:: PressureTendencyGroup
 
@@ -2914,12 +2784,6 @@ Example of the raw report data is ``52032``, ``5////``, ``PRESRR``, and ``PRESFR
 
 CloudTypesGroup
 ^^^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudtypesgroup.svg
-
-Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3``, ``SC1SC1SC3AC2``, and ``3CU010``.
 
 .. cpp:class:: CloudTypesGroup
 
@@ -3054,16 +2918,10 @@ Example of the raw report data is ``AC1CI1``, ``BLSN2SC4SC3``, ``SC1SC1SC3AC2``,
 			:returns: Always returns ``true``.
 
 
-CloudLayersGroup
-^^^^^^^^^^^^^^^^
+LowMidHighCloudGroup
+^^^^^^^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: cloudlayersgroup.svg
-
-Example of the raw report data is ``8/578``, and ``8/903``.
-
-.. cpp:class:: CloudLayersGroup
+.. cpp:class:: LowMidHighCloudGroup
 
 	Stores information about predominant cloud types in low, mid, and high cloud layers. This group is included in the remarks and is used in North America.
 
@@ -3235,12 +3093,6 @@ Example of the raw report data is ``8/578``, and ``8/903``.
 LightningGroup
 ^^^^^^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: lightninggroup.svg
-
-Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, etc.
-
 .. cpp:class:: LightningGroup
 
 	Stores information about observed lightning flashes. This group is included in the remarks and is used in North America.
@@ -3312,12 +3164,6 @@ Example of the raw report data is ``LTG DSNT``, ``CONS LTGICCG OHD AND NE-SE``, 
 
 VicinityGroup
 ^^^^^^^^^^^^^
-
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: vicinitygroup.svg
-
-Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MOV NE``, ``TCU DSNT W-NW AND S MOV W``, ``ACC ALQDS``, ``CB OHD AND E MOV E`` etc.
 
 .. cpp:class:: VicinityGroup
 
@@ -3410,9 +3256,9 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 
 			:returns: Vector of directions where the phenomena was observed (may include Overhead direction).
 
-		.. cpp:function:: Direction::Cardinal movingDirection() const
+		.. cpp:function:: Direction movingDirection() const
 
-			:returns: Direction in which phenomena is moving or :cpp:enumerator:`Direction::Cardinal::NONE` if the phenomena is not moving or direction is not specified.
+			:returns: Direction in which phenomena is moving or non-reported direction if the phenomena is not moving or direction is not specified.
 
 	**Validating**
 
@@ -3424,19 +3270,13 @@ Example of the raw report data is ``VIRGA N``, ``SCSL ALQDS``, ``TCU 5KM S-SW MO
 MiscGroup
 ^^^^^^^^^
 
-The following syntax corresponds to this group in METAR/TAF reports.
-
-.. image:: miscgroup.svg
-
-Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``. 
-
 .. cpp:class:: MiscGroup
 
-	Stores various values provided in METAR or TAF report.
+	Stores various data provided in METAR or TAF report.
 
 	.. cpp:enum-class:: Type
 
-		Indicates the type of the value reported in this group.
+		Indicates the type of the data reported in this group.
 
 		.. cpp:enumerator:: SUNSHINE_DURATION_MINUTES
 
@@ -3448,12 +3288,71 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 
 		.. cpp:enumerator:: DENSITY_ALTITUDE
 
-			Density altitude (in feet) reported in remarks. Non-reported value indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
+			Density altitude (in feet) reported in remarks. An empty ``std::optional`` indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
 
 		.. cpp:enumerator:: HAILSTONE_SIZE
 
 			Largest hailstone size in inches with increments of 1/4 inch.
 
+		.. cpp:enumerator:: COLOUR_CODE_BLUE
+
+			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet. 
+
+		.. cpp:enumerator:: COLOUR_CODE_WHITE
+
+			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_GREEN
+
+			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_YELLOW1
+
+			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_YELLOW2
+
+			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_AMBER
+
+			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_RED
+
+			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE
+
+			Same as :cpp:enumerator:`COLOUR_CODE_BLUE` but also indicates that aerodrome is closed e.g. due to snow accumulation.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKWHITE
+
+			Same as :cpp:enumerator:`COLOUR_CODE_WHITE` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKGREEN
+
+			Same as :cpp:enumerator:`COLOUR_CODE_GREEN` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW1
+
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW1` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW2
+
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW2` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKAMBER
+
+			Same as :cpp:enumerator:`COLOUR_CODE_AMBER` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKRED
+
+			Same as :cpp:enumerator:`COLOUR_CODE_RED` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: FROIN
+
+			Indicates frost on the instrument (e.g. due to fog depositing rime). No data are provided.
 
 	**Acquiring group data**
 
@@ -3461,19 +3360,18 @@ Examples of the raw report data are ``98096``, ``CCA``, ``CCB``, and ``CCC``.
 
 			:returns: Type of value reported in this group.
 
-		.. cpp:function:: std::optional<float> value() const
+		.. cpp:function:: std::optional<float> data() const
 
 			:returns: The value reported in this group, or empty ``std::optional`` if the value is not reported.
+
+				.. note:: empty ``std::optional`` is always returned for colour codes (e.g. BLU or BLACKRED).
+
 
 	**Validating**
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: The following values are returned depending on type of the value:
-
-				* If sunshine duration value is reported, always returns ``true``.
-
-				* If number of corrected weather observation is reported, always returns ``true``.
+			:returns: Always returns ``true``.
 
 
 UnknownGroup
@@ -3541,11 +3439,9 @@ ReportError
 
 		.. note: This enumerator only means that the report overall syntax is correct and the report is not malformed. It does not guarantee that all groups were recognised by the parser. Unrecognised groups are treated as Plain Text Groups (see :cpp:class:`metaf::PlainTextGroup`).
 
-
 	.. cpp:enumerator:: EMPTY_REPORT
 
 		The report source string is empty or contains only report end designator ``=``.
-
 
 	.. cpp:enumerator:: EXPECTED_REPORT_TYPE_OR_LOCATION
 
@@ -3556,24 +3452,19 @@ ReportError
 			- METAR or SPECI: the report type is METAR.
 			- TAF: the report type is TAF.
 
-		However in practice report type in both METARs and TAFs may be omitted.
+		However in practice this report type in both METARs and TAFs may be missing.
 
 		If the report type is missing then the report must begin with the ICAO location group (see :cpp:class:`metaf::LocationGroup`).
 
 		AMD or COR groups are not allowed at the beginning of the report (i.e. if report type is missing).
 
-		See also :doc:`basics` for the complete METAR and TAF report format.
-
-
 	.. cpp:enumerator:: EXPECTED_LOCATION
 
 		The parser expects an ICAO location group (see :cpp:class:`metaf::LocationGroup`) in this position but encounters some other group.
 
-
 	.. cpp:enumerator:: EXPECTED_REPORT_TIME
 
 		The parser expects a report release time group (see :cpp:class:`metaf::ReportTimeGroup`) in this position but encounters some other group.
-
 
 	.. cpp:enumerator:: EXPECTED_TIME_SPAN
 
@@ -3581,48 +3472,41 @@ ReportError
 
 		This error occurs when the validity time is not specified for the TAF report.
 
-
 	.. cpp:enumerator:: UNEXPECTED_REPORT_END
 
-		The report should not end at this position, more groups are expected according to the report format (see :doc:`basics`) but actually are missing. This error occurs if either stray report end designator (``=``) is placed in the middle of the report or if only part of the report is included in the source string.
-
+		The report should not end at this position, more groups are expected according to the report format but actually are missing. This error occurs if either stray report end designator (``=``) is placed in the middle of the report or if only part of the report is included in the source string.
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_NIL
 
-		This error occurs if any group is encountered after NIL. (see :cpp:enumerator:`metaf::FixedGroup::NIL`).
+		This error occurs if any group is encountered after NIL. (see :cpp:enumerator:`metaf::KeywordGroup::NIL`).
 
-		.. note: NIL means missing report, thus including groups in report body are not allowed.
-
+		.. note: NIL means missing report and must not be included in non-empty report.
 
 	.. cpp:enumerator:: UNEXPECTED_GROUP_AFTER_CNL
 
-		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::FixedGroup::CNL`).
+		This error occurs if any group is encountered after CNL. (see :cpp:enumerator:`metaf::KeywordGroup::CNL`).
 
-		.. note: CNL means canceled report, thus including groups in report body are not allowed.
-
+		.. note: CNL means canceled report and must not be included in non-empty report.
 
 	.. cpp:enumerator:: UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY
 
-		This error occurs if NIL or CNL are found in the middle of non-empty reports (see :cpp:enumerator:`metaf::FixedGroup::NIL` and :cpp:enumerator:`metaf::FixedGroup::CNL`).
+		This error occurs if NIL or CNL are found in the middle of non-empty reports (see :cpp:enumerator:`metaf::KeywordGroup::NIL` and :cpp:enumerator:`metaf::KeywordGroup::CNL`).
 
 		.. note: NIL means missing report and CNL means canceled report; these groups must not be included is the report which contains any actual observation or forecast.
 
-
 	.. cpp:enumerator:: AMD_ALLOWED_IN_TAF_ONLY
 
-		Group AMD which designates amended report (see :cpp:enumerator:`metaf::FixedGroup::AMD`) is only used in TAF reports. This error occurs if AMD is encountered in a METAR report.
+		Group AMD which designates amended report (see :cpp:enumerator:`metaf::KeywordGroup::AMD`) is only used in TAF reports. This error occurs if AMD is encountered in a METAR report.
 
-		.. note: COR (see :cpp:enumerator:`metaf::FixedGroup::COR`) may be used in both METAR and TAF reports.
-
+		.. note: COR (see :cpp:enumerator:`metaf::KeywordGroup::COR`) may be used in both METAR and TAF reports.
 
 	.. cpp:enumerator:: CNL_ALLOWED_IN_TAF_ONLY
 
-		Group CNL which designates canceled report (see :cpp:enumerator:`metaf::FixedGroup::CNL`) is only used in TAF reports. 
+		Group CNL which designates canceled report (see :cpp:enumerator:`metaf::KeywordGroup::CNL`) is only used in TAF reports. 
 
 		Since METAR reports contain the actual weather observation, canceling a METAR report is a semantic error.
 
 		This error occurs if CNL is encountered in a METAR report in place of NIL.
-
 
 	.. cpp:enumerator:: MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY
 
@@ -3630,10 +3514,9 @@ ReportError
 
 		This error occurs if maintenance indicator ($) is encountered in a TAF report.
 
+	.. cpp:enumerator:: REPORT_TOO_LARGE
 
-	.. cpp:enumerator:: GROUP_LIMIT_EXCEEDED
-
-		Too many groups included in the report. Group number limit is specified in the parameter ``groupLimit`` of :cpp:func:`Parser::parse()`.
+		Too many groups included in the report. Group number limit is specified in the argument ``groupLimit`` of :cpp:func:`Parser::parse()`.
 
 
 ReportPart
@@ -3649,15 +3532,15 @@ ReportPart
 
 		.. cpp:enumerator:: HEADER
 
-			METAR or TAF report header (see :doc:`basics` for format).
+			METAR or TAF report header.
 
 		.. cpp:enumerator:: METAR
 
-			METAR report body (see :doc:`basics` for format).
+			METAR report body and trends.
 
 		.. cpp:enumerator:: TAF
 
-			TAF report body (see :doc:`basics` for format).
+			TAF report body and trends.
 
 		.. cpp:enumerator:: RMK
 
@@ -3769,7 +3652,7 @@ Since the METAR or TAF report is parsed into the vector of type :cpp:type:`metaf
 
 The Group Visitor checks the type of an alternative in :cpp:type:`metaf::Group` and calls a corresponding virtual method for the concrete group type. The virtual methods are pure to make sure there is no risk of accidentally missing the handling of a particular group type.
 
-See :doc:`getting_started` for the tutorial which uses a Visitor.
+See :doc:`tutorial` for the tutorial which uses a Visitor.
 
 .. cpp:class:: template <typename T> Visitor
 
@@ -3787,7 +3670,7 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 		:return: Value returned by corresponding virtual method or T() if the suitable method cannot be found for the Group variant alternative.
 
-	.. cpp:function:: protected virtual T visitFixedGroup(const FixedGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+	.. cpp:function:: protected virtual T visitKeywordGroup(const KeywordGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitLocationGroup(const LocationGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
@@ -3805,21 +3688,11 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitTemperatureGroup(const TemperatureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	.. cpp:function:: protected virtual T visitTemperatureForecastGroup(const TemperatureForecastGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
 	.. cpp:function:: protected virtual T visitPressureGroup(const PressureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitRunwayVisualRangeGroup(const RunwayVisualRangeGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitRunwayStateGroup(const RunwayStateGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	.. cpp:function:: protected virtual T visitSecondaryLocationGroup(const SecondaryLocationGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitRainfallGroup(const RainfallGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
 	.. cpp:function:: protected virtual T visitSeaSurfaceGroup(const SeaSurfaceGroup & group, ReportPart reportPart, const std::string & rawString) = 0
-
-	.. cpp:function:: protected virtual T visitColourCodeGroup(const ColourCodeGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitMinMaxTemperatureGroup(const MinMaxTemperatureGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
@@ -3831,7 +3704,7 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitCloudTypesGroup(const CloudTypesGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	.. cpp:function:: protected T visitCloudLayersGroup(const CloudLayersGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+	.. cpp:function:: protected T visitLowMidHighCloudGroup(const LowMidHighCloudGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected T visitLightningGroup(const LightningGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
@@ -3841,4 +3714,4 @@ See :doc:`getting_started` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected virtual T visitUnknownGroup(const UnknownGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
-	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`getting_started` for usage example.
+	These methods are called by :cpp:func:`visit()` for the concrete group types. See :doc:`tutorial` for minimalistic usage example.

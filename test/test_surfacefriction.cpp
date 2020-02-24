@@ -10,28 +10,35 @@
 
 static const auto margin = 0.01 / 2;
 
+///////////////////////////////////////////////////////////////////////////////
+// Parsing tests
+// Purpose: to confirm that surface friction and braking action strings are 
+// parsed correctly, the reserved values and 'unreliable or unmeasurable' value
+// are correctly identified, and that other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SurfaceFriction, fromStringFrictionCoefficient) {
 	const auto sf1 = metaf::SurfaceFriction::fromString("90");
 	ASSERT_TRUE(sf1.has_value());
-	EXPECT_EQ(sf1->status(), metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
+	EXPECT_EQ(sf1->type(), metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(sf1->coefficient().has_value());
 	EXPECT_NEAR(sf1->coefficient().value(), 0.9, margin);
 
 	const auto sf2 = metaf::SurfaceFriction::fromString("62");
 	ASSERT_TRUE(sf2.has_value());
-	EXPECT_EQ(sf2->status(), metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
+	EXPECT_EQ(sf2->type(), metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(sf2->coefficient().has_value());
 	EXPECT_NEAR(sf2->coefficient().value(), 0.62, margin);
 
 	const auto sf3 = metaf::SurfaceFriction::fromString("08");
 	ASSERT_TRUE(sf3.has_value());
-	EXPECT_EQ(sf3->status(), metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
+	EXPECT_EQ(sf3->type(), metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(sf3->coefficient().has_value());
 	EXPECT_NEAR(sf3->coefficient().value(), 0.08, margin);
 
 	const auto sf4 = metaf::SurfaceFriction::fromString("00");
 	ASSERT_TRUE(sf4.has_value());
-	EXPECT_EQ(sf4->status(), metaf::SurfaceFriction::Status::SURFACE_FRICTION_REPORTED);
+	EXPECT_EQ(sf4->type(), metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
 	ASSERT_TRUE(sf4->coefficient().has_value());
 	EXPECT_NEAR(sf4->coefficient().value(), 0.0, margin);
 }
@@ -39,7 +46,7 @@ TEST(SurfaceFriction, fromStringFrictionCoefficient) {
 TEST(SurfaceFriction, fromStringBrakingActionPoor) {
 	const auto sf = metaf::SurfaceFriction::fromString("91");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED);
 	ASSERT_TRUE(sf->coefficient().has_value());
 	EXPECT_NEAR(sf->coefficient().value(), 0.0, margin);
 }
@@ -47,7 +54,7 @@ TEST(SurfaceFriction, fromStringBrakingActionPoor) {
 TEST(SurfaceFriction, fromStringBrakingActionMediumPoor) {
 	const auto sf = metaf::SurfaceFriction::fromString("92");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED);
 	ASSERT_TRUE(sf->coefficient().has_value());
 	EXPECT_NEAR(sf->coefficient().value(), 0.26, margin);
 }
@@ -55,7 +62,7 @@ TEST(SurfaceFriction, fromStringBrakingActionMediumPoor) {
 TEST(SurfaceFriction, fromStringBrakingActionMedium) {
 	const auto sf = metaf::SurfaceFriction::fromString("93");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED);
 	ASSERT_TRUE(sf->coefficient().has_value());
 	EXPECT_NEAR(sf->coefficient().value(), 0.30, margin);
 }
@@ -63,7 +70,7 @@ TEST(SurfaceFriction, fromStringBrakingActionMedium) {
 TEST(SurfaceFriction, fromStringBrakingActionMediumGood) {
 	const auto sf = metaf::SurfaceFriction::fromString("94");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED);
 	ASSERT_TRUE(sf->coefficient().has_value());
 	EXPECT_NEAR(sf->coefficient().value(), 0.36, margin);
 }
@@ -71,7 +78,7 @@ TEST(SurfaceFriction, fromStringBrakingActionMediumGood) {
 TEST(SurfaceFriction, fromStringBrakingActionGood) {
 	const auto sf = metaf::SurfaceFriction::fromString("95");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::BRAKING_ACTION_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::BRAKING_ACTION_REPORTED);
 	ASSERT_TRUE(sf->coefficient().has_value());
 	EXPECT_NEAR(sf->coefficient().value(), 0.40, margin);
 }
@@ -85,14 +92,14 @@ TEST(SurfaceFriction, fromStringReservedValues) {
 TEST(SurfaceFriction, fromStringUnreliable) {
 	const auto sf = metaf::SurfaceFriction::fromString("99");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::UNRELIABLE);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::UNRELIABLE);
 	EXPECT_FALSE(sf->coefficient().has_value());
 }
 
 TEST(SurfaceFriction, fromStringNotReported) {
 	const auto sf = metaf::SurfaceFriction::fromString("//");
 	ASSERT_TRUE(sf.has_value());
-	EXPECT_EQ(sf->status(), metaf::SurfaceFriction::Status::NOT_REPORTED);
+	EXPECT_EQ(sf->type(), metaf::SurfaceFriction::Type::NOT_REPORTED);
 	EXPECT_FALSE(sf->coefficient().has_value());
 }
 
@@ -104,6 +111,12 @@ TEST(SurfaceFriction, fromStringWrongFormat) {
 	EXPECT_FALSE(metaf::SurfaceFriction::fromString("///").has_value());
 	EXPECT_FALSE(metaf::SurfaceFriction::fromString("/").has_value());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Braking action
+// Purpose: to confirm that correct braking action values are returned for 
+// specified surface friction values
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SurfaceFriction, brakingActionPoor) {
 	const auto sf1 = metaf::SurfaceFriction::fromString("00");
@@ -167,6 +180,12 @@ TEST(SurfaceFriction, brakingActionNotReported) {
 	EXPECT_EQ(sf->brakingAction(), metaf::SurfaceFriction::BrakingAction::NONE);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// isReported() test
+// Purpose: to confirm that isReported() method correctly distingishes between
+// reported and non-reported values.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(SurfaceFriction, isReported) {
 	const auto sf62 = metaf::SurfaceFriction::fromString("62");
 	ASSERT_TRUE(sf62.has_value());
@@ -176,6 +195,12 @@ TEST(SurfaceFriction, isReported) {
 	ASSERT_TRUE(sfNr.has_value());
 	EXPECT_FALSE(sfNr->isReported());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// isUnreliable() test
+// Purpose: to confirm that isUnreliable() method correctly identifies value of
+// 'unreliable or unmeasurable' kind.
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(SurfaceFriction, isUnreliable) {
 	const auto sf99 = metaf::SurfaceFriction::fromString("99");

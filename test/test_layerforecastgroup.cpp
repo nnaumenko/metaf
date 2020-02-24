@@ -8,29 +8,50 @@
 #include "gtest/gtest.h"
 #include "metaf.hpp"
 
+static const auto margin = 1.0 / 2;
+
+///////////////////////////////////////////////////////////////////////////////
+// Atmospheric layer range
+// Purpose: to confirm that base and top heights which define the atmospheric
+// layer range are parsed and identified correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LayerForecastGroup, baseTopHeights) {
 	const auto lfg1 = metaf::LayerForecastGroup::parse("620304", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg1.has_value());
 
-	ASSERT_TRUE(lfg1->baseHeight().isInteger());	
-	ASSERT_TRUE(lfg1->baseHeight().integer().has_value());
-	EXPECT_EQ(lfg1->baseHeight().integer().value(), 3000u);
+	EXPECT_TRUE(lfg1->baseHeight().isReported());	
+	EXPECT_EQ(lfg1->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg1->baseHeight().distance().has_value());
+	EXPECT_NEAR(lfg1->baseHeight().distance().value(), 3000, margin);
+	EXPECT_EQ(lfg1->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
-	ASSERT_TRUE(lfg1->topHeight().isInteger());	
-	ASSERT_TRUE(lfg1->topHeight().integer().has_value());
-	EXPECT_EQ(lfg1->topHeight().integer().value(), 7000u);
+	EXPECT_TRUE(lfg1->topHeight().isReported());	
+	EXPECT_EQ(lfg1->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg1->topHeight().distance().has_value());
+	EXPECT_NEAR(lfg1->topHeight().distance().value(), 7000, margin);
+	EXPECT_EQ(lfg1->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
 	const auto lfg2 = metaf::LayerForecastGroup::parse("520004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg2.has_value());
 
-	ASSERT_TRUE(lfg2->baseHeight().isInteger());	
-	ASSERT_TRUE(lfg2->baseHeight().integer().has_value());
-	EXPECT_EQ(lfg2->baseHeight().integer().value(), 0u);
+	EXPECT_TRUE(lfg2->baseHeight().isReported());	
+	EXPECT_EQ(lfg2->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg2->baseHeight().distance().has_value());
+	EXPECT_NEAR(lfg2->baseHeight().distance().value(), 0, margin);
+	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 
-	ASSERT_TRUE(lfg2->topHeight().isInteger());	
-	ASSERT_TRUE(lfg2->topHeight().integer().has_value());
-	EXPECT_EQ(lfg2->topHeight().integer().value(), 4000u);
+	EXPECT_TRUE(lfg2->topHeight().isReported());	
+	EXPECT_EQ(lfg2->baseHeight().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(lfg2->topHeight().distance().has_value());
+	EXPECT_NEAR(lfg2->topHeight().distance().value(), 4000, margin);
+	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Icing groups
+// Purpose: to confirm that each type if icing is identified correctly
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, icingTrace) {
 	const auto lfg = metaf::LayerForecastGroup::parse("600304", metaf::ReportPart::TAF);
@@ -92,6 +113,11 @@ TEST(LayerForecastGroup, icingSevereClearInPrecipitation) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::ICING_SEVERE_CLEAR_IN_PRECIPITATION);	
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Turbulence groups
+// Purpose: to confirm that each type if turbulence is identified correctly
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LayerForecastGroup, turbulenceNone) {
 	const auto lfg = metaf::LayerForecastGroup::parse("500004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
@@ -104,10 +130,10 @@ TEST(LayerForecastGroup, turbulenceLight) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_LIGHT);
 }
 
-TEST(LayerForecastGroup, turbulenceModerateInClearAirOccassional) {
+TEST(LayerForecastGroup, turbulenceModerateInClearAirOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("520004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceModerateInClearAirFrequent) {
@@ -116,10 +142,10 @@ TEST(LayerForecastGroup, turbulenceModerateInClearAirFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLEAR_AIR_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceModerateInCloudOccassional) {
+TEST(LayerForecastGroup, turbulenceModerateInCloudOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("540004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceModerateInCloudFrequent) {
@@ -128,10 +154,10 @@ TEST(LayerForecastGroup, turbulenceModerateInCloudFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_MODERATE_IN_CLOUD_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceSevereInClearAirOccassional) {
+TEST(LayerForecastGroup, turbulenceSevereInClearAirOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("560004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceSevereInClearAirFrequent) {
@@ -140,10 +166,10 @@ TEST(LayerForecastGroup, turbulenceSevereInClearAirFrequent) {
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLEAR_AIR_FREQUENT);
 }
 
-TEST(LayerForecastGroup, turbulenceSevereInCloudOccassional) {
+TEST(LayerForecastGroup, turbulenceSevereInCloudOccasional) {
 	const auto lfg = metaf::LayerForecastGroup::parse("580004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg.has_value());
-	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASSIONAL);
+	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_SEVERE_IN_CLOUD_OCCASIONAL);
 }
 
 TEST(LayerForecastGroup, turbulenceSevereInCloudFrequent) {
@@ -157,6 +183,11 @@ TEST(LayerForecastGroup, turbulenceExtreme) {
 	ASSERT_TRUE(lfg.has_value());
 	EXPECT_EQ(lfg->type(), metaf::LayerForecastGroup::Type::TURBULENCE_EXTREME);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Incorrect groups
+// Purpose: to confirm that incorrect groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, wrongReportPart) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("620324", metaf::ReportPart::UNKNOWN).has_value());
@@ -183,6 +214,12 @@ TEST(LayerForecastGroup, wrongFormat) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62A324", metaf::ReportPart::TAF).has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Appending tests
+// Purpose: to confirm that turbulence/icing forecast groups do not append to
+// each other and other groups cannot be appended.
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(LayerForecastGroup, append) {
 	auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);
 	ASSERT_TRUE(lfg1.has_value());
@@ -208,6 +245,11 @@ TEST(LayerForecastGroup, append) {
 	EXPECT_EQ(lfg2->append("TEST", metaf::ReportPart::TAF), 
 		metaf::AppendResult::NOT_APPENDED);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for isValid()
+// Purpose: to confirm that isValid() method returns true for all groups
+///////////////////////////////////////////////////////////////////////////////
 
 TEST(LayerForecastGroup, isValid) {
 	const auto lfg1 = metaf::LayerForecastGroup::parse("590004", metaf::ReportPart::TAF);
