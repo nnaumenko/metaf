@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="731.5" height="168" viewBox="0 0 731.5 168">
+<style>
+/* <![CDATA[ */
+svg.railroad-diagram { background-color: hsl(30,20%,95%); }
+svg.railroad-diagram path { stroke-width: 3; stroke: black; fill: rgba(0,0,0,0); }
+svg.railroad-diagram text { font: bold 14px monospace; text-anchor: middle; }
+svg.railroad-diagram text.diagram-text { font-size: 12px; }
+svg.railroad-diagram text.diagram-arrow { font-size: 16px; }
+svg.railroad-diagram text.label { text-anchor: start; }
+svg.railroad-diagram text.comment { font: italic 12px monospace; }
+svg.railroad-diagram g.non-terminal text { /*font-style: italic;*/ }
+svg.railroad-diagram rect { stroke-width: 3; stroke: black; fill: hsl(120,100%,90%); }
+svg.railroad-diagram path.diagram-text { stroke-width: 3; stroke: black; fill: white; cursor: help; }
+svg.railroad-diagram g.diagram-text:hover path.diagram-text { fill: #eee; }
+/* ]]> */
+</style>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20Stack(%0A%20%20Sequence(%0A%20%20%20Sequence(%0A%20%20%20%20Optional(Sequence('TAF'%2C%20Choice(1%2C%20'COR'%2C%20Skip()%2C%20'AMD')))%2C%0A%20%20%20%20NonTerminal('ICAO%20Location')%2C%0A%20%20%20)%2C%0A%20%20%20NonTerminal('Report%20Release%20Time')%2C%0A%20%20)%2C%0A%20%20Sequence(%0A%20%20%20NonTerminal('Time%20span%20xxxx%2Fxxxx')%2C%0A%20%20%20NonTerminal('Trend(s)')%2C%0A%20%20%20Choice(1%2C%20Sequence('RMK'%2C%20NonTerminal('Remarks'))%2C%20Skip())%2C%0A%20%20%20)%2C%0A%20%20)%2C%20%0A%20Optional('%3D')%0A)%0A
+-->
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 49v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 59h10"></path>
+<g>
+<path d="M50 59h0"></path>
+<path d="M50 59h10"></path>
+<g>
+<path d="M60 59h10"></path>
+<path d="M593 59h10"></path>
+<g>
+<path d="M70 59h0"></path>
+<path d="M391.5 59h0"></path>
+<g>
+<path d="M70 59h0"></path>
+<path d="M251 59h0"></path>
+<path d="M70 59a10 10 0 0 0 10 -10v-19a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M90 20h141"></path>
+</g>
+<path d="M231 20a10 10 0 0 1 10 10v19a10 10 0 0 0 10 10"></path>
+<path d="M70 59h20"></path>
+<g>
+<path d="M90 59h0"></path>
+<path d="M231 59h0"></path>
+<g class="terminal">
+<path d="M90 59h0"></path>
+<path d="M135.5 59h0"></path>
+<rect x="90" y="48" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="112.75" y="63">TAF</text>
+</g>
+<path d="M135.5 59h10"></path>
+<g>
+<path d="M145.5 59h0"></path>
+<path d="M231 59h0"></path>
+<path d="M145.5 59a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g class="terminal">
+<path d="M165.5 39h0"></path>
+<path d="M211 39h0"></path>
+<rect x="165.5" y="28" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="188.25" y="43">COR</text>
+</g>
+<path d="M211 39a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M145.5 59h20"></path>
+<g>
+<path d="M165.5 59h45.5"></path>
+</g>
+<path d="M211 59h20"></path>
+<path d="M145.5 59a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M165.5 79h0"></path>
+<path d="M211 79h0"></path>
+<rect x="165.5" y="68" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="188.25" y="83">AMD</text>
+</g>
+<path d="M211 79a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M231 59h20"></path>
+</g>
+<path d="M251 59h10"></path>
+<g class="non-terminal">
+<path d="M261 59h0"></path>
+<path d="M391.5 59h0"></path>
+<rect x="261" y="48" width="130.5" height="22"></rect>
+<text x="326.25" y="63">ICAO Location</text>
+</g>
+</g>
+<path d="M391.5 59h10"></path>
+<path d="M401.5 59h10"></path>
+<g class="non-terminal">
+<path d="M411.5 59h0"></path>
+<path d="M593 59h0"></path>
+<rect x="411.5" y="48" width="181.5" height="22"></rect>
+<text x="502.25" y="63">Report Release Time</text>
+</g>
+</g>
+<path d="M603 59a10 10 0 0 1 10 10v19a10 10 0 0 1 -10 10h-543a10 10 0 0 0 -10 10v19a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M60 137h29.25"></path>
+<path d="M573.75 137h29.25"></path>
+<g class="non-terminal">
+<path d="M89.25 137h0"></path>
+<path d="M270.75 137h0"></path>
+<rect x="89.25" y="126" width="181.5" height="22"></rect>
+<text x="180" y="141">Time span xxxx/xxxx</text>
+</g>
+<path d="M270.75 137h10"></path>
+<path d="M280.75 137h10"></path>
+<g class="non-terminal">
+<path d="M290.75 137h0"></path>
+<path d="M378.75 137h0"></path>
+<rect x="290.75" y="126" width="88" height="22"></rect>
+<text x="334.75" y="141">Trend(s)</text>
+</g>
+<path d="M378.75 137h10"></path>
+<g>
+<path d="M388.75 137h0"></path>
+<path d="M573.75 137h0"></path>
+<path d="M388.75 137a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M408.75 117h0"></path>
+<path d="M553.75 117h0"></path>
+<g class="terminal">
+<path d="M408.75 117h0"></path>
+<path d="M454.25 117h0"></path>
+<rect x="408.75" y="106" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="431.5" y="121">RMK</text>
+</g>
+<path d="M454.25 117h10"></path>
+<path d="M464.25 117h10"></path>
+<g class="non-terminal">
+<path d="M474.25 117h0"></path>
+<path d="M553.75 117h0"></path>
+<rect x="474.25" y="106" width="79.5" height="22"></rect>
+<text x="514" y="121">Remarks</text>
+</g>
+</g>
+<path d="M553.75 117a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M388.75 137h20"></path>
+<g>
+<path d="M408.75 137h145"></path>
+</g>
+<path d="M553.75 137h20"></path>
+</g>
+</g>
+<path d="M603 137h10"></path>
+<path d="M613 137h0"></path>
+</g>
+<path d="M613 137h10"></path>
+<g>
+<path d="M623 137h0"></path>
+<path d="M691.5 137h0"></path>
+<path d="M623 137a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M643 117h28.5"></path>
+</g>
+<path d="M671.5 117a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M623 137h20"></path>
+<g class="terminal">
+<path d="M643 137h0"></path>
+<path d="M671.5 137h0"></path>
+<rect x="643" y="126" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="657.25" y="141">=</text>
+</g>
+<path d="M671.5 137h20"></path>
+</g>
+<path d="M 691.5 137 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+</svg>

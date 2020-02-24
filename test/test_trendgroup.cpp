@@ -21,7 +21,7 @@ TEST(TrendGroup, parseProb30) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -31,7 +31,7 @@ TEST(TrendGroup, parseProb40) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_40);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -66,7 +66,7 @@ TEST(TrendGroup, parseNosig) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NOSIG);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -87,7 +87,7 @@ TEST(TrendGroup, parseBecmg) {
 	EXPECT_EQ(tg1->type(), metaf::TrendGroup::Type::BECMG);
 	EXPECT_EQ(tg1->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg1->timeFrom().has_value());
-	EXPECT_FALSE(tg1->timeTill().has_value());
+	EXPECT_FALSE(tg1->timeUntil().has_value());
 	EXPECT_FALSE(tg1->timeAt().has_value());
 
 	const auto tg2 = metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF);
@@ -95,7 +95,7 @@ TEST(TrendGroup, parseBecmg) {
 	EXPECT_EQ(tg2->type(), metaf::TrendGroup::Type::BECMG);
 	EXPECT_EQ(tg2->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg2->timeFrom().has_value());
-	EXPECT_FALSE(tg2->timeTill().has_value());
+	EXPECT_FALSE(tg2->timeUntil().has_value());
 	EXPECT_FALSE(tg2->timeAt().has_value());
 }
 
@@ -116,7 +116,7 @@ TEST(TrendGroup, parseTempo) {
 	EXPECT_EQ(tg1->type(), metaf::TrendGroup::Type::TEMPO);
 	EXPECT_EQ(tg1->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg1->timeFrom().has_value());
-	EXPECT_FALSE(tg1->timeTill().has_value());
+	EXPECT_FALSE(tg1->timeUntil().has_value());
 	EXPECT_FALSE(tg1->timeAt().has_value());
 
 	const auto tg2 = metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF);
@@ -124,7 +124,7 @@ TEST(TrendGroup, parseTempo) {
 	EXPECT_EQ(tg2->type(), metaf::TrendGroup::Type::TEMPO);
 	EXPECT_EQ(tg2->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg2->timeFrom().has_value());
-	EXPECT_FALSE(tg2->timeTill().has_value());
+	EXPECT_FALSE(tg2->timeUntil().has_value());
 	EXPECT_FALSE(tg2->timeAt().has_value());
 }
 
@@ -145,7 +145,7 @@ TEST(TrendGroup, parseInter) {
 	EXPECT_EQ(tg1->type(), metaf::TrendGroup::Type::INTER);
 	EXPECT_EQ(tg1->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg1->timeFrom().has_value());
-	EXPECT_FALSE(tg1->timeTill().has_value());
+	EXPECT_FALSE(tg1->timeUntil().has_value());
 	EXPECT_FALSE(tg1->timeAt().has_value());
 
 	const auto tg2 = metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF);
@@ -153,7 +153,7 @@ TEST(TrendGroup, parseInter) {
 	EXPECT_EQ(tg2->type(), metaf::TrendGroup::Type::INTER);
 	EXPECT_EQ(tg2->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg2->timeFrom().has_value());
-	EXPECT_FALSE(tg2->timeTill().has_value());
+	EXPECT_FALSE(tg2->timeUntil().has_value());
 	EXPECT_FALSE(tg2->timeAt().has_value());
 }
 
@@ -184,7 +184,7 @@ TEST(TrendGroup, parseFm) {
 	EXPECT_EQ(tg->timeFrom()->day().value(), 19u);
 	EXPECT_EQ(tg->timeFrom()->hour(), 14u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 45u);
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -223,11 +223,11 @@ TEST(TrendGroup, parseTafTimeSpan) {
 	EXPECT_EQ(tg1->timeFrom()->day(), 12u);
 	EXPECT_EQ(tg1->timeFrom()->hour(), 21u);
 	EXPECT_EQ(tg1->timeFrom()->minute(), 00u);
-	ASSERT_TRUE(tg1->timeTill().has_value());
-	ASSERT_TRUE(tg1->timeTill()->day().has_value());
-	EXPECT_EQ(tg1->timeTill()->day().value(), 13u);
-	EXPECT_EQ(tg1->timeTill()->hour(), 3u);
-	EXPECT_EQ(tg1->timeTill()->minute(), 00u);
+	ASSERT_TRUE(tg1->timeUntil().has_value());
+	ASSERT_TRUE(tg1->timeUntil()->day().has_value());
+	EXPECT_EQ(tg1->timeUntil()->day().value(), 13u);
+	EXPECT_EQ(tg1->timeUntil()->hour(), 3u);
+	EXPECT_EQ(tg1->timeUntil()->minute(), 00u);
 	EXPECT_FALSE(tg1->timeAt().has_value());
 
 	const auto tg2 = metaf::TrendGroup::parse(gs, metaf::ReportPart::TAF);
@@ -239,11 +239,11 @@ TEST(TrendGroup, parseTafTimeSpan) {
 	EXPECT_EQ(tg2->timeFrom()->day().value(), 12u);
 	EXPECT_EQ(tg2->timeFrom()->hour(), 21u);
 	EXPECT_EQ(tg2->timeFrom()->minute(), 00u);
-	ASSERT_TRUE(tg2->timeTill().has_value());
-	ASSERT_TRUE(tg2->timeTill()->day().has_value());
-	EXPECT_EQ(tg2->timeTill()->day().value(), 13u);
-	EXPECT_EQ(tg2->timeTill()->hour(), 3u);
-	EXPECT_EQ(tg2->timeTill()->minute(), 00u);
+	ASSERT_TRUE(tg2->timeUntil().has_value());
+	ASSERT_TRUE(tg2->timeUntil()->day().has_value());
+	EXPECT_EQ(tg2->timeUntil()->day().value(), 13u);
+	EXPECT_EQ(tg2->timeUntil()->hour(), 3u);
+	EXPECT_EQ(tg2->timeUntil()->minute(), 00u);
 	EXPECT_FALSE(tg2->timeAt().has_value());
 }
 
@@ -256,10 +256,10 @@ TEST(TrendGroup, parseMetarTimeSpan) {
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 21u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 13u);
-	EXPECT_EQ(tg->timeTill()->minute(), 03u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	EXPECT_FALSE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->hour(), 13u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 03u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -301,7 +301,7 @@ TEST(TrendGroup, parseTrendTimeFm) {
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 14u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 45u);
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -321,10 +321,10 @@ TEST(TrendGroup, parseTrendTimeTl) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::UNTIL);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 3u);
-	EXPECT_EQ(tg->timeTill()->minute(), 0u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	EXPECT_FALSE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->hour(), 3u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 0u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -344,7 +344,7 @@ TEST(TrendGroup, parseTrendTimeAt) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::AT);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	ASSERT_TRUE(tg->timeAt().has_value());
 	EXPECT_FALSE(tg->timeAt()->day().has_value());
 	EXPECT_EQ(tg->timeAt()->hour(), 15u);
@@ -396,7 +396,7 @@ TEST(TrendGroup, appendProbabilityFollowedByTempo) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::TEMPO);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -410,7 +410,7 @@ TEST(TrendGroup, appendProbabilityFollowedByInter) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::INTER);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -428,11 +428,11 @@ TEST(TrendGroup, appendProbabilityFollowedByTimeSpan) {
 	EXPECT_EQ(tg->timeFrom()->day().value(), 25u);
 	EXPECT_EQ(tg->timeFrom()->hour(), 23u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 00u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	ASSERT_TRUE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->day().value(), 26u);
-	EXPECT_EQ(tg->timeTill()->hour(), 01u);
-	EXPECT_EQ(tg->timeTill()->minute(), 00u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	ASSERT_TRUE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->day().value(), 26u);
+	EXPECT_EQ(tg->timeUntil()->hour(), 01u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 00u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -456,7 +456,7 @@ TEST(TrendGroup, appendProbabilityFollowedByOther) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -469,7 +469,7 @@ TEST(TrendGroup, appendProbabilityFollowedByKeywordGroup) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::PROB);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::PROB_30);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -492,11 +492,11 @@ TEST(TrendGroup, appendTrendFollowedByTimeSpan) {
 	EXPECT_EQ(tg->timeFrom()->day().value(), 12u);
 	EXPECT_EQ(tg->timeFrom()->hour(), 21u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 00u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	ASSERT_TRUE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->day().value(), 13u);
-	EXPECT_EQ(tg->timeTill()->hour(), 03u);
-	EXPECT_EQ(tg->timeTill()->minute(), 00u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	ASSERT_TRUE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->day().value(), 13u);
+	EXPECT_EQ(tg->timeUntil()->hour(), 03u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 00u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -509,10 +509,10 @@ TEST(TrendGroup, appendTrendFollowedByTrendTimeSingle) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::BECMG);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 13u);
-	EXPECT_EQ(tg->timeTill()->minute(), 03u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	EXPECT_FALSE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->hour(), 13u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 03u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -530,10 +530,10 @@ TEST(TrendGroup, appendTrendFollowedByTrendTimeCompound) {
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 21u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 13u);
-	EXPECT_EQ(tg->timeTill()->minute(), 03u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	EXPECT_FALSE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->hour(), 13u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 03u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -553,7 +553,7 @@ TEST(TrendGroup, appendTrendFollowedByOther) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::BECMG);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -572,11 +572,11 @@ TEST(TrendGroup, appendProbTrendFollowedByTimeSpan) {
 	EXPECT_EQ(tg->timeFrom()->day().value(), 12u);
 	EXPECT_EQ(tg->timeFrom()->hour(), 21u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 00u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	ASSERT_TRUE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->day().value(), 13u);
-	EXPECT_EQ(tg->timeTill()->hour(), 03u);
-	EXPECT_EQ(tg->timeTill()->minute(), 00u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	ASSERT_TRUE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->day().value(), 13u);
+	EXPECT_EQ(tg->timeUntil()->hour(), 03u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 00u);
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -610,7 +610,7 @@ TEST(TrendGroup, appendFrom) {
 	EXPECT_EQ(tg->timeFrom()->day().value(), 19u);
 	EXPECT_EQ(tg->timeFrom()->hour(), 14u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 45u);
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -634,7 +634,7 @@ TEST(TrendGroup, appendNosig) {
 	EXPECT_EQ(tg->type(), metaf::TrendGroup::Type::NOSIG);
 	EXPECT_EQ(tg->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tg->timeFrom().has_value());
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 }
 
@@ -645,7 +645,7 @@ TEST(TrendGroup, appendNosig) {
 // appended
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(TrendGroup, appendTrendTimeFromTill) {
+TEST(TrendGroup, appendTrendTimeFromUntil) {
 	auto tg = metaf::TrendGroup::parse("FM1230", metaf::ReportPart::METAR);
 	ASSERT_TRUE(tg.has_value());
 	EXPECT_EQ(tg->append("TL1445", metaf::ReportPart::METAR), 
@@ -656,15 +656,15 @@ TEST(TrendGroup, appendTrendTimeFromTill) {
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 30u);
-	ASSERT_TRUE(tg->timeTill().has_value());
-	EXPECT_FALSE(tg->timeTill()->day().has_value());
-	EXPECT_EQ(tg->timeTill()->hour(), 14u);
-	EXPECT_EQ(tg->timeTill()->minute(), 45u);
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	EXPECT_FALSE(tg->timeUntil()->day().has_value());
+	EXPECT_EQ(tg->timeUntil()->hour(), 14u);
+	EXPECT_EQ(tg->timeUntil()->minute(), 45u);
 }
 
 TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	const std::string fromStr ("FM1230");
-	const std::string tillStr ("TL1445");
+	const std::string untilStr ("TL1445");
 	const std::string atStr ("AT1315");
 
 	auto tg = metaf::TrendGroup::parse(fromStr, metaf::ReportPart::METAR);
@@ -681,32 +681,32 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	EXPECT_FALSE(tg->timeFrom()->day().has_value());
 	EXPECT_EQ(tg->timeFrom()->hour(), 12u);
 	EXPECT_EQ(tg->timeFrom()->minute(), 30u);
-	EXPECT_FALSE(tg->timeTill().has_value());
+	EXPECT_FALSE(tg->timeUntil().has_value());
 	EXPECT_FALSE(tg->timeAt().has_value());
 
-	auto tgTill = metaf::TrendGroup::parse(tillStr, metaf::ReportPart::METAR);
-	ASSERT_TRUE(tgTill.has_value());
+	auto tgUntil = metaf::TrendGroup::parse(untilStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(tgUntil.has_value());
 
-	EXPECT_EQ(tgTill->append(fromStr, metaf::ReportPart::METAR), 
+	EXPECT_EQ(tgUntil->append(fromStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(tgTill->append(atStr, metaf::ReportPart::METAR), 
+	EXPECT_EQ(tgUntil->append(atStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(tgTill->append(tillStr, metaf::ReportPart::METAR), 
+	EXPECT_EQ(tgUntil->append(untilStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	EXPECT_EQ(tgTill->type(), metaf::TrendGroup::Type::UNTIL);
-	EXPECT_EQ(tgTill->probability(), metaf::TrendGroup::Probability::NONE);
-	EXPECT_FALSE(tgTill->timeFrom().has_value());
-	ASSERT_TRUE(tgTill->timeTill().has_value());
-	EXPECT_FALSE(tgTill->timeTill()->day().has_value());
-	EXPECT_EQ(tgTill->timeTill()->hour(), 14u);
-	EXPECT_EQ(tgTill->timeTill()->minute(), 45u);
-	EXPECT_FALSE(tgTill->timeAt().has_value());
+	EXPECT_EQ(tgUntil->type(), metaf::TrendGroup::Type::UNTIL);
+	EXPECT_EQ(tgUntil->probability(), metaf::TrendGroup::Probability::NONE);
+	EXPECT_FALSE(tgUntil->timeFrom().has_value());
+	ASSERT_TRUE(tgUntil->timeUntil().has_value());
+	EXPECT_FALSE(tgUntil->timeUntil()->day().has_value());
+	EXPECT_EQ(tgUntil->timeUntil()->hour(), 14u);
+	EXPECT_EQ(tgUntil->timeUntil()->minute(), 45u);
+	EXPECT_FALSE(tgUntil->timeAt().has_value());
 
 	auto tgAt = metaf::TrendGroup::parse(atStr, metaf::ReportPart::METAR);
 	ASSERT_TRUE(tgAt.has_value());
 
-	EXPECT_EQ(tgAt->append(tillStr, metaf::ReportPart::METAR), 
+	EXPECT_EQ(tgAt->append(untilStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(tgAt->append(atStr, metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -716,7 +716,7 @@ TEST(TrendGroup, appendTrendTimeWrongCombinations) {
 	EXPECT_EQ(tgAt->type(), metaf::TrendGroup::Type::AT);
 	EXPECT_EQ(tgAt->probability(), metaf::TrendGroup::Probability::NONE);
 	EXPECT_FALSE(tgAt->timeFrom().has_value());
-	EXPECT_FALSE(tgAt->timeTill().has_value());
+	EXPECT_FALSE(tgAt->timeUntil().has_value());
 	ASSERT_TRUE(tgAt->timeAt().has_value());
 	EXPECT_FALSE(tgAt->timeAt()->day().has_value());
 	EXPECT_EQ(tgAt->timeAt()->hour(), 13u);
@@ -908,8 +908,8 @@ TEST(TrendGroup, isValidTrueTrendTypeAndAppendedTrendTime) {
 TEST(TrendGroup, isValidFalseInvalidTimeSpan) {
 	const auto tg = metaf::TrendGroup::parse("2520/2525", metaf::ReportPart::TAF);
 	ASSERT_TRUE(tg.has_value());
-	ASSERT_TRUE(tg->timeTill().has_value());
-	ASSERT_FALSE(tg->timeTill()->isValid());
+	ASSERT_TRUE(tg->timeUntil().has_value());
+	ASSERT_FALSE(tg->timeUntil()->isValid());
 	EXPECT_FALSE(tg->isValid());
 }
 

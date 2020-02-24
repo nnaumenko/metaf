@@ -839,7 +839,7 @@ public:
 		NOSPECI
 	};
 	Type type() const { return t; }
-	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
+	bool isValid() const { return (true); }
 
 	KeywordGroup() = default;
 	static inline std::optional<KeywordGroup> parse(const std::string & group,
@@ -851,24 +851,7 @@ public:
 
 private:
 	Type t;
-
-	enum class IncompleteText {
-		NONE,
-		CLD,
-		PRES,
-		T,
-		TD,
-		WND,
-		WX,
-		TS_LTNG,
-		TS_LTNG_TEMPO
-	};
-	IncompleteText incompleteText = IncompleteText::NONE;
-
 	KeywordGroup(Type type) :t (type) {}
-	KeywordGroup(IncompleteText it, Type t) :t (t), incompleteText(it) {}
-
-	static inline Type typeFromIncomplete(IncompleteText it);
 };
 
 class LocationGroup {
@@ -928,7 +911,7 @@ public:
 	Type type() const { return t; }
 	Probability probability() const { return prob; }
 	std::optional<MetafTime> timeFrom() const { return tFrom; }
-	std::optional<MetafTime> timeTill() const { return tTill; }
+	std::optional<MetafTime> timeUntil() const { return tTill; }
 	std::optional<MetafTime> timeAt() const { return tAt; }
 	bool isValid() const {
 		if (type() == Type::PROB) return false; //PROBxx without time span, BECMG, TEMPO, INTER
@@ -4154,7 +4137,7 @@ bool TrendGroup::isProbabilityGroup() const {
 	// Probability must be reported and no time allowed
 	if (type() != Type::PROB) return false;
 	if (probability() == Probability::NONE) return false;
-	if (timeFrom().has_value() || timeTill().has_value()) return false;
+	if (timeFrom().has_value() || timeUntil().has_value()) return false;
 	if (timeAt().has_value()) return false;
 	return true;
 }
@@ -4166,21 +4149,21 @@ bool TrendGroup::isTrendTypeGroup() const {
 		type() != Type::TEMPO &&
 		type() != Type::INTER) return false;
 	if (probability() != Probability::NONE) return false;
-	if (timeFrom().has_value() || timeTill().has_value()) return false;
+	if (timeFrom().has_value() || timeUntil().has_value()) return false;
 	if (timeAt().has_value()) return false;
 	return true;
 }
 
 bool TrendGroup::isTrendTimeGroup() const {
 	// Trend time group has format FMxxxx, TLxxxx, ATxxxx
-	// Only one time from timeFrom, timeTill or timeAt can be reported
+	// Only one time from timeFrom, timeUntil or timeAt can be reported
 	if (type() != Type::FROM && type() != Type::UNTIL && type() != Type::AT) 
 		return false;
 	if (probability() != Probability::NONE) return false;
-	if (!timeFrom() && !timeTill() && !timeAt()) return false;
-	if (timeFrom() && timeTill()) return false;
+	if (!timeFrom() && !timeUntil() && !timeAt()) return false;
+	if (timeFrom() && timeUntil()) return false;
 	if (timeFrom() && timeAt()) return false;
-	if (timeTill() && timeAt()) return false;
+	if (timeUntil() && timeAt()) return false;
 	return true;
 }
 
@@ -4193,7 +4176,7 @@ bool TrendGroup::isTimeSpanGroup() const {
 		!isTafTimeSpanGroup ||
 		probability() != Probability::NONE ||
 		!timeFrom().has_value() || 
-		!timeTill().has_value()) return false;
+		!timeUntil().has_value()) return false;
 	if (timeAt().has_value()) return false;
 	return true;
 }
@@ -4201,19 +4184,19 @@ bool TrendGroup::isTimeSpanGroup() const {
 bool TrendGroup::canCombineTime(const TrendGroup & g1, const TrendGroup & g2) {
 	// Cannot combine time 'from' with 'from', 'till' with 'till', 'at' with 'at'
 	if (g1.timeFrom().has_value() && g2.timeFrom().has_value()) return false;
-	if (g1.timeTill().has_value() && g2.timeTill().has_value()) return false;
+	if (g1.timeUntil().has_value() && g2.timeUntil().has_value()) return false;
 	if (g1.timeAt().has_value() && g2.timeAt().has_value()) return false;
 	// Cannot combine time 'from' or 'till' with 'at'
 	if (g1.timeAt().has_value() &&
-	       (g2.timeFrom().has_value() || g2.timeTill().has_value())) return false;
+	       (g2.timeFrom().has_value() || g2.timeUntil().has_value())) return false;
 	if (g2.timeAt().has_value() &&
-	       (g1.timeFrom().has_value() || g1.timeTill().has_value())) return false;
+	       (g1.timeFrom().has_value() || g1.timeUntil().has_value())) return false;
 	return true;	
 }
 
 void TrendGroup::combineTime(const TrendGroup & nextTrendGroup) {
 	if (!timeFrom().has_value()) tFrom = nextTrendGroup.timeFrom();
-	if (!timeTill().has_value()) tTill = nextTrendGroup.timeTill();
+	if (!timeUntil().has_value()) tTill = nextTrendGroup.timeUntil();
 	if (!timeAt().has_value()) tAt = nextTrendGroup.timeAt();
 }
 

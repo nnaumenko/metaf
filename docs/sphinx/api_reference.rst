@@ -1465,7 +1465,6 @@ KeywordGroup
 
 			Indicates a manual station where SPECI (unscheduled) reports are not issued.
 
-
 	**Acquiring group data**
 
 		.. cpp:function:: Type type() const
@@ -1476,7 +1475,7 @@ KeywordGroup
 
 		.. cpp:function:: bool isValid() const
 
-			:returns: This method is for compatibility only and always returns ``true`` for this group.
+			:returns: Always returns ``true``.
 
 
 LocationGroup
@@ -1620,7 +1619,7 @@ TrendGroup
 
 			:returns: Begin time of trend's time span or empty ``std::optional`` if no time span or no begin time were specified.
 
-		.. cpp:function:: std::optional<MetafTime> timeTill() const
+		.. cpp:function:: std::optional<MetafTime> timeUntil() const
 
 			:returns: End time of trend's time span or empty ``std::optional`` if no time span or no end time were specified.
 
