@@ -1728,9 +1728,9 @@ private:
 	MidLayer cloudMidLayer = MidLayer::NONE;
 	HighLayer cloudHighLayer = HighLayer::NONE;
 
-	static inline std::optional<LowLayer> lowLayerFromChar(char c);
-	static inline std::optional<MidLayer> midLayerFromChar(char c);
-	static inline std::optional<HighLayer> highLayerFromChar(char c);
+	static inline LowLayer lowLayerFromChar(char c);
+	static inline MidLayer midLayerFromChar(char c);
+	static inline HighLayer highLayerFromChar(char c);
 };
 
 class LightningGroup {
@@ -2615,10 +2615,11 @@ std::optional<Temperature> Temperature::fromRemarkString(const std::string & s) 
 std::optional<float> Temperature::toUnit(Unit unit) const {
 	std::optional<float> error;
 	auto v = temperature();
-	if (!v.has_value()) return error;
-	if (tempUnit == unit) return v;
-	if (tempUnit == Unit::C && unit == Unit::F) return (v.value() * 1.8 + 32);
-	return error;
+	if (!v.has_value() || tempUnit != Unit::C) return error;
+	switch (unit) {
+		case Unit::C: return v.value();
+		case Unit::F: return (v.value() * 1.8 + 32);
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3279,29 +3280,31 @@ std::optional<Pressure> Pressure::fromTendencyString(const std::string & s) {
 std::optional<float> Pressure::toUnit(Unit unit) const {
 	if (!pressureValue.has_value()) return std::optional<float>();
 	auto v = pressureValue.value();
-	if (pressureUnit == unit) return v;
 	static const auto hpaPerInHg = 33.8639;
 	static const auto hpaPerMmHg = 1.3332;
 	static const auto mmPerInch = 25.4;
-	if (pressureUnit == Unit::HECTOPASCAL && unit == Unit::INCHES_HG) {
-		return (v / hpaPerInHg);
+	switch (pressureUnit) {
+		case Unit::HECTOPASCAL:
+		switch (unit) {
+			case Unit::HECTOPASCAL: return v;
+			case Unit::INCHES_HG: return (v / hpaPerInHg);
+			case Unit::MM_HG: return (v / hpaPerMmHg);
+		}
+
+		case Unit::INCHES_HG:
+		switch (unit) {
+			case Unit::HECTOPASCAL: return (v * hpaPerInHg);
+			case Unit::INCHES_HG: return v;
+			case Unit::MM_HG: return (v * mmPerInch);
+		}
+
+		case Unit::MM_HG:
+		switch (unit) {
+			case Unit::HECTOPASCAL: return (v * hpaPerMmHg);
+			case Unit::INCHES_HG: return (v / mmPerInch);
+			case Unit::MM_HG: return v;
+		}
 	}
-	if (pressureUnit == Unit::HECTOPASCAL && unit == Unit::MM_HG) {
-		return (v / hpaPerMmHg);
-	}
-	if (pressureUnit == Unit::INCHES_HG && unit == Unit::HECTOPASCAL) {
-		return (v * hpaPerInHg);
-	}
-	if (pressureUnit == Unit::INCHES_HG && unit == Unit::MM_HG) {
-		return (v * mmPerInch);
-	}
-	if (pressureUnit == Unit::MM_HG && unit == Unit::HECTOPASCAL) {
-		return (v * hpaPerMmHg);
-	}
-	if (pressureUnit == Unit::MM_HG && unit == Unit::INCHES_HG) {
-		return (v / mmPerInch);
-	}
-	return std::optional<float>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3505,15 +3508,11 @@ std::optional<WaveHeight> WaveHeight::fromString(const std::string & s) {
 
 std::optional<float> WaveHeight::toUnit(Unit unit) const {
 	const auto wh = waveHeight();
-	if (!wh.has_value()) return std::optional<float>();
-	if (this->unit() == unit) return wh.value();
-	if (static const float metersPerFoot = 0.3048;
-		this->unit() == Unit::METERS && unit == Unit::FEET)
-	{
-		return (wh.value() / metersPerFoot);
+	if (!wh.has_value() || whUnit != Unit::METERS) return std::optional<float>();
+	switch (unit) {
+		case Unit::METERS: return wh.value();
+		case Unit::FEET:   return wh.value() / 0.3048;
 	}
-	return std::optional<float>();
-
 }
 
 WaveHeight::StateOfSurface WaveHeight::stateOfSurface() const {
@@ -5474,9 +5473,9 @@ std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::from6hourly(
 	const auto temp = Temperature::fromRemarkString(match.str(matchValue));
 	if (!temp.has_value()) return notRecognised;
 	const auto typeStr = match.str(matchType);
-	if (typeStr == "1") { result.maxTemp = temp.value(); return result; }
-	if (typeStr == "2") { result.minTemp = temp.value(); return result; }
-	return notRecognised;
+	if (typeStr == "1") { result.maxTemp = temp.value(); }
+	if (typeStr == "2") { result.minTemp = temp.value(); }
+	return result;
 }
 
 std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::from24hourly(
@@ -5515,12 +5514,10 @@ std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::fromForecast(
 	if (match.str(matchPoint) == "N") {
 		result.minTemp = temp.value();
 		result.minTime = time;
-		return result;
 	} 
 	if (match.str(matchPoint) == "X") {
 		result.maxTemp = temp.value();
 		result.maxTime = time;
-		return result;
 	}
 	if (!match.length(matchPoint)) {
 		result.minTemp = temp.value();
@@ -5528,9 +5525,8 @@ std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::fromForecast(
 		result.maxTemp = temp.value();
 		result.maxTime = time;
 		result.isIncomplete = true;
-		return result;		
 	}
-	return notRecognised;
+	return result;
 }
 
 AppendResult MinMaxTemperatureGroup::append6hourly(const std::string & group) {
@@ -5972,7 +5968,7 @@ std::optional<LowMidHighCloudGroup> LowMidHighCloudGroup::parse(const std::strin
 {
 	(void)reportMetadata;
 	std::optional<LowMidHighCloudGroup> notRecognised;
-	static const std::regex rgx("8/([\\d/])([\\d/])([\\d/])");
+	static const std::regex rgx("8/([0-9/])([0-9/])([0-9/])");
 	static const auto matchLowLayer = 1, matchMidLayer = 2, matchHighLayer = 3;
 
 	if (reportPart != ReportPart::RMK) return notRecognised;
@@ -5982,14 +5978,10 @@ std::optional<LowMidHighCloudGroup> LowMidHighCloudGroup::parse(const std::strin
 	const auto lowLayer = lowLayerFromChar(match.str(matchLowLayer)[0]);
 	const auto midLayer = midLayerFromChar(match.str(matchMidLayer)[0]);
 	const auto highLayer = highLayerFromChar(match.str(matchHighLayer)[0]);
-	if (!lowLayer.has_value() || !midLayer.has_value() || !highLayer.has_value()) {
-		return notRecognised;
-	}
-
 	LowMidHighCloudGroup result;
-	result.cloudLowLayer = lowLayer.value();
-	result.cloudMidLayer = midLayer.value();
-	result.cloudHighLayer = highLayer.value();
+	result.cloudLowLayer = lowLayer;
+	result.cloudMidLayer = midLayer;
+	result.cloudHighLayer = highLayer;
 	return result;
 }
 
@@ -6001,7 +5993,7 @@ AppendResult LowMidHighCloudGroup::append(const std::string & group,
 	return AppendResult::NOT_APPENDED;
 }
 
-std::optional<LowMidHighCloudGroup::LowLayer> LowMidHighCloudGroup::lowLayerFromChar(char c) {
+LowMidHighCloudGroup::LowLayer LowMidHighCloudGroup::lowLayerFromChar(char c) {
 	switch (c) {
 		case '0': return LowLayer::NONE;
 		case '1': return LowLayer::CU_HU_CU_FR;
@@ -6013,12 +6005,11 @@ std::optional<LowMidHighCloudGroup::LowLayer> LowMidHighCloudGroup::lowLayerFrom
 		case '7': return LowLayer::ST_FR_CU_FR_PANNUS;
 		case '8': return LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS;
 		case '9': return LowLayer::CB_CAP;
-		case '/': return LowLayer::NOT_OBSERVABLE;
-		default:  return std::optional<LowLayer>();
+		default: return LowLayer::NOT_OBSERVABLE;
 	}
 }
 
-std::optional<LowMidHighCloudGroup::MidLayer> LowMidHighCloudGroup::midLayerFromChar(char c) {
+LowMidHighCloudGroup::MidLayer LowMidHighCloudGroup::midLayerFromChar(char c) {
 	switch (c) {
 		case '0': return MidLayer::NONE;
 		case '1': return MidLayer::AS_TR;
@@ -6030,12 +6021,11 @@ std::optional<LowMidHighCloudGroup::MidLayer> LowMidHighCloudGroup::midLayerFrom
 		case '7': return MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS;
 		case '8': return MidLayer::AC_CAS_AC_FLO;
 		case '9': return MidLayer::AC_OF_CHAOTIC_SKY;
-		case '/': return MidLayer::NOT_OBSERVABLE;
-		default:  return std::optional<MidLayer>();
+		default: return MidLayer::NOT_OBSERVABLE;
 	}
 }
 
-std::optional<LowMidHighCloudGroup::HighLayer> LowMidHighCloudGroup::highLayerFromChar(char c) {
+LowMidHighCloudGroup::HighLayer LowMidHighCloudGroup::highLayerFromChar(char c) {
 	switch (c) {
 		case '0': return HighLayer::NONE;
 		case '1': return HighLayer::CI_FIB_CI_UNC;
@@ -6047,8 +6037,7 @@ std::optional<LowMidHighCloudGroup::HighLayer> LowMidHighCloudGroup::highLayerFr
 		case '7': return HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY;
 		case '8': return HighLayer::CS;
 		case '9': return HighLayer::CC;
-		case '/': return HighLayer::NOT_OBSERVABLE;
-		default:  return std::optional<HighLayer>();
+		default: return HighLayer::NOT_OBSERVABLE;
 	}
 }
 
@@ -6697,9 +6686,6 @@ void Parser::Status::transition(SyntaxGroup group) {
 		transitionFromReportBodyTaf(group);
 		break;
 
-		case State::REMARK_METAR:
-		break;
-
 		case State::REMARK_TAF:
 		if (group == SyntaxGroup::MAINTENANCE_INDICATOR) {
 			setError(ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY);
@@ -6714,6 +6700,7 @@ void Parser::Status::transition(SyntaxGroup group) {
 		setError(ReportError::UNEXPECTED_GROUP_AFTER_CNL);
 		break;
 
+		case State::REMARK_METAR:
 		case State::ERROR:
 		break;
 	}
