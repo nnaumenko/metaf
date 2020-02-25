@@ -18,7 +18,20 @@
 const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 
 	{
-		"OIII", "Tehran/Mehrabad Intl", {2014, 06, 02},
+		"KFFO", "Wright-Patterson AFB", {2014, 2, 5},
+		"METAR KFFO 051658Z 30008KT 4SM -SN FEW014 OVC019 M05/M07 A2996"
+		" RMK AO1A SLP159 P0000 T10471072"
+		"=",
+		"", 
+		{
+			MetarTafRealData::Attribute::AO1A
+		},
+		{},
+		0
+	},
+
+	{
+		"OIII", "Tehran/Mehrabad Intl", {2014, 6, 2},
 		"METAR OIII 021300Z 27048G60KT 4000 +TSRA +DSSS SCT025CB SCT030 BKN070 23/11 Q1014 A2995"
 		" TEMPO FM 1300 32030G40KT 1500 SA"
 		" TEMPO 1000 SA TSRA"

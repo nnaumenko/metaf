@@ -355,7 +355,25 @@ TEST(getSyntaxGroup, OTHER_MiscGroup) {
 	ASSERT_TRUE(g2.has_value());
 	EXPECT_EQ(metaf::getSyntaxGroup(g2.value()), metaf::SyntaxGroup::OTHER);
 
-	//TODO: add more types of MiscGroup
+	auto g3 = metaf::MiscGroup::parse("GR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g3.has_value());
+	EXPECT_EQ(g3->append("1", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(g3->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(g3.value()), metaf::SyntaxGroup::OTHER);
+
+	auto g4 = metaf::MiscGroup::parse("DENSITY", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g4.has_value());
+	EXPECT_EQ(g4->append("ALT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(g4->append("100FT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(g4.value()), metaf::SyntaxGroup::OTHER);
+
+	const auto g5 = metaf::MiscGroup::parse("BLU", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g5.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g5.value()), metaf::SyntaxGroup::OTHER);
+
+	const auto g6 = metaf::MiscGroup::parse("BLACKAMB", metaf::ReportPart::METAR);
+	ASSERT_TRUE(g6.has_value());
+	EXPECT_EQ(metaf::getSyntaxGroup(g6.value()), metaf::SyntaxGroup::OTHER);
 }
 
 TEST(getSyntaxGroup, OTHER_UnknownGroup) {

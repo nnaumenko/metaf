@@ -182,6 +182,51 @@ static bool isPressure(const metaf::Group & group) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Test attribute checker
+// Purpose: to confirm that checkAttributesVsMetadata() correctly identifies 
+// match or mismatch of reference attributes vs attributes of actually 
+// parsed report
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(Parser, checkAttributesVsMetadataMatch) {
+	static const std::string reportStr(
+		"METAR PABA 091952Z AUTO 28011KT 10SM BKN050 OVC060 06/03 A3003"
+		" RMK AO2 SLP156 T00560028 TSNO");
+	static const std::vector<testdata::MetarTafRealData::Attribute> attr {
+		testdata::MetarTafRealData::Attribute::AUTO, 
+		testdata::MetarTafRealData::Attribute::AO2
+	};
+	const auto parseResult = metaf::Parser::parse(reportStr);
+	const auto attrStr = checkAttributesVsMetadata(attr, parseResult.reportMetadata);
+	EXPECT_TRUE(attrStr.empty());
+}
+
+TEST(Parser, checkAttributesVsMetadataMismatch) {
+	static const std::string reportStr(
+		"METAR PABA 091952Z AUTO 28011KT 10SM BKN050 OVC060 06/03 A3003"
+		" RMK AO2 SLP156 T00560028 TSNO");
+	static const std::vector<testdata::MetarTafRealData::Attribute> attrMissing {
+		testdata::MetarTafRealData::Attribute::AUTO
+	};
+	static const std::vector<testdata::MetarTafRealData::Attribute> attrExtra {
+		testdata::MetarTafRealData::Attribute::AUTO, 
+		testdata::MetarTafRealData::Attribute::AO2,
+		testdata::MetarTafRealData::Attribute::COR,
+		testdata::MetarTafRealData::Attribute::SPECI
+	};
+
+	const auto parseResult = metaf::Parser::parse(reportStr);
+
+	const auto attrStrAttrMissing = 
+		checkAttributesVsMetadata(attrMissing, parseResult.reportMetadata);
+	EXPECT_EQ(attrStrAttrMissing, "AO2");
+
+	const auto attrStrAttrExtra = 
+		checkAttributesVsMetadata(attrExtra, parseResult.reportMetadata);
+	EXPECT_EQ(attrStrAttrExtra, "SPECI, COR");
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Real-life METAR and TAF data testing
 // Purpose: to confirm that test set of METAR and TAF reports produced by 
 // actual weather stations around the world can be parsed without errors, 
