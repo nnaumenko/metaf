@@ -70,10 +70,9 @@ constexpr size_t variant_index() {
 // groups correctly.
 ///////////////////////////////////////////////////////////////////////////////
 
-class visitorCounter : public metaf::Visitor<void> {
+class VisitorCounter : public metaf::Visitor<void> {
 public:
 	std::array<int, std::variant_size_v<metaf::Group>> count = {0};
-	int otherGroups = 0; 
 protected:
 	virtual void visitKeywordGroup(const metaf::KeywordGroup & group, 
 		metaf::ReportPart reportPart,
@@ -236,13 +235,11 @@ protected:
 };
 
 TEST(Visitor, visitorVoid) {
-
-	visitorCounter v;
-
+	VisitorCounter v;
 	for (const auto & report : testReports) {
 		const auto result = metaf::Parser::parse(report);
 			for (const auto & groupInfo : result.groups) {
-				v.visit(groupInfo.group);
+				v.visit(groupInfo);
 			}
 	}
 
@@ -270,4 +267,381 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 3);
 }
 
-// TODO: visitor which returns a value
+///////////////////////////////////////////////////////////////////////////////
+// Visitor which returns a value
+// Purpose: to confirm that Visitor which returns a value handles all groups 
+// correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+class VisitorIndex : public metaf::Visitor<std::string> {
+protected:
+	virtual std::string visitKeywordGroup(const metaf::KeywordGroup & group, 
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("keyword:"s + rawString);
+	}
+	virtual std::string visitLocationGroup(const metaf::LocationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("location:"s + rawString);
+	}
+	virtual std::string visitReportTimeGroup(const metaf::ReportTimeGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("reporttime:"s + rawString);
+	}
+	virtual std::string visitTrendGroup(const metaf::TrendGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("trend:"s + rawString);
+	}
+	virtual std::string visitWindGroup(const metaf::WindGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("wind:"s + rawString);
+	}
+	virtual std::string visitVisibilityGroup(const metaf::VisibilityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("visibility:"s + rawString);
+	}
+	virtual std::string visitCloudGroup(const metaf::CloudGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("cloud:"s + rawString);
+	}
+	virtual std::string visitWeatherGroup(const metaf::WeatherGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("weather:"s + rawString);
+	}
+	virtual std::string visitTemperatureGroup(const metaf::TemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("temperature:"s + rawString);
+	}
+	virtual std::string visitPressureGroup(const metaf::PressureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("pressure:"s + rawString);
+	}
+	virtual std::string visitRunwayStateGroup(const metaf::RunwayStateGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("runwaystate:"s + rawString);
+	}
+	virtual std::string visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("seasurface:"s + rawString);
+	}
+	virtual std::string visitMinMaxTemperatureGroup(const metaf::MinMaxTemperatureGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("minmaxtemperature:"s + rawString);
+	}
+	virtual std::string visitPrecipitationGroup(const metaf::PrecipitationGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("precipitation:"s + rawString);
+	}
+	virtual std::string visitLayerForecastGroup(const metaf::LayerForecastGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("layerforecast:"s + rawString);
+	}
+	virtual std::string visitPressureTendencyGroup(const metaf::PressureTendencyGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("pressuretendency:"s + rawString);
+	}
+	virtual std::string visitCloudTypesGroup(const metaf::CloudTypesGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("cloudtypes:"s + rawString);
+	}
+	virtual std::string visitLowMidHighCloudGroup(const metaf::LowMidHighCloudGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("lowmidhighcloud:"s + rawString);
+	}
+
+	virtual std::string visitLightningGroup(const metaf::LightningGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("lightning:"s + rawString);
+	}
+
+	virtual std::string visitVicinityGroup(const metaf::VicinityGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("vicinity:"s + rawString);
+	}
+
+	virtual std::string visitMiscGroup(const metaf::MiscGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("misc:"s + rawString);
+	}
+
+	virtual std::string visitUnknownGroup(const metaf::UnknownGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("unknown:"s + rawString);
+	}
+};
+
+TEST(Visitor, visitorNonVoid) {
+	VisitorIndex v;
+
+	std::vector<std::string> result;
+
+	for (const auto & report : testReports) {
+		std::string r;
+		const auto parseResult = metaf::Parser::parse(report);
+			for (const auto & groupInfo : parseResult.groups) {
+				r += v.visit(groupInfo);
+				r += " ";
+			}
+		result.push_back(std::move(r));
+	}
+
+	ASSERT_EQ(result.size(), 11u);
+	EXPECT_EQ(result.at(0),
+		"keyword:TAF "
+		"location:BGTL "
+		"reporttime:060900Z "
+		"trend:0609/0715 "
+		"wind:VRB06KT "
+		"visibility:8000 "
+		"weather:-SHRASN "
+		"cloud:OVC003 "
+		"layerforecast:610105 "
+		"pressure:QNH2980INS "
+		"trend:BECMG 0614/0615 "
+		"wind:VRB06KT "
+		"visibility:9999 "
+		"weather:NSW "
+		"cloud:BKN005 "
+		"cloud:OVC015 "
+		"layerforecast:620105 "
+		"pressure:QNH2983INS "
+		"minmaxtemperature:TX03/0620Z TNM02/0709Z "s
+	);
+	EXPECT_EQ(result.at(1),
+		"keyword:METAR "
+		"location:EGYD "
+		"reporttime:281050Z "
+		"wind:11015KT "
+		"visibility:5000 "
+		"weather:-SHSN "
+		"cloud:FEW004 "
+		"cloud:BKN012CB "
+		"cloud:BKN025 "
+		"temperature:M04/M05 "
+		"pressure:Q1020 "
+		"misc:BLACKGRN "s
+	);
+	EXPECT_EQ(result.at(2),
+		"keyword:METAR "
+		"location:PABR "
+		"reporttime:091953Z "
+		"wind:28006KT "
+		"visibility:3/4SM "
+		"visibility:R07/2000V4500FT "
+		"weather:BR "
+		"cloud:OVC003 "
+		"temperature:06/06 "
+		"pressure:A3006 "
+		"keyword:RMK "
+		"pressure:SLP179 "
+		"visibility:VIS 1/2V1 "
+		"temperature:T00560056 "
+		"unknown:VIA AUTODIAL "s
+	);
+	EXPECT_EQ(result.at(3),
+		"keyword:METAR "
+		"location:CYHI "
+		"reporttime:171900Z "
+		"misc:CCA "
+		"wind:34019KT "
+		"visibility:10SM "
+		"weather:-SN DRSN VCSH VCFG "
+		"cloud:FEW011 "
+		"cloud:BKN030 "
+		"cloud:BKN040 "
+		"cloud:BKN060 "
+		"cloud:BKN150 "
+		"temperature:M05/M09 "
+		"pressure:A2994 "
+		"keyword:RMK "
+		"cloudtypes:SC1ST4SC1SC1AC1 "
+		"unknown:SC TR AC TR CIG RAG "
+		"visibility:VIS SW 15 "
+		"pressure:SLP144 "s
+	);
+	EXPECT_EQ(result.at(4),
+		"keyword:SPECI "
+		"location:UKLL "
+		"reporttime:202304Z "
+		"wind:00000MPS "
+		"visibility:4800 "
+		"visibility:1100SE "
+		"visibility:R31/1900 "
+		"weather:BR "
+		"cloud:NSC "
+		"temperature:11/10 "
+		"pressure:Q1020 "
+		"runwaystate:R31/CLRD// "
+		"trend:TEMPO "
+		"visibility:0400 "
+		"weather:FG "
+		"cloud:VV002 "s
+	);
+	EXPECT_EQ(result.at(5),
+		"keyword:METAR "
+		"location:SKBG "
+		"reporttime:232200Z "
+		"wind:31006KT "
+		"visibility:9999 "
+		"cloud:FEW015 "
+		"temperature:26/19 "
+		"pressure:A2989 "
+		"wind:WS R35 "s
+	);
+	EXPECT_EQ(result.at(6),
+		"keyword:METAR "
+		"location:YPKG "
+		"reporttime:232300Z "
+		"keyword:AUTO "
+		"wind:26013KT "
+		"visibility:9999 "
+		"weather:// "
+		"cloud:NCD "
+		"temperature:17/10 "
+		"pressure:Q1010 "
+		"precipitation:RF00.0////./ "s
+	);
+	EXPECT_EQ(result.at(7),
+		"keyword:METAR "
+		"location:ENSE "
+		"reporttime:201620Z "
+		"keyword:AUTO "
+		"wind:24040KT "
+		"visibility:9999NDV "
+		"cloud:FEW010/// "
+		"cloud:SCT020/// "
+		"cloud:BKN027/// "
+		"temperature:12/10 "
+		"pressure:Q0988 "
+		"seasurface:W///S7 "s
+	);
+	EXPECT_EQ(result.at(8),
+		"keyword:SPECI "
+		"location:MMMM "
+		"reporttime:171315Z "
+		"wind:00000KT "
+		"visibility:5SM "
+		"weather:VCFG "
+		"cloud:SCT008 "
+		"cloud:BKN080 "
+		"cloud:BKN230 "
+		"temperature:15/15 "
+		"pressure:A3023 "
+		"keyword:RMK "
+		"lowmidhighcloud:8/578 "
+		"unknown:HZY "s
+	);
+	EXPECT_EQ(result.at(9),
+		"keyword:METAR "
+		"location:EGUL "
+		"reporttime:211156Z "
+		"wind:25014G22KT "
+		"visibility:9999 "
+		"cloud:FEW046 "
+		"cloud:SCT055 "
+		"temperature:14/04 "
+		"pressure:A2971 "
+		"keyword:RMK "
+		"keyword:AO2A "
+		"wind:PK WND 24029/06 "
+		"pressure:SLP064 "
+		"precipitation:70021 "
+		"temperature:T01370043 "
+		"minmaxtemperature:10145 20103 "
+		"pressuretendency:52016 "
+		"keyword:$ "s
+	);
+	EXPECT_EQ(result.at(10),
+		"keyword:METAR "
+		"location:KABQ "
+		"reporttime:092052Z "
+		"wind:23004KT "
+		"visibility:10SM "
+		"cloud:FEW080 "
+		"cloud:FEW120 "
+		"cloud:FEW180 "
+		"cloud:SCT300 "
+		"temperature:29/07 "
+		"pressure:A3005 "
+		"keyword:RMK "
+		"keyword:AO2 "
+		"lightning:LTG DSNT SE "
+		"pressure:SLP085 "
+		"vicinity:CB DSNT N-NE AND SE "
+		"temperature:T02940067 "
+		"pressuretendency:58025 "s
+	);
+}
+
+
+
+
+
+
+
+

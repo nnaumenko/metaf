@@ -1892,23 +1892,71 @@ TEST(WindGroup, isValidFalseVariableWindSector) {
 }
 
 TEST(WindGroup, isValidTruePeakWind) {
-	//TODO
+	auto wg = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("WND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("31076/1547", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WindGroup, isValidFalsePeakWind) {
-	//TODO
+	auto wg1 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("WND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("37076/1547", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg1->isValid());
+
+	auto wg2 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("WND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("31076/2547", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg2->isValid());
+
+	auto wg3 = metaf::WindGroup::parse("PK", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("WND", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("31076/1560", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg3->isValid());
 }
 
 TEST(WindGroup, isValidTrueWindShift) {
-	//TODO
+	const auto wg1 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_TRUE(wg1->isValid());
+
+	auto wg2 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("0415", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg1->isValid());
+
+	auto wg3 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("0415", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("FROPA", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg1->isValid());
+
+	auto wg4 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("FROPA", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(wg1->isValid());
 }
 
 TEST(WindGroup, isValidFalseWindShift) {
-	//TODO
+	auto wg1 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("2515", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg1->isValid());
+
+	auto wg2 = metaf::WindGroup::parse("WSHFT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("0460", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(wg2->isValid());
 }
 
 TEST(WindGroup, isValidTrueWsconds) {
-	//TODO
+	auto wg = metaf::WindGroup::parse("WSCONDS", metaf::ReportPart::TAF);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_TRUE(wg->isValid());
 }
 
 TEST(WindGroup, isValidWindShearLowerLayersValidRunway) {
@@ -1936,16 +1984,4 @@ TEST(WindGroup, isValidWindShearLowerLayersAllRunways) {
 	EXPECT_EQ(wg->append("ALL", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append("RWY", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_TRUE(wg->isValid());
-}
-
-TEST(WindGroup, isValidFalseWs) {
-	//TODO
-}
-
-TEST(WindGroup, isValidFalseWsAll) {
-	//TODO
-}
-
-TEST(WindGroup, isValidFalseWnd) {
-	//TODO
 }

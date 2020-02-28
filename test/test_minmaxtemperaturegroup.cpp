@@ -128,11 +128,79 @@ TEST(MinMaxTemperatureGroup, append24hourly) {
 	EXPECT_EQ(mmtg2->append(s1, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 
-	// TODO: check group's stored data
+	EXPECT_EQ(mmtg1->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_24_HOURLY);
+	EXPECT_TRUE(mmtg1->minimum().isReported());
+	ASSERT_TRUE(mmtg1->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg1->minimum().temperature().value(), 8.4, margin);
+	EXPECT_EQ(mmtg1->minimum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_TRUE(mmtg1->maximum().isReported());
+	ASSERT_TRUE(mmtg1->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg1->maximum().temperature().value(), 11.2, margin);
+	EXPECT_EQ(mmtg1->maximum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg1->minimumTime().has_value());
+	EXPECT_FALSE(mmtg1->maximumTime().has_value());
+
+	EXPECT_EQ(mmtg2->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_24_HOURLY);
+	EXPECT_TRUE(mmtg2->minimum().isReported());
+	ASSERT_TRUE(mmtg2->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg2->minimum().temperature().value(), -1.5, margin);
+	EXPECT_EQ(mmtg2->minimum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_TRUE(mmtg2->maximum().isReported());
+	ASSERT_TRUE(mmtg2->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg2->maximum().temperature().value(), 10.0, margin);
+	EXPECT_EQ(mmtg2->maximum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg2->minimumTime().has_value());
+	EXPECT_FALSE(mmtg2->maximumTime().has_value());
 }
 
 TEST(MinMaxTemperatureGroup, appendOtherTo24hourly) {
-	//TODO
+	auto mmtg = 
+		metaf::MinMaxTemperatureGroup::parse("401120084", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg.has_value());
+
+	EXPECT_EQ(mmtg->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TN03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TNM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TX03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TXM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("T03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_24_HOURLY);
+	EXPECT_TRUE(mmtg->minimum().isReported());
+	ASSERT_TRUE(mmtg->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg->minimum().temperature().value(), 8.4, margin);
+	EXPECT_EQ(mmtg->minimum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_TRUE(mmtg->maximum().isReported());
+	ASSERT_TRUE(mmtg->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg->maximum().temperature().value(), 11.2, margin);
+	EXPECT_EQ(mmtg->maximum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg->minimumTime().has_value());
+	EXPECT_FALSE(mmtg->maximumTime().has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -475,11 +543,121 @@ TEST(MinMaxTemperatureGroup, append6hourlyNotRepoted) {
 }
 
 TEST(MinMaxTemperatureGroup, appendOtherTo6hourly) {
-	//TODO
+	auto mmtg1 = 
+		metaf::MinMaxTemperatureGroup::parse("21001", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg1.has_value());
+
+	EXPECT_EQ(mmtg1->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("TN03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("TNM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("TX03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("TXM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("T03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("TM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg1->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_6_HOURLY);
+	EXPECT_TRUE(mmtg1->minimum().isReported());
+	ASSERT_TRUE(mmtg1->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg1->minimum().temperature().value(), -0.1, margin);
+	EXPECT_EQ(mmtg1->minimum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg1->maximum().isReported());
+	EXPECT_FALSE(mmtg1->minimumTime().has_value());
+	EXPECT_FALSE(mmtg1->maximumTime().has_value());
+
+	auto mmtg2 = 
+		metaf::MinMaxTemperatureGroup::parse("11021", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg2.has_value());
+
+	EXPECT_EQ(mmtg2->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("TN03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("TNM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("TX03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("TXM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("T03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("TM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg2->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_6_HOURLY);
+	EXPECT_TRUE(mmtg2->maximum().isReported());
+	ASSERT_TRUE(mmtg2->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg2->maximum().temperature().value(), -2.1, margin);
+	EXPECT_EQ(mmtg2->maximum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg2->minimum().isReported());
+	EXPECT_FALSE(mmtg2->minimumTime().has_value());
+	EXPECT_FALSE(mmtg2->maximumTime().has_value());
 }
 
 TEST(MinMaxTemperatureGroup, appendTo6hourlyMinMax) {
-	//TODO
+	auto mmtg = 
+		metaf::MinMaxTemperatureGroup::parse("11021", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mmtg.has_value());
+	EXPECT_EQ(mmtg->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(mmtg->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TN03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TNM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TX03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TXM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("T03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("TM03/0620Z", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg->type(),
+		metaf::MinMaxTemperatureGroup::Type::OBSERVED_6_HOURLY);
+	EXPECT_TRUE(mmtg->maximum().isReported());
+	ASSERT_TRUE(mmtg->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg->maximum().temperature().value(), -2.1, margin);
+	EXPECT_EQ(mmtg->maximum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_TRUE(mmtg->maximum().isReported());
+	ASSERT_TRUE(mmtg->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg->minimum().temperature().value(), -0.1, margin);
+	EXPECT_EQ(mmtg->minimum().unit(), metaf::Temperature::Unit::C);
+	EXPECT_FALSE(mmtg->minimumTime().has_value());
+	EXPECT_FALSE(mmtg->maximumTime().has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -924,11 +1102,171 @@ TEST(MinMaxTemperatureGroup, appendForecastUnspecifiedMaxUnspecifiedMin) {
 }
 
 TEST(MinMaxTemperatureGroup, appendOtherToForecast) {
-	//TODO
+	auto mmtg1 = 
+		metaf::MinMaxTemperatureGroup::parse("TN03/0620Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mmtg1.has_value());
+
+	EXPECT_EQ(mmtg1->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg1->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg1->type(), metaf::MinMaxTemperatureGroup::Type::FORECAST);
+	EXPECT_TRUE(mmtg1->minimum().isReported());
+	ASSERT_TRUE(mmtg1->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg1->minimum().temperature().value(), 3, margin);
+	EXPECT_EQ(mmtg1->minimum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg1->minimumTime().has_value());
+	ASSERT_TRUE(mmtg1->minimumTime()->day().has_value());
+	EXPECT_EQ(mmtg1->minimumTime()->day().value(), 6u);
+	EXPECT_EQ(mmtg1->minimumTime()->hour(), 20u);
+	EXPECT_EQ(mmtg1->minimumTime()->minute(), 0u);	
+	EXPECT_FALSE(mmtg1->maximum().isReported());
+	EXPECT_FALSE(mmtg1->maximumTime().has_value());
+
+
+	auto mmtg2 = 
+		metaf::MinMaxTemperatureGroup::parse("TX03/0620Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mmtg2.has_value());
+
+	EXPECT_EQ(mmtg2->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg2->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg2->type(), metaf::MinMaxTemperatureGroup::Type::FORECAST);
+	EXPECT_TRUE(mmtg2->maximum().isReported());
+	ASSERT_TRUE(mmtg2->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg2->maximum().temperature().value(), 3, margin);
+	EXPECT_EQ(mmtg2->maximum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg2->maximumTime().has_value());
+	ASSERT_TRUE(mmtg2->maximumTime()->day().has_value());
+	EXPECT_EQ(mmtg2->maximumTime()->day().value(), 6u);
+	EXPECT_EQ(mmtg2->maximumTime()->hour(), 20u);
+	EXPECT_EQ(mmtg2->maximumTime()->minute(), 0u);	
+	EXPECT_FALSE(mmtg2->minimum().isReported());
+	EXPECT_FALSE(mmtg2->minimumTime().has_value());
+
+	auto mmtg3 = 
+		metaf::MinMaxTemperatureGroup::parse("T24/1306Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mmtg3.has_value());
+
+	EXPECT_EQ(mmtg3->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg3->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg3->type(), metaf::MinMaxTemperatureGroup::Type::FORECAST);
+	EXPECT_TRUE(mmtg3->minimum().isReported());
+	ASSERT_TRUE(mmtg3->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg3->minimum().temperature().value(), 24, margin);
+	EXPECT_EQ(mmtg3->minimum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg3->minimumTime().has_value());
+	ASSERT_TRUE(mmtg3->minimumTime()->day().has_value());
+	EXPECT_EQ(mmtg3->minimumTime()->day().value(), 13u);
+	EXPECT_EQ(mmtg3->minimumTime()->hour(), 6u);
+	EXPECT_EQ(mmtg3->minimumTime()->minute(), 0u);	
+	EXPECT_TRUE(mmtg3->maximum().isReported());
+	ASSERT_TRUE(mmtg3->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg3->maximum().temperature().value(), 24, margin);
+	EXPECT_EQ(mmtg3->maximum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg3->maximumTime().has_value());
+	ASSERT_TRUE(mmtg3->maximumTime()->day().has_value());
+	EXPECT_EQ(mmtg3->maximumTime()->day().value(), 13u);
+	EXPECT_EQ(mmtg3->maximumTime()->hour(), 6u);
+	EXPECT_EQ(mmtg3->maximumTime()->minute(), 0u);	
 }
 
 TEST(MinMaxTemperatureGroup, appendToForecastMinMax) {
-	//TODO
+	auto mmtg = metaf::MinMaxTemperatureGroup::parse("TNM02/0709Z", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mmtg.has_value());
+
+	EXPECT_EQ(mmtg->append("TX03/0620Z", metaf::ReportPart::TAF), 
+		metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(mmtg->append("401120084", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("21001", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("20012", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("11021", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("10142", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("1////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("2////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mmtg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mmtg->type(), metaf::MinMaxTemperatureGroup::Type::FORECAST);
+	EXPECT_TRUE(mmtg->maximum().isReported());
+	ASSERT_TRUE(mmtg->maximum().temperature().has_value());
+	EXPECT_NEAR(mmtg->maximum().temperature().value(), 3, margin);
+	EXPECT_EQ(mmtg->maximum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg->maximumTime().has_value());
+	ASSERT_TRUE(mmtg->maximumTime()->day().has_value());
+	EXPECT_EQ(mmtg->maximumTime()->day().value(), 6u);
+	EXPECT_EQ(mmtg->maximumTime()->hour(), 20u);
+	EXPECT_EQ(mmtg->maximumTime()->minute(), 0u);	
+	EXPECT_TRUE(mmtg->maximum().isReported());
+	ASSERT_TRUE(mmtg->minimum().temperature().has_value());
+	EXPECT_NEAR(mmtg->minimum().temperature().value(), -2, margin);
+	EXPECT_EQ(mmtg->minimum().unit(), metaf::Temperature::Unit::C);
+	ASSERT_TRUE(mmtg->minimumTime().has_value());
+	ASSERT_TRUE(mmtg->minimumTime()->day().has_value());
+	EXPECT_EQ(mmtg->minimumTime()->day().value(), 7u);
+	EXPECT_EQ(mmtg->minimumTime()->hour(), 9u);
+	EXPECT_EQ(mmtg->minimumTime()->minute(), 0u);	
+
+
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

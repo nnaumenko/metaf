@@ -1230,8 +1230,8 @@ TEST(CloudGroup, parseChinoNoDetails) {
 
 TEST(CloudGroup, parseChinoRunway) {
 	auto cg1 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
-	EXPECT_EQ(cg1->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("R18", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(cg1->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg1->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
@@ -1247,6 +1247,7 @@ TEST(CloudGroup, parseChinoRunway) {
 
 	auto cg2 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(cg2->type(), metaf::CloudGroup::Type::CHINO);
 	EXPECT_EQ(cg2->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
@@ -1255,7 +1256,6 @@ TEST(CloudGroup, parseChinoRunway) {
 	EXPECT_FALSE(cg2->verticalVisibility().isReported());
 	EXPECT_FALSE(cg2->minHeight().isReported());
 	EXPECT_FALSE(cg2->maxHeight().isReported());
-	EXPECT_EQ(cg2->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	ASSERT_TRUE(cg2->runway().has_value());
 	EXPECT_EQ(cg2->runway()->number(), 24u);
 	EXPECT_EQ(cg2->runway()->designator(), metaf::Runway::Designator::LEFT);
@@ -1289,11 +1289,73 @@ TEST(CloudGroup, parseChinoWrongReportPart) {
 }
 
 TEST(CloudGroup, chinoAppendToCompleteGroup) {
-	// TODO
+	auto cg1 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("CHINO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("RWY32", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("R12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("002", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("014V016", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("ALL", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("RWY", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg1->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg2 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("RWY24L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg2->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("CHINO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("RWY32", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("R12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("002", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("014V016", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("ALL", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("RWY", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg2->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg3 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->append("NW", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg3->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("CHINO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("RWY32", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("R12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("002", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("014V016", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("ALL", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("RWY", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(cg3->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(CloudGroup, chinoAppendWrongGroup) {
-	// TODO
+	auto cg1 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("CHINO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg2 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("CHINO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg3 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->append("002", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg4 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_EQ(cg4->append("014V016", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg5 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_EQ(cg5->append("ALL", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg6 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_EQ(cg6->append("RWY", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg7 = metaf::CloudGroup::parse("CHINO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg7.has_value());
+	EXPECT_EQ(cg7->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1339,6 +1401,11 @@ TEST(CloudGroup, parseCldAndOther) {
 	auto fg4 = metaf::CloudGroup::parse(gs, metaf::ReportPart::RMK);
 	ASSERT_TRUE(fg4.has_value());
 	EXPECT_EQ(fg4->append(gs, metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto fg5 = metaf::CloudGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg5.has_value());
+	EXPECT_EQ(fg5->append("", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
@@ -1740,7 +1807,42 @@ TEST(CloudGroup, isValidNoClouds) {
 }
 
 TEST(CloudGroup, isValidVariableCloudLayer) {
-	//TODO
+	auto cg1 = metaf::CloudGroup::parse("FEW016", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg1->append("SCT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg1->isValid());
+
+	auto cg2 = metaf::CloudGroup::parse("SCT016", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg2->append("BKN", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg2->isValid());
+
+	auto cg3 = metaf::CloudGroup::parse("BKN016", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
+	EXPECT_EQ(cg3->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg3->append("OVC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg3->isValid());
+
+	auto cg4 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_EQ(cg4->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg4->append("SCT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg4->isValid());
+
+	auto cg5 = metaf::CloudGroup::parse("SCT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_EQ(cg5->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg5->append("BKN", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg5->isValid());
+
+	auto cg6 = metaf::CloudGroup::parse("BKN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_EQ(cg6->append("V", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg6->append("OVC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg6->isValid());
 }
 
 TEST(CloudGroup, isValidCeilingValidRunway) {
@@ -1786,7 +1888,16 @@ TEST(CloudGroup, isValidCeilingNoDetails) {
 }
 
 TEST(CloudGroup, isValidCeilingDirection) {
-	//TODO
+	auto cg1 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
+	EXPECT_EQ(cg1->append("025", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg1->append("W", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg1->isValid());
+
+	auto cg2 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("012V014", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg2->append("W", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg2->isValid());
 }
 
 TEST(CloudGroup, isValidChinoValidRunway) {
@@ -1817,10 +1928,9 @@ TEST(CloudGroup, isValidChinoDirection) {
 	EXPECT_TRUE(cg->isValid());
 }
 
-TEST(CloudGroup, isValidCld) {
-	//TODO
-}
-
 TEST(CloudGroup, isValidCldMisg) {
-	//TODO
+	auto cg = metaf::CloudGroup::parse("CLD", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_TRUE(cg->isValid());
 }

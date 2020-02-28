@@ -154,7 +154,17 @@ TEST(CloudTypesGroup, parseFormatWithHeightWrongReportPart) {
 }
 
 TEST(CloudTypesGroup, parseFormatWithHeightWrongFormat) {
-	//TODO
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8ZZ035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("/NS035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8//035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8///035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS///", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("//////", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("ANS035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NSA35", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS03A", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS0035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("8NS35", metaf::ReportPart::RMK).has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

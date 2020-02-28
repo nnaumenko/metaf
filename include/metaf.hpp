@@ -1552,9 +1552,6 @@ private:
 	bool isIncomplete = false;
 
 	PrecipitationGroup(Type t, bool i = false) : precType(t), isIncomplete(i) {}
-	static inline std::optional<Type> typeFromString(const std::string & s,
-		bool is3hourly,
-		bool is6hourly);
 	static inline float factorFromType(Type type);
 	static inline Precipitation::Unit unitFromType(Type type);
 };
@@ -4414,7 +4411,8 @@ bool WindGroup::isValid() const {
 	if (incompleteText != IncompleteText::NONE) return false;
 	if (!gustSpeed().speed().value_or(1)) return false;
 	if (!height().distance().value_or(1)) return false;
-	if (runway().has_value() && !runway()->isValid()) return false;
+	if (!runway().value_or(Runway()).isValid()) return false;
+	if (!eventTime().value_or(MetafTime()).isValid()) return false;
 	if (windSpeed().speed().value_or(0) >= gustSpeed().speed().value_or(999)) 
 		return false; // if wind speed cannot be greater than gust speed
 	return (direction().isValid() &&
@@ -5087,7 +5085,8 @@ AppendResult WeatherGroup::append(const std::string & group,
 		return AppendResult::APPENDED;
 	}
 
-	if (type() == Type::EVENT) return AppendResult::NOT_APPENDED;
+	if (type() != Type::CURRENT && type() != Type::RECENT)
+		return AppendResult::NOT_APPENDED;
 
 	const auto wp = parseWeatherWithoutEvent(group, reportPart);
 	if (wp.has_value()) {
@@ -5531,6 +5530,7 @@ std::optional<MinMaxTemperatureGroup> MinMaxTemperatureGroup::fromForecast(
 
 AppendResult MinMaxTemperatureGroup::append6hourly(const std::string & group) {
 	static const auto error = AppendResult::NOT_APPENDED;
+	if (minTemp.isReported() && maxTemp.isReported()) return error;
 	const auto nextGroup = from6hourly(group);
 	if (!nextGroup.has_value()) return error;
 	if (minTemp.isReported() && nextGroup->minTemp.isReported()) return error;
@@ -5633,33 +5633,39 @@ std::optional<PrecipitationGroup> PrecipitationGroup::parse(const std::string & 
 	std::string typeStr = match.str(matchType1) + match.str(matchType2);
 	std::string valueStr = match.str(matchValue1) + match.str(matchValue2);
 
-	const bool is3hourlyReport =
+	const bool is3hourly =
 		reportMetadata.reportTime.has_value() ?
 		reportMetadata.reportTime->is3hourlyReportTime() :
 		false;
-
-	const bool is6hourlyReport =
+	const bool is6hourly =
 		reportMetadata.reportTime.has_value() ?
 		reportMetadata.reportTime->is6hourlyReportTime() :
 		false;
 
-	const auto t = typeFromString(typeStr, is3hourlyReport, is6hourlyReport);
-	if (!t.has_value()) return notRecognised;
-	const auto type = t.value();
+	if (typeStr == "P") result.precType = Type::TOTAL_PRECIPITATION_HOURLY;
+	if (typeStr == "4/") result.precType = Type::SNOW_DEPTH_ON_GROUND;
+	if (typeStr == "6") {
+		result.precType = Type::FROZEN_PRECIP_3_OR_6_HOURLY;
+		if (is3hourly) result.precType = Type::FROZEN_PRECIP_3_HOURLY;
+		if (is6hourly) result.precType = Type::FROZEN_PRECIP_6_HOURLY;
+	}
+	if (typeStr == "7") result.precType = Type::FROZEN_PRECIP_24_HOURLY;
+	if (typeStr == "931") result.precType = Type::SNOW_6_HOURLY;
+	if (typeStr == "933") result.precType = Type::WATER_EQUIV_OF_SNOW_ON_GROUND;
+	if (typeStr == "I1") result.precType = Type::ICE_ACCRETION_FOR_LAST_HOUR;
+	if (typeStr == "I3") result.precType = Type::ICE_ACCRETION_FOR_LAST_3_HOURS;
+	if (typeStr == "I6") result.precType = Type::ICE_ACCRETION_FOR_LAST_6_HOURS;
+	if (typeStr == "PP") result.precType = Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT;
 
-	// assuming that non-reported value will not pass the regex if not
-	// allowed for this type
 	const auto amount = Precipitation::fromRemarkString(valueStr,
-			factorFromType(type),
-			unitFromType(type),
+			factorFromType(result.precType),
+			unitFromType(result.precType),
 			true);
 	if (!amount.has_value()) return notRecognised;
 
-	result.precType = type;
 	result.precAmount = amount.value();
 	return result;
 }
-
 
 AppendResult PrecipitationGroup::append(const std::string & group,
 	ReportPart reportPart,
@@ -5680,28 +5686,6 @@ AppendResult PrecipitationGroup::append(const std::string & group,
 	precChange = std::get<0>(precip.value());
 	precAmount = std::get<1>(precip.value());
 	return AppendResult::APPENDED;
-}
-
-std::optional<PrecipitationGroup::Type> PrecipitationGroup::typeFromString(
-	const std::string & s,
-	bool is3hourly,
-	bool is6hourly)
-{
-	if (s == "P") return Type::TOTAL_PRECIPITATION_HOURLY;
-	if (s == "4/") return Type::SNOW_DEPTH_ON_GROUND;
-	if (s == "6") {
-		if (is3hourly) return Type::FROZEN_PRECIP_3_HOURLY;
-		if (is6hourly) return Type::FROZEN_PRECIP_6_HOURLY;
-		return Type::FROZEN_PRECIP_3_OR_6_HOURLY;
-	}
-	if (s == "7") return Type::FROZEN_PRECIP_24_HOURLY;
-	if (s == "931") return Type::SNOW_6_HOURLY;
-	if (s == "933") return Type::WATER_EQUIV_OF_SNOW_ON_GROUND;
-	if (s == "I1") return Type::ICE_ACCRETION_FOR_LAST_HOUR;
-	if (s == "I3") return Type::ICE_ACCRETION_FOR_LAST_3_HOURS;
-	if (s == "I6") return Type::ICE_ACCRETION_FOR_LAST_6_HOURS;
-	if (s == "PP") return Type::PRECIPITATION_ACCUMULATION_SINCE_LAST_REPORT;
-	return std::optional<PrecipitationGroup::Type>();
 }
 
 Precipitation::Unit PrecipitationGroup::unitFromType(Type type) {
@@ -6234,7 +6218,7 @@ AppendResult VicinityGroup::append(const std::string & group,
 			return finalise();
 		}
 		return rejectGroup();
-	};
+	}
 }
 
 bool VicinityGroup::appendDir1(const std::string & str) {

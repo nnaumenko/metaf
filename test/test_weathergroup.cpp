@@ -471,15 +471,73 @@ TEST(WeatherGroup, appendCurrentRecentWeather) {
 	EXPECT_EQ(wg2->append("RA", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 }
 
-TEST(WeatherGroup, appendEvent) {
-	//TODO
+TEST(WeatherGroup, appendWeatherEvent) {
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("TSRA", metaf::ReportPart::METAR, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("SNB1211", metaf::ReportPart::METAR, reportMetadata), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAE1212", metaf::ReportPart::METAR, reportMetadata), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("E1213", metaf::ReportPart::METAR, reportMetadata), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("E14", metaf::ReportPart::METAR, reportMetadata), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::CURRENT);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+
+	const auto wp = wg->weatherPhenomena().at(0);
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::MODERATE);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::THUNDERSTORM);
+	EXPECT_EQ(wp.weather().size(), 1u);
+	EXPECT_EQ(wp.weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::NONE);
+	EXPECT_FALSE(wp.time().has_value());
 }
 
 TEST(WeatherGroup, appendToWeatherEvent) {
-	//TODO
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("RAB1200", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("SNB1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAE1212", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("E1213", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("E14", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("FG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RERA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("VCSH", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::EVENT);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+	const auto wp = wg->weatherPhenomena().at(0);
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::NONE);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::NONE);
+	EXPECT_EQ(wp.weather().size(), 1u);
+	EXPECT_EQ(wp.weather().at(0), metaf::WeatherPhenomena::Weather::RAIN);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::BEGINNING);
+	ASSERT_TRUE(wp.time().has_value());
+	EXPECT_FALSE(wp.time()->day().has_value());
+	EXPECT_EQ(wp.time()->hour(), 12u);
+	EXPECT_EQ(wp.time()->minute(), 0u);
 }
 
 TEST(WeatherGroup, appendOther) {
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
 	auto wg1 = metaf::WeatherGroup::parse("SN", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg1.has_value());
 
@@ -500,7 +558,15 @@ TEST(WeatherGroup, appendOther) {
 	EXPECT_EQ(wg2->append("BECMG", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(wg2->append("/////", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 
-	//TODO:append other to event
+	auto wg3 = metaf::WeatherGroup::parse("RAB1200", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg3.has_value());
+
+	EXPECT_EQ(wg3->append("RMK", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append("12/12", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append("NOSIG", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append("TEMPO", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append("BECMG", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->append("/////", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -530,7 +596,27 @@ TEST(WeatherGroup, parseNswWrongReportPart) {
 }
 
 TEST(WeatherGroup, appendToNsw) {
-	// TODO
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("NSW", metaf::ReportPart::METAR, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("RMK", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("12/12", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("NOSIG", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("TEMPO", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("BECMG", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("/////", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAB1211", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B1211", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B11", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RA", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RERA", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("VCSH", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(WeatherGroup, parsePwino) {
@@ -549,7 +635,27 @@ TEST(WeatherGroup, parsePwinoWrongReportPart) {
 }
 
 TEST(WeatherGroup, appendToPwino) {
-	// TODO
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("PWINO", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("RMK", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("12/12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("NOSIG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("BECMG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("/////", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAB1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B11", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RERA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("VCSH", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(WeatherGroup, parseTsno) {
@@ -568,7 +674,27 @@ TEST(WeatherGroup, parseTsnoWrongReportPart) {
 }
 
 TEST(WeatherGroup, appendToTsno) {
-	// TODO
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("TSNO", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("RMK", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("12/12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("NOSIG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("BECMG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("/////", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAB1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B11", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RERA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("VCSH", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -596,7 +722,30 @@ TEST(WeatherGroup, parseWxWrongReportPart) {
 }
 
 TEST(WeatherGroup, appendToWxMisg) {
-	// TODO
+	const auto reportTime = metaf::MetafTime::fromStringDDHHMM("281232");
+	ASSERT_TRUE(reportTime.has_value());
+
+	metaf::ReportMetadata reportMetadata;
+	reportMetadata.reportTime =reportTime.value();
+
+	auto wg = metaf::WeatherGroup::parse("WX", metaf::ReportPart::RMK, reportMetadata);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_EQ(wg->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(wg->append("RMK", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("12/12", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("NOSIG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("TEMPO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("BECMG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("/////", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RAB1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B1211", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("B11", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("RERA", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("VCSH", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->append("MISG", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 TEST(WeatherGroup, appendOtherToWx) {

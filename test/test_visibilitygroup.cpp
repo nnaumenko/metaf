@@ -992,6 +992,23 @@ TEST(VisibilityGroup, parseVisnoRunwayWithDesignator) {
 	EXPECT_TRUE(vg3->isValid());
 }
 
+TEST(VisibilityGroup, parseVisnoAllRunways) {
+	auto vg = metaf::VisibilityGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("R88", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VISNO);
+	EXPECT_FALSE(vg->direction().has_value());
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_TRUE(vg->runway()->isAllRunways());
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
 TEST(VisibilityGroup, parseVisnoDirection) {
 	auto vg = metaf::VisibilityGroup::parse("VISNO", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg.has_value());
@@ -1166,7 +1183,11 @@ TEST(VisibilityGroup, appendToVisnoRunway) {
 }
 
 TEST(VisibilityGroup, isValidVisnoInvalidRunway) {
-	// TODO
+	auto vg = metaf::VisibilityGroup::parse("VISNO", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("R37", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1572,18 +1593,6 @@ TEST(VisibilityGroup, parseRmkVisVariableMeters) {
 	EXPECT_TRUE(vg->isValid());
 }
 
-TEST(VisibilityGroup, parseRmkVisVariableMetersIncorrectNotReported) {
-	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
-	ASSERT_TRUE(vg1.has_value());
-	EXPECT_EQ(vg1->append("////V3000", metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-
-	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
-	ASSERT_TRUE(vg2.has_value());
-	EXPECT_EQ(vg2->append("1200V////", metaf::ReportPart::RMK), 
-		metaf::AppendResult::GROUP_INVALIDATED);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // Malformed variable visibility groups
 // Purpose: to confirm that malformed variable visibility groups are not 
@@ -1697,15 +1706,74 @@ TEST(VisibilityGroup, parseRmkAppendOtherToVisInteger) {
 }
 
 TEST(VisibilityGroup, parseRmkVisIncorrectMeters) {
-	//TODO
+	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("1000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("1000W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("01000V02000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg4 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("500V800", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg5 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg5.has_value());
+	EXPECT_EQ(vg5->append("900V1800", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg6 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg6.has_value());
+	EXPECT_EQ(vg6->append("0800V900", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkVisVariableMetersIncorrectNotReported) {
+	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("////V3000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("1200V////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("////V////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
 TEST(VisibilityGroup, invalidVarVisGroupWrongVariableRangeMiles) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("1/2V7/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 TEST(VisibilityGroup, invalidVarVisGroupWrongVariableRangeMeters) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("1500V1400", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2256,11 +2324,27 @@ TEST(VisibilityGroup, parseRmkAppendOtherToVisDirectionInteger) {
 }
 
 TEST(VisibilityGroup, invalidDirVarVisGroupWrongVariableRangeMiles) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/2V7/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 TEST(VisibilityGroup, invalidDirVarVisGroupWrongVariableRangeMeters) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1500V1400", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2714,20 +2798,98 @@ TEST(VisibilityGroup, parseRmkVisRunwayNonVariableMeters9999) {
 // part of runway visibility groups.
 ///////////////////////////////////////////////////////////////////////////////
 
-TEST(VisibilityGroup, parseRmkVisRunwayRunwayWithoutDesignator) {
-	//TODO
+TEST(VisibilityGroup, parseRmkVisRunwayRWithoutDesignator) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RUNWAY);
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_TRUE(vg->isValid());
 }
 
-TEST(VisibilityGroup, parseRmkVisRunwayRunwayWithDesignator) {
-	//TODO
-}	
+TEST(VisibilityGroup, parseRmkVisRunwayRWithDesignator) {
+	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("R22R", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg1->runway().has_value());
+	EXPECT_EQ(vg1->runway()->number(), 22u);
+	EXPECT_EQ(vg1->runway()->designator(), metaf::Runway::Designator::RIGHT);
+	EXPECT_TRUE(vg1->isValid());
 
-TEST(VisibilityGroup, parseRmkVisRunwayRunwayRwyWithoutDesignator) {
-	//TODO
+	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("R22C", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg2->runway().has_value());
+	EXPECT_EQ(vg2->runway()->number(), 22u);
+	EXPECT_EQ(vg2->runway()->designator(), metaf::Runway::Designator::CENTER);
+	EXPECT_TRUE(vg2->isValid());
+	
+	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->append("R22L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg3->runway().has_value());
+	EXPECT_EQ(vg3->runway()->number(), 22u);
+	EXPECT_EQ(vg3->runway()->designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_TRUE(vg3->isValid());
 }
 
-TEST(VisibilityGroup, parseRmkVisRunwayRunwayRwyWithDesignator) {
-	//TODO
+TEST(VisibilityGroup, parseRmkVisRunwayRwyWithoutDesignator) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("RWY22", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RUNWAY);
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayRwyWithDesignator) {
+	auto vg1 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("RWY22R", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg1->runway().has_value());
+	EXPECT_EQ(vg1->runway()->number(), 22u);
+	EXPECT_EQ(vg1->runway()->designator(), metaf::Runway::Designator::RIGHT);
+	EXPECT_TRUE(vg1->isValid());
+
+	auto vg2 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("RWY22C", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg2->runway().has_value());
+	EXPECT_EQ(vg2->runway()->number(), 22u);
+	EXPECT_EQ(vg2->runway()->designator(), metaf::Runway::Designator::CENTER);
+	EXPECT_TRUE(vg2->isValid());
+	
+	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->append("RWY22L", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	ASSERT_TRUE(vg3->runway().has_value());
+	EXPECT_EQ(vg3->runway()->number(), 22u);
+	EXPECT_EQ(vg3->runway()->designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_TRUE(vg3->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2738,11 +2900,23 @@ TEST(VisibilityGroup, parseRmkVisRunwayRunwayRwyWithDesignator) {
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(VisibilityGroup, invalidRunwayVarVisGroupWrongVariableRangeMiles) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("1/2V7/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 TEST(VisibilityGroup, invalidRunwayVarVisGroupWrongVariableRangeMeters) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("1500V1400", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_FALSE(vg->isValid());
 }
 
 TEST(VisibilityGroup, invalidRunwayVisibilityGroupWrongRunway) {
@@ -4024,11 +4198,105 @@ TEST(VisibilityGroup, parseRvrGroupWrongFormat) {
 }
 
 TEST(VisibilityGroup, appendToRvrGroup) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("R05L/1100", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("R16/1200", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("R30/5000VP6000FT/U", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("9999", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("9999NDV", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3000E", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1/2SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("P6SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("////", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("TEST", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RMK", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("R05", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RWY05", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RVR);
+	EXPECT_FALSE(vg->direction().has_value());
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 5u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1100, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
 }
 
 TEST(VisibilityGroup, appendToVariableRvrGroup) {
-	//TODO
+	auto vg = metaf::VisibilityGroup::parse("R09/0500V0800", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("R16/1200", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("R30/5000VP6000FT/U", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("9999", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("9999NDV", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3000E", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1/2SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("P6SM", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("////", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("TEST", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RMK", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("R05", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RWY05", metaf::ReportPart::METAR), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RVR);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 9u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 500, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 800, margin);
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::METERS);
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
 }
 
 TEST(VisibilityGroup, invalidRvrGroupWrongRunway) {
@@ -4052,9 +4320,13 @@ TEST(VisibilityGroup, invalidRvrGroupWrongRunway) {
 }
 
 TEST(VisibilityGroup, invalidRvrGroupWrongVariableRangeMeters) {
-	//TODO
+	const auto vg = metaf::VisibilityGroup::parse("R09/0500V0400", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_FALSE(vg->isValid());
 }
 
 TEST(VisibilityGroup, invalidRvrGroupWrongVariableRangeFeet) {
-	//TODO
+	const auto vg = metaf::VisibilityGroup::parse("R22/0800V0700FT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_FALSE(vg->isValid());
 }
