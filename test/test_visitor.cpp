@@ -638,10 +638,64 @@ TEST(Visitor, visitorNonVoid) {
 	);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Invalid group passed to visitors
+// Purpose: to confirm that passing an invalid group to Visitor::visit handles
+// this situation correctly: no virtual method for groups is called, and for
+// value-returned visitor, a default value of this type is returned 
+///////////////////////////////////////////////////////////////////////////////
 
+// Initialises valueless std::variant Group, based on example from 
+// https://en.cppreference.com/w/cpp/utility/variant/valueless_by_exception
+metaf::Group valuelessGroup() {
+	struct S {
+	    operator metaf::KeywordGroup() { throw 42; }
+	};
+	metaf::Group group = metaf::UnknownGroup();
+	try {
+		group.emplace<0>(S());
+	}
+	catch(...) {}
+	return group;
+}
 
+const metaf::GroupInfo groupInfoInvalid(
+	valuelessGroup(), 
+	metaf::ReportPart::METAR,
+	"TEST");
 
+TEST(VisitorInvalidGroup, visitorVoid) {
+	VisitorCounter v;
+	ASSERT_TRUE(groupInfoInvalid.group.valueless_by_exception());
+	v.visit(groupInfoInvalid);
 
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::KeywordGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LocationGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::ReportTimeGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TrendGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::RunwayStateGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::SeaSurfaceGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PrecipitationGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LayerForecastGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureTendencyGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudTypesGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LowMidHighCloudGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 0);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 0);
+}
 
-
-
+TEST(VisitorInvalidGroup, visitorNonVoid) {
+	VisitorIndex v;
+	ASSERT_TRUE(groupInfoInvalid.group.valueless_by_exception());
+	const std::string result = v.visit(groupInfoInvalid);
+	EXPECT_TRUE(result.empty());
+}

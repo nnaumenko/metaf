@@ -33,7 +33,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 0;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -1830,15 +1830,15 @@ private:
 
 	enum class IncompleteType {
 		NONE,				// Group complete
-		EXPECT_TYPE,		// Expecting type (CB, CBMAM, TS, ROTOR, SCSL, etc.)
 		EXPECT_CLD, 		// ROTOR previously specified, now expecting CLD
 		EXPECT_DIST_DIR1,	// Expect distance or first direction sector
 		EXPECT_DIR1,		// Expect first direction sector
 		EXPECT_DIR2_MOV,	// Expect second direction sector
+		EXPECT_DIR2,		// Expect second direction sector
 		EXPECT_MOV,			// Expect MOV
 		EXPECT_MOVDIR		// Expect cardinal direction of movement
 	};
-	IncompleteType incompleteType = IncompleteType::EXPECT_TYPE;
+	IncompleteType incompleteType = IncompleteType::NONE;
 	AppendResult expectNext(IncompleteType newType) {
 		incompleteType = newType; return AppendResult::APPENDED;
 	}
@@ -1852,8 +1852,8 @@ private:
 	}
 
 	VicinityGroup(Type tp) : t(tp) {
-		expectNext(IncompleteType::EXPECT_DIST_DIR1);
-		if (type() == Type::ROTOR_CLOUD) expectNext(IncompleteType::EXPECT_CLD);
+		incompleteType = IncompleteType::EXPECT_DIST_DIR1;
+		if (type() == Type::ROTOR_CLOUD) incompleteType = IncompleteType::EXPECT_CLD;
 	}
 
 	inline bool appendDir1(const std::string & str);
@@ -6183,10 +6183,6 @@ AppendResult VicinityGroup::append(const std::string & group,
 		//Group is complete, nothing more to append
 		return AppendResult::NOT_APPENDED; 
 
-		case IncompleteType::EXPECT_TYPE:
-		//Attempt to append to a VicinityGroup object created with default constructor
-		return AppendResult::GROUP_INVALIDATED;
-
 		case IncompleteType::EXPECT_CLD:
 		if (group == "CLD") return expectNext(IncompleteType::EXPECT_DIST_DIR1);
 		return AppendResult::GROUP_INVALIDATED;
@@ -6202,9 +6198,13 @@ AppendResult VicinityGroup::append(const std::string & group,
 
 		case IncompleteType::EXPECT_DIR2_MOV:
 		if (group == "MOV") return expectNext(IncompleteType::EXPECT_MOVDIR);
-		if (group == "AND") return expectNext(IncompleteType::EXPECT_DIR2_MOV);
+		if (group == "AND") return expectNext(IncompleteType::EXPECT_DIR2);
 		if (appendDir2(group)) return expectNext(IncompleteType::EXPECT_MOV);
 		return rejectGroup();
+
+		case IncompleteType::EXPECT_DIR2:
+		if (appendDir2(group)) return expectNext(IncompleteType::EXPECT_MOV);
+		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteType::EXPECT_MOV:
 		if (group == "MOV") return expectNext(IncompleteType::EXPECT_MOVDIR);
@@ -6217,7 +6217,7 @@ AppendResult VicinityGroup::append(const std::string & group,
 			movDir = dir.value();
 			return finalise();
 		}
-		return rejectGroup();
+		return AppendResult::GROUP_INVALIDATED;
 	}
 }
 
