@@ -6541,7 +6541,7 @@ bool Parser::appendToLastResultGroup(ParseResult & result,
 	if (std::holds_alternative<FallbackGroup>(result.groups.back().group)) return false;
 
 	GroupInfo & lastGroupInfo = result.groups.back();
-	Group lastGroup = lastGroupInfo.group;
+	Group & lastGroup = lastGroupInfo.group;
 
 	const auto appendResult = std::visit(
 		[&](auto && gr) -> AppendResult {
@@ -6550,7 +6550,6 @@ bool Parser::appendToLastResultGroup(ParseResult & result,
 
 	switch (appendResult) {
 		case AppendResult::APPENDED:
-		lastGroupInfo.group = std::move(lastGroup);
 		lastGroupInfo.rawString += groupDelimiterChar;
 		lastGroupInfo.rawString += groupStr;
 		return true;
