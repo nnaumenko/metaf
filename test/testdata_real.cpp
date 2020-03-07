@@ -18,7 +18,7 @@
 const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 
 	{
-		"KFFO", "Wright-Patterson AFB", {2014, 2, 5},
+		"KFFO", "Wright-Patterson Air Force Base", {2014, 2, 5},
 		"METAR KFFO 051658Z 30008KT 4SM -SN FEW014 OVC019 M05/M07 A2996"
 		" RMK AO1A SLP159 P0000 T10471072"
 		"=",
@@ -31,7 +31,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OIII", "Tehran/Mehrabad Intl", {2014, 6, 2},
+		"OIII", "Mehrabad International Airport", {2014, 6, 2},
 		"METAR OIII 021300Z 27048G60KT 4000 +TSRA +DSSS SCT025CB SCT030 BKN070 23/11 Q1014 A2995"
 		" TEMPO FM 1300 32030G40KT 1500 SA"
 		" TEMPO 1000 SA TSRA"
@@ -47,7 +47,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LLBG", "Tel Aviv/Ben Gurion", {2015, 2, 11},
+		"LLBG", "Ben Gurion International Airport", {2015, 2, 11},
 		"METAR LLBG 110620Z 19014KT 1200 R08/2000 R26/2000 R30/2000 DS VV012 12/M00 Q1010"
 		" BECMG 20020G30KT 2500 DU NSC"
 		" RMK REP AT 0535Z VIS 2500M IN APCH RWY21"
@@ -63,7 +63,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TIST", "St Thomas/King Arpt", {2017, 9, 6},
+		"TIST", "Cyril E. King Airport", {2017, 9, 6},
 		"METAR TIST 061553Z AUTO 32051G76KT 1/2SM RA FG OVC014 26/26"
 		" RMK AO2 PK WND 31076/1547 SLPNO P0016 T02610261"
 		"=",
@@ -82,7 +82,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VIDP", "New Delhi/Gandhi Int", {2018, 5, 2},
+		"VIDP", "Indira Gandhi International Airport", {2018, 5, 2},
 		"METAR VIDP 021000Z 13009KT 3500 HZ FEW040 FEW040CB SCT100 38/20 Q1004"
 		" TEMPO 32020G30KT 1500 DS TS"
 		"=",
@@ -96,7 +96,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{	
-		"EGXC", "Coningsby(RAF)", {2018, 2, 25},
+		"EGXC", "RAF Coningsby", {2018, 2, 25},
 		"METAR EGXC 180250Z 08019KT 1600 -SN -BLSN BKN016 OVC030 M02/M04 Q1011 BLACKYLO2"
 		"=",
 		"TAF EGXC 180140Z 1803/1821 08020G30KT 9999 BKN025"
@@ -110,7 +110,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYD", "Cranwell(RAF)", {2018, 2, 26},
+		"EGYD", "RAF Cranwell", {2018, 2, 26},
 		"METAR EGYD 261218Z 09010KT 9999 6000S -SHSN FEW008 SCT018 BKN050 M01/M01 Q1033 BLACKWHT"
 		" TEMPO 9999 NSW FEW015 BLU"
 		"=",
@@ -125,7 +125,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGLC", "London City Air", {2018, 2, 28},
+		"EGLC", "London City Airport", {2018, 2, 28},
 		"METAR EGLC 280750Z AUTO 07008KT 9999 NCD M04/M07 Q1018 R/SNOCLO"
 		"=",
 		"TAF EGLC 280512Z 2806/2815 07004KT 9999 SCT040"
@@ -143,7 +143,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYD", "Cranwell(RAF)", {2018, 2, 28},
+		"EGYD", "RAF Cranwell", {2018, 2, 28},
 		"METAR EGYD 281050Z 11015KT 5000 -SHSN FEW004 BKN012CB BKN025 M04/M05 Q1020 BLACKGRN"
 		"=",
 		"TAF AMD EGYD 280939Z 2809/2818 CNL"
@@ -157,7 +157,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYD", "Cranwell(RAF)", {2018, 2, 28},
+		"EGYD", "RAF Cranwell", {2018, 2, 28},
 		"METAR EGYD 281427Z 09022G35KT 0700 SHSN BLSN BKN020CB SCT050 M04/M07 Q1019 BLACKRED"
 		"=",
 		"TAF EGYD 280812Z 2809/2818 11010KT 9999 FEW010 SCT030"
@@ -172,7 +172,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYM", "Marham(RAF)", {2018, 3, 1},
+		"EGYM", "RAF Marham", {2018, 3, 1},
 		"METAR EGYM 010850Z 08014KT 2500 -SN FEW015 BKN020 M04/M06 Q1007 BLACKYLO1 NOSIG"
 		"=",
 		"TAF EGYM 010731Z 0109/0118 08018G28KT 9999 OVC025"
@@ -186,7 +186,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGMC", "Southend Arpt", {2018, 3, 1},
+		"EGMC", "Southend Airport", {2018, 3, 1},
 		"METAR EGMC 011020Z 08013KT 1000 R05/1100 SN OVC012 M04/M05 Q1002 SNOCLO"
 		"=",
 		"TAF AMD EGMC 010841Z 0109/0118 09015KT 9999 FEW020 SCT035"
@@ -202,7 +202,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGXC", "Coningsby(RAF)", {2018, 3, 18},
+		"EGXC", "RAF Coningsby", {2018, 3, 18},
 		"METAR EGXC 180150Z 08021KT 1500 -SN -BLSN OVC030 M02/M03 Q1011 BLACKAMB"
 		"=",
 		"TAF EGXC 180140Z 1803/1821 08020G30KT 9999 BKN025"
@@ -216,7 +216,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGXC", "Coningsby(RAF)", {2018, 3, 18},
+		"EGXC", "RAF Coningsby", {2018, 3, 18},
 		"METAR EGXC 180450Z 08024KT 9999 OVC030 M01/M05 Q1011 BLACKBLU"
 		"=",
 		"TAF EGXC 180438Z 1806/1824 08025G35KT 9999 BKN030"
@@ -230,7 +230,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGKB", "London/Biggin Hill A", {2018, 3, 18},
+		"EGKB", "London Biggin Hill Airport", {2018, 3, 18},
 		"METAR EGKB 182050Z 05007KT 6000 -SN SCT007 BKN017 M01/M02 Q1010 RESN R21/SNOCLO"
 		"=",
 		"TAF EGKB 182000Z NIL"
@@ -243,7 +243,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGUW", "Wattisham(RAF)", {2018, 9, 3}, 
+		"EGUW", "RAF Wattisham", {2018, 9, 3}, 
 		"METAR EGUW 030650Z 05003KT 0600 FG FEW060 12/12 Q1021 RED"
 		" BECMG 9999 NSW BLU"
 		"=",
@@ -256,7 +256,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYRB", "Resolute Bay Arpt", {2018, 9, 3}, 
+		"CYRB", "Resolute Bay Airport", {2018, 9, 3}, 
 		"SPECI CYRB 030346Z 15011KT 3/8SM R35/3500VP6000FT/D -DZSN FG OVC002 00/M00 A2939"
 		" RMK FG6ST2 SLP960"
 		"=",
@@ -278,7 +278,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BGTL", "Thule(AB)", {2018, 9, 6},
+		"BGTL", "Thule Air Base", {2018, 9, 6},
 		"SPECI BGTL 060926Z AUTO 00000KT 1400 R08/1400VP1500 BR VV001 01/01 A2983"
 		" RMK AO2 VIS 1400V9999 SLP086 PNO TSNO $"
 		"=",
@@ -296,7 +296,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENLA", "Ula Platform(OIL)", {2018, 9, 6},
+		"ENLA", "Ula Platform", {2018, 9, 6},
 		"METAR ENLA 061120Z AUTO 14008KT 9999NDV FEW018/// BKN044/// 15/11 Q1013 W///S2"
 		"=",
 		"",
@@ -308,7 +308,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCB", "Cambridge Bay Arpt", {2018, 9, 7},
+		"CYCB", "Cambridge Bay Airport", {2018, 9, 7},
 		"METAR CYCB 070800Z 20007KT 15SM -SN FEW025 BKN060 OVC090 04/02 A2996"
 		" RMK SC1SC4AC3 SLP151=",
 		"TAF AMD CYCB 070732Z 0707/0719 19010KT P6SM OVC060"
@@ -325,7 +325,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYYB", "North Bay/Garland Ar", {2018, 9, 7},
+		"CYYB", "North Bay Jack Garland Airport", {2018, 9, 7},
 		"METAR CYYB 070900Z AUTO 00000KT 9SM R08/6000FT/ CLR 07/06 A3027"
 		" RMK SLP256"
 		"=",
@@ -341,7 +341,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CWFD", "Cape Dyer Arpt", {2018, 9, 9}, 
+		"CWFD", "Cape Dyer", {2018, 9, 9}, 
 		"METAR CWFD 092000Z AUTO 22006KT ////SM //// NCD ///// A////"
 		"=",
 		"",
@@ -353,7 +353,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YBAS", "Alice Springs Arpt", {2018, 9, 9},		
+		"YBAS", "Alice Springs Airport", {2018, 9, 9},		
 		"METAR YBAS 090030Z AUTO 08013KT 9999 // NCD 21/M03 Q1026 RF00.0/000.0"
 		" PRESENT WEATHER SENSOR US"
 		"=",
@@ -369,7 +369,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BGKK", "Kulusuk Arpt", {2018, 9, 9},
+		"BGKK", "Kulusuk Airport", {2018, 9, 9},
 		"METAR BGKK 091950Z AUTO 08010KT 9999NDV -DZ OVC025/// 06/04 Q1003"
 		"=",
 		"TAF BGKK 091418Z 0915/0921 08008KT 9999 -RA BKN040"
@@ -383,7 +383,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BGJN", "Ilulissat Arpt", {2018, 9, 9},
+		"BGJN", "Ilulissat Airport", {2018, 9, 9},
 		"METAR BGJN 091950Z AUTO 14003KT 9999NDV SCT016/// BKN019/// 04/01 Q1003"
 		"=",
 		"TAF AMD BGJN 091907Z 0919/0922 VRB03KT 9999 BKN020"
@@ -399,7 +399,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BGSF", "Stroemfjord Arpt", {2018, 9, 9},
+		"BGSF", "Kangerlussuaq Airport", {2018, 9, 9},
 		"METAR BGSF 091950Z AUTO 24004KT 9999NDV -SHRA BKN030/// BKN035/// 06/04 Q1004"
 		"=",
 		"TAF AMD BGSF 091757Z 0918/1024 25007KT 9999 FEW020 BKN040"
@@ -419,7 +419,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENNE", "Norne FPSO(OIL)", {2018, 9, 9}, 
+		"ENNE", "Norne A Oil Platform", {2018, 9, 9}, 
 		"METAR ENNE 092050Z AUTO 13027KT 9999NDV NCD 14/11 Q1006 W///S4"
 		"=",
 		"ENNE 091100Z 0912/0917 11020KT 9999 FEW040"
@@ -432,7 +432,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABR", "Barrow/Post-Rogers", {2018, 9, 9}, 
+		"PABR", "Wiley Post Will Rogers Memorial Airport", {2018, 9, 9}, 
 		"METAR PABR 091953Z 28006KT 3/4SM R07/2000V4500FT BR OVC003 06/06 A3006"
 		" RMK SLP179 VIS 1/2V1 T00560056 VIA AUTODIAL"
 		"=",
@@ -447,7 +447,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYRB", "Resolute Bay Arpt", {2018, 9, 9}, 
+		"CYRB", "Resolute Bay Airport", {2018, 9, 9}, 
 		"METAR CYRB 092000Z 08020KT 15SM FEW025 FEW038 BKN061 BKN070 M02/M04 A2945"
 		" RMK SC1SC1SC3AC2 SLP980"
 		"=",
@@ -465,7 +465,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYEV", "Inuvik/Zubko Arpt", {2018, 9, 9}, 
+		"CYEV", "Inuvik Mike Zubko Airport", {2018, 9, 9}, 
 		"CYEV 092000Z 25007KT 220V300 15SM FEW030 BKN085 OVC250 08/02 A2999"
 		" RMK SC1AC6CI1 SLP162"
 		"=",
@@ -482,7 +482,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABA", "Barter Island Arpt", {2018, 9, 9}, 
+		"PABA", "Barter Island LRRS Airport", {2018, 9, 9}, 
 		"METAR PABA 091952Z AUTO 28011KT 10SM BKN050 OVC060 06/03 A3003"
 		" RMK AO2 SLP156 T00560028 TSNO"
 		"=",
@@ -496,7 +496,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASC", "Deadhorse Arpt", {2018, 9, 9}, 
+		"PASC", "Deadhorse Airport", {2018, 9, 9}, 
 		"METAR PASC 091953Z 26010KT 10SM FEW040 OVC065 08/06 A3004"
 		" RMK AO2 SLP174 CIG LWR DSNT W T00830056"
 		"=",
@@ -512,7 +512,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYMA", "Mayo Arpt", {2018, 9, 9}, 
+		"CYMA", "Mayo Airport", {2018, 9, 9}, 
 		"METAR CYMA 092000Z VRB02KT 20SM FEW040 FEW190 SCT210 10/01 A3002"
 		" RMK CF1AS2CC1 CF TR SLP190"
 		"=",
@@ -525,7 +525,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UHMA", "Anadyr/Ugolny Arpt", {2018, 9, 9},
+		"UHMA", "Ugolny Airport", {2018, 9, 9},
 		"METAR UHMA 092030Z 08002MPS CAVOK 16/14 Q1020 R88/60D NOSIG"
 		" RMK END R01/09002MPS QFE761/1015"
 		"=",
@@ -540,7 +540,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UHPP", "Petropavlovsk-Kamcha", {2018, 9, 9}, 
+		"UHPP", "Yelizovo Airport", {2018, 9, 9}, 
 		"METAR UHPP 092030Z 15001MPS 9999 BKN010 OVC033 11/11 Q1020 R16R/290155 NOSIG"
 		" RMK MT OBSC QFE762/1016"
 		"=",
@@ -557,7 +557,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UHMM", "Magadan/Sokol Arpt", {2018, 9, 9}, 
+		"UHMM", "Sokol Airport", {2018, 9, 9}, 
 		"METAR UHMM 092030Z 07001MPS 9999 FEW010 OVC020CB 11/11 Q1008 R10/290550 NOSIG"
 		" RMK MT OBSC QFE741"
 		"=",
@@ -571,7 +571,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UHSS", "Yuzhno-Sakhalinsk Ar", {2018, 9, 9}, 
+		"UHSS", "Yuzhno-Sakhalinsk Airport", {2018, 9, 9}, 
 		"METAR UHSS 092030Z 14001MPS 9999 NSC 05/05 Q1021 R01/70D NOSIG"
 		" RMK QFE765/1020"
 		"=",
@@ -585,7 +585,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASN", "St Paul Island Arpt", {2018, 9, 9}, 
+		"PASN", "St Paul Island Airport", {2018, 9, 9}, 
 		"SPECI PASN 092045Z AUTO 06007KT 10SM BKN010 BKN017 08/07 A3026"
 		" RMK AO2 CIG 008V014 T00830072 TSNO $"
 		"=",
@@ -604,7 +604,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CWEU", "Eureka", {2018, 9, 9}, 
+		"CWEU", "Eureka Aerodrome", {2018, 9, 9}, 
 		"METAR CWEU 092000Z VRB02KT 15SM FEW025 FEW060 FEW110 FEW250 01/M07 A2964"
 		" RMK SC1SC1AC1CI1 SC TR SC TR AC TR CI TR SLP039"
 		"=",
@@ -615,7 +615,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYVR", "Vancouver Intl", {2018, 9, 9}, 
+		"CYVR", "Vancouver International Airport", {2018, 9, 9}, 
 		"SPECI CYVR 092044Z 10014G21KT 12SM -RA SCT019 BKN035 OVC058 16/13 A2993"
 		" RMK SF3SC3SC2 SLP136 DENSITY ALT 100FT"
 		"=",
@@ -636,7 +636,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KABQ", "Albuquerque Intl", {2018, 9, 9}, 
+		"KABQ", "Albuquerque International Sunport", {2018, 9, 9}, 
 		"METAR KABQ 092052Z 23004KT 10SM FEW080 FEW120 FEW180 SCT300 29/07 A3005"
 		" RMK AO2 LTG DSNT SE SLP085 CB DSNT N-NE AND SE T02940067 58025"
 		"=",
@@ -655,7 +655,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMIA", "Miami Intl", {2018, 9, 9}, 
+		"KMIA", "Miami International Airport", {2018, 9, 9}, 
 		"KMIA 092053Z 17008KT 10SM VCTS SCT030 SCT065 SCT130 BKN250 29/24 A2990"
 		" RMK AO2 LTG DSNT W SLP125 CB DSNT NW MOV NE T02890239 58010 $"
 		"=",
@@ -674,7 +674,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHTS", "Huntington/Ferguson", {2018, 9, 9}, 
+		"KHTS", "Tri-State/Milton J. Ferguson Field", {2018, 9, 9}, 
 		"METAR KHTS 092051Z 00000KT 3/4SM +RA BR FEW055 BKN070 OVC090 22/21 A2980"
 		" RMK AO2 SLP086 P0018 60080 T02170206 57010"
 		"=",
@@ -691,7 +691,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KPIT", "Pittsburgh Intl", {2018, 9, 9}, 
+		"KPIT", "Pittsburgh International Airport", {2018, 9, 9}, 
 		"METAR KPIT 092051Z 08015G22KT 3SM RA BR BKN008 OVC023 16/13 A2995"
 		" RMK AO2 SLP149 P0018 60072 T01560133 56005 $"
 		"=",
@@ -711,7 +711,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMFV", "Melfa/Accomack Cnty", {2018, 9, 9}, 
+		"KMFV", "Accomack County Airport", {2018, 9, 9}, 
 		"METAR KMFV 092035Z AUTO 09015G23KT 5SM -VCTSRA SCT009 OVC013 23/23 A2991"
 		" RMK AO2 LTG DSNT W P0009 T02320225"
 		"=",
@@ -725,7 +725,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MBPV", "Providenciales Intl", {2018, 9, 9}, 
+		"MBPV", "Providenciales Airport", {2018, 9, 9}, 
 		"MBPV 082000Z 13005KT 9999 SCT016 30/23 Q1011"
 		"=",
 		"TAF MBPV 091000Z 0912/1012 09005KT 9999 SCT015CB BKN250"
@@ -736,7 +736,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCB", "Cambridge Bay Arpt", {2018, 9, 9}, 
+		"CYCB", "Cambridge Bay Airport", {2018, 9, 9}, 
 		"SPECI CYCB 092016Z 31019G26KT 15SM VCSH FEW015 SCT022 BKN100 01/M03 A2967"
 		" RMK SC1SC3AC3 SLP050"
 		"=",
@@ -755,7 +755,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KPHF", "Newport News/William", {2018, 9, 9}, 
+		"KPHF", "Newport News Williamsburg International Airport", {2018, 9, 9}, 
 		"METAR KPHF 092054Z 36005KT 10SM FEW021 BKN027 OVC060 26/23 A2990"
 		" RMK AO2 LTG DSNT NE RAB41E50 SLP123 P0000 60000 T02560228 55010"
 		"=",
@@ -773,7 +773,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VRMM", "Male/Nasir Intl", {2018, 9, 9}, 
+		"VRMM", "Male International Airport", {2018, 9, 9}, 
 		"METAR VRMM 092000Z 26006KT 9999 FEW018 29/24 Q1011 NOSIG"
 		"=",
 		"TAF VRMM 091700Z 0918/1024 27005KT 9999 FEW018"
@@ -785,7 +785,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{ 
-		"OMAA", "Abu Dhabi Intl", {2018, 9, 9}, 
+		"OMAA", "Abu Dhabi International Airport", {2018, 9, 9}, 
 		"METAR OMAA 092100Z 03007KT 6000 NSC 31/28 Q1003"
 		" BECMG 09008KT"
 		"=",
@@ -802,7 +802,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LTBA", "Istanbul/Ataturk Int", {2018, 9, 9}, 
+		"LTBA", "Ataturk International Airport", {2018, 9, 9}, 
 		"METAR LTBA 092050Z 34004KT CAVOK 21/16 Q1016 NOSIG"
 		" RMK RWY17L 35002KT RWY05 VRB02KT RWY23 04003KT"
 		"=",
@@ -817,7 +817,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LBSF", "Sofia Arpt", {2018, 9, 9}, 
+		"LBSF", "Sofia Airport", {2018, 9, 9}, 
 		"METAR LBSF 092100Z 29006KT 260V340 CAVOK 17/10 Q1021 NOSIG"
 		"=",
 		"TAF LBSF 091700Z 0918/1018 30010KT 9999 SCT050"
@@ -831,7 +831,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LFRB", "Brest/Guipavas Arpt", {2018, 9, 9}, 
+		"LFRB", "Brest Bretagne Airport", {2018, 9, 9}, 
 		"METAR LFRB 092100Z AUTO 22002KT 9000 2300 FEW006 15/15 Q1023"
 		" TEMPO 2000 BR OVC002"
 		"=",
@@ -850,7 +850,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LSGG", "Geneva/Cointrin Arpt", {2018, 9, 9}, 
+		"LSGG", "Geneva Cointrin International Airport", {2018, 9, 9}, 
 		"METAR LSGG 092050Z VRB01KT CAVOK 19/14 Q1022 NOSIG"
 		"=",
 		"TAF LSGG 092025Z 0921/1103 VRB03KT CAVOK TX28/1015Z TN11/1005Z"
@@ -862,7 +862,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EIKN", "Knock/Ireland West A", {2018, 9, 9}, 
+		"EIKN", "Ireland West Knock Airport", {2018, 9, 9}, 
 		"EIKN 092100Z 24011KT 9999 FEW018 BKN031 11/07 Q1015 NOSIG"
 		"=",
 		"TAF COR EIKN 091726Z 0918/1018 25014KT 9999 SCT018 BKN030"
@@ -886,7 +886,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGPO", "Stornoway Arpt", {2018, 9, 9}, 
+		"EGPO", "Stornoway Airport", {2018, 9, 9}, 
 		"METAR EGPO 092050Z 23016KT 9000 SHRA SCT006 SCT016 BKN026 11/10 Q0999"
 		"=",
 		"TAF EGPO 091953Z 0921/1006 22015KT 9999 SCT015"
@@ -900,7 +900,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGPU", "Tiree Island Arpt", {2018, 9, 9}, 
+		"EGPU", "Tiree Airport", {2018, 9, 9}, 
 		"METAR EGPU 092050Z AUTO 24025G35KT 210V270 9999 SCT021/// SCT033/// 12/11 Q1005 RERA"
 		"=",
 		"",
@@ -912,7 +912,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGPL", "Benbecula Isl Arpt", {2018, 9, 9}, 
+		"EGPL", "Benbecula Airport", {2018, 9, 9}, 
 		"METAR EGPL 092050Z AUTO 25027G37KT 9999 SCT012/// BKN017/// 13/11 Q1000 RERA"
 		"=",
 		"",
@@ -924,7 +924,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EINN", "Shannon Arpt", {2018, 9, 9}, 
+		"EINN", "Shannon Airport", {2018, 9, 9}, 
 		"METAR EINN 092100Z 25012KT 9999 -DZ FEW018 BKN024 BKN037 14/08 Q1018 NOSIG"
 		"=",
 		"TAF EINN 091700Z 0918/1018 25016KT 9999 FEW025 BKN035"
@@ -946,7 +946,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EICK", "Cork Arpt", {2018, 9, 9}, 
+		"EICK", "Cork Airport", {2018, 9, 9}, 
 		"METAR EICK 092100Z 23007KT 9999 FEW038 BKN180 11/08 Q1019 NOSIG"
 		"=",
 		"TAF EICK 091700Z 0918/1018 27012KT 9999 BKN025"
@@ -966,7 +966,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGPF", "Glasgow Arpt", {2018, 9, 9}, 
+		"EGPF", "Glasgow International Airport", {2018, 9, 9}, 
 		"METAR EGPF 092050Z AUTO 22017KT 7000 -RA FEW028/// BKN033/// //////TCU 12/09 Q1010"
 		"=",
 		"TAF EGPF 091657Z 0918/1018 25013KT 9999 SCT035"
@@ -985,7 +985,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGQK", "Kinloss(RAF)", {2018, 9, 9}, 
+		"EGQK", "RAF Kinloss", {2018, 9, 9}, 
 		"METAR EGQK 092050Z AUTO 21011KT 9999 FEW048/// 12/06 Q1004"
 		"=",
 		"",
@@ -997,7 +997,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENHM", "Heimdal(OIL)", {2018, 9, 9}, 
+		"ENHM", "Heimdal Oil Platform", {2018, 9, 9}, 
 		"METAR ENHM 092050Z AUTO 23019KT 9999NDV FEW017/// SCT026/// BKN087/// 14/12 Q1004 W15/S4"
 		"=",
 		"",
@@ -1009,7 +1009,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EDDT", "Berlin/Tegel Arpt", {2018, 9, 9}, 
+		"EDDT", "Berlin-Tegel Airport", {2018, 9, 9}, 
 		"METAR EDDT 092050Z 00000KT CAVOK 17/09 Q1021 NOSIG"
 		"=",
 		"TAF EDDT 091700Z 0918/1018 VRB03KT CAVOK"
@@ -1021,7 +1021,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EDDS", "Stuttgart Arpt", {2018, 9, 9}, 
+		"EDDS", "Stuttgart Airport", {2018, 9, 9}, 
 		"METAR EDDS 092050Z VRB04KT CAVOK 16/11 Q1022"
 		"=",
 		"TAF EDDS 091700Z 0918/1018 VRB03KT CAVOK"
@@ -1032,7 +1032,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ELLX", "Luxembourg/Findel Ar", {2018, 9, 9}, 
+		"ELLX", "Luxembourg-Findel International Airport", {2018, 9, 9}, 
 		"METAR ELLX 092050Z VRB02KT CAVOK 18/09 Q1022 NOSIG"
 		"=",
 		"TAF ELLX 091700Z 0918/1024 17005KT CAVOK"
@@ -1043,7 +1043,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ZSSS", "Shanghai/Hongqiad", {2018, 9, 9}, 
+		"ZSSS", "Shanghai Hongqiao International Airport", {2018, 9, 9}, 
 		"ZSSS 092100Z 34003MPS CAVOK 21/17 Q1018 NOSIG"
 		"=",
 		"TAF ZSSS 091512Z 0918/1018 03004MPS 6000 SCT030 TX28/1006Z TN22/0921Z"
@@ -1054,7 +1054,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RPLL", "Manila/Aquino Intl", {2018, 9, 9}, 
+		"RPLL", "Ninoy Aquino International Airport", {2018, 9, 9}, 
 		"METAR RPLL 092100Z 00000KT 9999 SCT023 BKN100 27/27 Q1010 NOSIG"
 		" RMK A2983"
 		"=",
@@ -1067,7 +1067,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UIBB", "Bratsk Arpt", {2018, 9, 9}, 
+		"UIBB", "Bratsk Airport", {2018, 9, 9}, 
 		"METAR UIBB 092100Z AUTO 02002MPS 330V070 9999 // ///074/// 12/09 Q1006"
 		" RMK QFE712/0949"
 		"=",
@@ -1083,7 +1083,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YSSY", "Sydney Intl", {2018, 9, 9}, 
+		"YSSY", "Sydney Kingsford Smith International Airport", {2018, 9, 9}, 
 		"METAR YSSY 092100Z 25007KT 9999 FEW032 14/05 Q1024"
 		"=",
 		"TAF YSSY 091644Z 0918/1024 25010KT CAVOK"
@@ -1097,7 +1097,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYP", "Mount Pleasant Arpt", {2018, 9, 9}, 
+		"EGYP", "Mount Pleasant Airport", {2018, 9, 9}, 
 		"METAR EGYP 092050Z 06007KT CAVOK 08/02 Q1024 BLU"
 		"=",
 		"TAF EGYP 091921Z 0921/1015 27008KT 9999 FEW025"
@@ -1110,7 +1110,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"SAWH", "Ushuaia/Malvinas Arp", {2018, 9, 9}, 
+		"SAWH", "Malvinas Argentinas Airport", {2018, 9, 9}, 
 		"METAR SAWH 092100Z 34006KT 9999 FEW045 SCT100 09/M01 Q1015"
 		"=",
 		"TAF SAWH 091700Z 0918/1018 VRB03KT 9999 SCT030 BKN090 TX10/0918Z TN00/1010Z"
@@ -1124,7 +1124,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VHHH", "Hong Kong Intl", {2018, 9, 9}, 
+		"VHHH", "Hong Kong International Airport", {2018, 9, 9}, 
 		"METAR VHHH 092100Z 07006KT 9999 FEW035 26/22 Q1012 NOSIG"
 		"=",
 		"TAF VHHH 091700Z 0918/1024 08010KT 9000 FEW020 TX32/1006Z TN26/0922Z TN27/1022Z"
@@ -1138,7 +1138,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PMDY", "Midway Island Arpt", {2018, 9, 9}, 
+		"PMDY", "Henderson Field", {2018, 9, 9}, 
 		"METAR PMDY 092056Z AUTO 22015KT 10SM BKN023 29/23 A2987"
 		" RMK AO2 SLP114 T02890233 51002"
 		"=",
@@ -1155,7 +1155,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"SBBV", "Boa Vista Arpt", {2018, 9, 9}, 
+		"SBBV", "Atlas Brasil Cantanhede Airport", {2018, 9, 9}, 
 		"METAR SBBV 092100Z 30003KT 9999 SCT015 FEW020TCU OVC070 26/23 Q1010"
 		"=",
 		"TAF SBBV 091600Z 0918/1018 17008KT 9999 SCT010 FEW020TCU TN25/1007Z T X33/1018Z"
@@ -1174,7 +1174,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DAAT", "Tamanrasset/Aguenar", {2018, 9, 9}, 
+		"DAAT", "Aguenar - Hadj Bey Akhamok Airport", {2018, 9, 9}, 
 		"METAR DAAT 092100Z 23004KT 3000 HZ SCT046 27/10 Q1025"
 		"=",
 		"TAF DAAT 091700Z 0918/1018 11010KT 8000 SCT046 SCT100"
@@ -1192,7 +1192,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LMML", "Malta Intl Arpt", {2018, 9, 9}, 
+		"LMML", "Malta International Airport", {2018, 9, 9}, 
 		"METAR LMML 092045Z 14004KT 9999 FEW020 25/21 Q1020 NOSIG"
 		" RMK SMOKE TO NE"
 		"=",
@@ -1205,7 +1205,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LPPT", "Lisbon Arpt", {2018, 9, 9}, 
+		"LPPT", "Humberto Delgado Airport (Lisbon Portela Airport)", {2018, 9, 9}, 
 		"METAR LPPT 092100Z 32014KT CAVOK 18/15 Q1020"
 		"=",
 		"TAF LPPT 091700Z 0918/1024 32015KT 9999 FEW020"
@@ -1219,7 +1219,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LFBD", "Bordeaux/Merignac Ar", {2018, 9, 9}, 
+		"LFBD", "Bordeaux-Merignac Airport", {2018, 9, 9}, 
 		"METAR LFBD 092100Z AUTO 26004KT CAVOK 20/18 Q1023 NOSIG"
 		"=",
 		"TAF LFBD 091700Z 0918/1024 30005KT CAVOK TX30/1015Z TN16/1006Z"
@@ -1233,7 +1233,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EKCH", "Kobenhavn Intl", {2018, 9, 9}, 
+		"EKCH", "Copenhagen Kastrup Airport", {2018, 9, 9}, 
 		"METAR EKCH 092050Z 16005KT CAVOK 17/15 Q1020 NOSIG"
 		"=",
 		"TAF EKCH 091657Z 0918/1018 18012KT 9999 SCT030"
@@ -1245,7 +1245,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENTC", "Tromso Arpt", {2018, 9, 9}, 
+		"ENTC", "Tromso Airport", {2018, 9, 9}, 
 		"METAR ENTC 092050Z VRB02KT CAVOK 09/07 Q1018 NOSIG"
 		" RMK WIND 2600FT 18019KT"
 		"=",
@@ -1258,7 +1258,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSB", "Longyearbyen/Svalbar", {2018, 9, 9}, 
+		"ENSB", "Ogdensburg International Airport", {2018, 9, 9}, 
 		"METAR ENSB 092050Z 25009KT 9999 FEW006 BKN018 05/04 Q1017"
 		" RMK WIND 1400FT 23012KT"
 		"=",
@@ -1273,7 +1273,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BIAR", "Akureyri Arpt", {2018, 9, 9}, 
+		"BIAR", "Akureyri Airport", {2018, 9, 9}, 
 		"METAR BIAR 092100Z 04005KT 9999 FEW040 BKN057 09/07 Q1001"
 		"=",
 		"TAF BIAR 091958Z 0921/1021 31010KT 9999 FEW030 BKN060 TX12/1015Z TN05/1006Z"
@@ -1287,7 +1287,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"FBMN", "Maun Arpt", {2018, 9, 9}, 
+		"FBMN", "Maun Airport", {2018, 9, 9}, 
 		"METAR FBMN 092100Z 16005KT CAVOK 14/M12 Q1022"
 		"=",
 		"TAF FBMN 091200Z 0915/0924 15010KT CAVOK"
@@ -1298,7 +1298,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"FALW", "Langebaanweg (S", {2018, 9, 9}, 
+		"FALW", "Langebaanweg Airport", {2018, 9, 9}, 
 		"METAR FALW 092100Z AUTO 20004KT //// // ////// 08/05 Q1022"
 		"=",
 		"",
@@ -1310,7 +1310,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LESA", "Salamanca Arpt", {2018, 9, 9}, 
+		"LESA", "Salamanca Airport", {2018, 9, 9}, 
 		"METAR LESA 092100Z AUTO 07007KT 9999 NCD 19/11 Q1023"
 		"=",
 		"TAF LESA 091700Z 0918/1018 VRB05KT 9999 FEW045 TX26/1015Z TN11/1006Z"
@@ -1327,7 +1327,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LEIB", "Ibiza Arpt", {2018, 9, 9}, 
+		"LEIB", "Ibiza Airport", {2018, 9, 9}, 
 		"METAR COR LEIB 092100Z 30008KT 280V350 9999 -RA FEW016 SCT019 BKN023 26/21 Q1018"
 		" TEMPO 4000 TSRA FEW022CB"
 		"=",
@@ -1344,7 +1344,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LEZG", "Zaragoza Arpt", {2018, 9, 9}, 
+		"LEZG", "Zaragoza Air Base", {2018, 9, 9}, 
 		"METAR LEZG 092100Z 30009KT 9999 VCTS FEW060CB 23/18 Q1021"
 		"=",
 		"TAF AMD LEZG 091935Z 0919/1018 30010KT 9999 FEW040 TX27/1014Z TN18/1005Z"
@@ -1360,7 +1360,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LEHC", "Huesca/Pirineos Arpt", {2018, 9, 9}, 
+		"LEHC", "Huesca/Pirineos Airport", {2018, 9, 9}, 
 		"METAR LEHC 092100Z AUTO 04003KT 360V080 CAVOK 20/17 Q1023"
 		"=",
 		"TAF LEHC 090800Z 0909/1009 08008KT 9999 SCT025 TX26/0914Z TN17/1005Z"
@@ -1377,7 +1377,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LRCK", "Constanta/Kogalnicea", {2018, 9, 9}, 
+		"LRCK", "Mihail Kogalniceanu International Airport", {2018, 9, 9}, 
 		"METAR LRCK 092130Z 32007KT CAVOK 16/11 Q1017 NOSIG"
 		"=",
 		"TAF LRCK 091700Z 0918/1018 35006KT CAVOK"
@@ -1392,7 +1392,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYVQ", "Norman Wells Arpt", {2018, 9, 9}, 
+		"CYVQ", "Norman Wells Airport", {2018, 9, 9}, 
 		"METAR CYVQ 092100Z VRB03KT 30SM FEW100 BKN120 BKN250 08/02 A3003"
 		" RMK AC2AC4CI1 SLP175"
 		"=",
@@ -1406,7 +1406,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BGTL", "Thule(AB)", {2018, 9, 9}, 
+		"BGTL", "Thule Air Base", {2018, 9, 9}, 
 		"METAR BGTL 092056Z AUTO 30007KT 9999 CLR 02/00 A2954"
 		" RMK AO2 SLP989 T00150003 58001 PNO TSNO $"
 		"=",
@@ -1421,7 +1421,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KCRW", "Charleston/Yeager Ar", {2018, 9, 9}, 
+		"KCRW", "Yeager Airport", {2018, 9, 9}, 
 		"SPECI KCRW 092124Z 06005KT 2SM -RA BR BKN006 OVC045 22/22 A2982"
 		" RMK AO2 LTG DSNT NE AND SW TSE18 CB DSNT NE-SE-SW P0001 T02170217"
 		"=",
@@ -1440,7 +1440,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KIOB", "Mount Sterling/Montg", {2018, 9, 9}, 
+		"KIOB", "Mount Sterling Montgomery County Airport", {2018, 9, 9}, 
 		"METAR KIOB 092115Z AUTO 00000KT 7SM RA BKN004 BKN013 OVC033 21/21 A2981"
 		" RMK AO2 P0002"
 		"=",
@@ -1454,7 +1454,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KJST", "Johnstown/Murtha Arp", {2018, 9, 9}, 
+		"KJST", "John Murtha Johnstown Cambria County Airport", {2018, 9, 9}, 
 		"METAR KJST 092054Z AUTO 09009KT 3SM RA BR OVC009 13/11 A3004"
 		" RMK AO2 CIG 006V013 SLP173 P0015 60035 T01280111 57007"
 		"=",
@@ -1470,7 +1470,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KSJS", "Prestonburg/Big Sand", {2018, 9, 9}, 
+		"KSJS", "Big Sandy Regional Airport", {2018, 9, 9}, 
 		"METAR KSJS 092135Z AUTO 00000KT 7SM RA SCT007 BKN013 OVC023 22/22 A2984"
 		" RMK AO2 T02230223"
 		"=",
@@ -1489,7 +1489,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KPKB", "Parkersburg/Wood Cnt", {2018, 9, 9}, 
+		"KPKB", "Mid Ohio Valley Regional Airport", {2018, 9, 9}, 
 		"SPECI KPKB 092126Z 09007KT 1SM -RA BR OVC006 20/19 A2987"
 		" RMK AO2 CIG 002V008 P0005 T02000189 $"
 		"=",
@@ -1508,7 +1508,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KZZV", "Zanesville Muni", {2018, 9, 9}, 
+		"KZZV", "Zanesville Municipal Airport", {2018, 9, 9}, 
 		"METAR KZZV 092053Z AUTO 07007KT 6SM -RA BR OVC006 16/14 A2985"
 		" RMK AO2 RAB21 SLP106 P0002 60004 T01610144 56013"
 		"=",
@@ -1527,7 +1527,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KYNG", "Youngstown-Warren Rg", {2018, 9, 9}, 
+		"KYNG", "Youngstown Warren Regional Airport", {2018, 9, 9}, 
 		"KYNG 092051Z 09017G21KT 4SM RA BR BKN005 OVC013 14/13 A2999"
 		" RMK AO2 SLP154 P0011 60050 T01440133 58010 $"
 		"=",
@@ -1546,7 +1546,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KRDG", "Reading/Spaatz Fld", {2018, 9, 9}, 
+		"KRDG", "Reading Regional Carl A Spaatz Field", {2018, 9, 9}, 
 		"SPECI KRDG 092115Z VRB04G15KT 2SM RA BKN009 OVC021 13/13 A3015"
 		" RMK AO2 SFC VIS 10 P0003 T01330128"
 		"=",
@@ -1565,7 +1565,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KIDI", "Indiana/Stewart Arpt", {2018, 9, 9}, 
+		"KIDI", "Indiana County/Jimmy Stewart Fld/ Airport", {2018, 9, 9}, 
 		"METAR KIDI 092135Z AUTO 09010G16KT 060V120 3SM BR SCT009 BKN014 OVC055 13/13 A3008"
 		" RMK A01"
 		"=",
@@ -1578,7 +1578,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGPI", "Islay Arpt", {2018, 9, 9}, 
+		"EGPI", "Islay Airport", {2018, 9, 9}, 
 		"METAR EGPI 092120Z AUTO 24026G36KT 9999 FEW028/// 13/10 Q1010"
 		"=",
 		"",
@@ -1590,7 +1590,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENBL", "Bringeland Arpt", {2018, 9, 9}, 
+		"ENBL", "Forde Airport", {2018, 9, 9}, 
 		"METAR ENBL 092050Z 18006KT 9999 VCSH SCT035 BKN040 13/10 Q1005"
 		"=",
 		"TAF ENBL 092300Z NIL"
@@ -1603,7 +1603,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENOV", "Orsta-Volda Arpt", {2018, 9, 9}, 
+		"ENOV", "Orsta-Volda Airport, Hovden", {2018, 9, 9}, 
 		"METAR ENOV 092050Z 06008KT 330V120 9999 -SHRA FEW030 BKN059 16/07 Q1004"
 		" RMK WIND 2175FT 13026KT"
 		"=",
@@ -1614,7 +1614,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENAL", "Vigra/Alesund Arpt", {2018, 9, 9}, 
+		"ENAL", "Alesund Airport", {2018, 9, 9}, 
 		"METAR ENAL 092120Z 09009KT 050V120 9999 -RA SCT053 OVC076 14/10 Q1003"
 		"=",
 		"TAF ENAL 091700Z 0918/0922 VRB07KT 9999 -SHRA FEW035TCU BKN050"
@@ -1628,7 +1628,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"NZSP", "Amundsen-South Pole", {2018, 9, 9}, 
+		"NZSP", "South Pole Station Airport", {2018, 9, 9}, 
 		"METAR NZSP 091750Z 11009KT 9999 IC FEW015 M70/ A2823"
 		" RMK CLN AIR 10009KT ALL WNDS GRID"
 		"=",
@@ -1639,7 +1639,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"USPP", "Perm/Savino Arpt", {2018, 9, 10},
+		"USPP", "Bolshoye Savino Airport", {2018, 9, 10},
 		"METAR USPP 100330Z 26002MPS 0100 R21/M0200 FG VV001 02/02 Q1028 R21/090060 NOSIG"
 		" RMK QBB030 QFE760"
 		"=",
@@ -1656,7 +1656,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EFHK", "Helsinki/Vantaa Arpt", {2018, 9, 10},
+		"EFHK", "Helsinki Vantaa Airport", {2018, 9, 10},
 		"METAR EFHK 101150Z 12010KT 9999 -SHRA SCT013 SCT030CB BKN040 17/15 Q1022"
 		" TEMPO 6000 SHRA BKN013 SCT030CB"
 		"=",
@@ -1672,7 +1672,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENLE", "Ekofisk Platform(OIL", {2018, 9, 10},
+		"ENLE", "Ekofisk L Oil Platform", {2018, 9, 10},
 		"METAR ENLE 101220Z 23029KT 9999 VCSH FEW020TCU BKN025 14/09 Q1013 W17/S5"
 		"=",
 		"TAF ENLE 101100Z 1012/1021 24028KT 9999 FEW020TCU BKN035"
@@ -1683,7 +1683,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKLI", "Ivano-Frankivsk Arpt", {2018, 9, 10},
+		"UKLI", "Ivano-Frankivsk International Airport", {2018, 9, 10},
 		"METAR UKLI 101730Z 28003MPS 230V310 9999 FEW025CB BKN046 15/13 Q1020 R28/190068"
 		" TEMPO VRB10G15MPS 0500 +TSRAGR BKN010CB"
 		"=",
@@ -1696,7 +1696,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KTPA", "Tampa Intl Arpt", {2018, 9, 10},
+		"KTPA", "Tampa International Airport", {2018, 9, 10},
 		"METAR KTPA 102242Z COR 08004KT 10SM TS OVC026CB 28/22 A2998"
 		" RMK AO2 LTG DSNT NE-SE RAB2159E09 TSE2159B13E22E27E32E39B42"
 		" CONS LTGICCCG OHD AND NE-E TS OHD AND NE-E MOV NE P0000 T02830222"
@@ -1714,7 +1714,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKHH", "Kharkiv Intl", {2018, 9, 11},
+		"UKHH", "Kharkiv International Airport", {2018, 9, 11},
 		"METAR UKHH 111430Z 12006MPS CAVOK 25/02 Q1019 R07/0///72"
 		" TEMPO 10009G16MPS"
 		"=",
@@ -1728,7 +1728,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGDY", "Yeovilton (NAVY)", {2018, 9, 11},
+		"EGDY", "RNAS Yeovilton", {2018, 9, 11},
 		"SPECI EGDY 111709Z 33007KT 2800 RADZ FEW006 OVC008 17/16 Q1019 YLO1"
 		" BECMG 4000 SCT008 GRN"
 		"=",
@@ -1746,7 +1746,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"NZSP", "Amundsen-South Pole", {2018, 9, 11}, 
+		"NZSP", "South Pole Station Airport", {2018, 9, 11}, 
 		"METAR NZSP 111750Z 10008KT 4000 IC BR FEW000 M62/ A2823"
 		" RMK BR FEW000 CLN AIR 10007KT ALL WNDS GRID"
 		"=",
@@ -1757,7 +1757,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMOB", "Mobile Rgnl", {2018, 9, 11},
+		"KMOB", "Mobile Regional Airport", {2018, 9, 11},
 		"METAR KMOB 111856Z 00000KT 7SM -RA SCT034 BKN055 BKN100 26/22 A3001"
 		" RMK AO2 RAB50 SLP160 CB DSNT ALQDS P0001 T02610222"
 		"=",
@@ -1776,7 +1776,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LFRB", "Brest/Guipavas Arpt", {2018, 9, 11},
+		"LFRB", "Brest Bretagne Airport", {2018, 9, 11},
 		"METAR LFRB 111900Z AUTO 23007KT 9999 OVC019 18/15 Q1023"
 		" BECMG OVC009"
 		"=",
@@ -1793,7 +1793,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EFHK", "Helsinki/Vantaa Arpt", {2018, 9, 11},
+		"EFHK", "Helsinki Vantaa Airport", {2018, 9, 11},
 		"METAR EFHK 111850Z 18010KT 9999 SHRA SCT050CB BKN063 14/12 Q1006"
 		" BECMG -SHRA"
 		"=",
@@ -1813,7 +1813,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKLL", "LViv/Halyfskyi Intl", {2018, 9, 11},
+		"UKLL", "Lviv International Airport", {2018, 9, 11},
 		"METAR UKLL 111900Z 14001MPS 6000 NSC 15/14 Q1023 R13/CLRD// NOSIG"
 		"=",
 		"TAF UKLL 111702Z 1118/1218 VRB01MPS 3000 BR BKN010"
@@ -1826,7 +1826,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHGG", "Groningen Arpt", {2018, 9, 11},
+		"EHGG", "Eelde Airport", {2018, 9, 11},
 		"METAR EHGG 111855Z AUTO 24013KT 4900 BR FEW019 BKN023 OVC027 18/16 Q1018"
 		" BECMG 28008KT 5000 DZ BKN006"
 		"=",
@@ -1848,7 +1848,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGSS", "London/Stansted Arpt", {2018, 9, 11},
+		"EGSS", "London Stansted Airport", {2018, 9, 11},
 		"METAR EGSS 111850Z AUTO VRB03KT 3400 DZ BKN003 BKN007 OVC016 17/17 Q1019 RERA"
 		"=",
 		"TAF AMD EGSS 111815Z 1118/1224 24010KT 9999 BKN020"
@@ -1869,7 +1869,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGGD", "Bristol Intl", {2018, 9, 11},
+		"EGGD", "Bristol Airport", {2018, 9, 11},
 		"METAR EGGD 111850Z 26011KT 2200 -DZ BR BKN001 15/15 Q1020 RERA"
 		"=",
 		"TAF AMD EGGD 111831Z 1118/1218 26009KT 0300 DZ FG OVC001"
@@ -1887,7 +1887,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHON", "Huron Rgnl", {2018, 9, 11},
+		"KHON", "Huron Regional Airport", {2018, 9, 11},
 		"METAR KHON 111855Z AUTO 18022G37KT 10SM CLR 29/17 A2968"
 		" RMK AO2 PK WND 17039/1814 SLP041 T02940172"
 		"=",
@@ -1906,7 +1906,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ZBAA", "Beijing Intl", {2018, 9, 11},
+		"ZBAA", "Beijing Capital International Airport", {2018, 9, 11},
 		"METAR ZBAA 111900Z 35002MPS 5000 BR NSC 17/16 Q1014 NOSIG"
 		"=",
 		"TAF ZBAA 111530Z 1118/1218 14004MPS 7000 NSC TX27/1207Z TN16/1121Z"
@@ -1917,7 +1917,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VEPT", "Patna/Narayan Intl", {2018, 9, 11},
+		"VEPT", "Lok Nayak Jayaprakash Airport", {2018, 9, 11},
 		"METAR VEPT 111900Z 00000KT 3500 HZ FEW020 SCT250 28/26 Q1005 NOSIG"
 		"=",
 		"TAF VEPT 111100Z 1112/1218 27005KT 4500 HZ SCT018 SCT025 BKN100"
@@ -1933,7 +1933,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OAKB", "Kabul Intl", {2018, 9, 11},
+		"OAKB", "Hamid Karzai International Airport", {2018, 9, 11},
 		"METAR OAKB 111850Z 02014G25KT 340V060 CAVOK 25/M05 Q1020 NOSIG"
 		" RMK A3013 BLU BLU"
 		"=",
@@ -1950,7 +1950,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UTST", "Termez Arpt", {2018, 9, 11},
+		"UTST", "Termez Airport", {2018, 9, 11},
 		"METAR UTST 111900Z 23004KT CAVOK 23/05 Q1011 R88/CLRD70 NOSIG"
 		"=",
 		"TAF UTST 111700Z 1118/1218 24010G20KT 6000 NSC TX38/1211Z"
@@ -1962,7 +1962,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OAHR", "Herat Arpt", {2018, 9, 11},
+		"OAHR", "Herat Airport", {2018, 9, 11},
 		"METAR OAHR 111855Z 00000KT CAVOK 27/M02 Q1017"
 		" RMK A3005 BLU"
 		"=",
@@ -1978,7 +1978,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DAAT", "Tamanrasset/Aguenar", {2018, 9, 11},
+		"DAAT", "Aguenar - Hadj Bey Akhamok Airport", {2018, 9, 11},
 		"METAR DAAT 111900Z 13016KT 7000 TS FEW040CB SCT046 25/07 Q1025"
 		"=",
 		"TAF COR DAAT 111700Z 1118/1218 12015KT 6000 NSC"
@@ -1997,7 +1997,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"GQNO", "Nouakchott/Oumtounsy", {2018, 9, 11},
+		"GQNO", "Nouakchott-Oumtounsy International Airport", {2018, 9, 11},
 		"METAR COR GQNO 111900Z VRB03KT 3000 TSRA FEW020 FEW030TCU FEW033CB 23/23 Q1010"
 		" TEMPO 6000 TSRA"
 		"=",
@@ -2013,7 +2013,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"GQPP", "Nouadhibou Arpt", {2018, 9, 11},
+		"GQPP", "Nouadhibou International Airport", {2018, 9, 11},
 		"METAR GQPP 111900Z 36018KT 6000 DRSA SCT010 23/17 Q1009 NOSIG"
 		"=",
 		"TAF GQPP 111700Z 1118/1218 35015KT 6000 NSC"
@@ -2026,7 +2026,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYQB", "Quebec/Lesage Intl", {2018, 9, 11},
+		"CYQB", "Quebec Jean Lesage International Airport", {2018, 9, 11},
 		"SPECI CYQB 111914Z 00000KT 4SM BR SCT008 OVC013 16/16 A3014"
 		" RMK SF4SC4 SLP210 DENSITY ALT 300FT"
 		"=",
@@ -2050,7 +2050,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MROC", "San Jose/Santamaria", {2018, 9, 11},
+		"MROC", "Juan Santamaria International Airport", {2018, 9, 11},
 		"SPECI MROC 111928Z 25010KT 210V290 9999 4000N -TSRA FEW020CB FEW030 SCT100 25/23 A2997 NOSIG", 
 		"MROC 111700Z 1118/1218 24010KT 9999 FEW030 TX28/1218Z TN19/1209Z"
 		" TEMPO 1119/1123 3000 TSRA SCT015CB"
@@ -2067,7 +2067,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MHPL", "Puerto Lempira Arpt", {2018, 9, 11},
+		"MHPL", "Puerto Lempira Airport", {2018, 9, 11},
 		"METAR MHPL 111900Z 00000KT 9999 BKN030TCU 33/26 Q1012 TCU ALL HZ"
 		"=",
 		"",
@@ -2076,9 +2076,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 
-
 	{
-		"KLCH", "Lake Charles Rgnl", {2018, 9, 11},
+		"KLCH", "Lake Charles Regional Airport", {2018, 9, 11},
 		"SPECI KLCH 111908Z 11004KT 3SM -RA BR BKN004 BKN075 OVC090 26/26 A2999"
 		" RMK AO2 P0002 T02560256 $"
 		"=",
@@ -2098,7 +2097,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYP", "Mount Pleasant Arpt", {2018, 9, 11},
+		"EGYP", "Mount Pleasant Airport", {2018, 9, 11},
 		"METAR EGYP 111850Z 33023KT 9999 FEW008 09/05 Q1003 BLU NOSIG"
 		"=",
 		"TAF AMD EGYP 111758Z 1118/1212 32022G32KT 9999 FEW008"
@@ -2113,7 +2112,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"FABL", "Bloemfontein Intl", {2018, 9, 11},
+		"FABL", "Bram Fischer International Airport", {2018, 9, 11},
 		"METAR FABL 111900Z AUTO VRB01KT 9999 ///////// 08/M05 Q1020"
 		"=",
 		"TAF FABL 111600Z 1118/1218 VRB03KT CAVOK"
@@ -2128,7 +2127,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"FIMR", "Rodrigues Arpt", {2018, 9, 11},
+		"FIMR", "Sir Charles Gaetan Duval Airport", {2018, 9, 11},
 		"METAR FIMR 111800Z 08010KT 8000 VCSH BKN017 22/18 Q1022"
 		"=",
 		"TAF FIMR 111735Z 1118/1212 07015G25KT 9999 SCT018"
@@ -2139,7 +2138,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAFA", "Fairbanks Intl", {2018, 9, 11},
+		"PAFA", "Fairbanks International Airport", {2018, 9, 11},
 		"METAR PAFA 111853Z 09003KT 10SM FEW100 SCT250 08/04 A3018"
 		" RMK AO2 SLP226 T00830039 $"
 		"=",
@@ -2157,7 +2156,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UAAA", "Almaty Intl", {2018, 9, 11},
+		"UAAA", "Almaty Airport", {2018, 9, 11},
 		"METAR UAAA 111930Z 28002MPS 220V310 9999 FEW050CB BKN100 14/04 Q1018 R23L/CLRD65 NOSIG"
 		"=",
 		"TAF UAAA 111700Z 1118/1218 21004MPS 9999 BKN030CB BKN100 TX19/1209Z TN09/1201Z"
@@ -2173,7 +2172,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGLL", "London/Heathrow Intl", {2018, 9, 11},
+		"EGLL", "London Heathrow Airport", {2018, 9, 11},
 		"METAR COR EGLL 111920Z AUTO 22010KT 9999 BKN011 OVC016 20/17 Q1019"
 		" TEMPO BKN008"
 		"=",
@@ -2196,7 +2195,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGWU", "Northolt(RAF)", {2018, 9, 11},
+		"EGWU", "RAF Northolt", {2018, 9, 11},
 		"METAR EGWU 111850Z 24007KT 7000 -RADZ BKN012 20/17 Q1019"
 		" TEMPO 4000 RADZ"
 		"=",
@@ -2214,7 +2213,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KAIK", "Aiken Muni", {2018, 9, 11},
+		"KAIK", "Aiken Regional Airport", {2018, 9, 11},
 		"METAR KAIK 111935Z AUTO 16012G18KT 4SM +TSRA SCT015 BKN038 OVC070 25/22 A3006"
 		" RMK AO2 LTG DSNT E THRU SW"
 		"=",
@@ -2228,7 +2227,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K2J3", "Louisville Muni", {2018, 9, 11},
+		"K2J3", "Louisville Municipal Airport", {2018, 9, 11},
 		"METAR K2J3 111930Z AUTO 34012G17KT 7SM VCTSRA SCT029 OVC048 27/24 A3003"
 		" RMK AO2 LTG DSNT ALQDS P0003 T02730236"
 		"=",
@@ -2242,7 +2241,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMYR", "Myrtle Beach Intl", {2018, 9, 11},
+		"KMYR", "Myrtle Beach International Airport", {2018, 9, 11},
 		"METAR KMYR 111856Z COR 12008KT 10SM SCT020 BKN030 29/24 A3006"
 		" RMK AO2 SLP178 T02940239"
 		"=",
@@ -2260,7 +2259,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EKVG", "Soervaag/Vagar Arpt", {2018, 9, 11},
+		"EKVG", "Vagar Airport", {2018, 9, 11},
 		"METAR EKVG 111950Z AUTO 33005KT 9999NDV FEW023/// BKN036/// 08/07 Q0996"
 		" RMK FEW015/// SCT022/// WIND 850FT 29018KT"
 		"=",
@@ -2275,7 +2274,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHGR", "Gilze-Rijen(AB)", {2018, 9, 11},
+		"EHGR", "Gilze Rijen Air Base", {2018, 9, 11},
 		"METAR EHGR 111955Z AUTO 25006KT 9999 BKN370 20/15 Q1020 BLU 25008KT 9999 SCT050"
 		"=",
 		"TAF EHGR 111750Z 1117/1205 24006KT CAVOK"
@@ -2290,7 +2289,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EFJY", "Jyvaskyla Arpt", {2018, 9, 11},
+		"EFJY", "Jyvaskyla Airport", {2018, 9, 11},
 		"METAR EFJY 111950Z AUTO VRB03KT 110V190 9999 -RA OVC011 13/13 Q1003 RERA RERA"
 		"=",
 		"TAF EFJY 111727Z 1118/1218 14006KT 9999 SCT013 BKN107"
@@ -2307,7 +2306,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KCHS", "Charleston Intl", {2018, 9, 11},
+		"KCHS", "Charleston Air Force Base-International Airport", {2018, 9, 11},
 		"METAR KCHS 111956Z 09006KT 10SM SCT035 SCT055 BKN200 29/26 A3001"
 		" RMK AO2 WSHFT 1851 LTG DSNT SW-NW RAB01E35 TSB08E29 SLP161 CB DSNT SW-NW P0017 T02890261"
 		"=",
@@ -2324,7 +2323,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHZ", "Halifax/Stanfield In", {2018, 9, 11},
+		"CYHZ", "Halifax / Stanfield International Airport", {2018, 9, 11},
 		"METAR CYHZ 112000Z 14011KT 4SM -RA FEW021 BKN062 OVC090 18/17 A3030"
 		" RMK CU1SC5AC2 PRESFR SLP263 DENSITY ALT 600FT"
 		"=",
@@ -2344,7 +2343,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KLGA", "New York/La Guardia", {2018, 9, 11},
+		"KLGA", "La Guardia Airport", {2018, 9, 11},
 		"METAR KLGA 111951Z 04004KT 2 1/2SM HZ BKN008 OVC015 23/21 A3012"
 		" RMK AO2 SFC VIS 4 SLP198 T02330206"
 		"=",
@@ -2362,7 +2361,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DAAG", "Algiers Intl Arpt", {2018, 9, 11},
+		"DAAG", "Houari Boumediene Airport", {2018, 9, 11},
 		"METAR DAAG 112000Z 10008KT 9999 FEW026 FEW030CB BKN200 27/21 Q1018"
 		"=",
 		"TAF COR DAAG 111700Z 1118/1218 08010KT CAVOK"
@@ -2381,7 +2380,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"URML", "Uytash Arpt", {2018, 9, 11},
+		"URML", "Uytash Airport", {2018, 9, 11},
 		"METAR URML 112000Z 33006MPS 9999 NSC 25/10 Q1016 R32/01//70"
 		" TEMPO VRB10G16MPS 6000 -TSRA SCT011 SCT020CB"
 		" RMK QFE761/1015"
@@ -2395,7 +2394,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UBBY", "Zakataly Intl", {2018, 9, 11},
+		"UBBY", "Zaqatala International Airport", {2018, 9, 11},
 		"METAR UBBY 112000Z 03008KT 9999 FEW050CB BKN100 22/15 Q1021 R33/////// NOSIG"
 		" RMK MT OP"
 		"=",
@@ -2408,7 +2407,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"URMM", "Mineralyne Vody Arpt", {2018, 9, 11},
+		"URMM", "Mineralnyye Vody Airport", {2018, 9, 11},
 		"METAR URMM 112000Z 27002MPS 9999 SCT015 16/14 Q1021 R30/290050"
 		" TEMPO 0300 FG OVC002"
 		" RMK MT OBSC QFE737/0983"
@@ -2423,7 +2422,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"GQNO", "Nouakchott/Oumtounsy", {2018, 9, 11},
+		"GQNO", "Nouakchott-Oumtounsy International Airport", {2018, 9, 11},
 		"METAR COR GQNO 112000Z 02004KT 6000 TS FEW020 FEW030TCU FEW033CB 25/24 Q1008"
 		" TEMPO 4000 TSRA"
 		"=",
@@ -2439,7 +2438,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGLL", "London/Heathrow Intl", {2018, 9, 11},
+		"EGLL", "London Heathrow Airport", {2018, 9, 11},
 		"METAR COR EGLL 112020Z 28006KT 3000 DZ BKN006 OVC012 18/17 Q1020"
 		" TEMPO 5000 -DZ"
 		"=",
@@ -2461,7 +2460,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGUW", "Wattisham(RAF)", {2018, 9, 11},
+		"EGUW", "RAF Wattisham", {2018, 9, 11},
 		"METAR EGUW 112250Z 25007KT 2500 RADZ FEW002 SCT003 BKN010 16/16 Q1019 YLO2"
 		"=",
 		"",
@@ -2471,7 +2470,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYBN", "Borden(CFB)", {2018, 9, 12}, 
+		"CYBN", "CFB Borden", {2018, 9, 12}, 
 		"SPECI CYBN 121023Z AUTO 22002KT 1 1/4SM VV000 05/05 A3026"
 		"=",
 		"TAF CYBN 121018Z 1210/1222 VRB03KT 1SM BR OVC001"
@@ -2492,7 +2491,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 12},
+		"KILM", "Wilmington International Airport", {2018, 9, 12},
 		"METAR KILM 121953Z 09009KT 10SM CLR 31/22 A3003"
 		" RMK AO2 SLP168 T03060222"
 		"=",
@@ -2509,7 +2508,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 12},
+		"KILM", "Wilmington International Airport", {2018, 9, 12},
 		"METAR KILM 122253Z AUTO 06007KT 10SM CLR 29/23 A3002"
 		" RMK AO2 SLP165 LAST T02890233"
 		"=",
@@ -2527,7 +2526,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNCA", "New River (MCAS)", {2018, 9, 12},
+		"KNCA", "New River MCAS /H/ /Mccutcheon Fld/ Airport", {2018, 9, 12},
 		"METAR KNCA 121556Z AUTO 08008KT 10SM FEW035 31/23 A3010"
 		" RMK AO2 SLP195 T03110233"
 		"=",
@@ -2545,7 +2544,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJTK", "Kisarazu (JGSDF)", {2018, 9, 13},
+		"RJTK", "Kisarazu Airport", {2018, 9, 13},
 		"SPECI RJTK 130029Z 02010KT 9999 FEW020 SCT040 BKN230 24/16 Q1021"
 		" RMK 1CU020 4SC040 5CI230 A3016"
 		"=",
@@ -2558,7 +2557,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KEKN", "Elkins Arpt", {2018, 9, 13},
+		"KEKN", "Elkins-Randolph Co-Jennings Randolph Field", {2018, 9, 13},
 		"SPECI KEKN 130503Z AUTO 00000KT 1/4SM FG VV002 19/18 A3024"
 		" RMK AO2 T01890183 TSNO"
 		"=",
@@ -2577,7 +2576,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YMHB", "Hobart Intl", {2018, 9, 13}, 
+		"YMHB", "Hobart International Airport", {2018, 9, 13}, 
 		"METAR YMHB 130000Z 33015KT 9999 VCSH FEW035 BKN042 15/05 Q1009 RF00.0/000.0"
 		"=",
 		"TAF YMHB 122303Z 1300/1324 32012KT 9999 SCT045"
@@ -2591,7 +2590,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"SAWH", "Ushuaia/Malvinas Arp", {2018, 9, 13}, 
+		"SAWH", "Malvinas Argentinas Airport", {2018, 9, 13}, 
 		"METAR SAWH 130000Z 32008G58KT 9999 DZ SCT030 BKN100 08/01 Q0987"
 		"=",
 		"TAF SAWH 122300Z 1300/1324 32018KT 9999 BKN025 BKN040 TX09/1319Z TN03/1310Z"
@@ -2603,7 +2602,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYBG", "Bagotville(MIL)", {2018, 9, 13},
+		"CYBG", "CFB Bagotville", {2018, 9, 13},
 		"METAR CYBG 131000Z 00000KT 25SM R11/4500FT BCFG FEW001 FEW030 10/09 A3029"
 		" RMK ST1SC1 FG BANK S VIS 1/2 SLP261"
 		"=",
@@ -2620,7 +2619,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"SCRM", "Teniente Marsh Arpt", {2018, 9, 13}, 
+		"SCRM", "Teniente Rodolfo Marsh Martin Base", {2018, 9, 13}, 
 		"METAR SCRM 131600Z 32030KT 9999 FEW020 M01/M03 Q0966"
 		"=",
 		"TAF SCRM 131604Z 1318/1418 30030KT 9999 SCT035 TXM01/1402Z TNM03/1418Z"
@@ -2635,7 +2634,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGVA", "Fairford(RAF)", {2018, 9, 13}, 
+		"EGVA", "RAF Fairford", {2018, 9, 13}, 
 		"SPECI EGVA 130810Z AUTO 00000KT 0400 R09/0500V0800 FG VV000 08/08 A3023"
 		" RMK AO2 SLP242 $"
 		"=",
@@ -2651,7 +2650,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KEWN", "New Bern/Coastal Car", {2018, 9, 13}, 
+		"KEWN", "Coastal Carolina Regional Airport", {2018, 9, 13}, 
 		"SPECI KEWN 131541Z AUTO 04024G40KT 1/4SM +RA FG BKN012 BKN022 OVC065 22/22 A2987"
 		" RMK AO2 PK WND 06044/1526 RAB24 P0066 T02170217"
 		"=",
@@ -2671,7 +2670,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LTBA", "Istanbul/Ataturk Int", {2018, 9, 13}, 
+		"LTBA", "Ataturk International Airport", {2018, 9, 13}, 
 		"SPECI LTBA 131616Z 03011KT 350V110 9999 -SHRA FEW018CB BKN028 24/20 Q1011 RETSRA"
 		" TEMPO -TSRA"
 		" RMK RWY17L 04013KT 010V070 RWY05 01013KT RWY23 04013KT 010V090"
@@ -2693,7 +2692,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LTBR", "Bursa/Yenisehir Arpt", {2018, 9, 13}, 
+		"LTBR", "Bursa Yenisehir Airport", {2018, 9, 13}, 
 		"METAR LTBR 131550Z 18006KT 090V260 9999 VCSH TS FEW025CB SCT030 BKN090 23/13 Q1011"
 		" TEMPO TL1700 34015G25KT 4500 TSRA"
 		"=",
@@ -2711,7 +2710,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LSME", "Emmen Arpt(MIL)", {2018, 9, 13}, 
+		"LSME", "Emmen Air Base", {2018, 9, 13}, 
 		"METAR LSME 131620Z AUTO 33018G38KT 300V360 9999NDV -RA FEW032 BKN044 22/15 Q1018"
 		" RMK"
 		"=",
@@ -2730,7 +2729,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LSMP", "Payerne Arpt(MIL)", {2018, 9, 13}, 
+		"LSMP", "Payerne Air Base", {2018, 9, 13}, 
 		"METAR LSMP 131620Z AUTO 10004KT 070V140 9999NDV SHRA FEW013 SCT047 BKN063 20/17 Q1018 RESHRA"
 		" RMK"
 		"=",
@@ -2745,7 +2744,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LIMH", "Pian Rosa(MTN)", {2018, 9, 13}, 
+		"LIMH", "Pian Rosa", {2018, 9, 13}, 
 		"LIMH 131555Z /////KT 0200 FG VV/// 06/04 Q1031"
 		" RMK MON INVIS VAL INVIS VIS MIN 0200"
 		"=",
@@ -2756,7 +2755,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OEGT", "Guriat Arpt", {2018, 9, 13}, 
+		"OEGT", "Gurayat Domestic Airport", {2018, 9, 13}, 
 		"METAR OEGT 131600Z 30016KT 2500 DU FEW040 BKN100 37/08 Q1009 NOSIG"
 		"=",
 		"TAF OEGT 131100Z 1312/1418 18014KT 7000 SCT040"
@@ -2769,7 +2768,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ORBD", "Balad", {2018, 9, 13}, 
+		"ORBD", "Joint Base Balad", {2018, 9, 13}, 
 		"METAR ORBD 131555Z 35007KT 9000 FU CLR 40/06 A2972"
 		" RMK WND DATA ALSTG ESTMD"
 		"=",
@@ -2783,7 +2782,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OODQ", "Duqm", {2018, 9, 13}, 
+		"OODQ", "Duqm International Airport", {2018, 9, 13}, 
 		"METAR OODQ 131550Z AUTO 21023KT //// R22///// NCD 26/21 Q1004 NOSIG"
 		"=",
 		"TAF OODQ 130500Z 1306/1406 20020KT 8000 NSC"
@@ -2797,7 +2796,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"GMMH", "Dakhla Intl", {2018, 9, 13}, 
+		"GMMH", "Dakhla Airport", {2018, 9, 13}, 
 		"METAR GMMH 131600Z 10011KT 0600 DU NSC 31/20 Q1012 NOSIG"
 		"=",
 		"TAF GMMH 131100Z 1312/1418 03020KT 3000 DU NSC"
@@ -2812,7 +2811,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DRRT", "Tahoua Arpt", {2018, 9, 13}, 
+		"DRRT", "Tahoua Airport", {2018, 9, 13}, 
 		"METAR DRRT 131600Z 12018KT 3000 SA FEW040 FEW050 CB 36/18 Q1009"
 		"=",
 		"",
@@ -2822,7 +2821,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DIAP", "Abidjan/Port Boet Ar", {2018, 9, 13}, 
+		"DIAP", "Port Bouet Airport", {2018, 9, 13}, 
 		"METAR DIAP 131630Z 22008KT 9999 TS SCT012 FEW020CB BKN030 27/23 Q1010"
 		" TEMPO BKN011 FEW020CB BKN030"
 		"=",
@@ -2836,7 +2835,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YCIN", "Curtin(RAAF)", {2018, 9, 13}, 
+		"YCIN", "RAAF Base Curtin", {2018, 9, 13}, 
 		"METAR YCIN 131630Z AUTO 35005KT 1600 // OVC003 21/21 Q1011 RF00.0/000.0"
 		"=",
 		"TAF AMD YCIN 131514Z 1315/1402 VRB05KT 0300 FG BKN001"
@@ -2851,7 +2850,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UTTT", "Taskent Intl", {2018, 9, 13}, 
+		"UTTT", "Tashkent International Airport", {2018, 9, 13}, 
 		"METAR UTTT 131630Z 16006KT 4000 FU NSC 17/06 Q1018 R08R/CLRD70 NOSIG"
 		"=",
 		"TAF UTTT 131100Z 1312/1412 06010KT 7000 NSC"
@@ -2863,7 +2862,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OAJL", "Jalalabad Arpt", {2018, 9, 13}, 
+		"OAJL", "Jalalabad Airport", {2018, 9, 13}, 
 		"METAR OAJL 131555Z 26011G24KT 2800 BLDU CLR 35/M04 A2961"
 		" RMK AO2A SLP971 T03491042"
 		"=",
@@ -2883,7 +2882,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"BIHN", "Hofn/Hornafjorour Ar", {2018, 9, 13}, 
+		"BIHN", "Hornafjordur Airport", {2018, 9, 13}, 
 		"METAR BIHN 131600Z 22004KT 9999 VCSH FEW010 BKN022 OVC038 10/06 Q1002 REDZ"
 		"=",
 		"TAF BIHN 131329Z 1314/1323 22008KT 9999 FEW010 BKN025 OVC045"
@@ -2895,7 +2894,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYPC", "Paulatuk Arpt", {2018, 9, 13}, 
+		"CYPC", "Paulatuk (Nora Aliqatchialuk Ruben) Airport", {2018, 9, 13}, 
 		"METAR CYPC 131700Z 30012KT 6SM -FZDZ SCT005 OVC010 M04/M06 A3022"
 		" RMK ST3SC5 SLP236"
 		"=",
@@ -2914,7 +2913,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCB", "Cambridge Bay Arpt", {2018, 9, 13}, 
+		"CYCB", "Cambridge Bay Airport", {2018, 9, 13}, 
 		"SPECI CYCB 131713Z 31019G28KT 1SM -SN BLSN SCT009 OVC020 M03/M05 A2983"
 		" RMK BLSN1CF3SC4 VIS VRB 1/2-1 1/2 SLP106"
 		"=",
@@ -2932,7 +2931,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAGH", "Shungnak Arpt", {2018, 9, 13}, 
+		"PAGH", "Shungnak Airport", {2018, 9, 13}, 
 		"METAR PAGH 131656Z AUTO 00000KT 1/4SM FG OVC002 04/04 A3033"
 		" RMK AO2 SLP276 T00440044"
 		"=",
@@ -2946,7 +2945,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PATC", "Tin City Arpt", {2018, 9, 13}, 
+		"PATC", "Tin City Long Range Radar Station Airport", {2018, 9, 13}, 
 		"METAR PATC 131655Z AUTO 26003KT 1/4SM FG VV003 07/07 A3025"
 		" RMK AO2 SLP245 T00690068"
 		"=",
@@ -2960,7 +2959,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UHMA", "Anadyr/Ugolny Arpt", {2018, 9, 13}, 
+		"UHMA", "Ugolny Airport", {2018, 9, 13}, 
 		"UHMA 131700Z 08007MPS 9999 -RA SCT010 BKN050 09/09 Q1014 NOSIG"
 		" RMK END R01/09009MPS MT OBSC QFE757/1009"
 		"=",
@@ -2974,7 +2973,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASY", "Shemya/Eareckson Arp", {2018, 9, 13}, 
+		"PASY", "Eareckson Air Station", {2018, 9, 13}, 
 		"METAR PASY 131656Z COR 00000KT 1SM BR BKN007 OVC018 11/10 A2942"
 		" RMK VIS NW-N 3/4 RAE14DZB14E20RAB35E52 SLP966 P0001 T01060103 COR 1703"
 		"=",
@@ -2993,7 +2992,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYEG", "Edmonton Intl Arpt", {2018, 9, 13}, 
+		"CYEG", "Edmonton International Airport", {2018, 9, 13}, 
 		"METAR CYEG 131700Z 34010KT 1 1/2SM R30/5000VP6000FT/U R02/5000FT/N -SN SCT004 BKN007 OVC011 M01/M03 A3007"
 		" RMK SN3SF1SC3SC1 /S02/ SLP220"
 		"=",
@@ -3011,7 +3010,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCB", "Cambridge Bay Arpt", {2018, 9, 13}, 
+		"CYCB", "Cambridge Bay Airport", {2018, 9, 13}, 
 		"SPECI CYCB 131713Z 31019G28KT 1SM -SN BLSN SCT009 OVC020 M03/M05 A2983"
 		" RMK BLSN1CF3SC4 VIS VRB 1/2-1 1/2 SLP106"
 		"=",
@@ -3029,7 +3028,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYSY", "Sachs Harbour Arpt", {2018, 9, 13}, 
+		"CYSY", "Sachs Harbour (David Nasogaluak Jr. Saaryuaq) Airport", {2018, 9, 13}, 
 		"METAR CYSY 131700Z 33016KT 2SM -SN BR BKN006 OVC035 M07/M08 A3019"
 		" RMK FG2ST3SC3 CIG RAG, SLP236"
 		"=",
@@ -3046,7 +3045,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYLT", "Alert Arpt", {2018, 9, 13}, 
+		"CYLT", "Alert Airport", {2018, 9, 13}, 
 		"METAR CYLT 131700Z 35004KT 15SM FEW016 BKN026 M05/M07 A3010"
 		" RMK SC2SC6 SLP197"
 		"=",
@@ -3063,7 +3062,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MYNN", "Nassau Intl", {2018, 9, 13}, 
+		"MYNN", "Lynden Pindling International Airport", {2018, 9, 13}, 
 		"METAR MYNN 131800Z 16011KT 9999 VCTS SCT015CB SCT022TCU 31/23 A2998"
 		" RMK CB SW-N LTG W TCU OVHD/N"
 		"=",
@@ -3075,7 +3074,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MWCR", "Grand Cayman/Roberts", {2018, 9, 13}, 
+		"MWCR", "Owen Roberts International Airport", {2018, 9, 13}, 
 		"METAR COR MWCR 131800Z 02010G26KT 320V060 1000 TSRA BKN016CB 27/26 Q1013"
 		"=",
 		"TAF MWCR 131700Z 1318/1418 09005KT 9999 VCSH SCT018"
@@ -3088,7 +3087,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 13},
+		"KILM", "Wilmington International Airport", {2018, 9, 13},
 		"SPECI KILM 131504Z AUTO 36020G28KT 10SM SCT026 SCT030 BKN037 29/23 A2984"
 		" RMK AO2 PK WND 35029/1454 T02890233"
 		"=",
@@ -3108,7 +3107,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KECG", "Elizabeth City Rgnl", {2018, 9, 13},
+		"KECG", "Elizabeth City Regional Airport & Coast Guard Air Station", {2018, 9, 13},
 		"METAR KECG 131454Z AUTO 05024G31KT 9SM -RA BKN017 BKN024 OVC030 28/26 A3001"
 		" RMK AO2 PK WND 04033/1428 RAB52 SLP161 P0000 60000 T02830261 56007"
 		"=",
@@ -3126,7 +3125,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K2DP", "Stumpy Point Gunnery", {2018, 9, 13},
+		"K2DP", "Stumpy Point Gunnery Range", {2018, 9, 13},
 		"SPECI K2DP 131533Z AUTO 06013G19KT 10SM SCT013 24/23 A2992"
 		" RMK AO2 SHRAB1456E33 SLPNO $"
 		"=",
@@ -3142,7 +3141,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 13},
 		"METAR KHSE 131451Z AUTO 06016G29KT 7SM -RA FEW035 SCT065 BKN085 27/24 A2983"
 		" RMK AO2 PK WND 08039/1356 RAB1352 SLP102 P0005 60006 T02670244 56019"
 		"=",
@@ -3156,7 +3155,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"SPECI KNKT 131504Z 03036G49KT 1 1/2SM BR SCT022 BKN028 BKN075 27/26 A2983"
 		" RMK AO2 PK WND 03049/1503 P0007 T02720261"
 		"=",
@@ -3174,7 +3173,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 13},
 		"SPECI KMRH 131549Z AUTO 03027G44KT 2SM -RA BR SCT025 BKN036 OVC048 26/24 A2972"
 		" RMK AO2 PK WND 04044/1546 P0011 T02610244 $"
 		"=",
@@ -3190,7 +3189,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TFFR", "Guadeloupe/Pitre Int", {2018, 9, 13},
+		"TFFR", "Pointe-a-Pitre Le Raizet", {2018, 9, 13},
 		"METAR TFFR 131530Z AUTO 10021G33KT 070V130 9999 BKN019 BKN027 BKN032 28/25 Q1009"
 		" TEMPO 1000 TSRA BKN010CB"
 		"=",
@@ -3212,7 +3211,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TDCF", "Canefield Arpt", {2018, 9, 13},
+		"TDCF", "Canefield Airport", {2018, 9, 13},
 		"METAR TDCF 131500Z 08002KT 9999 -TSRA BKN008 FEW///CB 26/25 Q1007"
 		"=",
 		"",
@@ -3222,7 +3221,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TRPG", "Monserrat/Geralds Ar", {2018, 9, 13},
+		"TRPG", "John A. Osborne Airport", {2018, 9, 13},
 		"METAR TRPG 131500Z 10019G33KT 9999 BKN018 27/25 Q1011"
 		"=",
 		"TAF TRPG 131140Z 1312/1412 06020KT 9999 SCT018 SCT038"
@@ -3237,7 +3236,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TBPB", "Bridgetown/Adams Int", {2018, 9, 13},
+		"TBPB", "Grantley Adams International Airport", {2018, 9, 13},
 		"METAR TBPB 131500Z 18023KT 9999 VCSH FEW014CB BKN034 27/22 Q1011 NOSIG"
 		"=",
 		"TAF TBPB 131105Z 1312/1412 17014KT 9999 SCT016 SCT036"
@@ -3250,7 +3249,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TNCE", "St Eustatius/Rooseve", {2018, 9, 13},
+		"TNCE", "F. D. Roosevelt Airport", {2018, 9, 13},
 		"METAR TNCE 131455Z AUTO 05021KT 030V090 //// // ///////// 30/24 Q1012 RE//"
 		"=",
 		"",
@@ -3262,7 +3261,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TNCM", "St Maarten Intl", {2018, 9, 13},
+		"TNCM", "Princess Juliana International Airport", {2018, 9, 13},
 		"METAR TNCM 131500Z 09016G26KT 060V130 9999 SCT016 32/23 Q1013 A2992 NOSIG"
 		" RMK HZ ALQDS"
 		"=",
@@ -3277,7 +3276,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TJSJ", "San Juan/Marin Intl", {2018, 9, 13},
+		"TJSJ", "Luis Munoz Marin International Airport", {2018, 9, 13},
 		"METAR TJSJ 131456Z 07014G22KT 9SM SCT035 31/25 A2995"
 		" RMK AO2 SLP139 HZ ALQDZ T03060250 51008"
 		"=",
@@ -3294,7 +3293,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KORF", "Norfolk Intl", {2018, 9, 13},
+		"KORF", "Norfolk International Airport", {2018, 9, 13},
 		"METAR KORF 131551Z 05016G30KT 10SM OVC006 27/25 A3007"
 		" RMK AO2 PK WND 06030/1547 SLP181 T02670250"
 		"=",
@@ -3311,7 +3310,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMFV", "Melfa/Accomack Cnty", {2018, 9, 13},
+		"KMFV", "Accomack County Airport", {2018, 9, 13},
 		"METAR KMFV 131555Z AUTO 06013G20KT 10SM OVC006 26/25 A3013"
 		" RMK AO2 T02620245"
 		"=",
@@ -3325,7 +3324,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KOXB", "Ocean City Muni", {2018, 9, 13},
+		"KOXB", "Ocean City Municipal Airport", {2018, 9, 13},
 		"METAR KOXB 131553Z AUTO 06011G19KT 10SM OVC004 24/23 A3018"
 		" RMK AO2 SLP220 T02440228 $"
 		"=",
@@ -3340,7 +3339,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 13},
 		"METAR KHSE 131551Z AUTO 06016G36KT 5SM -RA BR FEW050 BKN110 27/24 A2981"
 		" RMK AO2 PK WND 06036/1545 SLP093 P0004 T02670244"
 		"=",
@@ -3354,7 +3353,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KEWN", "New Bern/Coastal Car", {2018, 9, 13},
+		"KEWN", "Coastal Carolina Regional Airport", {2018, 9, 13},
 		"SPECI KEWN 131600Z AUTO 03017G27KT 1/2SM +RA FG BKN014 OVC022 23/23 A2986"
 		" RMK AO2 PK WND 02027/1558 P0013 T02330233"
 		"=",
@@ -3374,7 +3373,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"METAR KNKT 131554Z 02024G36KT 10SM FEW050 SCT065 BKN080 26/24 A2981"
 		" RMK AO2 PK WND 03049/1503 SLP092 P0010 T02610239"
 		"=",
@@ -3391,7 +3390,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNCA", "New River (MCAS)", {2018, 9, 13},
+		"KNCA", "New River MCAS /H/ /Mccutcheon Fld/ Airport", {2018, 9, 13},
 		"METAR KNCA 131556Z AUTO 03020G38KT 10SM SCT026 BKN036 BKN050 29/24 A2983"
 		" RMK AO2 PK WND 02038/1554 SLP105 T02890239"
 		"=",
@@ -3405,7 +3404,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 13},
 		"METAR KMRH 131558Z AUTO 03025G41KT 6SM -RA SCT029 BKN043 OVC070 27/24 A2971"
 		" RMK AO2 PK WND 04044/1546 SLP062 P0011 T02670239 $"
 		"=",
@@ -3420,7 +3419,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"TRPG", "Monserrat/Geralds Ar", {2018, 9, 13},
+		"TRPG", "John A. Osborne Airport", {2018, 9, 13},
 		"METAR TRPG 131600Z 11022G40KT 9999 BKN016 28/25 Q1010"
 		"=",
 		"TAF TRPG 131140Z 1312/1412 06020KT 9999 SCT018 SCT038"
@@ -3435,7 +3434,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 13},
 		"SPECI KMRH 131705Z AUTO 03027G48KT 3SM RA BR SCT026 BKN034 OVC060 26/24 A2966"
 		" RMK AO2 PK WND 03047/1700 P0003 T02610244"
 		"=",
@@ -3450,7 +3449,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 13},
 		"SPECI KHSE 131719Z AUTO 07026G42KT 2 1/2SM +RA BR FEW060 SCT080 BKN110 26/24 A2978"
 		" RMK AO2 PK WND 08043/1706 P0005 T02610239"
 		"=",
@@ -3465,7 +3464,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"METAR KNKT 131654Z 03026G39KT 10SM FEW027 SCT036 BKN095 28/26 A2977"
 		" RMK AO2 PK WND 03043/1639 SLP077 T02780256"
 		"=",
@@ -3482,7 +3481,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K7W6", "Engelhard/Hyde Cnty", {2018, 9, 13},
+		"K7W6", "Hyde County Airport", {2018, 9, 13},
 		"METAR K7W6 131825Z AUTO 04025G38KT 4SM -RA SCT018 BKN025 OVC080 26/25 A2983"
 		" RMK AO2 P0001 T02550245"
 		"=",
@@ -3496,7 +3495,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 13},
+		"KILM", "Wilmington International Airport", {2018, 9, 13},
 		"METAR KILM 131653Z AUTO 36014G39KT 10SM -RA FEW030 SCT046 BKN095 24/21 A2981"
 		" RMK AO2 PK WND 36043/1640 RAB37 SLP093 P0000 T02440211"
 		"=",
@@ -3515,7 +3514,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 13},
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
 		"=",
@@ -3530,7 +3529,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 13},
+		"KILM", "Wilmington International Airport", {2018, 9, 13},
 		"METAR KILM 131753Z AUTO 35018G26KT 10SM CLR 28/23 A2975"
 		" RMK AO2 PK WND 34026/1739 RAE02 SLP075 P0000 60000 T02780233 10289 20244 58032"
 		"=",
@@ -3549,7 +3548,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"METAR KNKT 131754Z 03031G48KT 4SM BR FEW025 BKN055 OVC085 27/26 A2973"
 		" RMK AO2 PK WND 03050/1743 SLP062 6//// T02670256 10289 20250 58031 $"
 		"=",
@@ -3567,7 +3566,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"SPECI KNKT 131858Z 02033G43KT 1 3/4SM BR FEW024 BKN029 OVC037 26/25 A2965"
 		" RMK AO2 PK WND 03043/1858 VIS 1 1/2V4 P0002 T02560250 $"
 		"=",
@@ -3586,7 +3585,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 13},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 13},
 		"SPECI KMRH 131829Z AUTO 02035G52KT 3/4SM +RA FEW015 OVC024 25/ A2957"
 		" RMK AO2 PK WND 01053/1817 P0041 T0250"
 		"=",
@@ -3601,7 +3600,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 13},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 13},
 		"METAR KHSE 131851Z AUTO 08022G43KT 2SM RA BR FEW034 BKN050 OVC070 26/24 A2975"
 		" RMK AO2 PK WND 08047/1826 SLP073 P0011 T02560239"
 		"=",
@@ -3615,7 +3614,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KEWN", "New Bern/Coastal Car", {2018, 9, 13},
+		"KEWN", "Coastal Carolina Regional Airport", {2018, 9, 13},
 		"METAR KEWN 131854Z AUTO 03020G42KT 3SM RA BR FEW028 BKN070 OVC095 26/24 A2974"
 		" RMK AO2 PK WND 03042/1849 PRESFR SLP069 P0002 T02560239"
 		"=",
@@ -3632,7 +3631,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNCA", "New River (MCAS)", {2018, 9, 13},
+		"KNCA", "New River MCAS /H/ /Mccutcheon Fld/ Airport", {2018, 9, 13},
 		"METAR KNCA 131856Z AUTO 01024G40KT 6SM -RA BR FEW028 SCT060 OVC100 26/24 A2970"
 		" RMK AO2 PK WND 02045/1827 RAB06 SLP058 P0006 T02610239"
 		"=",
@@ -3646,7 +3645,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KOAJ", "Jacksonville/Ellis A", {2018, 9, 13},
+		"KOAJ", "Albert J Ellis Airport", {2018, 9, 13},
 		"METAR KOAJ 131856Z AUTO 01018G25KT 10SM -RA SCT028 BKN034 27/24 A2975"
 		" RMK AO2 PK WND 04032/1834 RAB16 SLPNO P0006 T02720239"
 		"=",
@@ -3664,7 +3663,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 13},
+		"KILM", "Wilmington International Airport", {2018, 9, 13},
 		"METAR KILM 131853Z AUTO 35019G30KT 5SM R35/6000VP6000FT -RA SCT031 BKN042 OVC065 27/23 A2971"
 		" RMK AO2 PK WND 34033/1755 RAB50 SLP060 P0000 T02720233"
 		"=",
@@ -3683,7 +3682,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJBB", "Osaka/Kansai Intl", {2018, 9, 13},
+		"RJBB", "Kansai International Airport", {2018, 9, 13},
 		"METAR RJBB 131930Z AUTO 04014KT 9999 R06R///// R24R/P2000N FEW007 BKN090 "
 		"22/21 Q1016 NOSIG"
 		"=",
@@ -3698,7 +3697,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJFK", "Kagoshima Arpt", {2018, 9, 13},
+		"RJFK", "Kagoshima Airport", {2018, 9, 13},
 		"SPECI RJFK 132146Z VRB01KT 9999 VCVA BCFG FEW005 BKN150 22/22 Q1016"
 		" RMK 1ST005 7AC150 A3001 4000N-NE ASH FALL VOLCANIC ASH CLOUD S-SW FG N-NE"
 		"=",
@@ -3713,7 +3712,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJFK", "Kagoshima Arpt", {2018, 9, 13},
+		"RJFK", "Kagoshima Airport", {2018, 9, 13},
 		"METAR RJFK 132200Z VRB02KT 9999 VCVA BCFG FEW005 SCT030 BKN150 22/22 Q1016"
 		"=",
 		"TAF AMD RJFK 132203Z 1322/1500 14007KT 9999 VA FEW010 SCT025"
@@ -3727,7 +3726,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"SPECI KNKT 132203Z AUTO 05039G55KT 2 1/2SM -RA SCT012 BKN019 OVC043 26/ A2956"
 		" RMK AO2 PK WND 04055/2200 P0001 T0261 $"
 		"=",
@@ -3747,7 +3746,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 13},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 13},
 		"METAR KNKT 132354Z 03054G70KT +RA 25/25 A2946"
 		" RMK AO2 PK WND 04070/2347 RAE2214B2248B2253B47 SLP974 P0042 6//// T02500250 10267 20250 $"
 		"=",
@@ -3765,7 +3764,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 14},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 14},
 		"METAR KNKT 140454Z 07037G58KT 3SM RA BR BKN015 BKN021 OVC026 26/26 A2939"
 		" RMK AO2 PK WND 05062/0357 SLP950 P0011 T02560256 402890244"
 		"=",
@@ -3782,7 +3781,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 14},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 14},
 		"METAR KHSE 140451Z AUTO 12034G48KT 5SM -RA BR FEW120 27/25 A2976"
 		" RMK AO2 PK WND 12051/0440 SLP076 P0006 T02670250 402890239"
 		"=",
@@ -3796,7 +3795,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 14},
+		"KILM", "Wilmington International Airport", {2018, 9, 14},
 		"SPECI KILM 140509Z AUTO 33029G44KT 2SM +RA BR OVC014 24/22 A2924"
 		" RMK AO2 PK WND 33044/0506 P0010 T02390222"
 		"=",
@@ -3815,7 +3814,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K2DP", "Stumpy Point Gunnery", {2018, 9, 14},
+		"K2DP", "Stumpy Point Gunnery Range", {2018, 9, 14},
 		"SPECI K2DP 140516Z AUTO 10024G32KT 6SM -RA BKN014 OVC070 25/25 A2980"
 		" RMK AO2 CIG 014V070 SLPNO $"
 		"=",
@@ -3831,7 +3830,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNCA", "New River (MCAS)", {2018, 9, 14},
+		"KNCA", "New River MCAS /H/ /Mccutcheon Fld/ Airport", {2018, 9, 14},
 		"SPECI KNCA 140514Z AUTO 03039G64KT RA FEW013 BKN024 OVC033 25/23 A2921"
 		" RMK AO2 PK WND 04064/0509 PRESFR P0007 T02500233 $"
 		"=",
@@ -3847,7 +3846,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KOAJ", "Jacksonville/Ellis A", {2018, 9, 14},
+		"KOAJ", "Albert J Ellis Airport", {2018, 9, 14},
 		"SPECI KOAJ 140513Z AUTO 02028G40KT 6SM RA BR OVC013 24/23 A2938"
 		" RMK AO2 PK WND 02045/0457 PRESFR P0002"
 		"=",
@@ -3865,7 +3864,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KISO", "Kinston Rgnl", {2018, 9, 14},
+		"KISO", "Kisoro Airport", {2018, 9, 14},
 		"METAR KISO 140525Z AUTO 02030G49KT 4SM +RA SCT016 BKN024 OVC034 24/24 A2960"
 		" RMK AO2 P0016 T02350235"
 		"=",
@@ -3883,7 +3882,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 14},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 14},
 		"METAR KMRH 140958Z AUTO"
 		" RMK AO2 SLPNO PWINO $"
 		"=",
@@ -3898,7 +3897,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKOO", "Odessa Intl", {2018, 9, 14},
+		"UKOO", "Odessa International Airport", {2018, 9, 14},
 		"SPECI UKOO 141235Z 02002MPS 340V080 4200 -1004SE R34/////N -SHRA "
 		"SCT012 SCT018CB 20/16 Q1013 R34/290052 NOSIG"
 		"=",
@@ -3914,7 +3913,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KNKT", "Cherry Point (MCAS)", {2018, 9, 14},
+		"KNKT", "Cherry Point MCAS /Cunningham Field/", {2018, 9, 14},
 		"METAR KNKT 142158Z 13030G40KT +RA 2 1/2SM FEW003 OVC005 24/24 A2967"
 		" RMK SLP048 P////"
 		"=",
@@ -3933,7 +3932,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KFAY", "Fayetteville Rgnl", {2018, 9, 14},
+		"KFAY", "Fayetteville Regional Grannis Field", {2018, 9, 14},
 		"SPECI KFAY 142223Z AUTO 03032G48KT 1 3/4SM RA BR OVC014 23/22 A2953"
 		" RMK AO2 PK WND 03057/2212 P0008 T02330217"
 		"=",
@@ -3953,7 +3952,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KLBT", "Lumberton Muni", {2018, 9, 14},
+		"KLBT", "Lumberton Regional Airport", {2018, 9, 14},
 		"SPECI KLBT 142117Z AUTO 02030G52KT 2SM RA BR OVC013 24/23 A2934"
 		" RMK AO2 PK WND 02052/2112 RAB2055 P0005 T02390228 $"
 		"=",
@@ -3972,7 +3971,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMRH", "Beaufort-Morehead Ci", {2018, 9, 14},
+		"KMRH", "Michael J Smith Field Airport", {2018, 9, 14},
 		"SPECI KMRH 142126Z AUTO VCTS"
 		" RMK AO2 PWINO $"
 		"=",
@@ -3988,7 +3987,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KILM", "Wilmington Intl", {2018, 9, 14},
+		"KILM", "Wilmington International Airport", {2018, 9, 14},
 		"METAR KILM 142053Z AUTO A2929"
 		" RMK AO2 SLP920 6//// PWINO RVRNO PNO $"
 		"=",
@@ -4005,7 +4004,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KPOB", "Pope (AAF)", {2018, 9, 14},
+		"KPOB", "Pope Field", {2018, 9, 14},
 		"SPECI KPOB 142229Z AUTO 07031G46KT 8SM -RA FEW020 BKN028 BKN038 OVC050 24/21 M"
 		" RMK AO2 RAE08RAB28 CIG 025 RWY05 SLPNO $"
 		"=",
@@ -4024,7 +4023,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMYR", "Myrtle Beach Intl", {2018, 9, 14},
+		"KMYR", "Myrtle Beach International Airport", {2018, 9, 14},
 		"SPECI KMYR 142236Z AUTO 26031G43KT 2 1/2SM RA BR BKN010 OVC015 24/23 A2912"
 		" RMK AO2 PK WND 27048/2159 VIS 2V3 CIG 006V012 P0056"
 		"=",
@@ -4042,7 +4041,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KCRE", "North Myrtle Beach", {2018, 9, 14},
+		"KCRE", "Grand Strand Airport", {2018, 9, 14},
 		"SPECI KCRE 142234Z AUTO 24025G34KT 2SM +RA BR BKN008 OVC013 24/24 A2890"
 		" RMK AO1 PK WND 24038/2214 P0026 T02440239"
 		"=",
@@ -4060,7 +4059,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KEDE", "Edenton/Northeast Rg", {2018, 9, 14},
+		"KEDE", "Northeastern Regional Airport", {2018, 9, 14},
 		"METAR KEDE 142225Z AUTO 10012G19KT 7SM DZ OVC021 28/26 A2992"
 		" RMK AO2 P0001 T02750257"
 		"=",
@@ -4074,7 +4073,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHSE", "Hatteras/Mitchell Fl", {2018, 9, 14},
+		"KHSE", "Billy Mitchell Airport", {2018, 9, 14},
 		"SPECI KHSE 142223Z AUTO 13020G29KT 4SM -RA BR SCT024 BKN050 OVC120 28/26 A2990"
 		" RMK AO2 PK WND 13031/2157 P0004 T02780256"
 		"=",
@@ -4089,7 +4088,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KASJ", "Ahoskie/Tri Cnty", {2018, 9, 14},
+		"KASJ", "Tri County Airport", {2018, 9, 14},
 		"METAR KASJ 142230Z AUTO 05007KT 10SM RA SCT015 SCT060 BKN110 25/25 A2991"
 		" RMK AO2 P0002 T02450245"
 		"=",
@@ -4103,7 +4102,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KHYW", "Conway/Horry Cnty", {2018, 9, 14},
+		"KHYW", "Conway Horry County Airport", {2018, 9, 14},
 		"METAR KHYW 142215Z AUTO 29013G31KT 230V330 2SM +RA OVC011 23/23 A2914"
 		" RMK AO2 P0003"
 		"=",
@@ -4117,7 +4116,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KJZI", "Charleston/Executive", {2018, 9, 14},
+		"KJZI", "Charleston Executive Airport", {2018, 9, 14},
 		"METAR KJZI 142235Z AUTO 26017G28KT 8SM +RA SCT047 SCT055 BKN100 29/22 A2963"
 		" RMK AO2"
 		"=",
@@ -4131,7 +4130,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KLRO", "Mt Pleasant Rgnl", {2018, 9, 14},
+		"KLRO", "Mt Pleasant Regional-Faison field", {2018, 9, 14},
 		"METAR KLRO 142215Z AUTO 28018G29KT 10SM OVC038 29/22 A2958"
 		" RMK AO2"
 		"=",
@@ -4145,7 +4144,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KCHS", "Charleston Intl", {2018, 9, 14},
+		"KCHS", "Charleston Air Force Base-International Airport", {2018, 9, 14},
 		"METAR KCHS 142156Z AUTO 29017G27KT 10SM CLR 29/22 A2961"
 		" RMK AO2 PK WND 29031/2124 SLP026 T02890217"
 		"=",
@@ -4163,7 +4162,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MRPV", "San Jose/Bolanos Int", {2018, 9, 14},
+		"MRPV", "Tobias Bolanos International Airport", {2018, 9, 14},
 		"MRPV 142225Z VRB02KT 8000 2500SW PRFG BKN010 SCT025 20/18 A2997 NOSIG"
 		"=",
 		"MRPV 141700Z 1418/1518 11006KT CAVOK TX28/1418Z TN17/1510Z"
@@ -4178,7 +4177,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RCFN", "Feng Nin(TW-AFB)", {2018, 9, 14},
+		"RCFN", "Taitung Airport", {2018, 9, 14},
 		"SPECI COR RCFN 142242Z 35013G28KT 270V040 1000 R04/P2000 +SHRA FEW006 FEW012CB BKN015 OVC030 25/24 Q1005 NOSIG"
 		" RMK CB E-SE A2970"
 		"=",
@@ -4197,7 +4196,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OAKN", "Kandahar Intl", {2018, 9, 14},
+		"OAKN", "Kandahar Airport", {2018, 9, 14},
 		"METAR OAKN 142155Z 00000KT 6000 DU CLR 23/M08 A2980"
 		" RMK AO2A SLP032 Q1009 PA3416 DA5145"
 		"=",
@@ -4219,7 +4218,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LPMR", "Monte Real(AB)", {2018, 9, 14},
+		"LPMR", "Monte Real Air Base", {2018, 9, 14},
 		"METAR LPMR 142200Z 29003KT 5000 BR OVC003 17/16 Q1018"
 		"=",
 		"TAF LPMR 141703Z 1418/1518 33005KT 8000 BKN006"
@@ -4234,7 +4233,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSL", "Sleipner A Plat(OIL)", {2018, 9, 14},
+		"ENSL", "Sleipner A Platform", {2018, 9, 14},
 		"METAR ENSL 142250Z AUTO 29020KT 9999NDV -SHRA BKN043/// 11/08 Q1010 W10/S4"
 		"=",
 		"TAF ENSL 142000Z NIL"
@@ -4249,7 +4248,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ESSD", "Borlange/Dala Arpt", {2018, 9, 14},
+		"ESSD", "Borlange Airport", {2018, 9, 14},
 		"METAR ESSD 142250Z AUTO 20010KT 9999 DZ SCT017/// BKN024/// 12/11 Q1006"
 		"=",
 		"TAF ESSD 142000Z NIL"
@@ -4264,7 +4263,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ESNU", "Umea Arpt", {2018, 9, 14},
+		"ESNU", "Umea Airport", {2018, 9, 14},
 		"ESNU 142250Z 32002KT 0800 R14/P1500N R32/P1500N BCFG NSC 02/02 Q1005"
 		"=",
 		"TAF AMD ESNU 142149Z 1421/1506 VRB02KT CAVOK"
@@ -4279,7 +4278,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ESNS", "Skelleftea Arpt", {2018, 9, 14},
+		"ESNS", "Skelleftea Airport", {2018, 9, 14},
 		"METAR ESNS 142250Z AUTO 25003KT 0700 R10/P1500N R28/P1500N FG NCD 03/03 Q1005"
 		"=",
 		"TAF ESNS 142000Z NIL"
@@ -4294,7 +4293,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EFRO", "Rovaniemi Arpt", {2018, 9, 14},
+		"EFRO", "Rovaniemi Airport", {2018, 9, 14},
 		"METAR EFRO 142250Z AUTO 17005KT 1700 BCFG FEW001 SCT003 06/06 Q1004"
 		"=",
 		"TAF AMD EFRO 142223Z 1422/1521 19005KT 0350 FG VV001"
@@ -4316,7 +4315,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENRA", "Moirana Arpt", {2018, 9, 14},
+		"ENRA", "Mo i Rana Airport, Rossvoll", {2018, 9, 14},
 		"METAR ENRA 142120Z VRB01KT 9999 VCFG FEW005 SCT028 BKN045 06/06 Q1001"
 		"=",
 		"TAF ENRA 142000Z NIL"
@@ -4329,7 +4328,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EKYT", "Aalborg Arpt", {2018, 9, 14},
+		"EKYT", "Aalborg Airport", {2018, 9, 14},
 		"METAR EKYT 142250Z AUTO 22010KT 9999NDV -SHRA FEW013/// BKN065/// BKN100/// 13/12 Q1011 RESHRA"
 		"=",
 		"TAF EKYT 142021Z 1421/1518 23010KT 9999 SCT025 SCT070"
@@ -4345,7 +4344,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKLL", "LViv/Halyfskyi Intl", {2018, 9, 14},
+		"UKLL", "Lviv International Airport", {2018, 9, 14},
 		"METAR UKLL 142230Z VRB01MPS 2500 1100SE R31/1900 BR BKN010 17/16 Q1018 R31/290055 NOSIG"
 		"=",
 		"TAF UKLL 141702Z 1418/1518 VRB01MPS 2100 BR BKN007 SCT025CB"
@@ -4360,7 +4359,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 	
 	{
-		"PACD", "Cold Bay Arpt", {2018, 9, 14},
+		"PACD", "Cold Bay Airport", {2018, 9, 14},
 		"METAR PACD 142253Z 14026G36KT 4SM -RA BR OVC003 14/13 A2987"
 		" RMK AO2 PK WND 14039/2212 RAB06 SLP115 P0000 T01390133"
 		"=",
@@ -4379,7 +4378,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMYR", "Myrtle Beach Intl", {2018, 9, 15},
+		"KMYR", "Myrtle Beach International Airport", {2018, 9, 15},
 		"METAR KMYR 150856Z AUTO 16023G30KT 5SM -RA BR OVC008 24/23 A2933"
 		" RMK AO2 PK WND 17031/0841 CIG 006V012 SLP931 P0001 60004 T02390233 51026"
 		"=",
@@ -4396,7 +4395,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KDAN", "Danville Rgnl", {2018, 9, 15},
+		"KDAN", "Danville Regional Airport", {2018, 9, 15},
 		"SPECI KDAN 150901Z AUTO 05015G20KT 4SM +RA BR BKN009 BKN015 OVC020 22/22 A2995"
 		" RMK AO2 RAB0854 CIG 006V011 P0004 T02220217"
 		"=",
@@ -4417,7 +4416,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KCRW", "Charleston/Yeager Ar", {2018, 9, 15},
+		"KCRW", "Yeager Airport", {2018, 9, 15},
 		"SPECI KCRW 150921Z 01003KT 1/2SM FG VV001 21/21 A3007"
 		" RMK AO2 T02060206 RVRNO $"
 		"=",
@@ -4437,7 +4436,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMKG", "Muskegon Cnty Arpt", {2018, 9, 15},
+		"KMKG", "Muskegon County Airport", {2018, 9, 15},
 		"SPECI KMKG 150941Z 00000KT 1/2SM R32/4500VP6000FT FG FEW003 14/13 A3017"
 		" RMK AO2 T01390128 $"
 		"=",
@@ -4459,7 +4458,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYQT", "Thunder Bay Intl", {2018, 9, 15},
+		"CYQT", "Thunder Bay Airport", {2018, 9, 15},
 		"METAR CYQT 150900Z 35008G15KT 320V060 5SM -RA BKN013 OVC027 16/15 A3019"
 		" RMK SC6SC2 PRESFR SLP226 DENSITY ALT 700FT"
 		"=",
@@ -4483,7 +4482,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"DAUT", "Timimoun Arpt", {2018, 9, 15},
+		"DAUT", "Timimoun Airport", {2018, 9, 15},
 		"METAR DAUT 152100Z 06028KT 1000 BLSA FEW040TCU SCT046 33/11 Q1014 RETS"
 		"=",
 		"TAF DAUT 152000Z 1521/1606 32012KT 6000 SCT046"
@@ -4495,7 +4494,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKLL", "LViv/Halyfskyi Intl", {2018, 9, 15},
+		"UKLL", "Lviv International Airport", {2018, 9, 15},
 		"METAR UKLL 152130Z 29002MPS 7000 OVC015 14/13 Q1022 R31/CLRD// NOSIG"
 		"=",
 		"TAF UKLL 151720Z 1518/1618 30003MPS 3000 BR BKN007"
@@ -4508,7 +4507,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VNKT", "Kathmandu/Tribhuvan", {2018, 9, 15},
+		"VNKT", "Tribhuvan International Airport", {2018, 9, 15},
 		"METAR VNKT 152150Z 12003KT 6000 FEW010 FEW025CB SCT030 BKN100 20/19 Q1014 NOSIG"
 		" CB TO SE S AND SW"
 		"=",
@@ -4526,7 +4525,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ZGOW", "Jieyang/Chaoshan Int", {2018, 9, 15},
+		"ZGOW", "Jieyang Chaoshan International Airport", {2018, 9, 15},
 		"METAR ZGOW 152200Z 07012G18MPS 4000 -SHRA SCT017 FEW030CB BKN040 27/25 Q0999"
 		" BECMG 2100 SHRA"
 		"=",
@@ -4541,7 +4540,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VTSG", "Krabi Arpt", {2018, 9, 15},
+		"VTSG", "Krabi Airport", {2018, 9, 15},
 		"METAR VTSG 152100Z 27007KT 7000 VCSH SCT018 SCT020 BKN100 25/23 Q1006"
 		" TEMPO FM2200 TL2215 3000 +RA"
 		"=",
@@ -4554,7 +4553,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"WAOO", "Syamsudin Noor Arpt", {2018, 9, 15},
+		"WAOO", "Syamsudin Noor Airport", {2018, 9, 15},
 		"METAR WAOO 152200Z AUTO 30001KT 1200 R10/P2000N R28/P2000N BR ////// 22/21 Q1008"
 		"=",
 		"TAF WAOO 151700Z 1518/1618 00000KT 8000 FEW020"
@@ -4569,7 +4568,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJFK", "Kagoshima Arpt", {2018, 9, 15},
+		"RJFK", "Kagoshima Airport", {2018, 9, 15},
 		"METAR RJFK 152200Z 31002KT 9999 VCFG FEW020 23/23 Q1016"
 		"=",
 		"TAF RJFK 151706Z 1518/1700 29007KT 9999 FEW025"
@@ -4580,7 +4579,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJOB", "Okayama Arpt", {2018, 9, 15},
+		"RJOB", "Okayama Airport", {2018, 9, 15},
 		"METAR RJOB 152200Z 24004KT 8000 PRFG FEW000 BKN050 22/22 Q1014"
 		"=",
 		"TAF RJOB 151705Z 1518/1700 23005KT 9999 FEW015 SCT025"
@@ -4591,7 +4590,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJOA", "Hiroshima Arpt", {2018, 9, 15},
+		"RJOA", "Hiroshima Airport", {2018, 9, 15},
 		"METAR RJOA 152200Z VRB01KT 2000 R10/P1800N BCFG BR FEW000 SCT002 BKN008 22/21 Q1016"
 		"=",
 		"TAF AMD RJOA 152208Z 1522/1700 24005KT 9999 FEW015 SCT025"
@@ -4605,7 +4604,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJCK", "Kushiro Arpt", {2018, 9, 15},
+		"RJCK", "Kushiro Airport", {2018, 9, 15},
 		"METAR RJCK 152200Z 01002KT 0300 R17/0250V0450N +DZ VV001 16/16 Q1014"
 		"=",
 		"TAF RJCK 151712Z 1518/1700 36004KT 7000 FEW003 BKN015"
@@ -4620,7 +4619,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"GOOG", "Linguere Arpt", {2018, 9, 15},
+		"GOOG", "Linguere Airport", {2018, 9, 15},
 		"METAR GOOG 152200Z 00000KT DU NSC 30/24 Q////"
 		"=",
 		"",
@@ -4630,7 +4629,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKKK", "Kiev/Zhuliany Arpt", {2018, 9, 15},
+		"UKKK", "Kiev Zhuliany International Airport", {2018, 9, 15},
 		"METAR UKKK 152200Z 33004MPS 310V010 9999 SCT013 19/17 Q1015 R26/CLRD70"
 		" TEMPO 31010G17MPS 2100 -TSRA SQ BKN007 BKN015CB"
 		"=",
@@ -4641,7 +4640,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LPPR", "Porto/Cameriro Arpt", {2018, 9, 15},
+		"LPPR", "Francisco de Sá Carneiro Airport", {2018, 9, 15},
 		"METAR LPPR 152200Z 33003KT 0550 0500S R17/0500 FG VV001 15/15 Q1020"
 		"=",
 		"TAF LPPR 151700Z 1518/1618 30005KT 5000 BR SCT002 BKN005"
@@ -4654,7 +4653,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"SAWH", "Ushuaia/Malvinas Arp", {2018, 9, 15}, 
+		"SAWH", "Malvinas Argentinas Airport", {2018, 9, 15}, 
 		"METAR SAWH 150200Z 23033G49KT 9999 RA SCT015 BKN025 02/01 Q0984"
 		"=",
 		"TAF SAWH 142300Z 1500/1524 25020G30KT 5000 SNRA BKN015 BKN020 TX04/1519Z TN00/1510Z"
@@ -4668,7 +4667,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LRSM", "Satu Mare Arpt", {2018, 9, 15},
+		"LRSM", "Satu Mare Airport", {2018, 9, 15},
 		"METAR LRSM 152200Z AUTO 35007KT 9999 +RA SCT080/// BKN100/// 18/14 Q1020"
 		"=",
 		"TAF LRSM 151400Z 1515/1524 23008KT 9999 SCT040"
@@ -4682,7 +4681,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYAB", "Arctic Bay Arpt", {2018, 9, 15},
+		"CYAB", "Arctic Bay Airport", {2018, 9, 15},
 		"METAR CYAB 152200Z 25008KT 10SM -SHSN VCFG FEW005 SCT016 OVC023 M02/M04 A2994"
 		" RMK ST2SC2SC4 -0.3/-1.5/0.1/LAST STFD OBS/NEXT 171100Z VIS E SE 5 BR CIG ESTD SLP141"
 		"=",
@@ -4696,7 +4695,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EPKT", "Katowice/Pyrzowice A", {2018, 9, 15},
+		"EPKT", "Katowice International Airport", {2018, 9, 15},
 		"METAR EPKT 152230Z VRB01KT 8000 MIFG NSC 08/07 Q1024"
 		"=",
 		"TAF EPKT 151730Z 1518/1618 27006KT CAVOK"
@@ -4710,7 +4709,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EDDT", "Berlin/Tegel Arpt", {2018, 9, 15},
+		"EDDT", "Berlin-Tegel Airport", {2018, 9, 15},
 		"METAR EDDT 152220Z 26002KT 9999 BCFG MIFG NSC 11/10 Q1024"
 		"=",
 		"TAF EDDT 151700Z 1518/1618 28008KT CAVOK"
@@ -4723,7 +4722,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"URWW", "Volgograd Intl", {2018, 9, 15},
+		"URWW", "Volgograd International Airport", {2018, 9, 15},
 		"METAR URWW 152230Z 13005MPS CAVOK 20/03 Q1013 R06/010070"
 		" TEMPO -TSRAGR SCT040CB"
 		"=",
@@ -4736,7 +4735,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYZY", "Mackenzie Arpt", {2018, 9, 15},
+		"CYZY", "Mackenzie Airport", {2018, 9, 15},
 		"SPECI CYZY 152231Z AUTO 07014G25KT 010V110 9SM -RA -UP SCT033 OVC050 04/M04 A3002"
 		" RMK SLP193"
 		"=",
@@ -4757,7 +4756,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENKB", "Kristiansund Arpt", {2018, 9, 15},
+		"ENKB", "Kristiansund Airport (Kvernberget)", {2018, 9, 15},
 		"METAR ENKB 152150Z AUTO 23014KT 9999 BKN025/// OVC035/// 10/07 Q1010 RESHUP RERA"
 		" RMK WIND 745FT 25029G41KT"
 		"=",
@@ -4773,7 +4772,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MGGT", "Guatemala/Aurora Arp", {2018, 9, 15},
+		"MGGT", "La Aurora Airport", {2018, 9, 15},
 		"METAR MGGT 152300Z 18004KT 9999 TS FEW020TCU FEW025CB BKN090 24/17 Q1021 A3015 FEW200"
 		" CB/TS/PCPN SE/SSE/S CB WSW/W TCU N/NNW"
 		"=",
@@ -4789,7 +4788,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHM", "Hamilton/Munro Intl", {2018, 9, 16},
+		"CYHM", "John C. Munro Hamilton International Airport", {2018, 9, 16},
 		"SPECI CYHM 160907Z 08003KT 1SM R12/P6000FT/U BR SKC 18/18 A3020"
 		" RMK FG3 VIS NE 7 SLP226 DENSITY ALT 1100FT"
 		"=",
@@ -4807,7 +4806,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJAH", "Ibaraki Arpt", {2018, 9, 16},
+		"RJAH", "Hyakuri Airport", {2018, 9, 16},
 		"METAR RJAH 162100Z 04002KT 2400 BR MIFG FEW005 SCT250 20/20 Q1010"
 		"=",
 		"TAF RJAH 161708Z 1618/1800 20005KT 8000 FEW010 BKN020"
@@ -4822,7 +4821,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJFK", "Kagoshima Arpt", {2018, 9, 16},
+		"RJFK", "Kagoshima Airport", {2018, 9, 16},
 		"METAR RJFK 162100Z 31006KT 9999 VCFG FEW010 21/21 Q1017"
 		" RMK 1CU010 A3003"
 		" FG N-E VOLCANIC ASH CLOUD S"
@@ -4835,7 +4834,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJCC", "Sapporo/Chitose Arpt", {2018, 9, 16},
+		"RJCC", "New Chitose Airport", {2018, 9, 16},
 		"METAR RJCC 162130Z VRB01KT 0500 R19R/0800VP2000U R19L/P2000N FG VV001 19/18 Q1008"
 		"=",
 		"TAF AMD RJCC 162147Z 1621/1800 19003KT 0700 FG VV001"
@@ -4851,7 +4850,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYUS", "Shepherd Bay Arpt", {2018, 9, 16},
+		"CYUS", "Shepherd Bay Airport", {2018, 9, 16},
 		"SPECI CYUS 162147Z AUTO VRB13G28KT ////SM //// FEW009 BKN015 OVC065 M01/M02 A2987"
 		"=",
 		"",
@@ -4864,7 +4863,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHK", "Gjoa Haven Arpt", {2018, 9, 16},
+		"CYHK", "Gjoa Haven Airport", {2018, 9, 16},
 		"SPECI CYHK 162130Z 27011KT 4SM -SHSN FEW012 BKN020 OVC030 OVC035 M01/M02 A2990"
 		" RMK SN1SC1SC4SC2SC1 SC TR SLP131"
 		"=",
@@ -4885,7 +4884,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EFMI", "Mikkeli Arpt", {2018, 9, 16},
+		"EFMI", "Mikkeli Airport", {2018, 9, 16},
 		"METAR EFMI 162150Z AUTO 27001KT 0500 BCFG SCT032 04/04 Q1011"
 		"=",
 		"TAF EFMI 162000Z NIL"
@@ -4900,7 +4899,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHDV", "D15-FA-1 Sea(OIL)", {2018, 9, 16},
+		"EHDV", "D15-fa-1 Oil Platform", {2018, 9, 16},
 		"METAR EHDV 162155Z AUTO 26011KT 160V330 9999 DZ FEW023/// BKN027/// BKN033/// 17/15 Q1015 W///H///"
 		"=",
 		"",
@@ -4912,7 +4911,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYSY", "Sachs Harbour Arpt", {2018, 9, 17},
+		"CYSY", "Sachs Harbour (David Nasogaluak Jr. Saaryuaq) Airport", {2018, 9, 17},
 		"METAR CYSY NIL"
 		"=",
 		"",
@@ -4924,7 +4923,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMNI", "Manning/Cooper Rgnl", {2018, 9, 17},
+		"KMNI", "Santee Cooper Regional Airport", {2018, 9, 17},
 		"METAR KMNI 171315Z AUTO 18005KT 3/4SM BR OVC008 23/22 A2997"
 		" RMK AO2 VIS 1/2V1 3/4"
 		"=",
@@ -4938,7 +4937,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMWN", "Mount Washington(OBS", {2018, 9, 17},
+		"KMWN", "Mount Washington Regional Airport", {2018, 9, 17},
 		"METAR KMWN 171249Z 28023KT 1/16SM FG VV001 12/12"
 		" RMK"
 		"=",
@@ -4949,7 +4948,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KDSM", "Des Moines Intl", {2018, 9, 17},
+		"KDSM", "Des Moines International Airport", {2018, 9, 17},
 		"METAR KDSM 171254Z 19004KT 10SM FEW070 BKN085 22/19 A2996"
 		" RMK AO2 SLP136 MDT CU W-NW T02220189"
 		"=",
@@ -4965,7 +4964,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MMMM", "Morelia/Mujica Intl", {2018, 9, 17},
+		"MMMM", "General Francisco J. Mujica International Airport", {2018, 9, 17},
 		"SPECI MMMM 171315Z 00000KT 5SM VCFG SCT008 BKN080 BKN230 15/15 A3023"
 		" RMK 8/578 HZY"
 		"=",
@@ -4987,7 +4986,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MMLM", "Los Mochis Arpt", {2018, 9, 17},
+		"MMLM", "Valle del Fuerte International Airport", {2018, 9, 17},
 		"METAR MMLM 171307Z RTD 20008KT 5SM -RA BKN020 OVC070 23/20 A2984"
 		" RMK 60479 8/52/ OCNL LTGICC RTS"
 		"=",
@@ -5005,7 +5004,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYLT", "Alert Arpt", {2018, 9, 17},
+		"CYLT", "Alert Airport", {2018, 9, 17},
 		"METAR CYLT 171300Z 33003KT 15SM FEW012 M16/M17 A3002"
 		" RMK ST1 FROIN FZFG OVR WTR SLP171"
 		"=",
@@ -5021,7 +5020,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYQK", "Kenora Arpt", {2018, 9, 17},
+		"CYQK", "Kenora Airport", {2018, 9, 17},
 		"SPECI CYQK 171310Z 36005KT 2SM -DZ BR OVC002 05/05 A3005"
 		" RMK ST8 CIG RAG PRESRR SLP183"
 		"=",
@@ -5040,7 +5039,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMBG", "Mobridge Muni", {2018, 9, 17},
+		"KMBG", "Mobridge Municipal Airport", {2018, 9, 17},
 		"METAR KMBG 171252Z AUTO 00000KT 10SM OVC009 11/09 A2999"
 		" RMK AO2 PK WND 05031/1202 WSHFT 1144 LTG DSNT S RAE07 TSE08 SLP150 P0019 T01060094 $"
 		"=",
@@ -5059,7 +5058,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSL", "Sleipner A Plat(OIL)", {2018, 9, 17},
+		"ENSL", "Sleipner A Platform", {2018, 9, 17},
 		"METAR ENSL 171450Z 17023KT CAVOK 13/12 Q1007 W11/S3"
 		"=",
 		"TAF ENSL 171400Z NIL"
@@ -5072,7 +5071,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYSY", "Sachs Harbour Arpt", {2018, 9, 17},
+		"CYSY", "Sachs Harbour (David Nasogaluak Jr. Saaryuaq) Airport", {2018, 9, 17},
 		"METAR CYSY 171900Z 34029G36KT 10SM DRSN BKN004 M09/M11 A3012"
 		" RMK ST7 SLP210"
 		"=",
@@ -5088,7 +5087,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYPC", "Paulatuk Arpt", {2018, 9, 17},
+		"CYPC", "Paulatuk (Nora Aliqatchialuk Ruben) Airport", {2018, 9, 17},
 		"SPECI CYPC 171912Z 32018KT 10SM -FZRA SCT005 BKN011 M05/M07 A3017"
 		" RMK ST4SC3 SLP220"
 		"=",
@@ -5105,7 +5104,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHI", "Holman Arpt", {2018, 9, 17},
+		"CYHI", "Ulukhaktok Holman Airport", {2018, 9, 17},
 		"METAR CYHI 171900Z CCA 34019KT 10SM -SN DRSN VCSH VCFG FEW011 BKN030 BKN040 BKN060 BKN150 M05/M09 A2994"
 		" RMK SC1ST4SC1SC1AC1 SC TR AC TR CIG RAG VIS SW 15 SLP144"
 		"=",
@@ -5121,7 +5120,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABA", "Barter Island Arpt", {2018, 9, 17},
+		"PABA", "Barter Island LRRS Airport", {2018, 9, 17},
 		"METAR PABA 171852Z AUTO 09019KT 6SM BR OVC007 M02/M03 A3027"
 		" RMK AO2 PK WND 09028/1827 SNB26E37 SLP236 P0000 T10171028 FZRANO TSNO"
 		"=",
@@ -5135,7 +5134,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYBB", "Pelly Bay/Kugaaruk A", {2018, 9, 17},
+		"CYBB", "Kugaaruk Airport", {2018, 9, 17},
 		"SPECI CYBB 171940Z 22016KT 5/8SM SN OVC007 00/M01 A2977"
 		" RMK SN6ST2 SLP084"
 		"=",
@@ -5149,7 +5148,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHK", "Gjoa Haven Arpt", {2018, 9, 17},
+		"CYHK", "Gjoa Haven Airport", {2018, 9, 17},
 		"SPECI CYHK 171935Z 23019G25KT 5SM -SN DRSN SCT007 SCT012 OVC029 00/M00 A2961"
 		" RMK ST3SC1SC4 WET SN /S01/ SUN DIMLY VISIBLE OCNL DRSN SLP032"
 		"=",
@@ -5167,7 +5166,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MMPQ", "Palenque Intl", {2018, 9, 17},
+		"MMPQ", "Palenque International Airport", {2018, 9, 17},
 		"METAR MMPQ 171948Z 00000KT 10SM FEW040TCU 34/23 A2972"
 		" RMK 8/200"
 		"=",
@@ -5184,7 +5183,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KMMH", "Mammoth/Yosemite Arp", {2018, 9, 17},
+		"KMMH", "Mammoth Yosemite Airport", {2018, 9, 17},
 		"KMMH 171935Z AUTO 10010G14KT 3/4SM HZ VV005 23/M11 A3015"
 		" RMK AO2 VIS M1/4V5 AWOS NOTAMED OSM P0006 T02281112"
 		"=",
@@ -5201,7 +5200,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAEC", "Chulitna", {2018, 9, 17},
+		"PAEC", "Chulitna Airport", {2018, 9, 17},
 		"METAR PAEC 171856Z 00000KT 1/2SM -DZ FG VV002 09/08 A3003"
 		" RMK NOSPECI"
 		"=",
@@ -5212,7 +5211,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"OAKB", "Kabul Intl", {2018, 9, 17},
+		"OAKB", "Hamid Karzai International Airport", {2018, 9, 17},
 		"METAR OAKB 171950Z 00000KT 5000 HZ NSC 15/M00 Q1017 NOSIG"
 		" RMK A3006 WHT WHT"
 		"=",
@@ -5227,7 +5226,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGYP", "Mount Pleasant Arpt", {2018, 9, 17},
+		"EGYP", "Mount Pleasant Airport", {2018, 9, 17},
 		"METAR EGYP 171850Z 30020KT 9999 SCT014 SCT022 10/07 Q0988 GRN"
 		" BECMG FEW014 SCT022 WHT"
 		"=",
@@ -5246,7 +5245,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGDR", "Culdrose (NAVY)", {2018, 9, 17},
+		"EGDR", "RNAS Culdrose", {2018, 9, 17},
 		"METAR EGDR 171850Z 17015G29KT 8000 HZ FEW005 SCT007 BKN014 17/16 Q1005 GRN"
 		" TEMPO 5000 -RA SCT005 YLO1"
 		"=",
@@ -5257,7 +5256,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYRB", "Resolute Bay Arpt", {2018, 9, 18},
+		"CYRB", "Resolute Bay Airport", {2018, 9, 18},
 		"METAR CYRB 181400Z 09024KT 1/2SM R35/5500FT/D -SN BLSN OVC012 M02/M03 A2973"
 		" RMK BLSN7SC1 SLP077"
 		"=",
@@ -5277,7 +5276,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"VTSG", "Krabi Arpt", {2018, 9, 18},
+		"VTSG", "Krabi Airport", {2018, 9, 18},
 		"METAR VTSG 180000Z VRB02KT 9000 4000W RA SCT018 BKN020 BKN100 23/23 Q1010"
 		" TEMPO TL0030 3000 +RA"
 		"=",
@@ -5291,7 +5290,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KIWA", "Phoenix/Mesa Gateway", {2018, 9, 18},
+		"KIWA", "Phoenix-Mesa-Gateway Airport", {2018, 9, 18},
 		"METAR KIWA 182248Z VRB05KT 45SM PO FEW150 38/13 A2975"
 		"=",
 		"TAF KIWA 181720Z 1818/1918 27006KT P6SM FEW110"
@@ -5304,7 +5303,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJBD", "Nanki-Shirahama Arpt", {2018, 9, 20},
+		"RJBD", "Nanki Shirahama Airport", {2018, 9, 20},
 		"SPECI RJBD 200732Z 12005KT 4500 -SHRA BR FEW006 SCT015 FEW025CB BKN060 22/22 Q1009"
 		" RMK 1ST006 3CU015 1CB025 6SC060 A2981 CB 25KM E MOV NE"
 		"=",
@@ -5317,7 +5316,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
+		"ENSE", "Snorre A Oil Platform", {2018, 9, 20},
 		"METAR ENSE 201620Z AUTO 24040KT 9999NDV FEW010/// SCT020/// BKN027/// 12/10 Q0988 W///S7"
 		"=",
 		"",
@@ -5329,7 +5328,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKLL", "LViv/Halyfskyi Intl", {2018, 9, 20},
+		"UKLL", "Lviv International Airport", {2018, 9, 20},
 		"SPECI UKLL 202304Z 00000MPS 4800 1100SE R31/1900 BR NSC 11/10 Q1020 R31/CLRD//"
 		" TEMPO 0400 FG VV002"
 		"=",
@@ -5342,7 +5341,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSE", "Snorre A(OIL)", {2018, 9, 20},
+		"ENSE", "Snorre A Oil Platform", {2018, 9, 20},
 		"METAR ENSE 202320Z AUTO 24014KT 9999NDV SCT044/// BKN051/// 11/07 Q0995 W///S6"
 		"=",
 		"",
@@ -5354,7 +5353,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGVO", "Odiham(RAF)", {2018, 9, 21},
+		"EGVO", "RAF Odiham", {2018, 9, 21},
 		"SPECI EGVO 210017Z 22026G40KT 1000 +RA SCT010 BKN020 OVC028 17/16 Q0997 AMB"
 		" TEMPO 5000 -RA GRN"
 		"=",
@@ -5377,7 +5376,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSL", "Sleipner A Plat(OIL)", {2018, 9, 21},
+		"ENSL", "Sleipner A Platform", {2018, 9, 21},
 		"METAR ENSL 211150Z 35054KT 2000 RA BR BKN040 09/06 Q0978 W09/S5"
 		"=",
 		"TAF ENSL 211100Z 2112/2117 34058G72KT 8000 -RA SCT012 BKN020"
@@ -5391,7 +5390,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENLE", "Ekofisk Platform(OIL", {2018, 9, 21},
+		"ENLE", "Ekofisk L Oil Platform", {2018, 9, 21},
 		"METAR ENLE 211120Z 26060KT 4000 -SHRA BKN015 09/07 Q0982 W14/S7"
 		"=",
 		"TAF ENLE 211100Z 2112/2121 27060G72KT 8000 -SHRA SCT012 BKN025"
@@ -5403,7 +5402,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGUL", "Lakenheath(RAF)", {2018, 9, 21},
+		"EGUL", "RAF Lakenheath", {2018, 9, 21},
 		"METAR EGUL 211156Z 25014G22KT 9999 FEW046 SCT055 14/04 A2971"
 		" RMK AO2A PK WND 24029/06 SLP064 70021 T01370043 10145 20103 52016 $"
 		"=",
@@ -5424,7 +5423,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGDY", "Yeovilton (NAVY)", {2018, 9, 21},
+		"EGDY", "RNAS Yeovilton", {2018, 9, 21},
 		"METAR EGDY 211150Z 25022G33KT 9999 SCT025CB SCT050 16/06 Q1011 BLU"
 		" TEMPO 6000 SHRA SCT024CB WHT"
 		"=",
@@ -5439,7 +5438,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSE", "Snorre A(OIL)", {2018, 9, 21},
+		"ENSE", "Snorre A Oil Platform", {2018, 9, 21},
 		"METAR ENSE 211150Z AUTO 36028KT 9999NDV FEW030/// BKN130/// 09/04 Q0984 W///S4"
 		"=",
 		"",
@@ -5451,7 +5450,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KRSP", "Camp David(HEL)", {2018, 9, 21},
+		"KRSP", "Camp David", {2018, 9, 21},
 		"METAR KRSP 211554Z AUTO 19010G14KT M1/4SM FG VV001 17/17 A3020"
 		" RMK AO2 SLP225 T01720172 $"
 		"=",
@@ -5466,7 +5465,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"WADL", "Lompoc Intl", {2018, 9, 21},
+		"WADL", "Lombok International Airport", {2018, 9, 21},
 		"METAR WADL 212200Z 00000KT 5000 BR BKN016 22/20 Q1015"
 		" TEMPO TL2330 BR"
 		"=",
@@ -5479,7 +5478,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KADM", "Ardmore Muni", {2018, 9, 21},
+		"KADM", "Ardmore Municipal Airport", {2018, 9, 21},
 		"METAR KADM 212155Z 31008KT 1 1/4SM +VCTSRA BKN007 OVC017 22/22 A2996"
 		" RMK LTG DSNT SE AND S"
 		"=",
@@ -5490,7 +5489,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UUYY", "Syktyvkar Arpt", {2018, 9, 21},
+		"UUYY", "Syktyvkar Airport", {2018, 9, 21},
 		"METAR UUYY 212200Z 21002MPS 2900 0600SW FG SCT002 09/09 Q1012 R18/CLRD61"
 		" TEMPO 0300 FG"
 		" RMK QBB060 QFE751/1001"
@@ -5502,7 +5501,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	}, 
 
 	{
-		"SLLP", "La Paz/El Alto Intl", {2018, 9, 21},
+		"SLLP", "El Alto International Airport", {2018, 9, 21},
 		"METAR SLLP 212200Z 05014KT 9999 FEW023 FEW025CB SCT200 12/M01 Q1024"
 		"=",
 		"TAF SLLP 211600Z 2118/2218 15013KT 9999 FEW020 FEW023CB TX18/2120Z TN01/2210Z"
@@ -5516,7 +5515,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MHLC", "La Ceiba/Goloson Int", {2018, 9, 21},
+		"MHLC", "Goloson International Airport", {2018, 9, 21},
 		"METAR MHLC 212200Z 09012KT 9999 1000E TSRA SCT022CB BKN090 25/23 Q1009 A2980 NOSIG"
 		"=",
 		"TAF MHLC 211625Z 2118/2218 02014KT 9999 SCT026TCU SCT090 TX32/2120Z TN23/2212Z"
@@ -5531,7 +5530,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UUDD", "Moscow/Domodedovo Ar", {2018, 9, 21},
+		"UUDD", "Domodedovo International Airport", {2018, 9, 21},
 		"UUDD 212230Z 18002MPS 160V230 7000 0800NE PRFG NSC 11/09 Q1019 R14R/010095"
 		" TEMPO 1000 BR"
 		"=",
@@ -5547,7 +5546,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYND", "Gatineau/Ottawa Exec", {2018, 9, 21},
+		"CYND", "Ottawa / Gatineau Airport", {2018, 9, 21},
 		"SPECI CYND 212053Z 21018G27KT 180V240 12SM TS FEW043 SCT110 BKN210 27/21 A2949"
 		" RMK SC1AC2CI2 CVCTV CLDS EMBD VIS HIER E SLP987 DENSITY ALT 2200FT"
 		"=",
@@ -5568,7 +5567,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CWGZ", "Grise Fiord Arpt", {2018, 9, 22},
+		"CWGZ", "Grise Fiord Airport", {2018, 9, 22},
 		"METAR CWGZ 222000Z 00000KT 10SM -SG VCFG FEW013 SCT023 OVC055 M03/M06 A2991"
 		" RMK SF1SC3SC4 FREEZING FOG IN VICINITY"
 		" -3.1/-5.5/TR/TRACE SNW CVR/ LAST STFD OB/NEXT 251200Z SLP135"
@@ -5580,7 +5579,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENQC", "Troll-C(OIL)", {2018, 9, 22},
+		"ENQC", "Troll C Platform", {2018, 9, 22},
 		"METAR ENQC 220150Z AUTO 26036KT 9999NDV BKN023/// BKN099/// 10/05 Q0990 W///S/"
 		"=",
 		"",
@@ -5592,7 +5591,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENSE", "Snorre A(OIL)", {2018, 9, 22},
+		"ENSE", "Snorre A Oil Platform", {2018, 9, 22},
 		"METAR ENSE 221020Z AUTO 28030KT 9999NDV FEW017/// SCT021/// BKN034/// 10/07 Q0993 W///S5"
 		"=",
 		"",
@@ -5604,7 +5603,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K5H4", "Harvey Muni", {2018, 9, 22},
+		"K5H4", "Harvey Municipal Airport", {2018, 9, 22},
 		"METAR K5H4 221055Z AUTO 23005KT 10SM CLR 06/05 A3006"
 		" RMK AO2"
 		"=",
@@ -5618,7 +5617,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ZSOF", "Hefei/Xinqiao Intl", {2018, 9, 22},
+		"ZSOF", "Hefei Luogang International Airport", {2018, 9, 22},
 		"METAR ZSOF 221900Z 08002MPS 3500 BR NSC 19/19 Q1016"
 		" BECMG AT2000 2800 BR"
 		"=",
@@ -5630,7 +5629,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJFY", "Kanoya (JMSDF)", {2018, 9, 24},
+		"RJFY", "Kanoya Airport", {2018, 9, 24},
 		"SPECI RJFY 240332Z 05003KT 010V080 9999 -RA FEW005 SCT025 OVC035 22/20 Q1015"
 		" RMK 1ST005 3CU025 8NS035 A2999"
 		"=",
@@ -5643,7 +5642,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHJR", "K13-a Sea(OIL)", {2018, 9, 24},
+		"EHJR", "K13-A Oil Platform", {2018, 9, 24},
 		"METAR EHJR 241925Z AUTO 33015KT //// // ///////// 13/06 Q1036 RE// W17/H23"
 		"=",
 		"",
@@ -5655,7 +5654,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHJA", "J6-A Sea(OIL)", {2018, 9, 24},
+		"EHJA", "J6-a Oil Platform", {2018, 9, 24},
 		"METAR EHJA 241955Z AUTO 31017KT 270V340 9999 FEW029/// 12/05 Q1036 W///H///"
 		"=",
 		"",
@@ -5667,7 +5666,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENTC", "Tromso Arpt", {2018, 9, 24},
+		"ENTC", "Tromso Airport", {2018, 9, 24},
 		"ENTC 241950Z 25018KT 9999 -SHRA FEW015 BKN032 02/M00 Q1003"
 		" TEMPO 27020G35KTKT SHRAGS BKN014CB"
 		" RMK WIND 2600FT 29014KT"
@@ -5683,7 +5682,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJNG", "Gifu (JASDF)", {2018, 9, 25},		
+		"RJNG", "Gifu Airport", {2018, 9, 25},		
 		"SPECI RJNG 250349Z 33006KT 9999 FEW010 SCT070 OVC100 21/18 Q1014"
 		" RMK 1CU010 3AC070 8AS100 A2994"
 		"=",
@@ -5696,7 +5695,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHSA", "Euro Platform(OIL)", {2018, 9, 25},
+		"EHSA", "Europlatform Observation Station", {2018, 9, 25},
 		"METAR EHSA 252355Z AUTO 19012KT 9999 ///////// 15/07 Q1034 W16/H7"
 		"=",
 		"",
@@ -5708,7 +5707,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YSTW", "Tamworth Arpt", {2018, 9, 26},
+		"YSTW", "Tamworth Airport", {2018, 9, 26},
 		"METAR YSTW 250530Z AUTO 02007KT 8000 // OVC063 12/10 Q1023 RF00.2/011.2"
 		"=",
 		"TAF YSTW 250507Z 2506/2524 10008KT 9999 -SHRA SCT050"
@@ -5724,7 +5723,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYBG", "Bagotville(MIL)", {2018, 9, 26},
+		"CYBG", "CFB Bagotville", {2018, 9, 26},
 		"METAR CYBG 260900Z 08011KT 1/2SM R11/P6000FT -RA FG VV002 11/11 A2981"
 		" RMK FG8 VIS VRB 1/8-1 SLP099"
 		"=",
@@ -5745,7 +5744,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJAA", "Narita Intl", {2018, 9, 26},
+		"RJAA", "Narita International Airport", {2018, 9, 26},
 		"SPECI RJAA 261945Z 36020KT 4000 -SHRA BR FEW003 SCT004 BKN006 FEW020TCU 15/15 Q1014"
 		" RMK 1ST003 3ST004 5ST006 1TCU020 A2995 TCU 10KM N-NE MOV NE"
 		"=",
@@ -5761,7 +5760,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EGDM", "Boscombe Down(MIL)", {2018, 9, 27},
+		"EGDM", "MoD Boscombe Down Airport", {2018, 9, 27},
 		"METAR EGDM 270050Z AUTO 17003KT 0050 FG NCD 08/07 Q1030"
 		"=",
 		"TAF EGDM 261557Z 2615/2618 CNL"
@@ -5776,7 +5775,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ESNQ", "Kiruna Arpt", {2018, 9, 27},
+		"ESNQ", "Kiruna Airport", {2018, 9, 27},
 		"METAR ESNQ 262050Z 35010KT 5000 -RASN VV016 01/01 Q0980"
 		"=",
 		"TAF ESNQ 262030Z 2621/2623 34011KT 9999 -RASN BKN020"
@@ -5788,7 +5787,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHA", "Quaqtaq Arpt", {2018, 9, 27},
+		"CYHA", "Quaqtaq Airport", {2018, 9, 27},
 		"SPECI CYHA 262015Z 01012KT 15SM -SN OVC010 01/M00 A2944"
 		" RMK ST8 SLP974"
 		"=",
@@ -5806,7 +5805,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"RJTT", "Tokyo/Haneda Intl", {2018, 9, 30},
+		"RJTT", "Tokyo Haneda International Airport", {2018, 9, 30},
 		"SPECI RJTT 301545Z 19038G56KT 3000 R34L/M0050VP2000U R22/0400VP2000U "
 		"R16L/0450VP2000U R23/0400V1000D SHRA BR FEW005 SCT015 BKN020 25/24 Q0982"
 		" RMK 1ST005 3CU015 6CU020 A2900"
@@ -5826,7 +5825,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KPAM", "Tyndall AFB", {2018, 10, 10},
+		"KPAM", "Tyndall Air Force Base", {2018, 10, 10},
 		"SPECI KPAM 101721Z AUTO 08063G112KT M1/8SM R14/0600V1200FT +RA FG SQ M 25/25 A2724"
 		" RMK AO2 RAB1658 SLP227 CHINO RWY32 $"
 		"=",
@@ -5850,7 +5849,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKHH", "Kharkiv Intl", {2018, 11, 9},
+		"UKHH", "Kharkiv International Airport", {2018, 11, 9},
 		"METAR UKHH 090030Z 35001MPS 0050 0000E R25/0100N FZFG VV001 M02/M02 Q1024 "
 		"R25/0///72 NOSIG"
 		"=",
@@ -5864,7 +5863,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASV", "Sparrevohn Arpt", {2019, 1, 1},
+		"PASV", "Sparrevohn LRRS Airport", {2019, 1, 1},
 		"METAR PASV 010955Z AUTO 04019G23KT 10SM -SHRA OVC028 02/M05 A2877"
 		" RMK AO2 PK WND 09031/0935 WSHFT 0934 RAB0925E0930SHRASNB0944E0953SHSNB0953E0955 SLP759 P0000 T00151050 400351005"
 		"=",
@@ -5878,7 +5877,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABE", "Bethel Arpt", {2019, 1, 2},
+		"PABE", "Bethel Airport", {2019, 1, 2},
 		"METAR PABE 020053Z 31014KT 1 3/4SM -SN BR FEW006 BKN020 OVC029 M02/M03 A2866"
 		" RMK SLP708 P0001 T10221028 $ VIA AUTODIAL"
 		"=",
@@ -5896,7 +5895,20 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYHD", "Dryden Rgnl", {2019, 1, 3}, 
+		"CYVP", "Kuujjuaq Airport", {2019, 1, 2}, 
+		"METAR CYVP 021900Z 23011G18KT 8SM IC DRSN SCT023 M25/M29 A2990"
+		" RMK IC2SC1 SLP132"
+		"=",
+		"TAF CYVP 021738Z 0218/0306 22010KT 6SM IC FEW030 BKN080"
+		" TEMPO 0218/0306 P6SM NSW RMK NXT FCST BY 030000Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CYHD", "Dryden Regional Airport", {2019, 1, 3}, 
 		"METAR CYHD 032000Z AUTO 24008KT 9SM BKN009 OVC100 00/M01 A2941"
 		" RMK RVR MISG SLP988"
 		"=",
@@ -5916,7 +5928,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASY", "Shemya/Eareckson Arp", {2019, 1, 3}, 
+		"PASY", "Eareckson Air Station", {2019, 1, 3}, 
 		"METAR PASY 032359Z 19019G25KT 7SM SCT027 SCT035 BKN055 01/M03 A2943"
 		" RMK SLP970 6//// 4//// 5//// $"
 		"=",
@@ -5936,7 +5948,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABE", "Bethel Arpt", {2019, 1, 4},
+		"PABE", "Bethel Airport", {2019, 1, 4},
 		"METAR PABE 042053Z 18006KT 1/4SM R19R/1600V2000FT FZFG VV003 M07/M07 A2977"
 		" RMK AO2 SLP082 I1005 I3011 T10671072 51018 $"
 		"=",
@@ -5953,7 +5965,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABE", "Bethel Arpt", {2019, 1, 5},
+		"PABE", "Bethel Airport", {2019, 1, 5},
 		"METAR PABE 052353Z 03007KT 10SM SCT004 BKN110 M13/M15 A2992"
 		" RMK AO2 SLP136 I6011 T11331150 11072 21133 55003 $"
 		"=",
@@ -5972,7 +5984,70 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCQ", "Chetwynd Arpt", {2019, 1, 9},
+		"PAAK", "Atka Airport", {2019, 1, 6},
+		"SPECI PAAK 060053Z AUTO 26010G21KT 1/4SM -SN FZFG FEW003 SCT011 BKN019 M01/M03 A2955"
+		" RMK AO2 VIS M1/4V1 3/4 RAE14B40E42SNB14 CIG 014V025 P0000 FZRANO"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::SPECI,
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+
+	{
+		"KATL", "Hartsfield Jackson Atlanta International Airport", {2019, 1, 7},
+		"METAR KATL 070152Z 33003KT 10SM FEW001 FEW150 SCT200 SCT250 13/04 A3020"
+		" RMK AO2 SLP228 FU FEW001 T01280039=",
+		"KATL 072142Z 0722/0824 17008KT P6SM SCT200 BKN250 FM080600 20003KT P6SM BKN150"
+		" FM081100 22004KT P6SM BKN040"
+		" FM081400 24006KT P6SM SCT008 OVC015"
+		" FM081700 27009KT P6SM BKN025"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"CYUX", "Hall Beach Airport", {2019, 1, 7}, 
+		"METAR CYUX 072200Z 31020KT 5/8SM IC BLSN SCT002 BKN060 M29/M32 A2988"
+		" RMK BLSA3SF1SC3 SLP122="
+		"=",
+		"TAF CYUX 071838Z 0719/0807 31020KT 1/2SM IC BLSN VV005"
+		" TEMPO 0719/0724 1SM IC BLSN SKC"
+		" FM080000 31018KT 3/4SM IC BLSN FEW040"
+		" TEMPO 0800/0805 3SM IC BLSN SKC"
+		" FM080500 31015KT 11/2SM IC BLSN SKC"
+		" TEMPO 0805/0807 P6SM NSW"
+		" RMK NXT FCST BY 080100Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"KBKL", "Burke Lakefront Airport", {2019, 1, 8},
+		"METAR KBKL 081353Z 22014G19KT 1SM TSRA FEW014 BKN035 OVC060 12/08 A2978"
+		" RMK AO2 LTG DSNT E-SW RAB36 TSB44 PRESRR SLP086 TS SW MOV NE P0007 T01170083"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"CYCQ", "Chetwynd Airport", {2019, 1, 9},
 		"METAR CYCQ 090000Z CCB 00000KT 35SM FEW090 BKN170 OVC190 M14/M16 A3011"
 		" RMK AC2AS3CS3 CLIMAT -10.0/-31.0/-14.0/22 LAST STFD OBS/NEXT 091400Z SLP265"
 		"=",
@@ -5985,7 +6060,26 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCB", "Cambridge Bay Arpt", {2019, 1, 10},
+		"CYEG", "Edmonton International Airport", {2019, 1, 10},
+		"METAR CYEG 100900Z 00000KT 15SM MIFG SCT025 BKN220 M19/M20 A2988"
+		" RMK SC3CI3 MIFG SE SLP181"
+		"=",
+		"TAF CYEG 100839Z 1009/1106 09005KT P6SM FEW025 SCT080 BKN250"
+		" FM101000 VRB03KT P6SM FEW005 SCT030"
+		" TEMPO 1010/1021 2SM BR FEW003 BKN012"
+		" PROB30 1011/1021 1/2SM FZFG BKN003"
+		" FM102100 33005KT P6SM SCT008 BKN060"
+		" TEMPO 1021/1023 BKN008"
+		" FM110300 24008KT P6SM FEW006 SCT060"
+		" RMK NXT FCST BY 101200Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CYCB", "Cambridge Bay Airport", {2019, 1, 10},
 		"METAR CYCB 101800Z CCC 03006KT 10SM IC FEW030 M40/M44 A3068"
 		" RMK SC2 FG E DSIPTG SLP397"
 		"=",
@@ -6000,7 +6094,18 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CYCA", "Cartwright Arpt", {2019, 1, 11},
+		"CYBD", "Bella Coola Airport", {2019, 1, 10}, 
+		"METAR CYBD 102100Z VRB06KT 15SM FEW003 FEW020 FEW110 BKN160 02/00 A2983"
+		" RMK SF1SC1ACC2AS5 SF TR SC TR SLP104="
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CYCA", "Cartwright Airport", {2019, 1, 11},
 		"METAR CYCA 112000Z AUTO /////KT"
 		" RMK WND MISG CLD MISG WX MISG VIS MISG PCPN MISG PRES MISG"
 		" T MISG TD MISG ICG MISG DENSITY ALT MISG"
@@ -6016,7 +6121,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CWSA", "Sable Island", {2019, 1, 11},
+		"CWSA", "Sable Island Aerodrome", {2019, 1, 11},
 		"METAR CWSA 111000Z AUTO 25020KT 8SM BKN080 02/M02 A2953"
 		" RMK TS/LTNG TEMPO UNAVBL SLP003"
 		"=",
@@ -6035,7 +6140,20 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABT", "Bettles Arpt", {2019, 1, 12},
+		"K2DP", "Stumpy Point Gunnery Range", {2019, 1, 12},
+		"METAR K2DP 270456Z AUTO 00000KT 2 1/2SM BR CLR M01/M01 A3020"
+		" RMK AO2 VIS 1 1/8V2 1/2 SLPNO T10121015 401061043"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{}
+	},
+
+	{
+		"PABT", "Bettles Airport", {2019, 1, 12},
 		"METAR PABT 121453Z 01003KT 10SM CLR M35/ A3008"
 		" RMK AO2 SLP219 I1000 I3000 T1350 53004 PNO"
 		"=",
@@ -6049,7 +6167,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAYA", "Yakutat Arpt", {2019, 1, 13},
+		"PAYA", "Yakutat Airport", {2019, 1, 13},
 		"METAR PAYA 131653Z AUTO 00000KT 10SM M03/M04 A2992"
 		" RMK AO2 SLP133 I1/// T10331044 TSNO $"
 		"=",
@@ -6067,7 +6185,34 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAYA", "Yakutat Arpt", {2019, 1, 14},
+		"KONT", "Ontario International Airport", {2019, 1, 13},
+		"METAR KONT 132253Z VRB05KT 10SM SCT060 SCT100 BKN180 BKN250 17/04 A3001"
+		" RMK AO2 SLP163 ACC S-SW T01670039"
+		"=",
+		"TAF KONT 131720Z 1318/1424 VRB05KT P6SM SCT250 FM141000 05008KT P6SM BKN200"
+		" FM141700 05010G18KT P6SM BKN035 OVC150"
+		" FM142300 05012G22KT P6SM VCSH OVC035"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"KMWN", "Mount Washington Regional Airport", {2019, 1, 14},
+		"METAR KMWN 141155Z 32017KT 120SM FEW180 M08/M26"
+		" RMK PTCHY VLY FG NW 4/014 11085 21124"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"PAYA", "Yakutat Airport", {2019, 1, 14},
 		"METAR PAYA 141753Z AUTO 05003KT 6SM -FZRA BR FEW026 OVC034 01/01 A3002"
 		" RMK AO2 FZRAB31 SLP166 P0001 60004 I1001 I6/// T00060006 10006 21044 TSNO $"
 		"=",
@@ -6087,6 +6232,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"CYRT", "Rankin Inlet Airport", {2019, 1, 15}, 
+		"METAR CYRT 150500Z 33020G25KT 1/2SM BLSN SCT250 M38/M43 A3009"
+		" RMK BLDU3CI1 SLP196"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
 		"PATO", "Portage Glacier", {2019, 1, 16},
 		"METAR PATO 160753Z AUTO 09008KT 10SM UP FEW019 BKN029 OVC037 00/M01 A2969"
 		" RMK AO2 FZRAB01E04SNB04E16 SLP055 P0001 I1000 T00001011 TSNO"
@@ -6101,7 +6257,32 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UAAA", "Almaty Intl", {2019, 1, 18},
+		"CYZG", "Salluit Airport", {2019, 1, 16}, 
+		"METAR CYZG 162200Z 25006KT 200V270 5SM IC HZ SCT017 M31/M34 A2963 RMK HZ2SC2 SNW CVR/TRACELOOSE/LAST STFD OBS/NEXT171300 UTC SLP073"
+		"=",
+		"TAF AMD CYZG 162011Z 1620/1622 22012G22KT P6SM IC FEW060"
+		" TEMPO 1620/1622 5SM IC BR"
+		" RMK NXT FCST WILL BE ISSUED AT 171445Z",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD			
+		},
+		0
+	},
+
+	{
+		"CWSW", "Sparwood / Elk Valley Airport", {2019, 1, 17}, 
+		"METAR CWSW 172000Z 11008KT 2SM -SN OVC015 M06/M11 A2988"
+		" RMK SN5NS3 SLP179"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"UAAA", "Almaty Airport", {2019, 1, 18},
 		"METAR UAAA 181730Z 17002MPS 150V210 0700 R05L/1800 R05R/P2000 FZFG FU SCT200 M05/M07 Q1013 R05L/91//60 R05R/CLRD65 NOSIG"
 		"=",
 		"TAF UAAA 181700Z 1818/1918 16004MPS 0800 FZFG SCT011 BKN100 TX07/1908Z TNM06/1901Z"
@@ -6116,7 +6297,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"CWLY", "Lytton (READAC)", {2019, 1, 18},
+		"KELP", "El Paso International Airport", {2019, 1, 18},
+		"METAR KELP 181951Z 28023G36KT 8SM SCT050 SCT080 BKN250 17/02 A2995"
+		" RMK AO2 PK WND 25045/1856 SLP099 BLDU NE AND NW-N OCNL BLDU ALQDS T01720022"
+		"=",
+		"TAF KELP 181720Z 1818/1918 25015G25KT P6SM FEW060 SCT150"
+		" FM182100 28029G43KT P6SM FEW060 BKN200"
+		" FM190200 31015G25KT P6SM FEW250"
+		" FM190800 36009KT P6SM FEW250"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"CWLY", "Lytton Airport", {2019, 1, 18},
 		"METAR CWLY 182200Z AUTO /////KT 07/03 A2998"
 		" RMK WND MISG CLD MISG WX MISG VIS MISG PCPN MISG ICG MISG SLP160"
 		"=",
@@ -6129,7 +6327,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAAQ", "Palmer Muni", {2019, 1, 18},
+		"PAAQ", "Warren 'Bud' Woods Palmer Municipal Airport", {2019, 1, 18},
 		"METAR PAAQ 192253Z 18003KT 3/4SM BR OVC002 M13/M15 A2958"
 		" RMK AO2 SLP023 I1001 T11281150"
 		"=",
@@ -6146,7 +6344,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAWG", "Wrangell Arpt", {2019, 1, 18},
+		"PAWG", "Wrangell Airport", {2019, 1, 18},
 		"METAR PAWG 182256Z 00000KT 7SM -RAPL FEW012 BKN033 OVC046 00/M02 A2958"
 		" RMK AO2 RAB24GSB44E45PLB47 SLP018 T00001017 PNO $"
 		"=",
@@ -6163,7 +6361,135 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAAK", "Atka Arpt", {2019, 1, 23},
+		"KBKF", "Buckley Air Force Base", {2019, 1, 19},
+		"METAR KBKF 191658Z 17006KT 10SM FEW090 FEW130 01/M09 A3019"
+		" RMK AO2A ACSL NW APRNT ROTOR CLD SW-NW SLP246 T00091086"
+		"=",
+		"TAF KBKF 191704Z 1917/2023 22009KT 9999 FEW050 QNH3008INS"
+		" BECMG 2003/2004 VRB06KT 9999 FEW080 FEW200 QNH3015INS"
+		" BECMG 2017/2018 23009KT 9999 SKC QNH2993INS TX04/1922Z TNM02/2012Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A
+		},
+		{},
+		0
+	},
+
+	{
+		"CYSN", "Niagara District Airport", {2019, 1, 19}, 
+		"METAR CYSN 192300Z 07015G22KT 1SM -SN DRSN OVC009 M10/M11 A3003"
+		" RMK SN5FU3 SLP178"
+		"=",
+		"TAF CYSN 191938Z 1920/2002 07012G22KT 3/4SM -SN BLSN VV005"
+		" TEMPO 1920/1923 11/2SM -SN OVC010"
+		" BECMG 1920/1922 06018G28KT"
+		" FM192300 06020G30KT 1/2SM -SN BLSN VV006"
+		" TEMPO 1923/2002 1SM -SN VV010"
+		" RMK NXT FCST WILL BE ISSUED AT 201345Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"KVBG", "Vandenberg Air Force Base", {2019, 1, 20},
+		"METAR KVBG 200055Z 02008KT 10SM SCT200 BKN300 17/12 A3017"
+		" RMK AO2A HZ NW SLP219 T01680120"
+		"=",
+		"TAF AMD KVBG 210055Z 2100/2205 VRB06KT 2000 -DZ BR OVC003 QNH3007INS"
+		" TEMPO 2100/2103 0800 FG"
+		" BECMG 2102/2103 29015G25KT 9999 VCSH BKN007 OVC015 QNH3009INS"
+		" BECMG 2104/2105 20012G18KT 8000 -SHRA BR OVC005 QNH3013INS"
+		" BECMG 2110/2111 33020G30KT 9999 NSW BKN010 520009 QNH3015INS"
+		" BECMG 2118/2119 35015G25KT 9999 BKN015 QNH3007INS"
+		" BECMG 2201/2202 34012G18KT 9999 SCT015 SCT040 QNH3008INS TX13/2100Z TN09/2113Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2A
+		},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
+	},
+
+	{
+		"CYQI", "Yarmouth Airport", {2019, 1, 20}, 
+		"METAR CYQI 201400Z CCA 11021G33KT 1 1/4SM -PL DRSN OVC011 M02/M03 A2981"
+		" RMK PL6SC2 /S01/ PRESFR SLP098"
+		"=",
+		"TAF AMD CYQI 201421Z 2014/2024 11020G30KT 3SM -RASN SCT003 OVC009"
+		" TEMPO 2014/2016 1SM -FZRA -PL BR BKN003 OVC006"
+		" FM201600 12025G35KT 3SM -RA BR BKN003 OVC006"
+		" TEMPO 2016/2019 6SM -RA BR OVC006"
+		" FM201900 16025G40KT 3SM RA BR BKN003 OVC005"
+		" RMK NXT FCST BY 201800Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::COR,
+		},
+		{
+			MetarTafRealData::Attribute::AMD,
+		},
+		1
+	},
+
+	{
+		"KPVD", "Theodore Francis Green State Airport", {2019, 1, 21},
+		"METAR KPVD 211651Z 32014G24KT 7SM BCFG SCT031 BKN035 BKN050 M16/M21 A2985"
+		" RMK AO2 PK WND 29026/1632 SLP109 BCFG SW T11561206 $"
+		"=",
+		"KPVD 211559Z 2116/2212 28017G25KT P6SM SCT007 BKN060"
+		" FM211700 30014G33KT P6SM BKN050 FM220100 31015G28KT P6SM SCT060"
+		" FM220700 31013G22KT P6SM SKC"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
+	},
+
+	{
+		"KABQ", "Albuquerque International Sunport", {2019, 1, 22},
+		"METAR KABQ 220152Z 29021G31KT 10SM FEW100 FEW190 SCT230 10/M05 A2968"
+		" RMK AO2 PK WND 30031/0150 SLP028 ACSL NE-SE T01001050 $"
+		"=",
+		"KABQ 212337Z 2200/2224 26018G28KT P6SM SCT060 SCT250"
+		" TEMPO 2200/2202 26025G38KT"
+		" FM220500 29013G20KT P6SM BKN060"
+		" FM220900 30012KT P6SM VCSH BKN050"
+		" FM221200 30010KT P6SM SCT030 BKN070"
+		" FM221800 33012KT P6SM BKN050"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
+	},
+
+	{
+		"KSLC", "Salt Lake City International Airport", {2019, 1, 22},
+		"METAR KSLC 222154Z 33007KT 10SM FEW035 FEW060 BKN210 M01/M09 A3040"
+		" RMK AO2 SLP323 SCSL DSNT SE T10111089"
+		"=",
+		"KSLC 221456Z 2215/2318 19005KT P6SM FEW080 FM221800 32008KT P6SM SCT200"
+		" FM230300 16008KT P6SM BKN200"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"PAAK", "Atka Airport", {2019, 1, 23},
 		"METAR PAAK 231156Z AUTO 28007KT 10SM FEW027 SCT032 SCT045 00/M02 A2886"
 		" RMK AO2 SLP773 6//// 7//// T00001017 10017 21006 53015"
 		"=",
@@ -6177,7 +6503,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAJN", "Juneau Intl Arpt", {2019, 1, 23},
+		"PAJN", "Juneau International Airport", {2019, 1, 23},
 		"METAR PAJN 231753Z 07005KT 7SM OVC037 M02/M02 A3028"
 		" RMK AO2 SLP254 4/010 933021 I6002 T10171022 11017 21033 51015"
 		"=",
@@ -6193,7 +6519,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KBIL", "Billings/Logan Intl", {2019, 1, 23},
+		"KBIL", "Billings Logan International Airport", {2019, 1, 23},
 		"METAR KBIL 232253Z 00000KT 1/2SM R10L/2600V5000FT SN FZFG FEW004 OVC008 M02/M02 A2998"
 		" RMK AO2 SLP188 SNINCR 1/9 P0005 T10171022"
 		"=",
@@ -6212,7 +6538,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
     {
-		"KFTK", "Fort Knox/Godman Air", {2019, 1, 23}, 
+		"KFTK", "Godman Army Air Field", {2019, 1, 23}, 
 		"SPECI KFTK 232135Z 26011G19KT 4SM RA BR BKN005 OVC060 10/10 A2973"
 		" RMK AO2A WSHFT 30 FROPA PRESRR SLP071 CHINO RWY36 $"
 		"=",
@@ -6235,7 +6561,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
 	{
-		"KSDF", "Louisville Intl", {2019, 1, 23}, 
+		"KSDF", "Louisville Muhammad Ali International Airport", {2019, 1, 23}, 
 		"METAR KSDF 232256Z 31010KT 10SM FEW008 BKN012 OVC023 06/04 A2975"
 		" RMK AO2 PK WND 29026/2204 WSHFT 2144 RAE28 SLP077 APRNT FROPA P0001 T00610039 $"
 		"=",
@@ -6254,7 +6580,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KSLC", "Salt Lake City Intl", {2019, 1, 23}, 
+		"KSLC", "Salt Lake City International Airport", {2019, 1, 23}, 
 		"METAR KSLC 232154Z 14005KT 10SM BKN060 BKN080 M01/M07 A3022"
 		" RMK AO2 SNE2059 SLP260 VIRGA P0000 T10111072"
 		"=",
@@ -6271,7 +6597,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LGRP", "Rhodes/Diagoras Arpt", {2019, 1, 23},
+		"LGRP", "Diagoras Airport", {2019, 1, 23},
 		"METAR LGRP 232250Z 13011G25KT 040V210 9999 FEW010 FEW018TCU BKN020 15/12 Q1003 WS ALL RWY NOSIG"
 		"=",
 		"TAF LGRP 232300Z 2400/2424 13020G30KT 9999 FEW016 BKN020"
@@ -6287,7 +6613,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	}, 
 
 	{
-		"SKBG", "Bucaramango/Palonegr", {2019, 1, 23},
+		"SKBG", "Palonegro Airport", {2019, 1, 23},
 		"METAR SKBG 232200Z 31006KT 9999 FEW015 26/19 A2989 WS R35"
 		"=",
 		"TAF SKBG 232300Z 2400/2424 32006KT 9999 SCT015"
@@ -6300,7 +6626,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASC", "Deadhorse Arpt", {2019, 1, 23},
+		"PASC", "Deadhorse Airport", {2019, 1, 23},
 		"METAR PASC 232253Z 06013KT 10SM BKN005 M21/M23 A2978"
 		" RMK AO2 SLP084 I1000 T12061233"
 		"=",
@@ -6316,7 +6642,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"YPKG", "Kalgoorlie/Boulder A", {2019, 1, 23},
+		"YPKG", "Kalgoorlie Boulder Airport", {2019, 1, 23},
 		"METAR YPKG 232300Z AUTO 26013KT 9999 // NCD 17/10 Q1010 RF00.0////./"
 		"=",
 		"TAF YPKG 232302Z 2400/2424 24012KT CAVOK FM241000 18010KT CAVOK"
@@ -6329,7 +6655,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ULLI", "St Petersburg/Pulkov", {2019, 1, 23},
+		"ULLI", "Pulkovo Airport", {2019, 1, 23},
 		"METAR ULLI 232330Z 25005MPS 1200 1100SE R28R/P2000U SHSN SCT008 BKN016CB OVC033 M05/M06 Q1009 RESHSN R28R/492034 NOSIG"
 		"=",
 		"TAF ULLI 232255Z 2400/2424 25003G08MPS 1500 SN BKN011 OVC015"
@@ -6345,7 +6671,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UAAA", "Almaty Intl", {2019, 1, 24},
+		"CYVV", "Wiarton Airport", {2019, 1, 24}, 
+		"METAR CYVV 240000Z 22013G23KT 2SM -DZ OVC005 04/04 A2947"
+		" RMK DZ3SF5 SLP988"
+		"=",
+		"TAF CYVV 231938Z 2320/2324 13006KT P6SM -RA OVC012"
+		" TEMPO 2320/2322 3SM -RA BR OVC006"
+		" BECMG 2320/2322 22012G22KT"
+		" FM232200 22012G22KT 2SM -RA BR OVC006"
+		" TEMPO 2322/2324 6SM -RA BR OVC012"
+		" RMK NXT FCST WILL BE ISSUED AT 241145Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"UAAA", "Almaty Airport", {2019, 1, 24},
 		"METAR UAAA 240000Z VRB01MPS 3400 BR FU OVC006 M05/M06 Q1026 R23R/1///60 R23L/3///50 NOSIG"
 		" RMK QBB190"
 		"=",
@@ -6361,7 +6704,48 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	}, 
 
 	{
-		"KMEI", "Meridian/Key Fld", {2019, 1, 25},
+		"KCOS", "City of Colorado Springs Municipal Airport", {2019, 1, 24},
+		"METAR KCOS 240054Z 05010KT 10SM FEW090 FEW200 M02/M09 A2989"
+		" RMK AO2 SLP169 CCSL W T10171094"
+		"=",
+		"TAF KCOS 232340Z 2400/2424 14008KT P6SM FEW080 BKN110"
+		" FM240200 01008KT P6SM SCT050 BKN080"
+		" FM241400 36015G25KT P6SM VCSH OVC050"
+		" FM241600 36015G25KT P6SM VCSH FEW020 BKN050"
+		" FM242100 16006KT P6SM FEW040 FEW200"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2			
+		},
+		{},
+		0
+	}, 
+
+	{
+		"CYOW", "Ottawa Macdonald-Cartier International Airport", {2019, 1, 24}, 
+		"METAR CYOW 240700Z 21006KT 1 1/2SM -RA BR OVC006 03/03 A2955"
+		" RMK RA1SC7 SLP014"
+		"=",
+		"TAF AMD CYOW 240656Z 2406/2506 20007KT 11/2SM BR OVC006"
+		" TEMPO 2406/2408 6SM -RA BR OVC010"
+		" FM240800 21010G20KT 2SM -RA BR BKN005 OVC012"
+		" TEMPO 2408/2415 6SM -RA BR SCT005 OVC012"
+		" BECMG 2413/2414 31012KT"
+		" FM241600 31012KT 3SM -RASN BR BKN006 OVC015"
+		" FM241800 30012KT 11/2SM -SN OVC006"
+		" FM242100 29012KT 6SM -SHSN BKN015 OVC030"
+		" FM242300 28010KT P6SM SCT015 BKN030"
+		" RMK NXT FCST BY 240900Z"
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::AMD
+		},
+		0
+	},
+
+	{
+		"KMEI", "Key Field", {2019, 1, 25},
 		"METAR KMEI 252058Z 30007G18KT 10SM CLR 13/M01 A3028"
 		" RMK AO2 SLP252 I1000 I3/// T01281006 56022 $"
 		"=",
@@ -6376,7 +6760,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PASY", "Shemya/Eareckson Arp", {2019, 1, 26}, 
+		"PASY", "Eareckson Air Station", {2019, 1, 26}, 
 		"METAR PASY 260558Z 27009KT 7SM SCT011 BKN018 00/M01 A2886"
 		" RMK SHSNB0436E58 SLPNO 60001 T00021007 1//// 2//// 51007 $"
 		"=",
@@ -6395,7 +6779,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAFA", "Fairbanks Intl", {2019, 1, 26}, 
+		"PAFA", "Fairbanks International Airport", {2019, 1, 26}, 
 		"METAR PAFA 260353Z VRB03KT 1 1/4SM -SN BR OVC016 00/M02 A2963"
 		" RMK AO2 TWR VIS 1 1/2 SLP043 T00001022 PNO"
 		"=",
@@ -6413,7 +6797,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PABT", "Bettles Arpt", {2019, 1, 26},
+		"PABT", "Bettles Airport", {2019, 1, 26},
 		"METAR PABT 261153Z 00000KT 4SM -SN BR OVC025 M05/M07 A2964"
 		" RMK AO2 SLP054 60008 70014 931011 4/030 T10501067 11050 21061 53018 PNO"
 		"=",
@@ -6430,7 +6814,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PGUA", "Guam/Andersen AFB", {2019, 1, 27},
+		"KHOU", "William P Hobby Airport", {2019, 1, 26},
+		"METAR KHOU 262053Z 10009KT 10SM FEW035 BKN075 BKN100 BKN250 17/11 A3013"
+		" RMK AO2 SLP209 VCSH SW T01720106 56026"
+		"=",
+		"TAF KHOU 261740Z 2618/2718 11005KT P6SM SCT090 BKN250"
+		" FM262000 12007KT P6SM VCSH BKN050 FM270200 10003KT P6SM VCSH OVC050"
+		" FM271000 31003KT 5SM BR BKN060"
+		" FM271500 34005KT P6SM FEW025"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"PGUA", "Andersen Air Force Base", {2019, 1, 27},
 		"METAR PGUA 271256Z 03016G25KT 4SM -SHRA SCT001 OVC007 23/22 A2993"
 		" RMK AO2A PK WND 05033/41 CIG 001V007 CIG 003 RWY24L SLP126 P//// T02300220 PWINO TSNO $"
 		"=",
@@ -6449,7 +6850,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PATA", "Tanana/Calhoun Mem", {2019, 1, 27}, 
+		"PATA", "Ralph M Calhoun Memorial Airport", {2019, 1, 27}, 
 		"METAR PATA 271752Z VRB05KT 10SM OVC140 M03/M05 A3021"
 		" RMK AO2 SLP236 4/015 933032 T10331050 11006 21039 51009 PNO"
 		"=",
@@ -6465,7 +6866,29 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"EHSA", "(Euro Platform(OIL)", {2019, 1, 27},
+		"CWSW", "Sparwood / Elk Valley Airport", {2019, 1, 27}, 
+		"METAR CWSW 271800Z 33006KT 300V020 20SM VCSH FEW010 SCT045TCU BKN080 03/M01 A3004"
+		" RMK ST1TCU3AC3 ST TR SH N SLP207"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CWSW", "Sparwood / Elk Valley Airport", {2019, 1, 27}, 
+		"METAR CWSW 272300Z 27008KT 220V330 20SM VCSH SCT072CB BKN082 06/M08 A3010"
+		" RMK CB4AC3 VIRGA E-W SLP219"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"EHSA", "Europlatform Observation Station", {2019, 1, 27},
 		"METAR EHSA 272355Z AUTO 29044KT 5000 -RADZ ///////// 05/03 Q0988 W05/H59"
 		"=",
 		"",
@@ -6492,7 +6915,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAAK", "Atka Arpt", {2019, 1, 29},
+		"PAAK", "Atka Airport", {2019, 1, 29},
 		"METAR PAAK 292256Z AUTO 14012KT 3SM -RA BR SCT013 BKN017 OVC031 04/03 A2924"
 		" RMK AO2 RAB31 SLP903 T00440028 PNO $"
 		"=",
@@ -6507,7 +6930,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PAAK", "Atka Arpt", {2019, 1, 30},
+		"PAAK", "Atka Airport", {2019, 1, 30},
 		" METAR PAAK 300056Z AUTO 13013KT 3SM -RA BR OVC013 04/03 A2923"
 		" RMK AO2 RAE28B50 SLP899 T00440028 PNO $"
 		"=",
@@ -6522,7 +6945,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENNE", "Norne FPSO(OIL)", {2019, 2, 16}, 
+		"ENNE", "Norne A Oil Platform", {2019, 2, 16}, 
 		"METAR ENNE 160150Z AUTO 26067G81KT 3600NDV BR BKN024/// 06/01 Q0987 W///S7"
 		"=",
 		"TAF ENNE 161400Z 1615/1618 31038KT 9999 -SHRA FEW020TCU BKN035"
@@ -6536,7 +6959,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"ENHE", "Heidrun(OIL)", {2019, 2, 27}, 
+		"ENHE", "Heidrun Oil Platform", {2019, 2, 27}, 
 		"METAR ENHE 270750Z 28050G60KT 7000 BKN020 07/03 Q1001 W///S8"
 		"=",
 		"TAF ENHE 270800Z 2709/2718 27048G58KT 9000 BKN025"
@@ -6550,7 +6973,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"K1GM", "Golf(MADIS)", {2019, 4, 10},
+		"K1GM", "Simms", {2019, 4, 10},
 		"METAR K1GM 101558Z AUTO 36012KT 1 5/8SM -SN OVC003 M01/M01 A2997"
 		" RMK AO2 OVC V BKN SLP184 P0006 T10081008 $"
 		"=",
@@ -6565,7 +6988,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LRTR", "Timisoara/Traian Vui", {2019, 4, 10},
+		"LRTR", "Timisoara Traian Vuia Airport", {2019, 4, 10},
 		"METAR LRTR 101600Z 11017KT 9999 TS VCSH FEW020 SCT045CB 18/09 Q1004 WS RWY11"
 		" TEMPO 5000 TSRA"
 		"=",
@@ -6581,7 +7004,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"PHHI", "Wheeler(AAF)", {2019, 9, 23},
+		"PHHI", "Wheeler Army Airfield", {2019, 9, 23},
 		"METAR PHHI 262356Z 29009KT 4SM -SHRA BR VCTS FEW005 BKN016 OVC020CB 25/24 A2989"
 		" RMK AO2A DZE2259RAB2259E16DZB16E22RAB37 TS 7E MOV NE"
 		" CIG 016V020 SLP111 P0007 60007 T02470238 10295 20243 57016 $"
@@ -6601,7 +7024,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
     {
-    	"RJFF", "Fukuoka Arpt", {2019, 10, 2},
+    	"RJFF", "Fukuoka Airport", {2019, 10, 2},
     	"SPECI RJFF 021531Z AUTO 16025G35KT 9999 FEW027 SCT034 BKN040 //////TCU 27/22 Q1005"
     	" RMK A2969 TCU 35KM SW MOV NE"
     	"=",
@@ -6622,7 +7045,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
     {
-    	"RJFF", "Fukuoka Arpt", {2019, 10, 2},
+    	"RJFF", "Fukuoka Airport", {2019, 10, 2},
     	"SPECI RJFF 021640Z AUTO 16024G34KT 9999 -RA FEW025 SCT027 BKN041 //////TCU 26/23 Q1005"
     	" RMK A2968 TCU 5KM S-SW MOV NE"
     	"=",
@@ -6643,7 +7066,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
     {
-    	"RJKI", "Kikai Island Arpt", {2019, 10, 15},
+    	"RJKI", "Kikai Airport", {2019, 10, 15},
     	"SPECI RJKI 152225Z AUTO 07018KT 9999 SCT011 SCT021 BKN024 //////CB 25/23 Q1017"
     	" RMK A3003 CB 40KM E MOV UNKNOWN TCU 40KM W MOV UNKNOWN"
     	"=",
@@ -6657,7 +7080,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
     {
-    	"KIDA", "Idaho Falls Rgnl", {2019, 10, 22},
+    	"KIDA", "Idaho Falls Regional Airport", {2019, 10, 22},
     	"METAR KIDA 221553Z 21013KT 10SM BKN085 OVC110 06/00 A3026"
     	" RMK AO2 SLP250 VIRGA DSNT NW-N T00560000"
     	"=",
@@ -6674,7 +7097,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
     },
 
 	{
-		"MSLP", "El Salvador Intl", {2019, 10, 22},
+		"MSLP", "Monsenor Oscar Arnulfo Romero International Airport", {2019, 10, 22},
 		"SPECI MSLP 221550Z VRB02KT 9999 FEW020 SCT027 FEW037CB 30/23 Q1012 A2991 NOSIG"
 		" RMK CB W"
 		"=",
@@ -6690,7 +7113,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"MMPS", "Puerto Escondido Arp", {2019, 10, 22},
+		"MMPS", "Puerto Escondido International Airport", {2019, 10, 22},
 		"METAR MMPS 221543Z 10005KT 15SM SKC 29/23 A2993"
 		" RMK TCU S"
 		"=",
@@ -6703,7 +7126,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KBTV", "Burlington Intl", {2019, 10, 22},
+		"KBTV", "Burlington International Airport", {2019, 10, 22},
 		"METAR KBTV 221554Z 18014G19KT 10SM FEW040 SCT120 BKN180 17/06 A2999"
 		" RMK AO2 SLP157 VIRGA N ACSL ALQDS T01670061"
 		"=",
@@ -6721,7 +7144,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"KSLC", "Salt Lake City Intl", {2019, 10, 22},		
+		"KSLC", "Salt Lake City International Airport", {2019, 10, 22},		
 		"METAR KSLC 221554Z 16008KT 10SM SCT060 BKN085 11/01 A3036"
 		" RMK AO2 SLP265 SCSL DSNT NW T01060006"
 		"=",
@@ -6736,7 +7159,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"LIMJ", "Genoa/Colombo Arpt", {2019, 11, 7},		
+		"LIMJ", "Genoa Cristoforo Colombo Airport", {2019, 11, 7},
 		"METAR LIMJ 070850Z 02005KT 360V060 9999 VCFC BKN022 14/11 Q1006 RETS"
 		"=",
 		"TAF LIMJ 070500Z 0706/0806 03006KT 9999 BKN040"
@@ -6748,9 +7171,33 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		0
 	},
+
+	{
+		"SPGM", "Tingo Maria Airport", {2019, 12, 2},
+		"METAR SPGM 021300Z 10002KT 1000 RA BR OVC005 21/21 Q1018"
+		" RMK TN20.5 PP540"
+		"=",
+		"TAF SPGM 021100Z NIL"
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
+	},
+
+	{
+		"SECU", "Mariscal Lamar Airport", {2019, 12, 11},
+		"METAR SECU 111800Z 01004KT 4000 VA FEW030 OVC070 23/11 Q1023"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
 	
 	{
-		"BGJN", "Ilulissat Arpt", {2020, 2, 2},		
+		"BGJN", "Ilulissat Airport", {2020, 2, 2},
 		"BGJN 022250Z AUTO 07002KT 8000NDV -SG SCT055/// BKN070/// M16/M19 Q1003"
 		"=",
 		"",

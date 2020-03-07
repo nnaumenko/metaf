@@ -1866,6 +1866,25 @@ TEST(ParserResultReportPartAndRawString, appendedRemarksWithInvalidatedGroups) {
 	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::RMK);
 }
 
+TEST(ParserResultReportPartAndRawString, appendedRemarksLastGroupValidity) {
+	// Confirm that bug fixed in commit c0cb2c2 is not reintroduced
+	// Groups CB W may or may not have another related group after them
+	// When the report end is reached, parser appends empty string to the 
+	// last group to confirm that no more groups are coming, the instance
+	// of the Group must react by setting its status to 'complete and valid'
+	const auto result = metaf::Parser::parse(
+		"SPECI MSLP 221550Z VRB02KT 9999 FEW020 SCT027 FEW037CB 30/23 "
+		"Q1012 A2991 NOSIG RMK CB W=");
+
+	EXPECT_EQ(result.groups.size(), 14u);
+
+	const auto group = result.groups.at(13).group;
+	ASSERT_TRUE(std::holds_alternative<metaf::VicinityGroup>(group));
+	const auto vicinityGroup = std::get<metaf::VicinityGroup>(group);
+	EXPECT_TRUE(vicinityGroup.isValid());
+	EXPECT_EQ(result.groups.at(13).rawString, "CB W");
+}
+
 TEST(ParserResultReportPartAndRawString, incompleteGroupAtTheEndOfReport) {
 	const auto result = metaf::Parser::parse(
 		"METAR LGRP 232250Z 13011G25KT 040V210 9999 FEW010 FEW018TCU "
