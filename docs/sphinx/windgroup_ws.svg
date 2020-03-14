@@ -1,0 +1,192 @@
+<svg class="railroad-diagram" width="777.5" height="171" viewBox="0 0 777.5 171" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 130v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 140h10"></path>
+<g class="terminal">
+<path d="M50 140h0"></path>
+<path d="M87 140h0"></path>
+<rect x="50" y="129" width="37" height="22" rx="10" ry="10"></rect>
+<text x="68.5" y="144">WS</text>
+</g>
+<path d="M87 140h10"></path>
+<path d="M97 140h10"></path>
+<g class="terminal">
+<path d="M107 140h0"></path>
+<path d="M135.5 140h0"></path>
+<rect x="107" y="129" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="121.25" y="144"> </text>
+</g>
+<path d="M135.5 140h10"></path>
+<g>
+<path d="M145.5 140h0"></path>
+<path d="M737.5 140h0"></path>
+<path d="M145.5 140a10 10 0 0 0 10 -10v-89a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M165.5 31h0"></path>
+<path d="M717.5 31h0"></path>
+<g>
+<path d="M165.5 31h0"></path>
+<path d="M251 31h0"></path>
+<path d="M165.5 31h20"></path>
+<g class="terminal">
+<path d="M185.5 31h0"></path>
+<path d="M231 31h0"></path>
+<rect x="185.5" y="20" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="208.25" y="35">RWY</text>
+</g>
+<path d="M231 31h20"></path>
+<path d="M165.5 31a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M185.5 61h8.5"></path>
+<path d="M222.5 61h8.5"></path>
+<rect x="194" y="50" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="208.25" y="65">R</text>
+</g>
+<path d="M231 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M251 31h10"></path>
+<g>
+<path d="M261 31h0"></path>
+<path d="M369 31h0"></path>
+<text x="315" y="36" class="comment">runway heading</text>
+</g>
+<path d="M369 31h10"></path>
+<path d="M379 31h10"></path>
+<g class="non-terminal">
+<path d="M389 31h0"></path>
+<path d="M460 31h0"></path>
+<rect x="389" y="20" width="71" height="22"></rect>
+<text x="424.5" y="35">01..36</text>
+</g>
+<path d="M460 31h10"></path>
+<g>
+<path d="M470 31h0"></path>
+<path d="M717.5 31h0"></path>
+<path d="M470 31h20"></path>
+<g>
+<path d="M490 31h207.5"></path>
+</g>
+<path d="M697.5 31h20"></path>
+<path d="M470 31a10 10 0 0 1 10 10v29a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M490 80h0"></path>
+<path d="M697.5 80h0"></path>
+<g>
+<path d="M490 80h0"></path>
+<path d="M619 80h0"></path>
+<text x="554.5" y="85" class="comment">runway designator</text>
+</g>
+<path d="M619 80h10"></path>
+<g>
+<path d="M629 80h0"></path>
+<path d="M697.5 80h0"></path>
+<path d="M629 80a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<g class="terminal">
+<path d="M649 50h0"></path>
+<path d="M677.5 50h0"></path>
+<rect x="649" y="39" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="663.25" y="54">R</text>
+</g>
+<path d="M677.5 50a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<path d="M629 80h20"></path>
+<g class="terminal">
+<path d="M649 80h0"></path>
+<path d="M677.5 80h0"></path>
+<rect x="649" y="69" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="663.25" y="84">C</text>
+</g>
+<path d="M677.5 80h20"></path>
+<path d="M629 80a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M649 110h0"></path>
+<path d="M677.5 110h0"></path>
+<rect x="649" y="99" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="663.25" y="114">L</text>
+</g>
+<path d="M677.5 110a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M697.5 80a10 10 0 0 0 10 -10v-29a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M717.5 31a10 10 0 0 1 10 10v89a10 10 0 0 0 10 10"></path>
+<path d="M145.5 140h20"></path>
+<g>
+<path d="M165.5 140h196.25"></path>
+<path d="M521.25 140h196.25"></path>
+<g class="terminal">
+<path d="M361.75 140h0"></path>
+<path d="M407.25 140h0"></path>
+<rect x="361.75" y="129" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="384.5" y="144">ALL</text>
+</g>
+<path d="M407.25 140h10"></path>
+<path d="M417.25 140h10"></path>
+<g class="terminal">
+<path d="M427.25 140h0"></path>
+<path d="M455.75 140h0"></path>
+<rect x="427.25" y="129" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="441.5" y="144"> </text>
+</g>
+<path d="M455.75 140h10"></path>
+<path d="M465.75 140h10"></path>
+<g class="terminal">
+<path d="M475.75 140h0"></path>
+<path d="M521.25 140h0"></path>
+<rect x="475.75" y="129" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="498.5" y="144">RWY</text>
+</g>
+</g>
+<path d="M717.5 140h20"></path>
+</g>
+<path d="M 737.5 140 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20'WS'%2C%0A%20'%20'%2C%0A%20Choice%20(1%2C%0A%20%20Sequence(%0A%20%20%20Choice%20(0%2C%20'RWY'%2C'R')%2C%0A%20%20%20Comment('runway%20heading')%2C%0A%20%20%20NonTerminal('01..36')%2C%0A%20%20%20Choice(0%2CSkip()%2CSequence(%0A%20%20%20%20Comment('runway%20designator')%2C%0A%20%20%20%20Choice(1%2C%20'R'%2C%20'C'%2C%20'L')%0A%20%20%20))%0A%20%20)%2C%0A%20%20Sequence('ALL'%2C'%20'%2C'RWY')%0A%20)%0A) 
+-->

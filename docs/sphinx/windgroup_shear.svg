@@ -1,0 +1,93 @@
+<svg class="railroad-diagram" width="761" height="62" viewBox="0 0 761 62" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 21v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 31h10"></path>
+<g class="terminal">
+<path d="M50 31h0"></path>
+<path d="M87 31h0"></path>
+<rect x="50" y="20" width="37" height="22" rx="10" ry="10"></rect>
+<text x="68.5" y="35">WS</text>
+</g>
+<path d="M87 31h10"></path>
+<path d="M97 31h10"></path>
+<g>
+<path d="M107 31h0"></path>
+<path d="M285 31h0"></path>
+<text x="196" y="36" class="comment">height, hundreds of feet</text>
+</g>
+<path d="M285 31h10"></path>
+<path d="M295 31h10"></path>
+<g class="non-terminal">
+<path d="M305 31h0"></path>
+<path d="M393 31h0"></path>
+<rect x="305" y="20" width="88" height="22"></rect>
+<text x="349" y="35">000..999</text>
+</g>
+<path d="M393 31h10"></path>
+<path d="M403 31h10"></path>
+<g class="terminal">
+<path d="M413 31h0"></path>
+<path d="M441.5 31h0"></path>
+<rect x="413" y="20" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="427.25" y="35">/</text>
+</g>
+<path d="M441.5 31h10"></path>
+<path d="M451.5 31h10"></path>
+<g class="non-terminal">
+<path d="M461.5 31h0"></path>
+<path d="M711 31h0"></path>
+<rect x="461.5" y="20" width="249.5" height="22"></rect>
+<text x="586.25" y="35">same format as surface wind</text>
+</g>
+<path d="M711 31h10"></path>
+<path d="M 721 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20'WS'%2C%0A%20Comment('height%2C%20hundreds%20of%20feet')%2C%0A%20NonTerminal('000..999')%2C%0A%20'%2F'%2C%0A%20NonTerminal('same%20format%20as%20surface%20wind')%0A)%0A 
+-->

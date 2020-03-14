@@ -1,17 +1,27 @@
+########
 Tutorial
-========
+########
 
 .. highlight:: c
 
 .. cpp:namespace-push:: metaf
 
-`Try it online <https://wandbox.org/permlink/r7bS7MFoCu8UuIso>`_.
+`Try it online <https://wandbox.org/permlink/5Sw5vEgPSkHkHKIa>`_.
 
 This section is a tutorial to demonstrate the basic usage of Metaf library.
+
+*************************
+Creating tutorial program
+*************************
 
 We start with a simple cpp file and proceed step-by-step to integrate Metaf library, to parse a METAR or TAF report, to check if any error occurred during parsing and to add a basic handling of the parse results.
 
 At the end of the tutorial we get a minimalistic yet functional program which parses METAR or TAF reports.
+
+Setting up
+==========
+
+Before we start actual implementation of the tutorial, we get the repository locally and create a template .cpp file which eventually turns into a functional program.
 
 
 Getting Metaf repository
@@ -23,8 +33,8 @@ Type the following in the command line to get the Metaf repository ::
 	cd metaf
 
 
-Setting up
-----------
+Template .cpp file
+------------------
 
 The tutorial will use a single file ``tutorial.cpp``.
 
@@ -39,6 +49,12 @@ We start with the following simple template: ::
 
 We need iostream to print to ``std::cout``. Since we are not going to use ``argc`` and ``argv`` we cast them to ``void`` to suppress the compiler warnings.
 
+
+
+Parsing a report
+================
+
+We are ready to integrate Metaf into our simple .cpp file and add code to parse the actual METAR report. 
 
 Integrating Metaf
 -----------------
@@ -64,8 +80,8 @@ Add the following after the line ``using namespace metaf;`` ::
 This is our METAR report to parse. Please feel free to enter any other METAR, SPECI or TAF report to test Metaf capabilities.
 
 
-Parsing a report
-----------------
+Using Metaf parser to parse a report
+------------------------------------
 
 Add the following to ``main()`` function before ``return 0``: ::
 
@@ -80,6 +96,11 @@ The groups which are not recognised by parser do not cause parser to stop and re
 
 This is it with parsing! The rest of the tutorial is about interpreting the results.
 
+
+Interpreting the results
+========================
+
+Now after we added some code which parses METAR/TAF report, we can proceed with interpreting the results of the parsing. We start with data related to the entire report and later move on to handling individual METAR/TAF groups.
 
 ParseResult
 -----------
@@ -187,6 +208,11 @@ SPECI reports are identified with :cpp:enumerator:`ReportType::METAR`. However S
 
 If Metaf is unable to detect the report type due to syntax error in the report, it identifies the report type as :cpp:enumerator:`ReportType::UNKNOWN`.
 
+
+Handling groups
+===============
+
+After we handle the type of the parsed report, and have checked whether (and which) an error occured. Now we proceed to the actual report contents: METAR/TAF groups included in the report.
 
 METAR/TAF report contents
 -------------------------
@@ -467,15 +493,21 @@ In real-life applications you want to check the fields of the concrete group cla
 
 Since all these virtual methods are pure in :cpp:class:`Visitor` there is no risk that some group type is not processed because this will result in compilation error.
 
+Done!
+=====
 
+We have created a very basic yet functional program which uses Metaf library to parse METAR/TAF report and interprets results.
+
+
+*********************
 Compiling and running
----------------------
+*********************
 
 At this point the file would look like `this <https://gitlab.com/nnaumenko/metaf/blob/master/examples/tutorial.cpp>`_.
 
 Compile the file ``tutorial.cpp`` and run it.
 
-`Or try it online <https://wandbox.org/permlink/r7bS7MFoCu8UuIso>`_.
+`Or try it online <https://wandbox.org/permlink/5Sw5vEgPSkHkHKIa>`_.
 
 The expected printout is as follows:
 
@@ -499,14 +531,16 @@ The expected printout is as follows:
 | Pressure Tendency: 58018
 
 
+**********
 Conclusion
-----------
+**********
 
 In this tutorial we created a minimalistic but working example which parses METAR and TAF reports using Metaf library. We parsed a report, checked for errors, determined the autodetected report type and used Visitor to process the report content.
 
 
+***************
 Further reading
----------------
+***************
 
 Please check the `Examples
-<https://nnaumenko.gitlab.io/metaf/examples.html>`_ and `API Reference <https://nnaumenko.gitlab.io/metaf/docs/api_reference.html>`_ for further details.
+<https://nnaumenko.gitlab.io/metaf/examples.html>`_ and :ref:`api:API Reference` for further details.

@@ -1,0 +1,171 @@
+<svg class="railroad-diagram" width="817.5" height="121" viewBox="0 0 817.5 121" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20"></path>
+</g>
+<g>
+<path d="M40 40h0"></path>
+<path d="M385.5 40h0"></path>
+<path d="M40 40h20"></path>
+<g>
+<path d="M60 40h0"></path>
+<path d="M365.5 40h0"></path>
+<g>
+<path d="M60 40h0"></path>
+<path d="M128.5 40h0"></path>
+<path d="M60 40h20"></path>
+<g>
+<path d="M80 40h28.5"></path>
+</g>
+<path d="M108.5 40h20"></path>
+<path d="M60 40a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M80 60h0"></path>
+<path d="M108.5 60h0"></path>
+<rect x="80" y="49" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="94.25" y="64">M</text>
+</g>
+<path d="M108.5 60a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M128.5 40h10"></path>
+<g>
+<path d="M138.5 40h0"></path>
+<path d="M274.5 40h0"></path>
+<text x="206.5" y="45" class="comment">air temperature, C</text>
+</g>
+<path d="M274.5 40h10"></path>
+<path d="M284.5 40h10"></path>
+<g class="non-terminal">
+<path d="M294.5 40h0"></path>
+<path d="M365.5 40h0"></path>
+<rect x="294.5" y="29" width="71" height="22"></rect>
+<text x="330" y="44">00..99</text>
+</g>
+</g>
+<path d="M365.5 40h20"></path>
+<path d="M40 40a10 10 0 0 1 10 10v30a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M60 90h134.25"></path>
+<path d="M231.25 90h134.25"></path>
+<rect x="194.25" y="79" width="37" height="22" rx="10" ry="10"></rect>
+<text x="212.75" y="94">//</text>
+</g>
+<path d="M365.5 90a10 10 0 0 0 10 -10v-30a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M385.5 40h10"></path>
+<g class="terminal">
+<path d="M395.5 40h0"></path>
+<path d="M424 40h0"></path>
+<rect x="395.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="409.75" y="44">/</text>
+</g>
+<path d="M424 40h10"></path>
+<g>
+<path d="M434 40h0"></path>
+<path d="M777.5 40h0"></path>
+<path d="M434 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M454 20h303.5"></path>
+</g>
+<path d="M757.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M434 40h20"></path>
+<g>
+<path d="M454 40h0"></path>
+<path d="M757.5 40h0"></path>
+<path d="M454 40h20"></path>
+<g>
+<path d="M474 40h0"></path>
+<path d="M737.5 40h0"></path>
+<g>
+<path d="M474 40h0"></path>
+<path d="M542.5 40h0"></path>
+<path d="M474 40h20"></path>
+<g>
+<path d="M494 40h28.5"></path>
+</g>
+<path d="M522.5 40h20"></path>
+<path d="M474 40a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M494 60h0"></path>
+<path d="M522.5 60h0"></path>
+<rect x="494" y="49" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="508.25" y="64">M</text>
+</g>
+<path d="M522.5 60a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M542.5 40h10"></path>
+<g>
+<path d="M552.5 40h0"></path>
+<path d="M646.5 40h0"></path>
+<text x="599.5" y="45" class="comment">dew point, C</text>
+</g>
+<path d="M646.5 40h10"></path>
+<path d="M656.5 40h10"></path>
+<g class="non-terminal">
+<path d="M666.5 40h0"></path>
+<path d="M737.5 40h0"></path>
+<rect x="666.5" y="29" width="71" height="22"></rect>
+<text x="702" y="44">00..99</text>
+</g>
+</g>
+<path d="M737.5 40h20"></path>
+<path d="M454 40a10 10 0 0 1 10 10v30a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M474 90h113.25"></path>
+<path d="M624.25 90h113.25"></path>
+<rect x="587.25" y="79" width="37" height="22" rx="10" ry="10"></rect>
+<text x="605.75" y="94">//</text>
+</g>
+<path d="M737.5 90a10 10 0 0 0 10 -10v-30a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M757.5 40h20"></path>
+</g>
+<path d="M 777.5 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20Choice(0%2C%20%0A%20%20Sequence(Optional('M'%2C'skip')%2C%20Comment('air%20temperature%2C%20C')%2C%20NonTerminal('00..99'))%2C%20%0A%20%20'%2F%2F'%0A%20)%2C%0A%20'%2F'%2C%0A%20Optional(%0A%20%20Choice(0%2C%20%0A%20%20%20Sequence(Optional('M'%2C'skip')%2C%20Comment('dew%20point%2C%20C')%2CNonTerminal('00..99'))%2C%20%0A%20%20%20'%2F%2F'%0A%20%20)%2C%0A%20)%0A)%0A 
+-->

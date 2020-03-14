@@ -1,0 +1,226 @@
+<svg class="railroad-diagram" width="1150.5" height="152" viewBox="0 0 1150.5 152" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 51v20m10 -20v20m-10 -10h20"></path>
+</g>
+<g>
+<path d="M40 61h0"></path>
+<path d="M425.5 61h0"></path>
+<path d="M40 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<g class="terminal">
+<path d="M60 31h150"></path>
+<path d="M255.5 31h150"></path>
+<rect x="210" y="20" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="232.75" y="35">VRB</text>
+</g>
+<path d="M405.5 31a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<path d="M40 61h20"></path>
+<g>
+<path d="M60 61h0"></path>
+<path d="M405.5 61h0"></path>
+<g>
+<path d="M60 61h0"></path>
+<path d="M266 61h0"></path>
+<text x="163" y="66" class="comment">mean wind direction, degrees</text>
+</g>
+<path d="M266 61h10"></path>
+<path d="M276 61h10"></path>
+<g class="non-terminal">
+<path d="M286 61h0"></path>
+<path d="M357 61h0"></path>
+<rect x="286" y="50" width="71" height="22"></rect>
+<text x="321.5" y="65">00..36</text>
+</g>
+<path d="M357 61h10"></path>
+<path d="M367 61h10"></path>
+<g class="terminal">
+<path d="M377 61h0"></path>
+<path d="M405.5 61h0"></path>
+<rect x="377" y="50" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="391.25" y="65">0</text>
+</g>
+</g>
+<path d="M405.5 61h20"></path>
+<path d="M40 61a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M60 91h150"></path>
+<path d="M255.5 91h150"></path>
+<rect x="210" y="80" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="232.75" y="95">///</text>
+</g>
+<path d="M405.5 91a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M425.5 61h0"></path>
+<path d="M718.5 61h0"></path>
+<path d="M425.5 61h20"></path>
+<g>
+<path d="M445.5 61h0"></path>
+<path d="M698.5 61h0"></path>
+<g>
+<path d="M445.5 61h0"></path>
+<path d="M560.5 61h0"></path>
+<text x="503" y="66" class="comment">sustained speed</text>
+</g>
+<path d="M560.5 61h10"></path>
+<g>
+<path d="M570.5 61h0"></path>
+<path d="M698.5 61h0"></path>
+<path d="M570.5 61h20"></path>
+<g class="non-terminal">
+<path d="M590.5 61h8.5"></path>
+<path d="M670 61h8.5"></path>
+<rect x="599" y="50" width="71" height="22"></rect>
+<text x="634.5" y="65">00..99</text>
+</g>
+<path d="M678.5 61h20"></path>
+<path d="M570.5 61a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M590.5 91h0"></path>
+<path d="M678.5 91h0"></path>
+<rect x="590.5" y="80" width="88" height="22"></rect>
+<text x="634.5" y="95">100..999</text>
+</g>
+<path d="M678.5 91a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M698.5 61h20"></path>
+<path d="M425.5 61a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M445.5 121h108"></path>
+<path d="M590.5 121h108"></path>
+<rect x="553.5" y="110" width="37" height="22" rx="10" ry="10"></rect>
+<text x="572" y="125">//</text>
+</g>
+<path d="M698.5 121a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M718.5 61h0"></path>
+<path d="M1025 61h0"></path>
+<path d="M718.5 61h20"></path>
+<g>
+<path d="M738.5 61h266.5"></path>
+</g>
+<path d="M1005 61h20"></path>
+<path d="M718.5 61a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M738.5 81h0"></path>
+<path d="M1005 81h0"></path>
+<g class="terminal">
+<path d="M738.5 81h0"></path>
+<path d="M767 81h0"></path>
+<rect x="738.5" y="70" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="752.75" y="85">G</text>
+</g>
+<path d="M767 81h10"></path>
+<path d="M777 81h10"></path>
+<g>
+<path d="M787 81h0"></path>
+<path d="M1005 81h0"></path>
+<g>
+<path d="M787 81h0"></path>
+<path d="M867 81h0"></path>
+<text x="827" y="86" class="comment">gust speed</text>
+</g>
+<path d="M867 81h10"></path>
+<g>
+<path d="M877 81h0"></path>
+<path d="M1005 81h0"></path>
+<path d="M877 81h20"></path>
+<g class="non-terminal">
+<path d="M897 81h8.5"></path>
+<path d="M976.5 81h8.5"></path>
+<rect x="905.5" y="70" width="71" height="22"></rect>
+<text x="941" y="85">00..99</text>
+</g>
+<path d="M985 81h20"></path>
+<path d="M877 81a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M897 111h0"></path>
+<path d="M985 111h0"></path>
+<rect x="897" y="100" width="88" height="22"></rect>
+<text x="941" y="115">100..999</text>
+</g>
+<path d="M985 111a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+</g>
+<path d="M1005 81a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M1025 61h0"></path>
+<path d="M1110.5 61h0"></path>
+<path d="M1025 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<g class="terminal">
+<path d="M1045 31h4.25"></path>
+<path d="M1086.25 31h4.25"></path>
+<rect x="1049.25" y="20" width="37" height="22" rx="10" ry="10"></rect>
+<text x="1067.75" y="35">KT</text>
+</g>
+<path d="M1090.5 31a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<path d="M1025 61h20"></path>
+<g class="terminal">
+<path d="M1045 61h0"></path>
+<path d="M1090.5 61h0"></path>
+<rect x="1045" y="50" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="1067.75" y="65">MPS</text>
+</g>
+<path d="M1090.5 61h20"></path>
+<path d="M1025 61a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal">
+<path d="M1045 91h0"></path>
+<path d="M1090.5 91h0"></path>
+<rect x="1045" y="80" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="1067.75" y="95">KMH</text>
+</g>
+<path d="M1090.5 91a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M 1110.5 61 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#%20%20Diagram(%0A%20%20%20Choice(1%2C%0A%20%20%20%20'VRB'%2C%0A%20%20%20%20Sequence(%0A%20%20%20%20%20Comment('mean%20wind%20direction%2C%20degrees')%2C%0A%20%20%20%20%20NonTerminal('00..36')%2C%0A%20%20%20%20%20'0'%0A%20%20%20%20)%2C%0A%20%20%20%20'%2F%2F%2F'%0A%20%20%20)%2C%0A%20%20%20Choice(0%2C%0A%20%20%20%20Sequence(%0A%20%20%20%20%20Comment('sustained%20speed')%2C%0A%20%20%20%20%20Choice(0%2C%20NonTerminal('00..99')%2CNonTerminal('100..999'))%20%20%20%0A%20%20%20%20)%2C%0A%20%20%20%20'%2F%2F'%0A%20%20%20)%2C%0A%20%20%20Choice(0%2C%0A%20%20%20%20Skip()%2C%20%20%20%0A%20%20%20%20Sequence(%0A%20%20%20%20%20'G'%2C%20%0A%20%20%20%20Sequence(%0A%20%20%20%20%20Comment('gust%20speed')%2C%0A%20%20%20%20%20Choice(0%2C%20NonTerminal('00..99')%2CNonTerminal('100..999'))%20%20%20%0A%20%20%20%20)%2C%0A%20%20%20%20)%0A%20%20%20)%2C%0A%20%20%20Choice(1%2C%20'KT'%2C%20'MPS'%2C%20'KMH')%0A%20%20)%0A 
+-->

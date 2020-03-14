@@ -1,22 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram" width="582.5" height="62" viewBox="0 0 582.5 62">
-<style>
-/* <![CDATA[ */
-svg.railroad-diagram { background-color: hsl(30,20%,95%); }
-svg.railroad-diagram path { stroke-width: 3; stroke: black; fill: rgba(0,0,0,0); }
-svg.railroad-diagram text { font: bold 14px monospace; text-anchor: middle; }
-svg.railroad-diagram text.diagram-text { font-size: 12px; }
-svg.railroad-diagram text.diagram-arrow { font-size: 16px; }
-svg.railroad-diagram text.label { text-anchor: start; }
-svg.railroad-diagram text.comment { font: italic 12px monospace; }
-svg.railroad-diagram g.non-terminal text { /*font-style: italic;*/ }
-svg.railroad-diagram rect { stroke-width: 3; stroke: black; fill: hsl(120,100%,90%); }
-svg.railroad-diagram path.diagram-text { stroke-width: 3; stroke: black; fill: white; cursor: help; }
-svg.railroad-diagram g.diagram-text:hover path.diagram-text { fill: #eee; }
-/* ]]> */
-</style>
-<!-- 
-	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20Comment('day')%2C%0A%20NonTerminal('01..31')%2C%0A%20Comment('hour')%2C%0A%20NonTerminal('00..24')%2C%0A%20Comment('minute')%2C%0A%20NonTerminal('00..59')%2C%0A%20'Z'%0A)%0A
--->
+<svg class="railroad-diagram" width="582.5" height="62" viewBox="0 0 582.5 62" xmlns="http://www.w3.org/2000/svg">
 <g transform="translate(.5 .5)">
 <g>
 <path d="M20 21v20m10 -20v20m-10 -10h20"></path>
@@ -76,4 +58,50 @@ svg.railroad-diagram g.diagram-text:hover path.diagram-text { fill: #eee; }
 <path d="M532.5 31h10"></path>
 <path d="M 542.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
 </g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
 </svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20Comment('day')%2C%0A%20NonTerminal('01..31')%2C%0A%20Comment('hour')%2C%0A%20NonTerminal('00..24')%2C%0A%20Comment('minute')%2C%0A%20NonTerminal('00..59')%2C%0A%20'Z'%0A)%0A
+-->

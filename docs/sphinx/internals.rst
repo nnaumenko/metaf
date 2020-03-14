@@ -1,5 +1,6 @@
+#########
 Internals
-=========
+#########
 
 .. cpp:namespace-push:: metaf
 

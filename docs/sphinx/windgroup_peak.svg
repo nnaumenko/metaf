@@ -1,0 +1,191 @@
+<svg class="railroad-diagram" width="1266" height="101" viewBox="0 0 1266 101" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 40h10"></path>
+<g class="terminal">
+<path d="M50 40h0"></path>
+<path d="M87 40h0"></path>
+<rect x="50" y="29" width="37" height="22" rx="10" ry="10"></rect>
+<text x="68.5" y="44">PK</text>
+</g>
+<path d="M87 40h10"></path>
+<path d="M97 40h10"></path>
+<g class="terminal">
+<path d="M107 40h0"></path>
+<path d="M135.5 40h0"></path>
+<rect x="107" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="121.25" y="44"> </text>
+</g>
+<path d="M135.5 40h10"></path>
+<path d="M145.5 40h10"></path>
+<g class="terminal">
+<path d="M155.5 40h0"></path>
+<path d="M201 40h0"></path>
+<rect x="155.5" y="29" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="178.25" y="44">WND</text>
+</g>
+<path d="M201 40h10"></path>
+<path d="M211 40h10"></path>
+<g class="terminal">
+<path d="M221 40h0"></path>
+<path d="M249.5 40h0"></path>
+<rect x="221" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="235.25" y="44"> </text>
+</g>
+<path d="M249.5 40h10"></path>
+<path d="M259.5 40h10"></path>
+<g>
+<path d="M269.5 40h0"></path>
+<path d="M405.5 40h0"></path>
+<text x="337.5" y="45" class="comment">direction, degrees</text>
+</g>
+<path d="M405.5 40h10"></path>
+<path d="M415.5 40h10"></path>
+<g class="non-terminal">
+<path d="M425.5 40h0"></path>
+<path d="M496.5 40h0"></path>
+<rect x="425.5" y="29" width="71" height="22"></rect>
+<text x="461" y="44">00..36</text>
+</g>
+<path d="M496.5 40h10"></path>
+<path d="M506.5 40h10"></path>
+<g class="terminal">
+<path d="M516.5 40h0"></path>
+<path d="M545 40h0"></path>
+<rect x="516.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="530.75" y="44">0</text>
+</g>
+<path d="M545 40h10"></path>
+<path d="M555 40h10"></path>
+<g>
+<path d="M565 40h0"></path>
+<path d="M659 40h0"></path>
+<text x="612" y="45" class="comment">speed, knots</text>
+</g>
+<path d="M659 40h10"></path>
+<g>
+<path d="M669 40h0"></path>
+<path d="M797 40h0"></path>
+<path d="M669 40h20"></path>
+<g class="non-terminal">
+<path d="M689 40h8.5"></path>
+<path d="M768.5 40h8.5"></path>
+<rect x="697.5" y="29" width="71" height="22"></rect>
+<text x="733" y="44">00..99</text>
+</g>
+<path d="M777 40h20"></path>
+<path d="M669 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M689 70h0"></path>
+<path d="M777 70h0"></path>
+<rect x="689" y="59" width="88" height="22"></rect>
+<text x="733" y="74">100..999</text>
+</g>
+<path d="M777 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M797 40h10"></path>
+<g class="terminal">
+<path d="M807 40h0"></path>
+<path d="M835.5 40h0"></path>
+<rect x="807" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="821.25" y="44">/</text>
+</g>
+<path d="M835.5 40h10"></path>
+<path d="M845.5 40h10"></path>
+<g>
+<path d="M855.5 40h0"></path>
+<path d="M893.5 40h0"></path>
+<text x="874.5" y="45" class="comment">hour</text>
+</g>
+<path d="M893.5 40h10"></path>
+<g>
+<path d="M903.5 40h0"></path>
+<path d="M1014.5 40h0"></path>
+<path d="M903.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M923.5 20h71"></path>
+</g>
+<path d="M994.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M903.5 40h20"></path>
+<g class="non-terminal">
+<path d="M923.5 40h0"></path>
+<path d="M994.5 40h0"></path>
+<rect x="923.5" y="29" width="71" height="22"></rect>
+<text x="959" y="44">00..24</text>
+</g>
+<path d="M994.5 40h20"></path>
+</g>
+<path d="M1014.5 40h10"></path>
+<g>
+<path d="M1024.5 40h0"></path>
+<path d="M1076.5 40h0"></path>
+<text x="1050.5" y="45" class="comment">minute</text>
+</g>
+<path d="M1076.5 40h10"></path>
+<path d="M1086.5 40h10"></path>
+<g class="non-terminal">
+<path d="M1096.5 40h0"></path>
+<path d="M1167.5 40h0"></path>
+<rect x="1096.5" y="29" width="71" height="22"></rect>
+<text x="1132" y="44">00..59</text>
+</g>
+<path d="M1167.5 40h10"></path>
+<path d="M1177.5 40h10"></path>
+<g class="terminal">
+<path d="M1187.5 40h0"></path>
+<path d="M1216 40h0"></path>
+<rect x="1187.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="1201.75" y="44"> </text>
+</g>
+<path d="M1216 40h10"></path>
+<path d="M 1226 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20%22PK%22%2C%20%22%20%22%2C%20%0A%20%22WND%22%2C%20%22%20%22%2C%20%0A%20Comment('direction%2C%20degrees')%2C%0A%20NonTerminal('00..36')%2C%20'0'%2C%0A%20Comment('speed%2C%20knots')%2C%0A%20Choice(0%2C%20NonTerminal('00..99')%2CNonTerminal('100..999'))%2C%0A%20%22%2F%22%2C%0A%20Comment('hour')%2C%0A%20Optional(NonTerminal('00..24'))%2C%20%0A%20Comment('minute')%2C%0A%20NonTerminal('00..59')%2C%20%22%20%22%2C%20%20%20%20%0A)%0A 
+-->
