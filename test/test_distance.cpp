@@ -597,6 +597,34 @@ TEST(Distance, fromIntegerAndFraction) {
 	EXPECT_TRUE(combined->isValue());
 }
 
+TEST(Distance, fromIntegerWithModifierAndFraction) {
+	const auto integerM = metaf::Distance::fromMileString("M1SM");
+	ASSERT_TRUE(integerM);
+	const auto integerP = metaf::Distance::fromMileString("P1SM");
+	ASSERT_TRUE(integerP);
+	const auto fraction = metaf::Distance::fromMileString("1/4SM");
+	ASSERT_TRUE(fraction);
+
+	const auto combinedM = 
+		metaf::Distance::fromIntegerAndFraction(integerM.value(), fraction.value());
+	EXPECT_EQ(combinedM->modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(combinedM->isReported());
+	ASSERT_TRUE(combinedM->distance().has_value());
+	EXPECT_NEAR(combinedM->distance().value(), 1.25, margin);
+	EXPECT_EQ(combinedM->unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(combinedM->isValue());
+
+	const auto combinedP = 
+		metaf::Distance::fromIntegerAndFraction(integerP.value(), fraction.value());
+	EXPECT_EQ(combinedP->modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(combinedP->isReported());
+	ASSERT_TRUE(combinedP->distance().has_value());
+	EXPECT_NEAR(combinedP->distance().value(), 1.25, margin);
+	EXPECT_EQ(combinedM->unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(combinedP->isValue());
+
+}
+
 TEST(Distance, fromIntegerAndFractionWrongCombination) {
 	const auto integer = metaf::Distance(2, metaf::Distance::Unit::STATUTE_MILES);
 	const auto fraction = metaf::Distance::fromMileString("1/4SM");
@@ -622,8 +650,6 @@ TEST(Distance, fromIntegerAndFractionWrongCombination) {
 		fraction.value()).has_value());
 	EXPECT_FALSE(metaf::Distance::fromIntegerAndFraction(integer, 
 		fractionWithModifier.value()).has_value());
-	EXPECT_FALSE(metaf::Distance::fromIntegerAndFraction(integerWithModifier.value(), 
-		fraction.value()).has_value());
 	EXPECT_FALSE(metaf::Distance::fromIntegerAndFraction(integerWithModifier.value(), 
 		fractionWithModifier.value()).has_value());
 }

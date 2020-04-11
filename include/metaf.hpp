@@ -32,8 +32,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 0;
-	inline static const int patch = 2;
+	inline static const int minor = 1;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -283,7 +283,8 @@ public:
 	static inline std::optional<Distance> fromIntegerAndFraction(const Distance & integer,
 		const Distance & fraction);
 	static inline std::optional<Distance> fromMeterString(const std::string & s);
-	static inline std::optional<Distance> fromMileString(const std::string & s);
+	static inline std::optional<Distance> fromMileString(const std::string & s,
+		bool remarkFormat = false);
 	static inline std::optional<Distance> fromHeightString(const std::string & s);
 	static inline std::optional<Distance> fromRvrString(const std::string & s, bool unitFeet);
 	static inline std::optional< std::pair<Distance,Distance> > fromLayerString(
@@ -2714,17 +2715,24 @@ std::optional<Distance> Distance::fromMeterString(const std::string & s) {
 	return distance;
 }
 
-std::optional<Distance> Distance::fromMileString(const std::string & s) {
-	//static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?SM|////SM");
+std::optional<Distance> Distance::fromMileString(const std::string & s, 
+	bool remarkFormat)
+{
+	// static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?SM|////SM");
+	// static const std::regex rgx ("([PM])?(\\d?\\d)(?:/(\\d?\\d))?");
 	static const std::optional<Distance> error;
 	static const auto unitStr = std::string ("SM");
 	static const auto unitLength = unitStr.length();
-	if (s.length() < unitLength + 1) return error; //1 digit minimum
 
 	Distance distance;
 	distance.distUnit = Unit::STATUTE_MILES;
-	if (s == "////SM") return distance;
-	if (s.substr(s.length() - unitLength, unitLength) != unitStr) return error; //s.endsWith(unitStr)
+	if (!remarkFormat) {
+		if (s.length() < unitLength + 1) return error; //1 digit minimum
+		if (s == "////SM") return distance;
+		if (s.substr(s.length() - unitLength, unitLength) != unitStr) return error; //s.endsWith(unitStr)
+	} else {
+		if (s.length() < 1) return error; //1 digit minimum
+	}
 	const auto modifier = modifierFromChar(s[0]);
 	if (modifier.has_value()) {
 		distance.distModifier = modifier.value();
@@ -2733,8 +2741,9 @@ std::optional<Distance> Distance::fromMileString(const std::string & s) {
 	if (s.find('/') == std::string::npos) {
 		//The value is integer, e.g. 3SM or 15SM
 		const int intPos = static_cast<int>(modifier.has_value());
-		const int intLength =
-			s.length() - unitLength - static_cast<int>(modifier.has_value());
+		const int intLength = s.length() - 
+			(remarkFormat ? 0 : unitLength) - 
+			static_cast<int>(modifier.has_value());
 		static const int minDigits = 1, maxDigits = 2;
 		if (intLength < minDigits || intLength > maxDigits) return error;
 		const auto dist = strToUint(s, intPos, intLength);
@@ -2742,9 +2751,12 @@ std::optional<Distance> Distance::fromMileString(const std::string & s) {
 		distance.dist = dist.value() * statuteMileFactor;
 	} else {
 		//Fraction value, e.g. 1/2SM, 11/2SM, 5/16SM, 11/16SM
+		const int fracLength = s.length() - 
+			(remarkFormat ? 0: unitLength) - 
+			static_cast<int>(modifier.has_value());
 		const auto fraction = fractionStrToUint(s,
 			static_cast<int>(modifier.has_value()),
-			s.length() - unitLength - static_cast<int>(modifier.has_value()));
+			fracLength);
 		if (!fraction.has_value()) return error;
 		auto integer = 0u;
 		auto numerator = std::get<0>(fraction.value());
@@ -2842,18 +2854,21 @@ std::optional<Distance> Distance::fromKmString(const std::string & s) {
 std::optional<Distance> Distance::fromIntegerAndFraction(const Distance & integer,
 	const Distance & fraction)
 {
+	static const std::optional<Distance> error; 
+	if (integer.modifier() != Modifier::NONE &&
+		integer.modifier() != Modifier::LESS_THAN &&
+		integer.modifier() != Modifier::MORE_THAN) return error;
 	if (!integer.isValid() ||
 		!fraction.isValid() ||
-		integer.modifier() != Modifier::NONE ||
 		fraction.modifier() != Modifier::NONE ||
 		integer.unit() != Unit::STATUTE_MILES || 
 		fraction.unit() != Unit::STATUTE_MILES ||
 		!integer.dist.has_value() ||
 		!fraction.dist.has_value() ||
 		(integer.dist.value() % statuteMileFactor) ||
-		!(fraction.dist.value() % statuteMileFactor)) 
-			return std::optional<Distance>();
+		!(fraction.dist.value() % statuteMileFactor)) return error; 
 	Distance result;
+	result.distModifier = integer.modifier();
 	result.dist = integer.dist.value() + fraction.dist.value();
 	result.distUnit = Unit::STATUTE_MILES;
 	return result;
@@ -4561,8 +4576,10 @@ AppendResult VisibilityGroup::append(const std::string & group,
 std::optional<VisibilityGroup> VisibilityGroup::fromIncompleteInteger(
 	const std::string & group)
 {
+	static const std::optional<VisibilityGroup> error;
 	VisibilityGroup	result;
-	if (!result.appendInteger(group)) return std::optional<VisibilityGroup>();
+	if (!result.appendInteger(group)) return error;
+	if (result.visibility().modifier() != Distance::Modifier::NONE) return error;
 	result.incompleteText = IncompleteText::INTEGER;
 	return result;
 }
@@ -4650,28 +4667,27 @@ bool VisibilityGroup::appendRunway(const std::string & group, IncompleteText nex
 }
 
 bool VisibilityGroup::appendInteger(const std::string & group, IncompleteText next) {
-	if (group.empty() || group.length() > 2) return false;
-	const auto val = strToUint(group, 0, group.length());
-	if (!val.has_value()) return false;
-	vis = Distance(val.value(), Distance::Unit::STATUTE_MILES);
+	if (group.empty() || group.length() > 3) return false;
+	if (group.find('/') != std::string::npos) return false;
+	if (vis.isReported()) return false;
+	const auto v = Distance::fromMileString(group, true);
+	if (!v.has_value()) return false;
+	vis = v.value();
 	incompleteText = next;
 	return true;
 }
 
 bool VisibilityGroup::appendFraction(const std::string & group, IncompleteText next) {
-	const auto fraction = fractionStrToUint(group, 0, group.length());
-	if (!fraction.has_value()) return false;
-	const auto numerator = std::get<0>(fraction.value());
-	const auto denominator = std::get<1>(fraction.value());
-	if (!numerator || !denominator) return false;
-	auto v = Distance(numerator, denominator);
-	if (!v.isValue()) return false;
+	if (group.find('/') == std::string::npos) return false;
+	const auto v = Distance::fromMileString(group, true);
+	if (!v.has_value()) return false;
 	if (vis.isReported()) {
-		const auto t = Distance::fromIntegerAndFraction(vis, v);
-		if (!t.has_value()) return false;
-		v = t.value();
+		const auto d = Distance::fromIntegerAndFraction(vis, std::move(v.value()));
+		if (!d.has_value()) return false;
+		vis = std::move(d.value());
+	} else {
+		vis = std::move(v.value());
 	}
-	vis = v;
 	incompleteText = next;
 	return true;
 }
@@ -4694,58 +4710,29 @@ bool VisibilityGroup::appendVariable(const std::string & group,
 	IncompleteText nextIfMaxIsInteger,
 	IncompleteText nextIfMaxIsFraction)
 {
-	bool maxInteger = false;
-	static const std::regex rgx(
-		"(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))V(?:(\\d?\\d/\\d?\\d)|(\\d?\\d))");
-	static const auto matchFractionMin = 1, matchIntegerMin = 2;
-	static const auto matchFractionMax = 3, matchIntegerMax = 4;
-	std::smatch match;
-	if (!std::regex_match(group, match, rgx)) return false;
+	const auto vPos = group.find('V');
+	if (vPos == std::string::npos || 
+		!vPos ||
+		vPos == group.length()) return false;
+	const bool maxInteger = (group.find('/', vPos) == std::string::npos);
+	const auto min = 
+		Distance::fromMileString(group.substr(0, vPos), true);
+	if (!min.has_value()) return false;
+	const auto max = 
+		Distance::fromMileString(group.substr(vPos + 1), true);
+	if (!max.has_value()) return false;
 
-	Distance minDistance = vis, maxDistance = visMax;
-
-	if (match.length(matchFractionMin)) {
- 		const auto fraction = fractionStrToUint(match.str(matchFractionMin), 0, 
- 			match.length(matchFractionMin));
-		if (!fraction.has_value()) return false;
-		const auto numerator = std::get<0>(fraction.value());
-		const auto denominator = std::get<1>(fraction.value());
-		if (!numerator || !denominator) return false;
-		auto d = Distance(numerator, denominator);
-		if (!d.isValue()) return false;
-		if (minDistance.isReported()) {
-			const auto t = Distance::fromIntegerAndFraction(minDistance, d);
-			if (!t.has_value()) return false;
-			d = t.value();
-		}
-		minDistance = d;
+	if (vis.isReported()) {
+		const auto v = Distance::fromIntegerAndFraction(vis, std::move(min.value()));
+		if (!v.has_value()) return false;
+		vis = std::move(v.value());
+	} else {
+		vis = std::move(min.value());
 	}
-	if (match.length(matchIntegerMin)) {
-		if (minDistance.isReported()) return false;
-		minDistance = Distance(std::stoi(match.str(matchIntegerMin)), Distance::Unit::STATUTE_MILES);
-	}
-	if (!minDistance.isValid()) return false;
-	
-	if (match.length(matchFractionMax)) {
- 		const auto fraction = fractionStrToUint(match.str(matchFractionMax), 0, 
- 			match.length(matchFractionMax));
-		if (!fraction.has_value()) return false;
-		const auto numerator = std::get<0>(fraction.value());
-		const auto denominator = std::get<1>(fraction.value());
-		if (!numerator || !denominator) return false;
-		maxDistance = Distance(numerator, denominator);
-		if (!maxDistance.isValue()) return false;
-	}
-	if (match.length(matchIntegerMax)) {
-		maxInteger = true;
-		maxDistance = Distance(std::stoi(match.str(matchIntegerMax)), Distance::Unit::STATUTE_MILES);
-	}
-	if (!maxDistance.isValid()) return false;
+	visMax = std::move(max.value());
 
 	if (type() == Type::PREVAILING) visType = Type::VARIABLE_PREVAILING;
 	if (type() == Type::DIRECTIONAL) visType = Type::VARIABLE_DIRECTIONAL;
-	vis = std::move(minDistance);
-	visMax = std::move(maxDistance);
 	incompleteText = maxInteger ? nextIfMaxIsInteger : nextIfMaxIsFraction;
 	return true;
 }

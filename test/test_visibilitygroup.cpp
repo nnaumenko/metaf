@@ -264,6 +264,10 @@ TEST(VisibilityGroup, parseMetersWrongFormat) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("4000N0V", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("/////", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("///", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P4000", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M4000", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P////", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M////", metaf::ReportPart::METAR).has_value());
 }
 
 TEST(VisibilityGroup, parseMetersWrongReportPart) {
@@ -500,7 +504,15 @@ TEST(VisibilityGroup, parseMilesIncomplete) {
 
 TEST(VisibilityGroup, parseMilesIncompleteWrongFormat) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("A", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P", metaf::ReportPart::METAR).has_value());
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("/", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M1", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P1", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M15", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P15", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("M/", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("P/", metaf::ReportPart::METAR).has_value());
 }
 
 TEST(VisibilityGroup, appendIncompleteAndFraction) {
@@ -1556,6 +1568,162 @@ TEST(VisibilityGroup, parseRmkAppendToCompleteVarVisGroups) {
 	EXPECT_EQ(vg5->append("RWY22", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
+TEST(VisibilityGroup, parseRmkVisModifierFractionVariableInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4V5", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_PREVAILING);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 5, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_PREVAILING);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisModifierFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_PREVAILING);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisModifierFractionVariableIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4V1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_PREVAILING);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisModifierIntegerFractionVariableModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4VP1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_PREVAILING);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Variable visibility in meters
 // Purpose: to confirm that variable visibility groups in meters specified in 
@@ -1737,6 +1905,16 @@ TEST(VisibilityGroup, parseRmkVisIncorrectMeters) {
 	ASSERT_TRUE(vg6.has_value());
 	EXPECT_EQ(vg6->append("0800V900", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg7 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg7.has_value());
+	EXPECT_EQ(vg7->append("M0800V5000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg8 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg8.has_value());
+	EXPECT_EQ(vg8->append("0800VP5000", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
 TEST(VisibilityGroup, parseRmkVisVariableMetersIncorrectNotReported) {
@@ -1753,6 +1931,11 @@ TEST(VisibilityGroup, parseRmkVisVariableMetersIncorrectNotReported) {
 	auto vg3 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
 	ASSERT_TRUE(vg3.has_value());
 	EXPECT_EQ(vg3->append("////V////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg4 = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("M////V5000", metaf::ReportPart::RMK), 
 		metaf::AppendResult::GROUP_INVALIDATED);
 }
 
@@ -2078,6 +2261,183 @@ TEST(VisibilityGroup, parseRmkVisDirectionalVariableMeters) {
 	EXPECT_TRUE(vg->isValid());
 }
 
+TEST(VisibilityGroup, parseRmkVisDirectionalModifierFractionVariableInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/4V5", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL);
+	EXPECT_FALSE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 5, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL);
+	EXPECT_FALSE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalModifierFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL);
+	EXPECT_FALSE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalModifierFractionVariableIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/4V1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL);
+	EXPECT_FALSE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalModifierIntegerFractionVariableModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4VP1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_DIRECTIONAL);
+	EXPECT_FALSE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Directional non-variable visibility included in remarks
 // Purpose: to confirm that non-variable directional visibility groups 
@@ -2198,6 +2558,101 @@ TEST(VisibilityGroup, parseRmkAppendToCompleteNonVarVisGroups) {
 	EXPECT_EQ(vg2->append("1V3", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(vg2->append("1/2V3", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(vg2->append("2", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
+
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("P6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
+
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisDirectionalNonVariableModifierFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::DIRECTIONAL);
+	ASSERT_TRUE(vg->direction().has_value());
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::W);
+
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 16.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2631,6 +3086,192 @@ TEST(VisibilityGroup, parseRmkVisRunwayVariableMeters) {
 	EXPECT_TRUE(vg->isValid());
 }
 
+TEST(VisibilityGroup, parseRmkVisRunwayModifierFractionVariableInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4V5", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RUNWAY);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 5, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RUNWAY);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayModifierFractionVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4VP6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RUNWAY);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayModifierFractionVariableIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/4V1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RUNWAY);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::NONE);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayModifierIntegerFractionVariableModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4VP1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::VARIABLE_RUNWAY);
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->minVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->minVisibility().isReported());
+	ASSERT_TRUE(vg->minVisibility().distance().has_value());
+	EXPECT_NEAR(vg->minVisibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->minVisibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+
+	EXPECT_EQ(vg->maxVisibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+	EXPECT_TRUE(vg->maxVisibility().isReported());
+	ASSERT_TRUE(vg->maxVisibility().distance().has_value());
+	EXPECT_NEAR(vg->maxVisibility().distance().value(), 1.0 + 3.0 / 4.0, margin);
+	EXPECT_EQ(vg->maxVisibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Non-variable runway visibility specified in statute miles and meters
 // Purpose: to confirm that non-variable runway visibility groups specified in 
@@ -2783,6 +3424,98 @@ TEST(VisibilityGroup, parseRmkVisRunwayNonVariableMeters9999) {
 	ASSERT_TRUE(vg->visibility().distance().has_value());
 	EXPECT_NEAR(vg->visibility().distance().value(), 10000, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayNonVariableModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayNonVariableModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("P6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisRunwayNonVariableModifierFraction) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("M1/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("R22", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::RUNWAY);
+	EXPECT_FALSE(vg->direction().has_value());
+
+	ASSERT_TRUE(vg->runway().has_value());
+	EXPECT_EQ(vg->runway()->number(), 22u);
+	EXPECT_EQ(vg->runway()->designator(), metaf::Runway::Designator::NONE);
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 16.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
@@ -3100,6 +3833,92 @@ TEST(VisibilityGroup, parseRmkAppendToCompleteSfcVis) {
 	EXPECT_EQ(vg->append("RWY22", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
+TEST(VisibilityGroup, parseRmkSfcVisModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("SFC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkSfcVisModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("SFC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("P6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkSfcVisModifierFraction) {
+	auto vg = metaf::VisibilityGroup::parse("SFC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::SURFACE);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 16.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Malformed surface visibility groups
 // Purpose: to confirm that malformed surface visibility groups are not parsed 
@@ -3210,7 +4029,7 @@ TEST(VisibilityGroup, parseRmkAppendVariableToSfc) {
 ///////////////////////////////////////////////////////////////////////////////
 // Tower visibility in statute miles and meters
 // Purpose: to confirm that tower visibility groups specified in remarks 
-// (e.g. SFC VIS 1 3/4, SFC VIS 1/8, SFC VIS 4, SFC VIS 4000) are parsed and 
+// (e.g. TWR VIS 1 3/4, TWR VIS 1/8, TWR VIS 4, TWR VIS 4000) are parsed and 
 // appended correctly.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3337,6 +4156,92 @@ TEST(VisibilityGroup, parseRmkTwrMeters9999) {
 	ASSERT_TRUE(vg->visibility().distance().has_value());
 	EXPECT_NEAR(vg->visibility().distance().value(), 10000, margin);
 	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkTwrVisModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("TWR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkTwrVisModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("TWR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("P6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkTwrVisModifierFraction) {
+	auto vg = metaf::VisibilityGroup::parse("TWR", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::TOWER);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 16.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
 
 	EXPECT_FALSE(vg->minVisibility().isReported());
 	EXPECT_FALSE(vg->maxVisibility().isReported());
