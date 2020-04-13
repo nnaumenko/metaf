@@ -110,3 +110,50 @@ TEST(GroupParser, parseUnrecognised) {
 		metaf::GroupParser::parse("AAAAAAAAAA", metaf::ReportPart::METAR, metaf::missingMetadata);
 	EXPECT_TRUE(std::holds_alternative<metaf::UnknownGroup>(group));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Reparse tests
+// Purpose: to confirm that the group string can be re-parsed while ignoring
+// the previously parsed option, and that trying to re-parse a group which
+// does not have a second option, results in UnknownGroup
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(GroupParser, reparseOtherGroup) {
+	static const std::string groupStr ("FU");
+	static const metaf::ReportPart rp = metaf::ReportPart::RMK;
+
+	const metaf::Group group1 = 
+		metaf::GroupParser::parse(groupStr, rp, metaf::missingMetadata);
+	EXPECT_FALSE(std::holds_alternative<metaf::UnknownGroup>(group1));
+
+	const metaf::Group group2 = 
+		metaf::GroupParser::reparse(groupStr, rp, metaf::missingMetadata, group1);
+	EXPECT_FALSE(std::holds_alternative<metaf::UnknownGroup>(group2));
+
+	EXPECT_NE(group1.index(), group2.index());
+}
+
+TEST(GroupParser, reparseToUnknownGroup) {
+	static const std::string groupStr ("METAR");
+	static const metaf::ReportPart rp = metaf::ReportPart::HEADER;
+	const metaf::Group group1 = 
+		metaf::GroupParser::parse(groupStr, rp, metaf::missingMetadata);
+	EXPECT_FALSE(std::holds_alternative<metaf::UnknownGroup>(group1));
+
+	const metaf::Group group2 = 
+		metaf::GroupParser::reparse(groupStr, rp, metaf::missingMetadata, group1);
+	EXPECT_TRUE(std::holds_alternative<metaf::UnknownGroup>(group2));
+}
+
+TEST(GroupParser, reparseUnknownGroup) {
+	static const std::string groupStr ("AAAA");
+	static const metaf::ReportPart rp = metaf::ReportPart::RMK;
+
+	const metaf::Group group1 = 
+		metaf::GroupParser::parse(groupStr, rp, metaf::missingMetadata);
+	EXPECT_TRUE(std::holds_alternative<metaf::UnknownGroup>(group1));
+
+	const metaf::Group group2 = 
+		metaf::GroupParser::reparse(groupStr, rp, metaf::missingMetadata, group1);
+	EXPECT_TRUE(std::holds_alternative<metaf::UnknownGroup>(group2));
+}

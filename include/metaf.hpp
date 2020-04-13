@@ -4,7 +4,6 @@
 * This software may be modified and distributed under the terms
 * of the MIT license. See the LICENSE file for details.
 */
-
 #ifndef METAF_HPP
 #define METAF_HPP
 
@@ -32,7 +31,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 1;
+	inline static const int minor = 2;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -698,7 +697,8 @@ public:
 		SMOKE,
 		FOG,
 		MIST,
-		HAZE
+		HAZE,
+		VOLCANIC_ASH
 	};
 	Type type() const { return tp; }
 	Distance height() const { return ht; }
@@ -708,6 +708,7 @@ public:
 	CloudType() = default;
 	CloudType(Type t, Distance h, unsigned int o) : tp(t), ht(h), okt(o) {}
 	static inline std::optional<CloudType> fromString(const std::string & s);
+	static inline std::optional<CloudType> fromStringObscuration(const std::string & s);
 private:
 	Type tp = Type::NOT_REPORTED;
 	Distance ht;
@@ -1069,7 +1070,9 @@ public:
 	std::optional<Direction> direction() const { return dir; }
 	std::optional<Runway> runway() const { return rw; }
 	std::vector<Direction> sectorDirections() const {
-		return std::vector<Direction>();
+		return Direction::sectorCardinalDirToVector(
+			dirSecFrom.value_or(Direction()), 
+			dirSecTo.value_or(Direction()));
 	}
 	Trend trend() const { return rvrTrend; }
 	inline bool isValid() const;
@@ -1109,9 +1112,19 @@ private:
 			case Type::VARIABLE_DIRECTIONAL:
 			case Type::VARIABLE_RUNWAY:
 			case Type::VARIABLE_RVR:
+			case Type::VARIABLE_SECTOR:
 			return true;
 
 			default: return false;
+		}
+	}
+
+	void makeVariable() {
+		switch(visType) {
+			case Type::PREVAILING: visType = Type::VARIABLE_PREVAILING; break;
+			case Type::DIRECTIONAL: visType = Type::VARIABLE_DIRECTIONAL; break;
+			case Type::SECTOR: visType = Type::VARIABLE_SECTOR; break;
+			default: break;
 		}
 	}
 
@@ -1147,6 +1160,9 @@ private:
 	Trend rvrTrend = Trend::NONE;
 	std::optional<Direction> dir;
 	std::optional<Runway> rw;
+	std::optional<Direction> dirSecFrom;
+	std::optional<Direction> dirSecTo;
+
 	IncompleteText incompleteText = IncompleteText::NONE;
 };
 
@@ -1187,8 +1203,9 @@ public:
 	Amount amount() const { return amnt; }
 	ConvectiveType convectiveType() const { return convtype; }
 	inline Distance height() const {
-		if (type() != Type::CLOUD_LAYER && type() != Type::CEILING) 
-			return heightNotReported;
+		if (type() != Type::CLOUD_LAYER && 
+			type() != Type::CEILING &&
+			type() != Type::OBSCURATION) return heightNotReported;
 		return heightOrVertVis;
 	}
 	inline Distance minHeight() const {
@@ -1229,6 +1246,7 @@ private:
 	WeatherPhenomena w;
 	std::optional<Runway> rw;
 	std::optional<Direction> dir;
+	CloudType cldTp;
 	static const inline auto heightNotReported = Distance(Distance::Unit::FEET);
 
 	enum class IncompleteText {
@@ -1238,7 +1256,8 @@ private:
 		CIG,
 		CIG_NUM,
 		CHINO,
-		CLD
+		CLD,
+		OBSCURATION
 	};
 	IncompleteText incompleteText = IncompleteText::NONE;
 
@@ -1251,6 +1270,7 @@ private:
 	inline AppendResult appendVariableCloudAmount(const std::string & group);
 	inline AppendResult appendCeiling(const std::string & group);
 	inline AppendResult appendRunwayOrCardinalDirection(const std::string & group);
+	inline AppendResult appendObscuration(const std::string & group);
 	static inline unsigned int amountToMaxOkta(Amount a);
 	static inline CloudType::Type convectiveTypeToCloudTypeType(ConvectiveType t);
 };
@@ -1977,6 +1997,14 @@ public:
 	{
 		return parseAlternative<0>(group, reportPart, reportMetadata);
 	}
+
+	static Group reparse(const std::string & group,
+		ReportPart reportPart,
+		const ReportMetadata & reportMetadata,
+		const Group & previous)
+	{
+		return reparseAlternative<0>(group, reportPart, reportMetadata, previous.index());
+	}
 private:
 	template <size_t I>
 	static Group parseAlternative(const std::string & group,
@@ -1991,7 +2019,26 @@ private:
 		if constexpr (I < std::variant_size_v<Group> - 1) {
 			return parseAlternative<I+1>(group, reportPart, reportMetadata);
 		}
-		return FallbackGroup();
+	return FallbackGroup();
+	}
+
+	template <size_t I>
+	static Group reparseAlternative(const std::string & group,
+		ReportPart reportPart,
+		const ReportMetadata & reportMetadata,
+		size_t ignoreIndex)
+	{
+		using Alternative = std::variant_alternative_t<I, Group>;
+		if constexpr (!std::is_same<Alternative, FallbackGroup>::value) {
+			if (I != ignoreIndex) {
+				const auto parsed = Alternative::parse(group, reportPart, reportMetadata);
+				if (parsed.has_value()) return parsed.value();
+			}
+		}
+		if constexpr (I < std::variant_size_v<Group> - 1) {
+			return reparseAlternative<I+1>(group, reportPart, reportMetadata, ignoreIndex);
+		}
+	return FallbackGroup();
 	}
 };
 
@@ -2008,7 +2055,8 @@ private:
 	static inline bool appendToLastResultGroup(ParseResult & result,
 		const std::string & groupStr,
 		ReportPart reportPart,
-		const ReportMetadata & reportMetadata);
+		const ReportMetadata & reportMetadata,
+		bool allowReparse = true);
 	static inline void addGroupToResult(ParseResult & result,
 		Group group,
 		ReportPart reportPart,
@@ -3840,6 +3888,19 @@ std::optional<CloudType> CloudType::fromString(const std::string & s) {
 	}
 }
 
+std::optional<CloudType> CloudType::fromStringObscuration(const std::string & s) {
+	auto type = Type::NOT_REPORTED;
+	if (s == "BLSN") type = Type::BLOWING_SNOW;
+	if (s == "BLDU") type = Type::BLOWING_DUST;
+	if (s == "BLSA") type = Type::BLOWING_SAND;
+	if (s == "VA") type = Type::VOLCANIC_ASH;
+	if (s == "FU") type = Type::SMOKE;
+	if (s == "FG") type = Type::FOG;
+	if (type == Type::NOT_REPORTED) return std::optional<CloudType>();
+	return CloudType(type, Distance(), 0);
+}
+
+
 CloudType::Type CloudType::cloudTypeFromString(const std::string & s) {
 	if (s == "CB")    return Type::CUMULONIMBUS;
 	if (s == "TCU")   return Type::TOWERING_CUMULUS;
@@ -3872,6 +3933,7 @@ CloudType::Type CloudType::cloudTypeOrObscurationFromString(const std::string & 
 	if (s == "FG")    return Type::FOG;
 	if (s == "BR")    return Type::MIST;
 	if (s == "HZ")    return Type::HAZE;
+	if (s == "VA") 	  return Type::VOLCANIC_ASH;
 	return Type::NOT_REPORTED;
 }
 
@@ -4648,12 +4710,20 @@ bool VisibilityGroup::appendFractionToIncompleteInteger(const std::string & grou
 
 
 bool VisibilityGroup::appendDirection(const std::string & group, IncompleteText next) {
-	const auto d = Direction::fromCardinalString(group); 
-	if (!d.has_value()) return false;
-	dir = d;
-	if (visType == Type::PREVAILING) visType = Type::DIRECTIONAL;
-	incompleteText = next;
-	return true;
+	if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
+		dir = d;
+		if (visType == Type::PREVAILING) visType = Type::DIRECTIONAL;
+		incompleteText = next;
+		return true;
+	}
+	if (const auto d = Direction::fromSectorString(group); d.has_value()) {
+		dirSecFrom = std::get<0>(d.value());
+		dirSecTo = std::get<1>(d.value());
+		if (visType == Type::PREVAILING) visType = Type::SECTOR;
+		incompleteText = next;
+		return true;
+	}
+	return false;
 }
 
 bool VisibilityGroup::appendRunway(const std::string & group, IncompleteText next) {
@@ -4730,9 +4800,7 @@ bool VisibilityGroup::appendVariable(const std::string & group,
 		vis = std::move(min.value());
 	}
 	visMax = std::move(max.value());
-
-	if (type() == Type::PREVAILING) visType = Type::VARIABLE_PREVAILING;
-	if (type() == Type::DIRECTIONAL) visType = Type::VARIABLE_DIRECTIONAL;
+	makeVariable();
 	incompleteText = maxInteger ? nextIfMaxIsInteger : nextIfMaxIsFraction;
 	return true;
 }
@@ -4758,8 +4826,7 @@ bool VisibilityGroup::appendVariableMeters(const std::string & group, Incomplete
 	if (!min->isReported() || !max->isReported()) return false;
 	vis = min.value();
 	visMax = max.value();
-	if (type() == Type::PREVAILING) visType = Type::VARIABLE_PREVAILING;
-	if (type() == Type::DIRECTIONAL) visType = Type::VARIABLE_DIRECTIONAL;
+	makeVariable();
 	incompleteText = next;
 	return true;
 }
@@ -4785,7 +4852,6 @@ bool VisibilityGroup::isValid() const {
 	return (vis.isValid() && visMax.isValid());
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
 
 std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
@@ -4800,6 +4866,11 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 		if (group == "CLD") return CloudGroup(Type::CLD_MISG, IncompleteText::CLD);
 		if (group == "CIG") return CloudGroup(Type::CEILING, IncompleteText::CIG);
 		if (group == "CHINO") return CloudGroup(Type::CHINO, IncompleteText::CHINO);
+		if (const auto ct = CloudType::fromStringObscuration(group); ct.has_value()) {
+			CloudGroup result = CloudGroup(Type::OBSCURATION, IncompleteText::OBSCURATION);
+			result.cldTp = ct.value();
+			return result;
+		}
 		return parseVariableCloudLayer(group); 
 	}
 	return std::optional<CloudGroup>();
@@ -4834,6 +4905,9 @@ AppendResult CloudGroup::append(const std::string & group,
 		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
 		incompleteText = IncompleteText::NONE;
 		return AppendResult::APPENDED;
+
+		case IncompleteText::OBSCURATION:
+		return appendObscuration(group);
 	}
 }
 
@@ -4875,8 +4949,7 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	static const std::optional<CloudGroup> notRecognised;
 
 	std::smatch match;
-	static const std::regex rgx(
-		"([A-Z][A-Z][A-Z])(\\d\\d\\d)?");
+	static const std::regex rgx("([A-Z][A-Z][A-Z])(\\d\\d\\d)?");
 	static const auto matchAmount = 1, matchHeight = 2;
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
@@ -4946,7 +5019,7 @@ std::optional<CloudType> CloudGroup::cloudType() const {
 		return CloudType(cldConvType, minHeight(), cldOkta);
 
 		case Type::OBSCURATION:
-		return CloudType();
+		return cldTp;
 
 		default:
 		return std::optional<CloudType>();
@@ -5017,6 +5090,27 @@ AppendResult CloudGroup::appendRunwayOrCardinalDirection(const std::string & gro
 	dir = Direction::fromCardinalString(group);
 	if (dir.has_value()) return AppendResult::APPENDED;
 	return AppendResult::NOT_APPENDED;
+}
+
+AppendResult CloudGroup::appendObscuration(const std::string & group) {
+	static const std::regex rgx("([A-Z][A-Z][A-Z])(\\d\\d\\d)");
+	static const auto matchAmount = 1, matchHeight = 2;
+	std::smatch match;
+	if (!std::regex_match(group, match, rgx)) return AppendResult::GROUP_INVALIDATED;
+
+	const auto h = Distance::fromHeightString(match.str(matchHeight));
+	if (!h.has_value()) return AppendResult::GROUP_INVALIDATED;
+
+	const auto a = amountFromString(match.str(matchAmount));
+	if (!a.has_value()) return AppendResult::GROUP_INVALIDATED;
+	if (a.value() == Amount::OBSCURED || a.value() == Amount::NOT_REPORTED) 
+		return AppendResult::GROUP_INVALIDATED;
+
+	amnt = a.value();
+	heightOrVertVis = h.value();
+	cldTp = CloudType(cldTp.type(), h.value(), amountToMaxOkta(a.value()));
+	incompleteText = IncompleteText::NONE;
+	return AppendResult::APPENDED;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -6517,7 +6611,8 @@ ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
 bool Parser::appendToLastResultGroup(ParseResult & result,
 	const std::string & groupStr,
 	ReportPart reportPart,
-	const ReportMetadata & reportMetadata)
+	const ReportMetadata & reportMetadata,
+	bool allowReparse)
 {
 	// Unable to append if this is the first group
 	if (result.groups.empty()) return false;
@@ -6547,10 +6642,20 @@ bool Parser::appendToLastResultGroup(ParseResult & result,
 		case AppendResult::GROUP_INVALIDATED:
 		{
 			std::string prevStr = std::move(result.groups.back().rawString);
-			const auto prevRp = result.groups.back().reportPart; 
+			const auto prevRp = result.groups.back().reportPart;
+			const auto & prevGroup = result.groups.back().group;
+			if (!allowReparse) {
+				addGroupToResult(result, FallbackGroup(), prevRp, std::move(prevStr));
+				return false;
+			}
+			const auto reparsed = 
+				GroupParser::reparse(prevStr, prevRp, reportMetadata, prevGroup);
+			const bool reparsedIsOtherGroup = 
+				!std::holds_alternative<FallbackGroup>(reparsed);
 			result.groups.pop_back();
-			addGroupToResult(result, FallbackGroup(), prevRp, std::move(prevStr));
-			return false;
+			addGroupToResult(result, std::move(reparsed), prevRp, std::move(prevStr));
+			if (!reparsedIsOtherGroup) return false;
+			return appendToLastResultGroup(result, groupStr, reportPart, reportMetadata, false);
 		}
 	}
 }
@@ -6561,26 +6666,12 @@ void Parser::addGroupToResult(ParseResult & result,
 	std::string groupString)
 {
 	if (!result.groups.empty() && std::holds_alternative<FallbackGroup>(group)) {
-		// Check if both last group in result and curent group are
-		// fallback group (unknown), if yes try to append current group
+		// Assumed that two fallback groups can always be appended 
 		GroupInfo & lastGroupInfo = result.groups.back();
-		auto lastFallbackGroup = std::get_if<FallbackGroup>(&lastGroupInfo.group);
-		if (lastFallbackGroup)
-		{
-			// Both last group and group being saved are fallback groups and
-			// should be appended if possible
-			const auto appendResult =
-				lastFallbackGroup->append(groupString, reportPart, missingMetadata);
-
-			if (appendResult == AppendResult::APPENDED) {
-				// Appended successfully, just append raw group string as well
-				// Append may fail if max length of text that may be stored in
-				// the fallback (unknown) group is exceeded
-				lastGroupInfo.rawString += groupDelimiterChar;
-				lastGroupInfo.rawString += groupString;
-				return;
-			}
-			// Unable to append to previous fallback group, add new group normally
+		if (std::get_if<FallbackGroup>(&lastGroupInfo.group)) {
+			lastGroupInfo.rawString += groupDelimiterChar;
+			lastGroupInfo.rawString += groupString;
+			return;
 		}
 	}
 	GroupInfo groupInfo(std::move(group), reportPart, groupString);

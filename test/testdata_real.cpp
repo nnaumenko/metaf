@@ -6105,6 +6105,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"KFAT", "Fresno Yosemite International Airport", {2019, 1, 11},		
+		"METAR KFAT 111553Z 10005KT 1/8SM R29R/1200FT FG VV002 08/07 A3005"
+		" RMK AO2 SFC VIS M1/4 SLP174 T00780072"
+		"=",
+		"KFAT 111418Z 1114/1212 15006KT 1/4SM FG VV002"
+		" TEMPO 1114/1116 1SM BR OVC005"
+		" FM111800 13008KT 1SM BR BKN005"
+		" FM112000 13006KT 4SM BR SCT020 BKN200"
+		" FM120300 14004KT 3SM BR BKN060"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
 		"CYCA", "Cartwright Airport", {2019, 1, 11},
 		"METAR CYCA 112000Z AUTO /////KT"
 		" RMK WND MISG CLD MISG WX MISG VIS MISG PCPN MISG PRES MISG"

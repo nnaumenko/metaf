@@ -2823,6 +2823,9 @@ std::string_view VisitorExplain::cloudTypeToString(
 		
 		case metaf::CloudType::Type::HAZE:
 		return "haze";
+
+		case metaf::CloudType::Type::VOLCANIC_ASH:
+		return "volcanic ash";
 	}
 }
 

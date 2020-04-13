@@ -130,6 +130,9 @@ Type definitions
 
 			Obscuration: haze.
 
+		.. cpp:enumerator:: VOLCANIC_ASH
+
+			Obscuration: volcanic ash.
 
 Acquiring the data
 ^^^^^^^^^^^^^^^^^^

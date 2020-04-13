@@ -467,6 +467,66 @@ TEST(CloudType, parseObsurations) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Parse obscurations
+// Purpose: to confirm that all ground-based or aloft obscurations included 
+// in remarks are parsed correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudType, parseObscurationBlowingSnow) {
+	const auto ct = metaf::CloudType::fromStringObscuration("BLSN");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SNOW);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+TEST(CloudType, parseObscurationBlowingDust) {
+	const auto ct = metaf::CloudType::fromStringObscuration("BLDU");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_DUST);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+TEST(CloudType, parseObscurationBlowingSand) {
+	const auto ct = metaf::CloudType::fromStringObscuration("BLSA");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SAND);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+TEST(CloudType, parseObscurationFog) {
+	const auto ct = metaf::CloudType::fromStringObscuration("FG");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+TEST(CloudType, parseObscurationSmoke) {
+	const auto ct = metaf::CloudType::fromStringObscuration("FU");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SMOKE);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+TEST(CloudType, parseObscurationVolcanicAsh) {
+	const auto ct = metaf::CloudType::fromStringObscuration("VA");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::VOLCANIC_ASH);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 0u);
+	EXPECT_FALSE(ct->isValid());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Parse invalid format
 // Purpose: to confirm that invalid formats would not parse.
 ///////////////////////////////////////////////////////////////////////////////

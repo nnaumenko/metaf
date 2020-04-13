@@ -181,6 +181,10 @@ static bool isPressure(const metaf::Group & group) {
 	return(std::holds_alternative<metaf::PressureGroup>(group));
 }
 
+static bool isVicinity(const metaf::Group & group) {
+	return(std::holds_alternative<metaf::VicinityGroup>(group));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test attribute checker
 // Purpose: to confirm that checkAttributesVsMetadata() correctly identifies 
@@ -1522,6 +1526,52 @@ TEST(ParserAppended, appendedGroups) {
 	EXPECT_TRUE(isVisibility(result.groups.at(12).group));
 	EXPECT_TRUE(isPressure(result.groups.at(13).group));
 	EXPECT_TRUE(isTemperature(result.groups.at(14).group));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Reports with reparsed groups 
+// Purpose: to confirm that reports which contain groups which begin with the
+// same string (e.g. FU BKN002 and FU SE-NE begin with the same group FU so 
+// the parser must go one step back and parse the group again).
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(ParserReparsedGroups, reparsedGroups) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z 00000KT RMK FU BKN001 FU NE-E=");
+
+	ASSERT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	ASSERT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 7u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isWind(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "00000KT");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isRmk(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isCloud(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "FU BKN001");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isVicinity(result.groups.at(6).group));
+	EXPECT_EQ(result.groups.at(6).rawString, "FU NE-E");
+	EXPECT_EQ(result.groups.at(6).reportPart, metaf::ReportPart::RMK);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

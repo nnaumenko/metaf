@@ -1418,9 +1418,195 @@ TEST(CloudGroup, parseMisg) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Ground-based or aloft obscuration
+// Purpose: to confirm that groups representing ground-based and aloft 
+// obscurations (e.g. FG SCT000 or FU BKN020) are parsed and appended 
+// correctly, and that malformed groups of this type cannot be parsed
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudGroup, parseObscurationGroundBased) {
+	auto cg = metaf::CloudGroup::parse("BLSN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+
+	EXPECT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 0, heightMargin);
+	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
+
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SNOW);
+	EXPECT_TRUE(ct->height().isReported());
+	EXPECT_EQ(ct->height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ct->height().distance().has_value());
+	EXPECT_NEAR(ct->height().distance().value(), 0, heightMargin);
+	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ct->okta(), 7u);
+}
+
+TEST(CloudGroup, parseObscurationAloft) {
+	auto cg = metaf::CloudGroup::parse("FU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN002", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+
+	EXPECT_TRUE(cg->height().isReported());
+	EXPECT_NEAR(cg->height().distance().value(), 200, heightMargin);
+	EXPECT_EQ(cg->height().unit(), metaf::Distance::Unit::FEET);
+
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SMOKE);
+	EXPECT_TRUE(ct->height().isReported());
+	EXPECT_EQ(ct->height().modifier(), metaf::Distance::Modifier::NONE);
+	ASSERT_TRUE(ct->height().distance().has_value());
+	EXPECT_NEAR(ct->height().distance().value(), 200, heightMargin);
+	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ct->okta(), 7u);
+}
+
+TEST(CloudGroup, parseObscurationFew) {
+	auto cg = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("FEW000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::FEW);
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+	EXPECT_EQ(ct->okta(), 2u);
+}
+
+TEST(CloudGroup, parseObscurationScattered) {
+	auto cg = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("SCT000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(ct->okta(), 4u);
+}
+
+TEST(CloudGroup, parseObscurationBroken) {
+	auto cg = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+	EXPECT_EQ(ct->okta(), 7u);
+}
+
+TEST(CloudGroup, parseObscurationOvercast) {
+	auto cg = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("OVC000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OVERCAST);
+
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+	EXPECT_EQ(ct->okta(), 8u);
+}
+
+TEST(CloudGroup, parseObscurationBlowingSnow) {
+	auto cg = metaf::CloudGroup::parse("BLSN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SNOW);
+}
+
+TEST(CloudGroup, parseObscurationBlowingDust) {
+	auto cg = metaf::CloudGroup::parse("BLDU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_DUST);
+}
+
+TEST(CloudGroup, parseObscurationBlowingSand) {
+	auto cg = metaf::CloudGroup::parse("BLSA", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SAND);
+}
+
+TEST(CloudGroup, parseObscurationFog) {
+	auto cg = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN000", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
+}
+
+TEST(CloudGroup, parseObscurationSmoke) {
+	auto cg = metaf::CloudGroup::parse("FU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("BKN020", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SMOKE);
+}
+
+TEST(CloudGroup, parseObscurationVolcanicAsh) {
+	auto cg = metaf::CloudGroup::parse("VA", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("SCT085", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::OBSCURATION);
+	const auto ct = cg->cloudType();
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::VOLCANIC_ASH);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for cloudType()
 // Purpose: to confirm that cloudType() method correctly initialises a
-// CloudType instance
+// CloudType instance 
+// Note: except case where type() == CloudGroup::Type::OBSCURATION, which is
+// tested separately
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, cloudTypeNoClouds) {
