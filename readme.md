@@ -1,4 +1,4 @@
-# Modern C++ library for parsing METAR and TAF with focus on Webassembly
+# Modern C++ library for parsing METAR and TAF
 
 [![pipeline status](https://gitlab.com/nnaumenko/metaf/badges/master/pipeline.svg)](https://gitlab.com/nnaumenko/metaf/commits/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/785c3536264b4a90bd8d94e1a799d275)](https://www.codacy.com/manual/nnaumenko/metaf?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nnaumenko/metaf&amp;utm_campaign=Badge_Grade)
@@ -14,8 +14,6 @@ Metaf is a header-only, dependency-free modern C++ library for parsing [METAR we
 [Live demo: Short weather summary for aerodromes near your location based on METAR/TAF weather data](https://nnaumenko.gitlab.io/metaf/examples/summary.html).
 
 [Live demo: Decode METAR or TAF report and explain in English language](https://nnaumenko.gitlab.io/metaf/examples/explain.html).
-
-This project focuses on using METAR and TAF parsing with Webassembly, however the library is has no dependencies and can be used in other environments.
 
 Metaf can do the following:
 
@@ -124,9 +122,9 @@ Example of a TAF report is as follows:
 
 There are no plans to change the API in the foreseeable future.
 
-At this stage the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring. Also a couple of group formats are planned to be added eventually.
+At this stage the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring.
 
-If your region uses some group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
+There are currently no plan to add new group types. If your region uses group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
 
 ## Acknowledgements
 

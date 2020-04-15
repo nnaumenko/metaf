@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 2;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -2016,10 +2016,11 @@ private:
 			const auto parsed = Alternative::parse(group, reportPart, reportMetadata);
 			if (parsed.has_value()) return parsed.value();
 		}
-		if constexpr (I < std::variant_size_v<Group> - 1) {
+		if constexpr (I >= (std::variant_size_v<Group> - 1)) {
+			return FallbackGroup();
+		} else {
 			return parseAlternative<I+1>(group, reportPart, reportMetadata);
 		}
-	return FallbackGroup();
 	}
 
 	template <size_t I>
@@ -2035,10 +2036,11 @@ private:
 				if (parsed.has_value()) return parsed.value();
 			}
 		}
-		if constexpr (I < std::variant_size_v<Group> - 1) {
+		if constexpr (I >= (std::variant_size_v<Group> - 1)) {
+			return FallbackGroup();
+		} else {
 			return reparseAlternative<I+1>(group, reportPart, reportMetadata, ignoreIndex);
 		}
-	return FallbackGroup();
 	}
 };
 
@@ -5103,8 +5105,6 @@ AppendResult CloudGroup::appendObscuration(const std::string & group) {
 
 	const auto a = amountFromString(match.str(matchAmount));
 	if (!a.has_value()) return AppendResult::GROUP_INVALIDATED;
-	if (a.value() == Amount::OBSCURED || a.value() == Amount::NOT_REPORTED) 
-		return AppendResult::GROUP_INVALIDATED;
 
 	amnt = a.value();
 	heightOrVertVis = h.value();
