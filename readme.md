@@ -6,6 +6,12 @@
 [![MIT license](https://img.shields.io/github/license/nnaumenko/metaf)](LICENSE.md)
 [![Try online](https://img.shields.io/badge/try-online-blue)](https://wandbox.org/permlink/5Sw5vEgPSkHkHKIa)
 
+## Highlights
+
+* **Dependency-free**: No external dependencies except standard C++ library.
+* **Versatile**: recognises large number of group types including rare and regional formats.
+* **Thoroughly tested**: 100% test coverage.
+* **Easy to integrate**: Header-only library, integrated by including a single .hpp file.
 
 ## Introduction
 
@@ -19,7 +25,7 @@ Metaf can do the following:
 
 * Parse METAR or TAF report and autodetect its type.
 * Check the validity of the report syntax, detect malformed reports and report errors.
-* Convert METAR or TAF report into the vector of classes; each of these classes represents individual chunk of information encoded in the weather report or forecast.
+* Convert METAR or TAF groups into classes wrapped in std::variant; each of these classes represents a particular type of group coded in weather report or forecast.
 
 ## Compatible compilers
 
