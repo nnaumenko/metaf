@@ -733,7 +733,13 @@ std::string VisitorExplain::visitCloudGroup(
 		break;
 
 		case metaf::CloudGroup::Type::OBSCURATION:
-		result << "Ground-based or aloft obscuration";
+		const auto h = group.height().distance();
+		if (h.has_value() && !h->value()) {
+			result << "Ground-based obscuration\n";
+		} else {
+			result << "Aloft obscuration\n";
+		}
+		explainCloudType(group.cloudType());
 		break;
 	}
 	return result.str();

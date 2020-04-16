@@ -70,3 +70,15 @@ ReportMetadata
 	.. cpp:var:: bool maintenanceIndicator
 
 		``true`` if ``$`` group is found in the report, and ``false`` otherwise.
+
+	.. cpp:var:: std::optional<MetafTime> timeSpanFrom
+
+		For TAF reports contains time from which the TAF report is valid.
+
+		For METAR and SPECI reports contains an empty ``std::optional``.
+
+	.. cpp:var:: std::optional<MetafTime> timeSpanUntil
+
+		For TAF reports contains time until which the TAF report is valid.
+
+		For METAR and SPECI reports contains an empty ``std::optional``.

@@ -2098,3 +2098,123 @@ TEST(ParserResultReportPartAndRawString, invalidatedGroupsFollowedByValidGroup) 
 	EXPECT_EQ(result.groups.at(11).rawString, "T00560028");
 	EXPECT_EQ(result.groups.at(11).reportPart, metaf::ReportPart::RMK);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Test TAF report time span in ReportMetadata
+// Purpose: to confirm that various nil reports are parsed correctly, and 
+// parsing of malformed nil reports results in error or correct type
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(ParserTafTimeSpanInMetadata, parseNormalTaf) {
+	const auto result = metaf::Parser::parse(
+		"TAF COR EIKN 091726Z 0918/1018 25014KT 9999 SCT018 BKN030"
+		" TEMPO 0918/0921 25016G26KT"
+		" BECMG 1001/1004 23009KT"
+		" BECMG 1006/1009 20008KT"
+		" BECMG 1009/1011 18013KT -RA SCT007 BKN012"
+		" TEMPO 1009/1011 5000 -RADZ BKN007"
+		" BECMG 1011/1014 5000 -RADZ SCT003 BKN007"
+		" TEMPO 1011/1017 18015G25KT 2000 RADZ BR BKN003"
+		" PROB30" 
+		" TEMPO 1011/1017 0800 FG BKN002"
+		" BECMG 1016/1018 24014KT 9999 SCT008 BKN020"
+		" TEMPO 1016/1018 24016G26KT");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanFrom->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->day().value(), 9u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->hour(), 18u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->minute(), 0u);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanUntil.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanUntil->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->day().value(), 10u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->hour(), 18u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->minute(), 0u);
+}
+
+TEST(ParserTafTimeSpanInMetadata, parseCancelledTaf) {
+	const auto result = metaf::Parser::parse(
+		"TAF AMD EGYD 280939Z 2809/2818 CNL=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanFrom->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->day().value(), 28u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->hour(), 9u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->minute(), 0u);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanUntil.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanUntil->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->day().value(), 28u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->hour(), 18u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->minute(), 0u);
+}
+
+TEST(ParserTafTimeSpanInMetadata, parseNilTaf) {
+	const auto result = metaf::Parser::parse(
+		"TAF EGKB 182000Z NIL=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+	EXPECT_FALSE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_FALSE(result.reportMetadata.timeSpanUntil.has_value());
+}
+
+TEST(ParserTafTimeSpanInMetadata, parseTafWithoudTypeIdentifier) {
+	const auto result = metaf::Parser::parse(
+		"ENNE 091100Z 0912/0917 11020KT 9999 FEW040=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanFrom->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->day().value(), 9u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->hour(), 12u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->minute(), 0u);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanUntil.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanUntil->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->day().value(), 9u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->hour(), 17u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->minute(), 0u);
+}
+
+TEST(ParserTafTimeSpanInMetadata, parseTafTrendExceedingMainTrend) {
+	// Note that main trend is from 17th 20:00 till 18th 08:00 whereas
+	// tempo trend exceeds 18th 08:00 and lasts until 09:00.
+	// Only main trend will be saved in this case
+	const auto result = metaf::Parser::parse(
+		"TAF ZZZZ 172009Z 1720/1808 17001KT CAVOK"
+		" TEMPO 1806/1809 21012KT SCT022TCU=");
+
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::TAF);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanFrom->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->day().value(), 17u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->hour(), 20u);
+	EXPECT_EQ(result.reportMetadata.timeSpanFrom->minute(), 0u);
+
+	ASSERT_TRUE(result.reportMetadata.timeSpanUntil.has_value());
+	EXPECT_TRUE(result.reportMetadata.timeSpanUntil->day().has_value());
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->day().value(), 18u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->hour(), 8u);
+	EXPECT_EQ(result.reportMetadata.timeSpanUntil->minute(), 0u);
+}
+
+TEST(ParserTafTimeSpanInMetadata, parseMetar) {
+	const auto result = metaf::Parser::parse(
+		"METAR YBBN 041130Z 15010KT 9999 SCT013 BKN028 BKN045 22/19 Q1018"
+		" FM1130 16011KT 9999 -DZ FEW010 BKN015"
+		" INTER 1130/1300 16020G30KT 3000 SHRA BKN010"
+		" TEMPO 1300/1430 2000 DZ BKN010"
+		" FM1130 MOD TURB BLW 5000FT TL1200=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+	EXPECT_FALSE(result.reportMetadata.timeSpanFrom.has_value());
+	EXPECT_FALSE(result.reportMetadata.timeSpanUntil.has_value());
+}

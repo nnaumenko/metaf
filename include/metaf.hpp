@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 2;
-	inline static const int patch = 1;
+	inline static const int patch = 2;
 	inline static const char tag [] = "";
 };
 
@@ -769,6 +769,7 @@ struct ReportMetadata {
 	bool isCorrectional = false;
 	std::optional<unsigned int> correctionNumber = 0;
 	bool maintenanceIndicator = false;
+	std::optional<MetafTime> timeSpanFrom, timeSpanUntil;
 };
 
 static const inline ReportMetadata missingMetadata;
@@ -7022,8 +7023,9 @@ void Parser::updateMetadata(const Group & group, ReportMetadata & reportMetadata
 			default:
 			break;
 		}
-	if (const auto reportTime = std::get_if<ReportTimeGroup>(&group); reportTime)
+	if (const auto reportTime = std::get_if<ReportTimeGroup>(&group); reportTime) {
 		reportMetadata.reportTime = reportTime->time();
+	}
 	if (const auto location = std::get_if<LocationGroup>(&group); location)
 		reportMetadata.icaoLocation = location->toString();
 	if (const auto misc = std::get_if<MiscGroup>(&group); 
@@ -7032,6 +7034,16 @@ void Parser::updateMetadata(const Group & group, ReportMetadata & reportMetadata
 		misc->data().has_value()) {
 			reportMetadata.isCorrectional = true;
 			reportMetadata.correctionNumber = misc->data().value();
+	}
+	if (const auto trend = std::get_if<TrendGroup>(&group); 
+		trend && 
+		reportMetadata.type != ReportType::METAR &&
+		trend->type() == TrendGroup::Type::TIME_SPAN &&
+		!reportMetadata.timeSpanFrom.has_value() &&
+		!reportMetadata.timeSpanUntil.has_value())
+	{
+		reportMetadata.timeSpanFrom = trend->timeFrom();
+		reportMetadata.timeSpanUntil = trend->timeUntil();
 	}
 }
 
