@@ -54,6 +54,7 @@
     	function explain() {
         clearTable();
         var inputStr = document.getElementById("input").value;
+        window.location.hash = '#' + encodeURIComponent(inputStr);
         console.log(inputStr);
         var result = Module.ccall('explain',    // name of C function 
                                   'string',     // return type
@@ -64,17 +65,22 @@
         document.getElementById("explanation").innerHTML = result;
     	};
 
-      function setSampleInput(){
-        var sampleMetarStr = 'TAF UKLL 241107Z 2412/2512 35007G13MPS 4000 BR OVC005 TXM00/2412Z TNM05/2504Z TEMPO 2412/2418 33009G14MPS 1100 -SHSN BKN003 BKN020CB TEMPO 2418/2506 32009G14MPS 0400 +SHSN BKN002 BKN015CB TEMPO 2506/2512 29008G14MPS 2100 -SHSN BKN006 BKN025CB=';
-        if (document.getElementById("input").value.length == 0) {
-          document.getElementById("input").value = sampleMetarStr;
+      function getInputFromHash(){
+        const sampleReportStr = 'TAF UKLL 241107Z 2412/2512 35007G13MPS 4000 BR OVC005 TXM00/2412Z TNM05/2504Z TEMPO 2412/2418 33009G14MPS 1100 -SHSN BKN003 BKN020CB TEMPO 2418/2506 32009G14MPS 0400 +SHSN BKN002 BKN015CB TEMPO 2506/2512 29008G14MPS 2100 -SHSN BKN006 BKN025CB=';
+        console.log(window.location.hash);
+        if (window.location.hash) {
+          const report = decodeURIComponent(window.location.hash.substring(1));
+          document.getElementById("input").value = report;
+        } else {
+          document.getElementById("input").value = sampleReportStr;
+          window.location.hash = '#' + encodeURIComponent(sampleReportStr);
         }
       }
 
     </script>
     {{{ SCRIPT }}}
 </head>
-<body onload="setSampleInput()">
+<body onload="getInputFromHash()">
   <ul class="navbar">
     <li class="navitem"><a href="../index.html">About</a></li>
     <li class="navitem"><a href="https://gitlab.com/nnaumenko/metaf/" target="_blank">Repository</a></li>
