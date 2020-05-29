@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 2;
-	inline static const int patch = 3;
+	inline static const int patch = 4;
 	inline static const char tag [] = "";
 };
 
@@ -805,10 +805,6 @@ enum class AppendResult {
 // Default delimiter between groups
 // Note: only used to append raw strings, see also groupDelimiterRegex
 static const inline char groupDelimiterChar = ' ';
-
-// This is the regex is used by parser to split report into separate
-// group strings
-static const inline std::regex groupDelimiterRegex("\\s+");
 
 // Everything after this char is ignored by parser
 static const inline char reportEndChar = '=';
@@ -2065,6 +2061,22 @@ private:
 		std::string groupString);
 	static inline void updateMetadata(const Group & group,
 		ReportMetadata & reportMetadata);
+
+
+	class ReportInput {
+	public:
+		ReportInput(const std::string & s) : report(s) {}
+		friend ReportInput & operator >> (ReportInput & input, std::string & output) {
+			output = input.getNextGroup();
+			return input;
+		}
+	private:
+		inline std::string getNextGroup();
+		const std::string & report;
+		bool finished = false;
+		size_t pos = 0;
+	};
+
 
 	class Status {
 	public:
@@ -6531,9 +6543,8 @@ SyntaxGroup getSyntaxGroup(const Group & group) {
 ///////////////////////////////////////////////////////////////////////////////
 
 ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
-	std::sregex_token_iterator iter(report.begin(), report.end(),
-		groupDelimiterRegex,
-		-1);
+	ReportInput in(report);
+
 	bool reportEnd = false;
 	Status status;
 	ReportMetadata reportMetadata;
@@ -6541,59 +6552,33 @@ ParseResult Parser::parse(const std::string & report, size_t groupLimit) {
 	size_t groupCount = 0;
 
 	//Iterate through report groups separated by delimiters
-	while (iter != std::sregex_token_iterator() && !reportEnd && !status.isError()) {
-		std::string groupStr = *iter;
+	std::string groupStr;
+	in >> groupStr;
+	while (!groupStr.empty() && !reportEnd && !status.isError()) {
 
-		// Check for report end character (=), it is normally appended to the end
-		// of last group, eg "NOSIG=" 
-		if (groupStr.back() == reportEndChar) {
-			reportEnd = true;
-			groupStr.pop_back();
-		}
-
-		if (groupStr.length()) {
-			Group group;
-			ReportPart reportPart = status.getReportPart();
-			// Try to append the raw string to the last group first
-			if (!appendToLastResultGroup(result, groupStr, reportPart, reportMetadata)) {
-				// Raw string cannot be appended to the previous group or this is the first group
-				do {
-					// Try to parse group in a loop until no more re-parsing is required
-					// re-parsing may be required because at some point parser does not
-					// 'know' to which report part the next group belongs.
-					// E.g. if report begins with ZZZZ 151000Z, at this point the parser
-					// has no info on the report type yet. If the group to follow is
-					// 32007KT, then the report type is METAR, but if the group to follow
-					// is 1510/1610 then the report type is TAF. So the parser must first
-					// try to parse the raw string as a Trend Group (if it succeds then 
-					// the report type is autodetected as TAF), otherwise the parser 
-					// attempts to parse the same raw string as a group from METAR report 
-					// body. This is why the string is parsed in the loop. 
-
-					// updating report part here is mandatory since the group may 
-					// be re-parsed with different report part
-					reportPart = status.getReportPart(); 
-					group = GroupParser::parse(groupStr, reportPart, reportMetadata);
-					status.transition(getSyntaxGroup(group));
-					groupCount++;
-					if (groupCount >= groupLimit) status.setError(ReportError::REPORT_TOO_LARGE);
-				} while(status.isReparseRequired()  && !status.isError());
-				// Update report metadata, e.g. set global report release time which can 
-				// be used by other groups (for example by PK WND group if hour is not specified)
-				updateMetadata(group, reportMetadata);
-				// Add group to result along with its report part and raw string
-				addGroupToResult(result,
-					std::move(group),
-					reportPart,
-					std::move(groupStr));
-			} else {
-				// Raw string was appended to the group, just increase group count
+		Group group;
+		ReportPart reportPart = status.getReportPart();
+		if (!appendToLastResultGroup(result, groupStr, reportPart, reportMetadata)) {
+			// Current group was not appended to last group
+			do {
+				// Group may be parsed multiple times because at this point 
+				// parser may not know yet if the report is METAR or TAF
+				// and reportPart may change based on report type.
+				reportPart = status.getReportPart(); 
+				group = GroupParser::parse(groupStr, reportPart, reportMetadata);
+				status.transition(getSyntaxGroup(group));
 				groupCount++;
 				if (groupCount >= groupLimit) status.setError(ReportError::REPORT_TOO_LARGE);
-			}
+			} while(status.isReparseRequired()  && !status.isError());
+			updateMetadata(group, reportMetadata);
+			addGroupToResult(result, std::move(group), reportPart, std::move(groupStr));
+		} else {
+			// Raw string was appended to the group, just increase group count
+			groupCount++;
+			if (groupCount >= groupLimit) status.setError(ReportError::REPORT_TOO_LARGE);
 		}
 		
-		iter++;
+		in >> groupStr;
 	}
 	if (!result.groups.empty()) {
 		// if last group is incomplete, invalidate it by adding an empty string
@@ -6677,6 +6662,33 @@ void Parser::addGroupToResult(ParseResult & result,
 	GroupInfo groupInfo(std::move(group), reportPart, groupString);
 	result.groups.push_back(std::move(groupInfo));
 }
+
+
+std::string Parser::ReportInput::getNextGroup() {
+	if (finished) return std::string();
+
+	// ASCII control codes and spaces are concidered delimiters
+	while (report[pos] <= ' ') {
+		if (pos >= report.length()) {
+			finished = true;
+			return std::string();
+		}
+		pos++;
+	}
+
+	size_t groupLen = 0;
+	while (report[pos + groupLen] > ' ') {
+		if (pos >= report.length() || report[pos + groupLen] == reportEndChar) {
+			finished = true;
+			return report.substr(pos, groupLen);
+		}
+		groupLen++;
+	}
+	const auto prevPos = pos;
+	pos = pos + groupLen;
+	return report.substr(prevPos, groupLen);
+}
+
 
 ReportPart Parser::Status::getReportPart() {
 	switch (state) {
