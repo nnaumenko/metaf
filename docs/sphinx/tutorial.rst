@@ -6,7 +6,7 @@ Tutorial
 
 .. cpp:namespace-push:: metaf
 
-`Try it online <https://wandbox.org/permlink/5Sw5vEgPSkHkHKIa>`_.
+`Try it online <https://wandbox.org/permlink/qusrOPN4FSki9g1T>`_.
 
 This section is a tutorial to demonstrate the basic usage of Metaf library.
 
