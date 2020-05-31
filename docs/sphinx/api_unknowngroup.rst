@@ -19,21 +19,11 @@ UnknownGroup class
 .. cpp:namespace-push:: UnknownGroup
 
 
-Acquiring group data
-^^^^^^^^^^^^^^^^^^^^
-
-	.. cpp:function:: std::string toString() const
-
-		:returns: Content of plain text group in form of ``std::string``.
-
-
 Validating
 ^^^^^^^^^^
 
 	.. cpp:function:: bool isValid() const
 
-		:returns: ``true`` if the information stored in the group is valid and consistent, and ``false`` otherwise.
-
-			Plain text group is considered valid if it contains a non-empty string.
+		:returns: Always returns ``true``.
 
 .. cpp:namespace-pop::

@@ -33,7 +33,7 @@ Type definitions
 Acquiring the data
 ^^^^^^^^^^^^^^^^^^
 
-	.. cpp:function:: std::optional<float> precipitation() const
+	.. cpp:function:: std::optional<float> amount() const
 
 		:returns: Stored amount/accumulation value or empty ``std::optional`` if the value is not reported.
 

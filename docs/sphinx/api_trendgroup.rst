@@ -123,9 +123,6 @@ Validating
 
 		:returns: ``true`` if all of the reported times (begin time / end time / expected event time) are valid (see :cpp:func:`MetafTime::isValid()`). Alternatively returns ``false`` if any of the time values above are not valid or the group type is :cpp:enumerator:``Type::PROB``.
 
-.. cpp:namespace-pop::
-
-
 
 Formats
 -------
@@ -280,3 +277,5 @@ Caveats
 ^^^^^^^
 
 Old TAF format used before November 2008 employs different format for time spans and trends (time without date); this format is not understood by Metaf.
+
+.. cpp:namespace-pop::
