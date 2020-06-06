@@ -88,7 +88,7 @@ Type definitions
 
 		.. cpp:enumerator:: VISNO
 
-			Indicates that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:``runway()`` or :cpp:func:``direction()``, if both methods return non-reported values, no further details were specified.
+			Indicates that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:`runway()` or :cpp:func:`direction()`, if both methods return non-reported values, no further details were specified.
 
 
 Acquiring group data
@@ -112,7 +112,11 @@ Acquiring group data
 
 	.. cpp:function:: std::optional<Direction> direction() const
 
-		:returns:  Cardinal direction if directional visibility is specified or empty ``std::optional`` if no directional visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+		:returns: Cardinal direction if directional visibility is specified or empty ``std::optional`` if no directional visibility is specified. Automated stations may also report No Directional Variation if the station is not capable of providing directional visibility.
+
+	.. cpp:function:: std::optional<Runway> runway() const
+
+		:returns: Runway identification if runway visibility is specified or empty ``std::optional`` otherwise.
 
 	.. cpp:function:: std::vector<Direction> sectorDirections() const
 

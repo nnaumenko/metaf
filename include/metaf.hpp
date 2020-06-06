@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 2;
-	inline static const int patch = 4;
+	inline static const int minor = 3;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -5409,10 +5409,14 @@ std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & grou
 	if (reportPart != ReportPart::METAR) return notRecognised;
 	if (group == "SNOCLO" || group == "R/SNOCLO") 
 		return RunwayStateGroup(Type::AERODROME_SNOCLO, Runway::makeAllRunways());
-	static const std::regex rgx("(R\\d\\d[RCL]?)/"
-		"(?:(SNOCLO)|(?:([0-9/])([0-9/])(\\d\\d|//)|(CLRD))(\\d\\d|//))");
-	static const auto matchRunway = 1, matchSnoclo = 2, matchDeposits = 3;
-	static const auto matchExtent = 4, matchDepth = 5, matchClrd = 6, matchFriction = 7;
+	static const std::regex rgx("(R\\d\\d[RCL]?)/(?:"
+		"(SNOCLO)|"
+		"((\\d\\d)?D)|"
+		"(?:([0-9/])([0-9/])(\\d\\d|//)|(CLRD))(\\d\\d|//))|");
+	static const auto matchRunway = 1, matchSnoclo = 2;
+	static const auto matchClrdAvc = 3, matchFrictionAvc = 4;
+	static const auto matchDeposits = 5, matchExtent = 6, matchDepth = 7;
+	static const auto matchClrd = 8, matchFriction = 9;
 	static const std::string depthRunwayNotOperational = "99";
 	std::smatch match;
 	if (!regex_match(group, match, rgx)) return notRecognised;
@@ -5420,6 +5424,15 @@ std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & grou
 	if (!runway.has_value()) return notRecognised;
 	if (match.length(matchSnoclo)) 
 		return RunwayStateGroup(Type::RUNWAY_SNOCLO, *runway);
+	if (match.length(matchClrdAvc)) {
+		auto fr = SurfaceFriction();
+		if (match.length(matchFrictionAvc)) {
+			const auto f = SurfaceFriction::fromString(match.str(matchFrictionAvc));
+			if (!f.has_value()) return notRecognised;
+			fr = *f;
+		}
+		return RunwayStateGroup(Type::RUNWAY_CLRD, *runway, fr);
+	}
 	const auto friction = SurfaceFriction::fromString(match.str(matchFriction));
 	if (!friction.has_value()) return notRecognised;
 	if (match.length(matchClrd)) 
@@ -5434,11 +5447,11 @@ std::optional<RunwayStateGroup> RunwayStateGroup::parse(const std::string & grou
 	if (match.str(matchDepth) == depthRunwayNotOperational) {
 		result.tp = Type::RUNWAY_NOT_OPERATIONAL;
 	}
-	result.rw = *runway;
-	result.dp = *deposits;
-	result.ext = *extent;
-	result.dDepth = *depth;
-	result.sf = *friction;
+	result.rw = runway.value();
+	result.dp = deposits.value();
+	result.ext = extent.value();
+	result.dDepth = depth.value();
+	result.sf = friction.value();
 	return result;
 }
 

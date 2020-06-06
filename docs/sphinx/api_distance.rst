@@ -172,7 +172,7 @@ Validating
 
 	.. cpp:function:: bool isValid() const
 
-		::returns:: Always returns ``true``; this method is for compatibility only.
+		:returns: Always returns ``true``; this method is for compatibility only.
 
 .. cpp:namespace-pop::
 

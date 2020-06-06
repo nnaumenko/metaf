@@ -310,6 +310,91 @@ TEST(RunwayStateGroup, parseClrdWrongFormat) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Test parsing of Rxx/D and Rxx/xxD groups
+// Purpose: to confirm that the groups which identify cleared runway deposits 
+// reported by aviationweather.gov are parsed correctly and only within correct 
+// report part, and that malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(RunwayStateGroup, parseClrdAvcSurfaceFrictionReported) {
+	const auto rsg = metaf::RunwayStateGroup::parse("R88/70D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg.has_value());
+	EXPECT_EQ(rsg->runway().number(), 88u);
+	EXPECT_EQ(rsg->runway().designator(), metaf::Runway::Designator::NONE);
+	EXPECT_EQ(rsg->type(), metaf::RunwayStateGroup::Type::RUNWAY_CLRD);
+	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
+	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
+	EXPECT_EQ(rsg->surfaceFriction().type(), 
+		metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
+	ASSERT_TRUE(rsg->surfaceFriction().coefficient().has_value());
+	EXPECT_NEAR(rsg->surfaceFriction().coefficient().value(), 0.70, sfMargin);
+}
+
+TEST(RunwayStateGroup, parseClrdAvcSurfaceFrictionMissing) {
+	const auto rsg = metaf::RunwayStateGroup::parse("R13/D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg.has_value());
+	EXPECT_EQ(rsg->runway().number(), 13u);
+	EXPECT_EQ(rsg->runway().designator(), metaf::Runway::Designator::NONE);
+	EXPECT_EQ(rsg->type(), metaf::RunwayStateGroup::Type::RUNWAY_CLRD);
+	EXPECT_EQ(rsg->deposits(), metaf::RunwayStateGroup::Deposits::NOT_REPORTED);
+	EXPECT_EQ(rsg->contaminationExtent(), metaf::RunwayStateGroup::Extent::NOT_REPORTED);
+	EXPECT_FALSE(rsg->depositDepth().isReported());
+	EXPECT_EQ(rsg->surfaceFriction().type(), metaf::SurfaceFriction::Type::NOT_REPORTED);
+}
+
+TEST(RunwayStateGroup, parseClrdAvcRunwayWithDesignator) {
+	const auto rsg1 = metaf::RunwayStateGroup::parse("R21R/70D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg1.has_value());
+	EXPECT_EQ(rsg1->runway().number(), 21u);
+	EXPECT_EQ(rsg1->runway().designator(), metaf::Runway::Designator::RIGHT);
+	EXPECT_EQ(rsg1->type(), metaf::RunwayStateGroup::Type::RUNWAY_CLRD);
+	EXPECT_EQ(rsg1->surfaceFriction().type(), 
+		metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
+
+	const auto rsg2 = metaf::RunwayStateGroup::parse("R21L/70D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg2.has_value());
+	EXPECT_EQ(rsg2->runway().number(), 21u);
+	EXPECT_EQ(rsg2->runway().designator(), metaf::Runway::Designator::LEFT);
+	EXPECT_EQ(rsg2->type(), metaf::RunwayStateGroup::Type::RUNWAY_CLRD);
+	EXPECT_EQ(rsg2->surfaceFriction().type(), 
+		metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
+
+	const auto rsg3 = metaf::RunwayStateGroup::parse("R21C/70D", metaf::ReportPart::METAR);
+	ASSERT_TRUE(rsg3.has_value());
+	EXPECT_EQ(rsg3->runway().number(), 21u);
+	EXPECT_EQ(rsg3->runway().designator(), metaf::Runway::Designator::CENTER);
+	EXPECT_EQ(rsg3->type(), metaf::RunwayStateGroup::Type::RUNWAY_CLRD);
+	EXPECT_EQ(rsg3->surfaceFriction().type(), 
+		metaf::SurfaceFriction::Type::SURFACE_FRICTION_REPORTED);
+}
+
+TEST(RunwayStateGroup, parseClrdAvcWrongReportPart) {
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21L/70D", metaf::ReportPart::UNKNOWN));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21L/70D", metaf::ReportPart::HEADER));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21L/70D", metaf::ReportPart::TAF));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21L/70D", metaf::ReportPart::RMK));
+}
+
+TEST(RunwayStateGroup, parseClrdAvcWrongFormat) {
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21V70D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R1/70D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R112/70D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R1A/70D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21Z/70D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21/7D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21/070D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21/7AD", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21///D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21//4D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21/4/D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21//ZD", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21/Z/D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21//D", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::RunwayStateGroup::parse("R21////D", metaf::ReportPart::METAR));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Test parsing of Rxx/SNOCLO groups
 // Purpose: to confirm that the groups which identify runway closed due to
 // snow accumulation are parsed correctly and only within correct report part,

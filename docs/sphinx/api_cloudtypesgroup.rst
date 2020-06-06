@@ -21,10 +21,6 @@ Acquiring group data
 
 		.. note:: Sum of oktas for all layers may exceed 8 octa if higher cloud layer is observed through the gaps in the lower cloud layer.
 
-	.. cpp:function:: Distance baseHeight() const
-
-		:returns: Height of the base of the cloud layer, if a single cloud layer along with its base height is reported.
-
 
 Validating
 ^^^^^^^^^^

@@ -46,7 +46,7 @@ Type definitions
 
 		.. cpp:enumerator:: CHINO
 
-			Indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:``runway()`` or :cpp:func:``direction()``.
+			Indicates the that the ceiling data is not available for a secondary location. Use :cpp:func:`runway()` or :cpp:func:`direction()`.
 
 		.. cpp:enumerator:: CLD_MISG
 
@@ -181,7 +181,7 @@ Acquiring group data
 Miscellaneous
 ^^^^^^^^^^^^^
 
-	.. cpp:function: std::optional<CloudType> cloudType() const
+	.. cpp:function:: std::optional<CloudType> cloudType() const
 
 		:returns: :cpp:class:`CloudType` corresponding to the information stored in the group (maximum okta value, convective type, and cloud base height or minimum height if variable), or empty std::optional if 'no clouds' conditions or vertical visibility or missing data groups.
 

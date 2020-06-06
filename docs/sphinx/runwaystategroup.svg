@@ -1,0 +1,371 @@
+<svg class="railroad-diagram" width="1300" height="241" viewBox="0 0 1300 241" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 71v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 81h10"></path>
+<g class="terminal ">
+<path d="M50 81h0"></path>
+<path d="M78.5 81h0"></path>
+<rect x="50" y="70" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="64.25" y="85">R</text>
+</g>
+<path d="M78.5 81h10"></path>
+<g>
+<path d="M88.5 81h0"></path>
+<path d="M356.5 81h0"></path>
+<path d="M88.5 81a10 10 0 0 0 10 -10v-30a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M108.5 31h42"></path>
+<path d="M294.5 31h42"></path>
+<g class="comment ">
+<path d="M150.5 31h0"></path>
+<path d="M237.5 31h0"></path>
+<text x="194" y="36" class="comment">all runways</text>
+</g>
+<path d="M237.5 31h10"></path>
+<path d="M247.5 31h10"></path>
+<g class="terminal ">
+<path d="M257.5 31h0"></path>
+<path d="M294.5 31h0"></path>
+<rect x="257.5" y="20" width="37" height="22" rx="10" ry="10"></rect>
+<text x="276" y="35">88</text>
+</g>
+</g>
+<path d="M336.5 31a10 10 0 0 1 10 10v30a10 10 0 0 0 10 10"></path>
+<path d="M88.5 81h20"></path>
+<g>
+<path d="M108.5 81h3.25"></path>
+<path d="M333.25 81h3.25"></path>
+<g class="comment ">
+<path d="M111.75 81h0"></path>
+<path d="M163.75 81h0"></path>
+<text x="137.75" y="86" class="comment">runway</text>
+</g>
+<path d="M163.75 81h10"></path>
+<path d="M173.75 81h10"></path>
+<g class="non-terminal ">
+<path d="M183.75 81h0"></path>
+<path d="M254.75 81h0"></path>
+<rect x="183.75" y="70" width="71" height="22"></rect>
+<text x="219.25" y="85">00..36</text>
+</g>
+<path d="M254.75 81h10"></path>
+<g>
+<path d="M264.75 81h0"></path>
+<path d="M333.25 81h0"></path>
+<path d="M264.75 81a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g class="terminal ">
+<path d="M284.75 61h0"></path>
+<path d="M313.25 61h0"></path>
+<rect x="284.75" y="50" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="299" y="65">R</text>
+</g>
+<path d="M313.25 61a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M264.75 81h20"></path>
+<g>
+<path d="M284.75 81h28.5"></path>
+</g>
+<path d="M313.25 81h20"></path>
+<path d="M264.75 81a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M284.75 101h0"></path>
+<path d="M313.25 101h0"></path>
+<rect x="284.75" y="90" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="299" y="105">C</text>
+</g>
+<path d="M313.25 101a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<path d="M264.75 81a10 10 0 0 1 10 10v30a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M284.75 131h0"></path>
+<path d="M313.25 131h0"></path>
+<rect x="284.75" y="120" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="299" y="135">L</text>
+</g>
+<path d="M313.25 131a10 10 0 0 0 10 -10v-30a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M336.5 81h20"></path>
+<path d="M88.5 81a10 10 0 0 1 10 10v60a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M108.5 161h0"></path>
+<path d="M336.5 161h0"></path>
+<g class="comment ">
+<path d="M108.5 161h0"></path>
+<path d="M279.5 161h0"></path>
+<text x="194" y="166" class="comment">last message repetition</text>
+</g>
+<path d="M279.5 161h10"></path>
+<path d="M289.5 161h10"></path>
+<g class="terminal ">
+<path d="M299.5 161h0"></path>
+<path d="M336.5 161h0"></path>
+<rect x="299.5" y="150" width="37" height="22" rx="10" ry="10"></rect>
+<text x="318" y="165">99</text>
+</g>
+</g>
+<path d="M336.5 161a10 10 0 0 0 10 -10v-60a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M356.5 81h10"></path>
+<g class="terminal ">
+<path d="M366.5 81h0"></path>
+<path d="M395 81h0"></path>
+<rect x="366.5" y="70" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="380.75" y="85">/</text>
+</g>
+<path d="M395 81h10"></path>
+<g>
+<path d="M405 81h0"></path>
+<path d="M1260 81h0"></path>
+<path d="M405 81h20"></path>
+<g>
+<path d="M425 81h0"></path>
+<path d="M1240 81h0"></path>
+<g>
+<path d="M425 81h0"></path>
+<path d="M987 81h0"></path>
+<path d="M425 81h20"></path>
+<g>
+<path d="M445 81h0"></path>
+<path d="M967 81h0"></path>
+<g>
+<path d="M445 81h0"></path>
+<path d="M625 81h0"></path>
+<path d="M445 81h20"></path>
+<g>
+<path d="M465 81h0"></path>
+<path d="M605 81h0"></path>
+<g class="comment ">
+<path d="M465 81h0"></path>
+<path d="M531 81h0"></path>
+<text x="498" y="86" class="comment">deposits</text>
+</g>
+<path d="M531 81h10"></path>
+<path d="M541 81h10"></path>
+<g class="non-terminal ">
+<path d="M551 81h0"></path>
+<path d="M605 81h0"></path>
+<rect x="551" y="70" width="54" height="22"></rect>
+<text x="578" y="85">0..9</text>
+</g>
+</g>
+<path d="M605 81h20"></path>
+<path d="M445 81a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M465 111h55.75"></path>
+<path d="M549.25 111h55.75"></path>
+<rect x="520.75" y="100" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="535" y="115">/</text>
+</g>
+<path d="M605 111a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M625 81h0"></path>
+<path d="M791 81h0"></path>
+<path d="M625 81h20"></path>
+<g>
+<path d="M645 81h0"></path>
+<path d="M771 81h0"></path>
+<g class="comment ">
+<path d="M645 81h0"></path>
+<path d="M697 81h0"></path>
+<text x="671" y="86" class="comment">extent</text>
+</g>
+<path d="M697 81h10"></path>
+<path d="M707 81h10"></path>
+<g class="non-terminal ">
+<path d="M717 81h0"></path>
+<path d="M771 81h0"></path>
+<rect x="717" y="70" width="54" height="22"></rect>
+<text x="744" y="85">0..9</text>
+</g>
+</g>
+<path d="M771 81h20"></path>
+<path d="M625 81a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M645 111h48.75"></path>
+<path d="M722.25 111h48.75"></path>
+<rect x="693.75" y="100" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="708" y="115">/</text>
+</g>
+<path d="M771 111a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M791 81h0"></path>
+<path d="M967 81h0"></path>
+<path d="M791 81h20"></path>
+<g>
+<path d="M811 81h0"></path>
+<path d="M947 81h0"></path>
+<g class="comment ">
+<path d="M811 81h0"></path>
+<path d="M856 81h0"></path>
+<text x="833.5" y="86" class="comment">depth</text>
+</g>
+<path d="M856 81h10"></path>
+<path d="M866 81h10"></path>
+<g class="non-terminal ">
+<path d="M876 81h0"></path>
+<path d="M947 81h0"></path>
+<rect x="876" y="70" width="71" height="22"></rect>
+<text x="911.5" y="85">00..99</text>
+</g>
+</g>
+<path d="M947 81h20"></path>
+<path d="M791 81a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M811 111h49.5"></path>
+<path d="M897.5 111h49.5"></path>
+<rect x="860.5" y="100" width="37" height="22" rx="10" ry="10"></rect>
+<text x="879" y="115">//</text>
+</g>
+<path d="M947 111a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M967 81h20"></path>
+<path d="M425 81a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M445 141h234"></path>
+<path d="M733 141h234"></path>
+<rect x="679" y="130" width="54" height="22" rx="10" ry="10"></rect>
+<text x="706" y="145">CLRD</text>
+</g>
+<path d="M967 141a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M987 81h0"></path>
+<path d="M1240 81h0"></path>
+<path d="M987 81h20"></path>
+<g>
+<path d="M1007 81h0"></path>
+<path d="M1220 81h0"></path>
+<g class="comment ">
+<path d="M1007 81h0"></path>
+<path d="M1129 81h0"></path>
+<text x="1068" y="86" class="comment">surface friction</text>
+</g>
+<path d="M1129 81h10"></path>
+<path d="M1139 81h10"></path>
+<g class="non-terminal ">
+<path d="M1149 81h0"></path>
+<path d="M1220 81h0"></path>
+<rect x="1149" y="70" width="71" height="22"></rect>
+<text x="1184.5" y="85">00..99</text>
+</g>
+</g>
+<path d="M1220 81h20"></path>
+<path d="M987 81a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M1007 111h88"></path>
+<path d="M1132 111h88"></path>
+<rect x="1095" y="100" width="37" height="22" rx="10" ry="10"></rect>
+<text x="1113.5" y="115">//</text>
+</g>
+<path d="M1220 111a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M1240 81h20"></path>
+<path d="M405 81a10 10 0 0 1 10 10v79a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M425 180h261.75"></path>
+<path d="M978.25 180h261.75"></path>
+<g>
+<path d="M686.75 180h0"></path>
+<path d="M939.75 180h0"></path>
+<path d="M686.75 180a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M706.75 160h213"></path>
+</g>
+<path d="M919.75 160a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M686.75 180h20"></path>
+<g>
+<path d="M706.75 180h0"></path>
+<path d="M919.75 180h0"></path>
+<g class="comment ">
+<path d="M706.75 180h0"></path>
+<path d="M828.75 180h0"></path>
+<text x="767.75" y="185" class="comment">surface friction</text>
+</g>
+<path d="M828.75 180h10"></path>
+<path d="M838.75 180h10"></path>
+<g class="non-terminal ">
+<path d="M848.75 180h0"></path>
+<path d="M919.75 180h0"></path>
+<rect x="848.75" y="169" width="71" height="22"></rect>
+<text x="884.25" y="184">00..99</text>
+</g>
+</g>
+<path d="M919.75 180h20"></path>
+</g>
+<path d="M939.75 180h10"></path>
+<g class="terminal ">
+<path d="M949.75 180h0"></path>
+<path d="M978.25 180h0"></path>
+<rect x="949.75" y="169" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="964" y="184">D</text>
+</g>
+</g>
+<path d="M1240 180a10 10 0 0 0 10 -10v-79a10 10 0 0 1 10 -10"></path>
+<path d="M405 81a10 10 0 0 1 10 10v109a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M425 210h372"></path>
+<path d="M868 210h372"></path>
+<rect x="797" y="199" width="71" height="22" rx="10" ry="10"></rect>
+<text x="832.5" y="214">SNOCLO</text>
+</g>
+<path d="M1240 210a10 10 0 0 0 10 -10v-109a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M 1260 81 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	rect.group-box {
+		stroke: gray;
+		stroke-dasharray: 10 5;
+		fill: none;
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!--
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20'R'%2C%0A%20Choice(1%2C%0A%20%20Sequence(Comment('all%20runways')%2C'88')%2C%0A%20%20Sequence(Comment('runway')%2CNonTerminal('00..36')%2CChoice(1%2C'R'%2CSkip()%2C'C'%2C'L'))%2C%0A%20%20Sequence(Comment('last%20message%20repetition')%2C'99')%0A%20)%2C%0A%20'%2F'%2C%0A%20Choice(0%2C%0A%20%20Sequence(%0A%20%20%20Choice(0%2C%0A%20%20%20%20Sequence(%0A%20%20%20%20%20Choice(0%2C%20Sequence(Comment('deposits')%2CNonTerminal('0..9'))%2C'%2F')%2C%0A%20%20%20%20%20Choice(0%2C%20Sequence(Comment('extent')%2CNonTerminal('0..9'))%2C'%2F')%2C%0A%20%20%20%20%20Choice(0%2C%20Sequence(Comment('depth')%2CNonTerminal('00..99'))%2C'%2F%2F')%0A%20%20%20%20)%2C'CLRD')%2C%0A%20%20%20Choice(0%2C%20Sequence(Comment('surface%20friction')%2CNonTerminal('00..99'))%2C'%2F%2F')%0A%20%20)%2C%0A%20%20Sequence(%0A%20%20%20Optional(Sequence(Comment('surface%20friction')%2CNonTerminal('00..99')))%2C%0A%20%20%20%22D%22%0A%20%20)%2C%0A%20%20'SNOCLO'%0A%20)%0A)%0A
+-->

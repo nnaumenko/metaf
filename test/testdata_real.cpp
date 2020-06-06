@@ -4629,7 +4629,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
-		"UKKK", "Kiev Zhuliany International Airport", {2018, 9, 15},
+		"UKKK", "Kyiv Zhuliany International Airport", {2018, 9, 15},
 		"METAR UKKK 152200Z 33004MPS 310V010 9999 SCT013 19/17 Q1015 R26/CLRD70"
 		" TEMPO 31010G17MPS 2100 -TSRA SQ BKN007 BKN015CB"
 		"=",
@@ -7275,4 +7275,31 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 
+	{
+		"UKLL", "Lviv International Airport", {2020, 6, 4},
+		"UKLL 042000Z 14003MPS CAVOK 13/11 Q1001 R13/D NOSIG"
+		"=",
+		"TAF UKLL 041706Z 0418/0518 17005G10MPS 9999 BKN020"
+		" TEMPO 0418/0509 2100 -SHRA BKN007 BKN017CB"
+		" TEMPO 0509/0518 19009G14MPS 5000 -SHRA BKN010 BKN025CB"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"UKKK", "Kyiv Zhuliany International Airport", {2020, 6, 5},
+		"UKKK 052300Z 15002MPS 110V210 CAVOK 18/14 Q1008 R26/70D NOSIG"
+		"=",
+		"TAF UKKK 052303Z 0600/0624 17003G08MPS 9999 BKN020"
+		" TEMPO 0600/0606 2000 BR BKN007"
+		" BECMG 0606/0608 20005G10MPS"
+		" TEMPO 0608/0618 21007G13MPS 2100 -SHRA BKN007 SCT015CB"
+		" TEMPO 0618/0624 2000 BR BKN006"
+		"=",
+		{},
+		{},
+		0
+	},
 };

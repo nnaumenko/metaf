@@ -239,13 +239,6 @@ Acquiring the data
 
 		:returns: Time of the event or empty ``std::optional`` if no event time was specified.
 
-Miscellaneous
-^^^^^^^^^^^^^
-
-		.. cpp:function:: bool isOmitted() const
-
-			:returns: ``true`` if no qualifier, no descriptor, no weather phenomena, no event and no event time is stored in this instance, ``false`` if any of these conditions is not met.
-
 
 Validating
 ^^^^^^^^^^

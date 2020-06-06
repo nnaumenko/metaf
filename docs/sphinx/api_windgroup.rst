@@ -171,9 +171,9 @@ Calm wind (i.e. no wind) is coded as ``00000KT`` or ``00000MPS``.
 Non-reported values
 """""""""""""""""""
 
-If the wind direction and wind speed are not reported, their digits are replaced with ``/`` character, as per :ref:`api_direction:Numeric value in degrees` and :ref:`api_speed:Wind speed format`. 
+If the wind direction and wind speed are not reported, their digits are replaced with ``/`` character, as per :ref:`api_direction:Numeric value in degrees` and :ref:`api_speed:Wind speed format`, for example ``/////KT`` or ``/////MPS``. 
 
-For example ``/////KT`` or ``/////MPS``. When gust speed is not reported, it is not included in the group rather than being replaced with ``/`` character, thus group ``/////G//KT`` is not recognised by Metaf.
+When gust speed is not reported, it is not included in the group rather than being replaced with ``/`` character, thus group ``/////G//KT`` is not recognised by Metaf but group ``/////KT`` is.
 
 Variable wind direction sector
 """"""""""""""""""""""""""""""

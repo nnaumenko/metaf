@@ -106,7 +106,7 @@ Acquiring group data
 
 	.. cpp:function:: Precipitation recent() const
 
-		:returns: Amount or increase of precipitation during recent period.
+		:returns: Amount or increase of precipitation during recent period. Only reported for :cpp:enumerator:`Type::SNOW_INCREASING_RAPIDLY`, is a non-reported value for all other types. 
 
 
 Validating
