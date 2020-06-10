@@ -221,6 +221,14 @@ Height is always specified as the three-digit value in hundreds feet. For exampl
 Value ``///`` may be used instead of height to indicate non-reported value.
 
 
+Variable height
+^^^^^^^^^^^^^^^
+
+Variable height is specified as two three-digit values in hundreds feet separated by ``V`` character. For example ``039V042`` means that height is variable from 3900 feet to 4200 feet.
+
+Non-reported values are not recognised by Metaf as a part of variable height. For example, combinations ``039V///`` or ``///V042`` are not recognised by Metaf.
+
+
 Special distance values
 ^^^^^^^^^^^^^^^^^^^^^^^
 

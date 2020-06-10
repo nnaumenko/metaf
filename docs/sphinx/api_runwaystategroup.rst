@@ -192,6 +192,8 @@ Runway identification
 
 The first character is always ``R``, followed by two-digit runway number (heading), optionally followed by runway designator ``R`` (right), ``C`` (center), ``L`` (left) used to distinguish parallel runways.
 
+See :ref:`api_runway:Runway format` for details.
+
 Runway state information
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -318,7 +320,9 @@ Runway identification is the same as described above.
 
 Two digits following ``CLRD`` are surface friction as described in :ref:`api_surfacefriction:Formats`.
 
-Metaf also recognises format ``Rxx/Dxx`` and ``Rxxx/Dxx`` reported by s`AviationWeather <https://aviationweather.gov/>`_. The meaning is the same. If the group has format ``Rxx/D`` and ``Rxxx/D`` and surface friction value is missing, the surface frication is interpreted as a non-reported value.
+Metaf also recognises format ``Rxx/xxD`` and ``Rxxx/xxD`` reported by some publishers. The meaning is the same as ``Rxx/CLRDxx`` or ``Rxxx/CLRDxx``. 
+
+If the group has format ``Rxx/D`` and ``Rxxx/D`` and surface friction value is missing, the surface frication is interpreted as a non-reported value.
 
 Examples of CLRD groups
 """""""""""""""""""""""
