@@ -1,0 +1,160 @@
+<svg class="railroad-diagram" width="958.5" height="122" viewBox="0 0 958.5 122" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 21v20m10 -20v20m-10 -10h20"></path>
+</g>
+<g>
+<path d="M40 31h0"></path>
+<path d="M312.5 31h0"></path>
+<path d="M40 31h20"></path>
+<g>
+<path d="M60 31h32.5"></path>
+<path d="M260 31h32.5"></path>
+<g class="terminal ">
+<path d="M92.5 31h0"></path>
+<path d="M121 31h0"></path>
+<rect x="92.5" y="20" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="106.75" y="35">6</text>
+</g>
+<path d="M121 31h10"></path>
+<path d="M131 31h10"></path>
+<g class="comment ">
+<path d="M141 31h0"></path>
+<path d="M186 31h0"></path>
+<text x="163.5" y="36" class="comment">icing</text>
+</g>
+<path d="M186 31h10"></path>
+<path d="M196 31h10"></path>
+<g class="non-terminal ">
+<path d="M206 31h0"></path>
+<path d="M260 31h0"></path>
+<rect x="206" y="20" width="54" height="22"></rect>
+<text x="233" y="35">0..9</text>
+</g>
+</g>
+<path d="M292.5 31h20"></path>
+<path d="M40 31a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M60 61h0"></path>
+<path d="M292.5 61h0"></path>
+<g class="terminal ">
+<path d="M60 61h0"></path>
+<path d="M88.5 61h0"></path>
+<rect x="60" y="50" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="74.25" y="65">5</text>
+</g>
+<path d="M88.5 61h10"></path>
+<path d="M98.5 61h10"></path>
+<g class="comment ">
+<path d="M108.5 61h0"></path>
+<path d="M188.5 61h0"></path>
+<text x="148.5" y="66" class="comment">turbulence</text>
+</g>
+<path d="M188.5 61h10"></path>
+<g>
+<path d="M198.5 61h0"></path>
+<path d="M292.5 61h0"></path>
+<path d="M198.5 61h20"></path>
+<g class="non-terminal ">
+<path d="M218.5 61h0"></path>
+<path d="M272.5 61h0"></path>
+<rect x="218.5" y="50" width="54" height="22"></rect>
+<text x="245.5" y="65">0..9</text>
+</g>
+<path d="M272.5 61h20"></path>
+<path d="M198.5 61a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M218.5 91h12.75"></path>
+<path d="M259.75 91h12.75"></path>
+<rect x="231.25" y="80" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="245.5" y="95">X</text>
+</g>
+<path d="M272.5 91a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M292.5 61a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M312.5 31h10"></path>
+<g class="comment ">
+<path d="M322.5 31h0"></path>
+<path d="M556.5 31h0"></path>
+<text x="439.5" y="36" class="comment">layer base height, hundreds feet</text>
+</g>
+<path d="M556.5 31h10"></path>
+<path d="M566.5 31h10"></path>
+<g class="non-terminal ">
+<path d="M576.5 31h0"></path>
+<path d="M664.5 31h0"></path>
+<rect x="576.5" y="20" width="88" height="22"></rect>
+<text x="620.5" y="35">000..999</text>
+</g>
+<path d="M664.5 31h10"></path>
+<path d="M674.5 31h10"></path>
+<g class="comment ">
+<path d="M684.5 31h0"></path>
+<path d="M834.5 31h0"></path>
+<text x="759.5" y="36" class="comment">depth, hundreds feet</text>
+</g>
+<path d="M834.5 31h10"></path>
+<path d="M844.5 31h10"></path>
+<g class="non-terminal ">
+<path d="M854.5 31h0"></path>
+<path d="M908.5 31h0"></path>
+<rect x="854.5" y="20" width="54" height="22"></rect>
+<text x="881.5" y="35">0..9</text>
+</g>
+<path d="M908.5 31h10"></path>
+<path d="M 918.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	rect.group-box {
+		stroke: gray;
+		stroke-dasharray: 10 5;
+		fill: none;
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!--
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20Choice(0%2C%0A%20%20Sequence('6'%2C%20Comment('icing')%2C%20NonTerminal('0..9'))%2C%0A%20%20Sequence('5'%2C%20Comment('turbulence')%2C%20Choice(0%2CNonTerminal('0..9')%2C'X'))%0A%20)%2C%0A%20Comment('layer%20base%20height%2C%20hundreds%20feet')%2C%20%0A%20NonTerminal('000..999')%2C%20%0A%20Comment('depth%2C%20hundreds%20feet')%2C%20%0A%20NonTerminal('0..9')%0A)%0A
+-->

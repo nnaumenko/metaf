@@ -126,19 +126,19 @@ Type definitions
 
 		Significant convective type of the cloud in the layer.
 
-		.. cpp:enumerator::NONE
+		.. cpp:enumerator:: NONE
 
 			No cloud type specified or not applicable.
 
-		.. cpp:enumerator::NOT_REPORTED
+		.. cpp:enumerator:: NOT_REPORTED
 
 			Convective cloud type is not reported.
 
-		.. cpp:enumerator::TOWERING_CUMULUS
+		.. cpp:enumerator:: TOWERING_CUMULUS
 
 			Convective cloud: towering cumulus.
 
-		.. cpp:enumerator::CUMULONIMBUS
+		.. cpp:enumerator:: CUMULONIMBUS
 
 			Convective cloud: cumulonimbus.
 
@@ -208,23 +208,10 @@ No cloud conditions
 
 The following groups indicate condition of no clouds, no significant clouds and no detected clouds.
 
-+-------+--------------------------------------------------------------------------+
-| Group | Meaning                                                                  |
-+=======+==========================================================================+
-| CLR   | Clear sky: no cloud layers are detected at or below 12000 feet / 3700    |
-|       | meters (US) or 25000 feet / 7600 meters (Canada); indicates that station |
-|       | is at least partly automated                                             |
-+-------+--------------------------------------------------------------------------+
-| SKC   | Clear sky: In North America indicates report producted by human rather   |
-|       | than automatic weather station                                           |
-+-------+--------------------------------------------------------------------------+
-| NCD   | No cloud detected: automated weather station did not detect any clouds;  |
-|       | this can happen due to either no clouds present or sensor error          |
-+-------+--------------------------------------------------------------------------+
-| NSC   | No significant cloud: no cloud below 5000 feet / 1500 meters, no         |
-|       | cumulonimbus or towering cumulus clouds, no vertical visibility          |
-|       | restriction                                                              |
-+-------+--------------------------------------------------------------------------+
+ - ``CLR``: Clear sky; no cloud layers are detected at or below 12000 feet / 3700 meters (US) or 25000 feet / 7600 meters (Canada); indicates that station is at least partly automated.                                             |
+ - ``SKC``: Clear sky; In North America indicates report producted by human rather than automatic weather station.
+ - ``NCD``: No cloud detected; automated weather station did not detect any clouds; this can happen due to either no clouds present or sensor error.
+ - ``NSC``: No significant cloud; no cloud below 5000 feet / 1500 meters, no cumulonimbus or towering cumulus clouds, no vertical visibility restriction.
 
 Examples of 'no cloud' condition group
 """"""""""""""""""""""""""""""""""""""
@@ -257,33 +244,38 @@ For example, ``OVC008`` means that cloud layer covering 8/8 of the sky with base
 
 If any of these three parts is not reported, it is replaced by ``///`` characters. If no cloud information is available then the relevant group is coded ``/////////``. For example, group ``FEW///`` indicates clouds covering 1/8 to 2/8 of the sky, their base height is not known or not significant, and which are not of towering cumulus type and not of cumulonimbus type. Similarly group ``BKN024///`` means clouds covering 5/8 to 7/8 of the sky with base layer at height of 2400 feet, and indicates that the convective type is not known (that is, it is not known whether this cloud layer consists of Towering Cumulus or Cumulonimbus clouds or neither).
 
+Generalised syntax of cloud layer groups is as follows.
+
+.. image:: cloudgroup_cloudlayer.svg
+
 Cloud amount
 """"""""""""
 
 The cloud amounts recognised by Metaf are summarised in the table below.
 
-====== ============ ================================
-Amount Meaning      Sky coverage
-====== ============ ================================
-FEW    Few          1/8 to 2/8 of the sky
-SCT    Scattered    3/8 to 4/8 of the sky
-BKN    Broken       5/8 to 7/8 of the sky
-OVC    Overcast     8/8 of the sky
-///    Not reported
-====== ============ ================================
+====== ============ ===================== ==================================================
+Amount Meaning      Sky coverage          :cpp:enum:`CloudGroup::Amount`
+====== ============ ===================== ==================================================
+FEW    Few          1/8 to 2/8 of the sky :cpp:enumerator:`CloudGroup::Amount::FEW`
+SCT    Scattered    3/8 to 4/8 of the sky :cpp:enumerator:`CloudGroup::Amount::SCATTERED`
+BKN    Broken       5/8 to 7/8 of the sky :cpp:enumerator:`CloudGroup::Amount::BROKEN`
+OVC    Overcast     8/8 of the sky        :cpp:enumerator:`CloudGroup::Amount::OVERCAST`
+///    Not reported n/a                   :cpp:enumerator:`CloudGroup::Amount::NOT_REPORTED`
+====== ============ ===================== ==================================================
 
 Convective type
 """""""""""""""
 
 The convective cloud types recognised by Metaf are summarised in the table below.
 
-==== ================
-Type Meaning         
-==== ================
-TCU  Towering cumulus
-CB   Cumulonimbus
-///  Not reported
-==== ================
+======= ======================= ==============================================================
+Type    Meaning                 :cpp:enum:`CloudGroup::ConvectiveType`
+======= ======================= ==============================================================
+missing Not a convective cloud  :cpp:enumerator:`CloudGroup::ConvectiveType::NONE`
+TCU     Towering cumulus        :cpp:enumerator:`CloudGroup::ConvectiveType::TOWERING_CUMULUS`
+CB      Cumulonimbus            :cpp:enumerator:`CloudGroup::ConvectiveType::CUMULONIMBUS`
+///     Convective type unknown :cpp:enumerator:`CloudGroup::ConvectiveType::NOT_REPORTED`
+======= ======================= ==============================================================
 
 Examples of cloud layer group
 """""""""""""""""""""""""""""
@@ -356,6 +348,10 @@ Vertical visibility format is the same as :ref:`api_distance:Height`.
 
 For example, group ``VV001`` means vertical visibility of 100 feet.
 
+Generalised syntax of vertical visibility groups is as follows.
+
+.. image:: cloudgroup_vv.svg
+
 Examples of vertical visitibily group
 """""""""""""""""""""""""""""""""""""
 
@@ -385,15 +381,19 @@ First group may also include base height, for example ``BKN020 V OVC``.
 
 Variable sky condition groups recognised by Metaf are summarised in the table below.
 
-========= ====================================================
-Groups    Meaning 
-========= ====================================================
-FEW V SCT Cloud layer is variable between 1/8 and 4/8 coverage
-SCT V BKN Cloud layer is variable between 3/8 and 7/8 coverage
-BKN V OVC Cloud layer is variable between 5/8 and 8/8 coverage
-========= ====================================================
+========= ==================================================== ===============================================================
+Groups    Meaning                                              :cpp:enum:`CloudGroup::Amount`
+========= ==================================================== ===============================================================
+FEW V SCT Cloud layer is variable between 1/8 and 4/8 coverage :cpp:enumerator:`CloudGroup::Amount::VARIABLE_FEW_SCATTERED`
+SCT V BKN Cloud layer is variable between 3/8 and 7/8 coverage :cpp:enumerator:`CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN`
+BKN V OVC Cloud layer is variable between 5/8 and 8/8 coverage :cpp:enumerator:`CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST`
+========= ==================================================== ===============================================================
 
 .. note:: First group may also include base height, for example ``BKN020 V OVC``.
+
+Generalised syntax of variable sky condition groups is as follows.
+
+.. image:: cloudgroup_variable.svg
 
 Examples of variable sky condition groups
 """""""""""""""""""""""""""""""""""""""""
@@ -427,12 +427,16 @@ The table below gives examples of variable sky condition remark formats recognis
 Ceiling
 ^^^^^^^
 
+Ceiling is specified in the remarks as a sequence of groups. The first group is ``CIG``, followed by three-digit :ref:`api_distance:Height` group or :ref:`api_distance:Variable height` group, optionally followed by single cardinal direction (:ref:`api_direction:Cardinal directions`) group or runway identificator group in a form of Rxx or RWYxxx (:ref:`api_runway:Runway format`).
+
+Generalised syntax of ceiling of missing ceiling data groups is as follows.
+
+.. image:: cloudgroup_ceiling_chino.svg
+
 Examples of ceiling height groups
 """""""""""""""""""""""""""""""""
 
 The table below gives examples of variable sky condition remark formats recognised by Metaf. The table shows values returned by getter methods of :cpp:class:`CloudGroup`.
-
-Ceiling is specified in the remarks as a sequence of groups. The first group is ``CIG``, followed by three-digit :ref:`api_distance:Height` group or :ref:`api_distance:Variable height` group, optionally followed by single cardinal direction (:ref:`api_direction:Cardinal directions`) group or runway identificator group in a form of Rxx or RWYxxx (:ref:`api_runway:Runway format`).
 
 For example, ``CIG 003 RWY24L`` indicates that ceiling is 2500 feet for runway 24 LEFT, and ``CIG 001V007`` indicated that ceiling is variable between 100 and 700 feet.
 
@@ -470,7 +474,11 @@ This type of group may be included in the remarks to indicate obscurations cover
 
 For example, ``FG SCT000`` means ground-based layer of fog covering 3/8 to 4/8 of the sky, and ``FU BKN020`` means layer of smoke at 2000 feet covering 5/8 to 7/8 of the sky.
 
-Metaf does not recognise non-reported height value as a part of this group, for example ``FG SCT///`` is not recognised.
+Metaf does not recognise non-reported height value as a part of this group, for example ``FG SCT///`` is not recognised by Metaf.
+
+Generalised syntax of ceiling of missing ceiling data groups is as follows.
+
+.. image:: cloudgroup_obscuration.svg
 
 The following obscurations are recognised by Metaf (see :ref:`api_cloudtype:Cloud types in METAR`).
 
