@@ -181,3 +181,89 @@ Validating
 		:returns: ``true`` if all cloud layers above 'not observable' cloud layer are also 'not observable'; ``false`` otherwise.
 
 .. cpp:namespace-pop::
+
+Formats
+-------
+
+This group may be included in the METAR report remarks. The format is ``8/`` characters followed by three digits: first digit identifies low layer clouds, second digit middle layer clouds and the third digit identidies high layer clouds. The numbers of the clouds are according to International Cloud Atlas.
+
+One or more digits may be substituted with ``/`` character if the corresponding layer is obscured and is not observable.
+
+The format of low cloud layer are as follows:
+
+========= ================================================================
+Character  :cpp:enum:`LowMidHighCloudGroup::LowLayer`
+========= ================================================================
+0         :cpp:enumerator:`LowLayer::NONE`
+1         :cpp:enumerator:`LowLayer::CU_HU_CU_FR`
+2         :cpp:enumerator:`LowLayer::CU_MED_CU_CON`
+3         :cpp:enumerator:`LowLayer::CB_CAL`
+4         :cpp:enumerator:`LowLayer::SC_CUGEN`
+5         :cpp:enumerator:`LowLayer::SC_NON_CUGEN`
+6         :cpp:enumerator:`LowLayer::ST_NEB_ST_FR`
+7         :cpp:enumerator:`LowLayer::ST_FR_CU_FR_PANNUS`
+8         :cpp:enumerator:`LowLayer::CU_SC_NON_CUGEN_DIFFERENT_LEVELS`
+9         :cpp:enumerator:`LowLayer::CB_CAP`
+/         :cpp:enumerator:`LowLayer::NOT_OBSERVABLE`
+========= ================================================================
+
+The format of middle cloud layer are as follows:
+
+========= ================================================================
+Character  :cpp:enum:`LowMidHighCloudGroup::MidLayer`
+========= ================================================================
+0         :cpp:enumerator:`MidLayer::NONE`
+1         :cpp:enumerator:`MidLayer::AS_TR`
+2         :cpp:enumerator:`MidLayer::AS_OP_NS`
+3         :cpp:enumerator:`MidLayer::AC_TR`
+4         :cpp:enumerator:`MidLayer::AC_TR_LEN_PATCHES`
+5         :cpp:enumerator:`MidLayer::AC_TR_AC_OP_SPREADING`
+6         :cpp:enumerator:`MidLayer::AC_CUGEN_AC_CBGEN`
+7         :cpp:enumerator:`MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS`
+8         :cpp:enumerator:`MidLayer::AC_CAS_AC_FLO`
+9         :cpp:enumerator:`MidLayer::AC_OF_CHAOTIC_SKY`
+/         :cpp:enumerator:`MidLayer::NOT_OBSERVABLE`
+========= ================================================================
+
+The format of high cloud layer are as follows:
+
+========= ================================================================
+Character  :cpp:enum:`LowMidHighCloudGroup::HighLayer`
+========= ================================================================
+0         :cpp:enumerator:`HighLayer::NONE`
+1         :cpp:enumerator:`HighLayer::CI_FIB_CI_UNC`
+2         :cpp:enumerator:`HighLayer::CI_SPI_CI_CAS_CI_FLO`
+3         :cpp:enumerator:`HighLayer::CI_SPI_CBGEN`
+4         :cpp:enumerator:`HighLayer::CI_FIB_CI_UNC_SPREADING`
+5         :cpp:enumerator:`HighLayer::CI_CS_LOW_ABOVE_HORIZON`
+6         :cpp:enumerator:`HighLayer::CI_CS_HIGH_ABOVE_HORIZON`
+7         :cpp:enumerator:`HighLayer::CS_NEB_CS_FIB_COVERING_ENTIRE_SKY`
+8         :cpp:enumerator:`HighLayer::CS`
+9         :cpp:enumerator:`HighLayer::CC`
+/         :cpp:enumerator:`HighLayer::NOT_OBSERVABLE`
+========= ================================================================
+
+Generalised syntax
+^^^^^^^^^^^^^^^^^^
+
+The generalised syntax of this group is as follows.
+
+.. image:: lowmidhighcloudgroup.svg
+
+
+Example
+^^^^^^^
+
+Group ``8/578`` is parsed by Metaf as :cpp:class:`LowMidHighCloudGroup`.
+
+Method :cpp:func:`LowMidHighCloudGroup::lowLayer()` returns :cpp:enumerator:`LowMidHighCloudGroup::LowLayer::SC_NON_CUGEN` which means 'Stratocumulus not formed from Cumulus'.
+
+Method :cpp:func:`LowMidHighCloudGroup::midLayer()` returns :cpp:enumerator:`LowMidHighCloudGroup::MidLayer::AC_DU_AC_OP_AC_WITH_AS_OR_NS` which means 'Altocumulus duplicatus, or Altocumulus opacus in a single layer, not progressively invading the sky, or Altocumulus with Altostratus or Nimbostratus'.
+
+Method :cpp:func:`LowMidHighCloudGroup::highLayer()` returns :cpp:enumerator:`LowMidHighCloudGroup::HighLayer::CS` which means 'Cirrostratus not progressively invading the sky and not entirely covering it.'.
+
+
+Regional variation
+^^^^^^^^^^^^^^^^^^
+
+In practice, this group is mostly used in Mexico.
