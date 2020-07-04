@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 3;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -146,6 +146,10 @@ public:
 	MetafTime() = default;
 	MetafTime(unsigned int hour, unsigned int minute) :
 		hourValue(hour), minuteValue(minute) {}
+	MetafTime(std::optional<unsigned int> day, 
+		unsigned int hour, 
+		unsigned int minute) :
+			dayValue(day), hourValue(hour), minuteValue(minute) {}
 	static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
 	static inline std::optional<MetafTime> fromStringDDHH(const std::string & s);
 

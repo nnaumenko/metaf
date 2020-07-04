@@ -30,6 +30,32 @@ TEST(MetafTime, constructorHourMinuteInvalidTime) {
 	EXPECT_FALSE(t.isValid());
 }
 
+TEST(MetafTime, constructorDayHourMinute) {
+	const auto t = metaf::MetafTime(4, 11, 25);
+	ASSERT_TRUE(t.day().has_value());
+	EXPECT_EQ(t.day().value(), 4u);
+	EXPECT_EQ(t.hour(), 11u);
+	EXPECT_EQ(t.minute(), 25u);
+	EXPECT_TRUE(t.isValid());
+}
+
+TEST(MetafTime, constructorDayHourMinuteDayNotReported) {
+	const auto t = metaf::MetafTime(std::optional<unsigned int>(), 11, 25);
+	EXPECT_FALSE(t.day().has_value());
+	EXPECT_EQ(t.hour(), 11u);
+	EXPECT_EQ(t.minute(), 25u);
+	EXPECT_TRUE(t.isValid());
+}
+
+TEST(MetafTime, constructorDayHourMinuteInvalidDay) {
+	const auto t = metaf::MetafTime(32, 11, 25);
+	ASSERT_TRUE(t.day().has_value());
+	EXPECT_EQ(t.day().value(), 32u);
+	EXPECT_EQ(t.hour(), 11u);
+	EXPECT_EQ(t.minute(), 25u);
+	EXPECT_FALSE(t.isValid());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Parsing tests
 // Purpose: to confirm that various date/time formats used in METAR and TAF 
