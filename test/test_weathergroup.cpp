@@ -74,6 +74,40 @@ TEST(WeatherGroup, parseRecentWeatherTaf) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RERA", metaf::ReportPart::TAF).has_value());
 }
 
+TEST(WeatherGroup, parseVicinityMetar) {
+	const auto wg = metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::METAR);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_TRUE(wg->isValid());
+
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::CURRENT);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+
+	const auto wp = wg->weatherPhenomena().at(0);
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::VICINITY);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::SHOWERS);
+	EXPECT_EQ(wp.weather().size(), 0u);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::NONE);
+	EXPECT_FALSE(wp.time().has_value());
+}
+
+TEST(WeatherGroup, parseVicinityTaf) {
+	const auto wg = metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::TAF);
+	ASSERT_TRUE(wg.has_value());
+
+	EXPECT_TRUE(wg->isValid());
+
+	EXPECT_EQ(wg->type(), metaf::WeatherGroup::Type::CURRENT);
+	ASSERT_EQ(wg->weatherPhenomena().size(), 1u);
+
+	const auto wp = wg->weatherPhenomena().at(0);
+	EXPECT_EQ(wp.qualifier(), metaf::WeatherPhenomena::Qualifier::VICINITY);
+	EXPECT_EQ(wp.descriptor(), metaf::WeatherPhenomena::Descriptor::SHOWERS);
+	EXPECT_EQ(wp.weather().size(), 0u);
+	EXPECT_EQ(wp.event(), metaf::WeatherPhenomena::Event::NONE);
+	EXPECT_FALSE(wp.time().has_value());
+}
+
 TEST(WeatherGroup, parseNonReportedMetar) {
 	const auto wg = metaf::WeatherGroup::parse("//", metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
@@ -277,6 +311,10 @@ TEST(WeatherGroup, parseWrongReportPart) {
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RA", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RA", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RA", metaf::ReportPart::RMK).has_value());
+
+	EXPECT_FALSE(metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WeatherGroup::parse("VCSH", metaf::ReportPart::RMK).has_value());
 
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RAB1200", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::WeatherGroup::parse("RAB1200", metaf::ReportPart::HEADER).has_value());
