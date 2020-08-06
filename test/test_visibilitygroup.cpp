@@ -5320,6 +5320,32 @@ TEST(VisibilityGroup, parseRvrNotReported) {
 	EXPECT_TRUE(vg2->isValid());
 }
 
+TEST(VisibilityGroup, parseRvrNotReportedRunway) {
+	const auto vg1 = metaf::VisibilityGroup::parse("R///////", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::RVR);
+	EXPECT_FALSE(vg1->direction().has_value());
+	ASSERT_FALSE(vg1->runway().has_value());
+	EXPECT_FALSE(vg1->visibility().isReported());
+	EXPECT_FALSE(vg1->minVisibility().isReported());
+	EXPECT_FALSE(vg1->maxVisibility().isReported());
+	EXPECT_EQ(vg1->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg1->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg1->isValid());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("R///////FT", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->type(), metaf::VisibilityGroup::Type::RVR);
+	EXPECT_FALSE(vg2->direction().has_value());
+	ASSERT_FALSE(vg2->runway().has_value());
+	EXPECT_FALSE(vg2->visibility().isReported());
+	EXPECT_FALSE(vg2->minVisibility().isReported());
+	EXPECT_FALSE(vg2->maxVisibility().isReported());
+	EXPECT_EQ(vg2->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg2->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg2->isValid());
+}
+
 TEST(VisibilityGroup, parseRvrNotReportedWithTrend) {
 	const auto vg1 = metaf::VisibilityGroup::parse("R06R/////N", metaf::ReportPart::METAR);
 	ASSERT_TRUE(vg1.has_value());
@@ -5342,6 +5368,32 @@ TEST(VisibilityGroup, parseRvrNotReportedWithTrend) {
 	ASSERT_TRUE(vg2->runway().has_value());
 	EXPECT_EQ(vg2->runway()->number(), 6u);
 	EXPECT_EQ(vg2->runway()->designator(), metaf::Runway::Designator::RIGHT);
+	EXPECT_FALSE(vg2->visibility().isReported());
+	EXPECT_FALSE(vg2->minVisibility().isReported());
+	EXPECT_FALSE(vg2->maxVisibility().isReported());
+	EXPECT_EQ(vg2->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg2->trend(), metaf::VisibilityGroup::Trend::NEUTRAL);
+	EXPECT_TRUE(vg2->isValid());
+}
+
+TEST(VisibilityGroup, parseRvrNotReportedRunwayWithTrend) {
+	const auto vg1 = metaf::VisibilityGroup::parse("R///////N", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::RVR);
+	EXPECT_FALSE(vg1->direction().has_value());
+	ASSERT_FALSE(vg1->runway().has_value());
+	EXPECT_FALSE(vg1->visibility().isReported());
+	EXPECT_FALSE(vg1->minVisibility().isReported());
+	EXPECT_FALSE(vg1->maxVisibility().isReported());
+	EXPECT_EQ(vg1->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg1->trend(), metaf::VisibilityGroup::Trend::NEUTRAL);
+	EXPECT_TRUE(vg1->isValid());
+
+	const auto vg2 = metaf::VisibilityGroup::parse("R///////FT/N", metaf::ReportPart::METAR);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->type(), metaf::VisibilityGroup::Type::RVR);
+	EXPECT_FALSE(vg2->direction().has_value());
+	ASSERT_FALSE(vg2->runway().has_value());
 	EXPECT_FALSE(vg2->visibility().isReported());
 	EXPECT_FALSE(vg2->minVisibility().isReported());
 	EXPECT_FALSE(vg2->maxVisibility().isReported());
@@ -5813,6 +5865,10 @@ TEST(VisibilityGroup, parseRvrGroupWrongFormat) {
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("R05/1100V02000", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("R06R////", metaf::ReportPart::METAR));
 	EXPECT_FALSE(metaf::VisibilityGroup::parse("R06R///////", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("R///3200", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("R///3200FT", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("R////////", metaf::ReportPart::METAR));
+	EXPECT_FALSE(metaf::VisibilityGroup::parse("R///////FT//", metaf::ReportPart::METAR));
 }
 
 TEST(VisibilityGroup, appendToRvrGroup) {

@@ -48,6 +48,20 @@ TEST(LayerForecastGroup, baseTopHeights) {
 	EXPECT_EQ(lfg2->baseHeight().unit(), metaf::Distance::Unit::FEET);
 }
 
+TEST(LayerForecastGroup, baseTopHeightsNotReported) {
+	const auto lfg1 = metaf::LayerForecastGroup::parse("62////", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg1.has_value());
+
+	EXPECT_FALSE(lfg1->baseHeight().isReported());	
+	EXPECT_FALSE(lfg1->topHeight().isReported());	
+
+	const auto lfg2 = metaf::LayerForecastGroup::parse("52////", metaf::ReportPart::TAF);
+	ASSERT_TRUE(lfg2.has_value());
+
+	EXPECT_FALSE(lfg2->baseHeight().isReported());	
+	EXPECT_FALSE(lfg2->topHeight().isReported());	
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Icing groups
 // Purpose: to confirm that each type if icing is identified correctly
@@ -202,8 +216,10 @@ TEST(LayerForecastGroup, wrongFormat) {
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("6X0324", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("6/////", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("5/////", metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62////", metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::LayerForecastGroup::parse("52////", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62//12", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::LayerForecastGroup::parse("52//12", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::LayerForecastGroup::parse("6212//", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::LayerForecastGroup::parse("5212//", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62///3", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("62065/", metaf::ReportPart::TAF).has_value());
 	EXPECT_FALSE(metaf::LayerForecastGroup::parse("6200324", metaf::ReportPart::TAF).has_value());

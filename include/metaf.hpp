@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 3;
-	inline static const int patch = 1;
+	inline static const int minor = 4;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -4689,20 +4689,24 @@ std::optional<VisibilityGroup> VisibilityGroup::fromMeters(
 
 std::optional<VisibilityGroup> VisibilityGroup::fromRvr(const std::string & group) {
 	static const std::optional<VisibilityGroup> notRecognised;
-	static const std::regex rgx("(R\\d\\d[RCL]?)/(////|[PM]?\\d\\d\\d\\d)"
+	static const std::regex rgx("(R\\d\\d[RCL]?|R//)/(////|[PM]?\\d\\d\\d\\d)"
 		"(?:V([PM]?\\d\\d\\d\\d))?(FT/?)?([UND/])?");
 	static const auto matchRunway = 1, matchRvr = 2, matchVarRvr = 3, matchUnit = 4;
 	static const auto matchTrend = 5;
 	std::smatch match;
 	if (!regex_match(group, match, rgx)) return notRecognised;
 	const bool unitFeet = match.length(matchUnit);
+	if (match.str(matchRunway) == "R//" && match.str(matchRvr) != "////")
+		return notRecognised;
+	if (match.str(matchRunway) == "R//" && match.str(matchTrend) == "/")
+		return notRecognised;
 	const auto runway = Runway::fromString(match.str(matchRunway));
-	if (!runway.has_value()) return notRecognised;
+	if (!runway.has_value() && match.str(matchRunway) != "R//") return notRecognised;
 	const auto rvr = Distance::fromRvrString(match.str(matchRvr), unitFeet);
 	if (!rvr.has_value()) return notRecognised;
 	VisibilityGroup result;
 	result.visType = Type::RVR;
-	result.rw = *runway;
+	result.rw = runway;
 	result.vis = *rvr;
 	result.rvrTrend = trendFromString(match.str(matchTrend));
 	if (match.length(matchVarRvr)) {
@@ -5219,10 +5223,9 @@ std::optional<WeatherPhenomena> WeatherGroup::parseWeatherWithoutEvent(
 	}
 	const auto wp = WeatherPhenomena::fromString(group, true);
 	if (!wp.has_value()) return notRecognised;
-	// RECENT and VICINITY qualifiers are not allowed in TAF
+	// RECENT qualifier is not allowed in TAF
 	if (reportPart == ReportPart::TAF &&
-		(wp->qualifier() == WeatherPhenomena::Qualifier::RECENT || 
-		 wp->qualifier() == WeatherPhenomena::Qualifier::VICINITY)) return notRecognised; 
+		wp->qualifier() == WeatherPhenomena::Qualifier::RECENT) return notRecognised; 
 	return wp;
 }
 
@@ -5866,7 +5869,7 @@ std::optional<LayerForecastGroup> LayerForecastGroup::parse(
 {
 	(void)reportMetadata;
 	std::optional<LayerForecastGroup> notRecognised;
-	static const std::regex rgx("([65][\\dX])(\\d\\d\\d\\d)");
+	static const std::regex rgx("([65][\\dX])(\\d\\d\\d\\d|////)");
 	static const auto matchType = 1, matchHeight = 2;
 
 	if (reportPart != ReportPart::TAF) return notRecognised;
@@ -5875,12 +5878,13 @@ std::optional<LayerForecastGroup> LayerForecastGroup::parse(
 	const auto type = typeFromStr(match.str(matchType));
 	if (!type.has_value()) return notRecognised;
 	const auto heights = Distance::fromLayerString(match.str(matchHeight));
-	if (!heights.has_value()) return notRecognised;
-
+	if (!heights.has_value() && match.str(matchHeight) != "////") return notRecognised;
 	LayerForecastGroup result;
 	result.layerType = *type;
-	result.layerBaseHeight = std::get<0>(*heights);
-	result.layerTopHeight = std::get<1>(*heights);
+	if (match.str(matchHeight) != "////") {
+		result.layerBaseHeight = std::get<0>(*heights);
+		result.layerTopHeight = std::get<1>(*heights);		
+	}
 	return result;
 }
 

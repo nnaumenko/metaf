@@ -7319,4 +7319,66 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		0
 	},
+
+	{
+		"SCCH", "Gral. Bernardo OA Higgins Airport", {2020, 8, 6},
+		"METAR SCCH 060900Z AUTO 21008KT //// R/////// NCD 02/02 Q1025"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
+	},
+
+	{
+		"SCCH", "Gral. Bernardo OA Higgins Airport", {2020, 8, 6},
+		"METAR SCCH 060900Z AUTO 21008KT //// R/////// NCD 02/02 Q1025"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO
+		},
+		{},
+		0
+	},
+
+	{
+		"EGYP", "Mount Pleasant Airport", {2020, 8, 6},
+		"METAR EGYP 060450Z 35008KT 7000 -RADZ FEW006 BKN007 04/03 Q0995"
+		"=",
+		"TAF EGYP 060435Z 0606/0624 35015G25KT 9999 BKN010 520003"
+		" PROB40 TEMPO 0606/0608 VRB08KT 560003"
+		" PROB40 TEMPO 0606/0618 3000 RADZ BKN006"
+		" PROB30 TEMPO 0606/0615 2000 RASN SCT003"
+		" BECMG 0607/0609 30010KT 50////"
+		" BECMG 0614/0618 23022G32KT SCT035"
+		" BECMG 0618/0621 25015KT"
+		" BECMG 0621/0624 28010KT"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"KRWI", "Rocky Mount Wilson Regional Airport", {2020, 8, 6},
+		"METAR KRWI 061853Z AUTO VRB05KT 10SM CLR 32/23 A3003"
+		" RMK AO2 LTG DSNT W SLP166 T03220228"
+		"=",
+		"KRWI 061851Z 0619/0718 VRB03KT P6SM VCTS SCT035CB"
+		" FM070300 00000KT P6SM BKN250"
+		" TEMPO 0709/0713 4SM BR BKN007"
+		" FM071300 20004KT P6SM BKN015"
+		" FM071600 21006KT P6SM BKN050"
+		"=",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
 };
