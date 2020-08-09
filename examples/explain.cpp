@@ -569,6 +569,10 @@ std::string VisitorExplain::visitVisibilityGroup(
 		break;
 
 		case metaf::VisibilityGroup::Type::RVR:
+		if (!group.runway().has_value()) {
+			result << "Runway visual range not reported ";		
+			break;
+		}
 		result << "Runway visual range for ";
 		result << explainRunway(group.runway().value()) << " is ";
 		result << explainDistance(group.visibility());
@@ -1105,10 +1109,15 @@ std::string VisitorExplain::visitLayerForecastGroup(
 	std::ostringstream result;
 	if (!group.isValid()) result << groupNotValidMessage << "\n";
 	result << layerForecastGroupTypeToString(group.type());
-	result << " at heights from ";
-	result << explainDistance(group.baseHeight());
-	result << " to ";
-	result << explainDistance(group.topHeight());
+	result << " at ";
+	if (!group.baseHeight().isReported() && !group.topHeight().isReported()) {
+		result << "all heights";
+	} else {
+		result << "heights from ";
+		result << explainDistance(group.baseHeight());
+		result << " to ";
+		result << explainDistance(group.topHeight());
+	}
 	return result.str();	
 }
 
