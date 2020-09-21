@@ -10,7 +10,7 @@ WeatherGroup class
 
 		Stores information about recent or current weather phenomena, or on the beginning or ending time of weather phenomena.
 
-		.. note:: If more than 10 beginning/ending times are specified in the group, only first 10 are stored.
+		.. note:: If more than 20 beginning/ending times are specified in the group, only first 20 are stored.
 
 .. cpp:namespace-push:: WeatherGroup
 
@@ -1228,4 +1228,4 @@ The table below summarises parsing result for the miscellaneous weather groups r
 Regional variations
 ^^^^^^^^^^^^^^^^^^^
 
-Weather event groups specified in remarks (for example ``SNB2247E2255DZB2258``) are used only in North America.
+Weather event groups specified in remarks (for example ``SNB2247E2255DZB2258``) are used only in North America or on air bases of NATO countries.
