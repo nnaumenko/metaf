@@ -432,6 +432,16 @@ TEST(WeatherGroup, appendCurrentWeatherTooManyGroups) {
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
 }
@@ -482,6 +492,16 @@ TEST(WeatherGroup, appendRecentWeatherTooManyGroups) {
 	auto wg = metaf::WeatherGroup::parse(wgStr, metaf::ReportPart::METAR);
 	ASSERT_TRUE(wg.has_value());
 
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(wg->append(wgStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);

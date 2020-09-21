@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 4;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -625,10 +625,10 @@ public:
 		ENDING
 	};
 
-	Qualifier qualifier() const { return q; }
-	Descriptor descriptor() const { return d; }
+	inline Qualifier qualifier() const;
+	inline Descriptor descriptor() const;
 	inline std::vector<Weather> weather() const;
-	Event event() const { return ev; }
+	inline Event event() const;
 	std::optional<MetafTime> time() const { return tm; }
 	inline bool isValid() const;
 
@@ -645,26 +645,122 @@ public:
 	}
 
 private:
-	Qualifier q = Qualifier::NONE;
-	Descriptor d = Descriptor::NONE;
+	// data contains qualifier, descriptor, event, 3 weather phenomena, and
+	// number of weather phenomena
+	// qualifier: 3 bits (6 options)
+	// descriptor: 4 bits (9 options)
+	// each weather phenomena: 5 bits (23 options)
+	// weather phenomena number: 2 bits (value 0 to 3)
+	// event: 2 bits (3 options)
+	// this optimisation is performed to keep WeatherPhenomena as small as
+	// possible and allow more weather events in groups
+	// such as RAE04RAB12E13DZB13E16RAB16E17DZB17E18RAB18E29DZB29E30
+	// without using std::vector so that WeatherPhenomena is copied easily 
+	uint32_t data = 0;
 	static const inline size_t wSize = 3;
-	size_t wsz = 0;
-	Weather w[wSize] = {Weather::NOT_REPORTED, Weather::NOT_REPORTED, Weather::NOT_REPORTED};
-	Event ev = Event::NONE;
+
+	static const uint32_t qualifierMask = 0x7; // 3 bits
+	static const uint32_t qualifierShiftBits = 0;
+
+	static const uint32_t descriptorMask = 0x0f; // 4 bits
+	static const uint32_t descriptorShiftBits = 3;
+
+	static const uint32_t weatherMask = 0x1f; // 5 bits
+	static const uint32_t weather0ShiftBits = 3+4;
+	static const uint32_t weather1ShiftBits = 3+4+5;
+	static const uint32_t weather2ShiftBits = 3+4+5*2;
+
+	static const uint32_t weatherCountMask = 0x3; // 2 bits
+	static const uint32_t weatherCountShiftBits = 3+4+5*3;
+	
+	static const uint32_t eventMask = 0x3; // 2 bits
+	static const uint32_t eventShiftBits = 3+4+5*3+2;
+
+	//Qualifier q = Qualifier::NONE;
+	//Descriptor d = Descriptor::NONE;
+	//static const inline size_t wSize = 3;
+	//size_t wsz = 0;
+	//Weather w[wSize] = {Weather::NOT_REPORTED, Weather::NOT_REPORTED, Weather::NOT_REPORTED};
+	//Event ev = Event::NONE;
 	std::optional<MetafTime> tm;
 
-	WeatherPhenomena(Weather wthr1, 
-		Weather wthr2, 
-		Descriptor dscr = Descriptor::NONE, 
-		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr), wsz(2), w{wthr1, wthr2} {}
-	WeatherPhenomena(Weather wthr, 
-		Descriptor dscr = Descriptor::NONE, 
-		Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr), wsz(1), w{wthr} {}
-	WeatherPhenomena(Descriptor dscr, Qualifier qlf = Qualifier::NONE) : q(qlf), d(dscr) {}
+	inline WeatherPhenomena(Weather w1, 
+		Weather w2, 
+		Descriptor d = Descriptor::NONE, 
+		Qualifier q = Qualifier::NONE) : data (pack(q, d, 2, w1, w2)) {}
+	inline WeatherPhenomena(Weather w, 
+		Descriptor d = Descriptor::NONE, 
+		Qualifier q = Qualifier::NONE) : data (pack(q, d, 1, w)) {}
+	inline WeatherPhenomena(Descriptor d, Qualifier q = Qualifier::NONE) :
+		data(pack(q, d)) {}
 
 	static inline bool isDescriptorShAllowed (Weather w);
 	static inline bool isDescriptorTsAllowed (Weather w);
 	static inline bool isDescriptorFzAllowed (Weather w);
+
+	inline static uint32_t pack(Qualifier q = Qualifier::NONE, 
+		Descriptor d = Descriptor::NONE,
+		size_t wNum = 0,
+		Weather w1 = Weather::NOT_REPORTED,
+		Weather w2 = Weather::NOT_REPORTED,
+		Weather w3 = Weather::NOT_REPORTED,
+		Event e = Event::NONE
+	);
+	inline static uint32_t pack(Qualifier q, 
+		Descriptor d,
+		std::vector<Weather> w,
+		Event e = Event::NONE
+	);
+
+	// The following is to confirm that all enums cast to unsigned int
+	// fit into the specified amount of bits
+
+	static_assert(static_cast<uint32_t>(Qualifier::NONE) <= qualifierMask);
+	static_assert(static_cast<uint32_t>(Qualifier::RECENT) <= qualifierMask);
+	static_assert(static_cast<uint32_t>(Qualifier::VICINITY) <= qualifierMask);
+	static_assert(static_cast<uint32_t>(Qualifier::LIGHT) <= qualifierMask);
+	static_assert(static_cast<uint32_t>(Qualifier::MODERATE) <= qualifierMask);
+	static_assert(static_cast<uint32_t>(Qualifier::HEAVY) <= qualifierMask);
+
+	static_assert(static_cast<uint32_t>(Descriptor::NONE) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::SHALLOW) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::PARTIAL) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::PATCHES) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::LOW_DRIFTING) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::BLOWING) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::SHOWERS) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::THUNDERSTORM) <= descriptorMask);
+	static_assert(static_cast<uint32_t>(Descriptor::FREEZING) <= descriptorMask);
+
+	static_assert(static_cast<uint32_t>(Weather::NOT_REPORTED) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::DRIZZLE) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::RAIN) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SNOW) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SNOW_GRAINS) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::ICE_CRYSTALS) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::ICE_PELLETS) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::HAIL) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SMALL_HAIL) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::UNDETERMINED) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::MIST) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::FOG) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SMOKE) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::VOLCANIC_ASH) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::DUST) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SAND) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::HAZE) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SPRAY) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::DUST_WHIRLS) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SQUALLS) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::FUNNEL_CLOUD) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::SANDSTORM) <= weatherMask);
+	static_assert(static_cast<uint32_t>(Weather::DUSTSTORM) <= weatherMask);
+
+	static_assert(wSize <= weatherCountMask);
+
+	static_assert(static_cast<uint32_t>(Event::NONE) < eventMask);
+	static_assert(static_cast<uint32_t>(Event::BEGINNING) < eventMask);
+	static_assert(static_cast<uint32_t>(Event::ENDING) < eventMask);	
 };
 
 class CloudType {
@@ -1316,7 +1412,7 @@ private:
 	inline bool addWeatherPhenomena(const WeatherPhenomena & wp);
 
 	Type t = Type::CURRENT;
-	static const inline size_t wSize = 10;
+	static const inline size_t wSize = 20;
 	size_t wsz = 0;
 	WeatherPhenomena w[wSize];
 	IncompleteText incompleteText = IncompleteText::NONE;
@@ -3627,14 +3723,41 @@ std::optional<unsigned int> WaveHeight::waveHeightFromStateOfSurfaceChar(char c)
 
 ///////////////////////////////////////////////////////////////////////////////
 
+WeatherPhenomena::Qualifier WeatherPhenomena::qualifier() const 
+{
+	return static_cast<Qualifier>((data >> qualifierShiftBits) & qualifierMask);
+}
+
+WeatherPhenomena::Descriptor WeatherPhenomena::descriptor() const 
+{
+	return static_cast<Descriptor>((data >> descriptorShiftBits) & descriptorMask);
+}
+
 std::vector<WeatherPhenomena::Weather> WeatherPhenomena::weather() const 
 {
 	std::vector<Weather> result;
-	for (auto i=0u; i < wsz; i++)
-		result.push_back(w[i]);
+	const uint32_t sz = (data >> weatherCountShiftBits) & weatherCountMask;
+	if (sz > 0) {
+		const Weather w = 
+			static_cast<Weather>((data >> weather0ShiftBits) & weatherMask);
+		result.push_back(w);
+	}
+	if (sz > 1) {
+		const Weather w = 
+			static_cast<Weather>((data >> weather1ShiftBits) & weatherMask);
+		result.push_back(w);
+	}
+	if (sz > 2) {
+		const Weather w = 
+			static_cast<Weather>((data >> weather2ShiftBits) & weatherMask);
+		result.push_back(w);
+	}
 	return result;
 }
 
+WeatherPhenomena::Event WeatherPhenomena::event() const {
+	return static_cast<Event>((data >> eventShiftBits) & eventMask);
+}
 
 std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string & s,
 		bool enableQualifiers)
@@ -3717,27 +3840,29 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 			return WeatherPhenomena(Descriptor::THUNDERSTORM, Qualifier::RECENT);
 	}
 	// Precipitation
-	WeatherPhenomena result;
+	Qualifier resultQualifier = Qualifier::NONE;
+	Descriptor resultDescriptor = Descriptor::NONE;
+	std::vector<Weather> resultWeather;
 	std::string precipStr = s;
 	static const std::optional <WeatherPhenomena> error;
 	if (precipStr.length() < 2) return(error);
 	// Only + - RE qualifiers are allowed; no qualifier equals moderate intensity
 	if (enableQualifiers) {
-		result.q = Qualifier::MODERATE;
+		resultQualifier = Qualifier::MODERATE;
 		switch (precipStr[0]) {
 			case '+':
-			result.q = Qualifier::HEAVY;
+			resultQualifier = Qualifier::HEAVY;
 			precipStr = precipStr.substr(1);
 			break;
 
 			case '-':
-			result.q = Qualifier::LIGHT;
+			resultQualifier = Qualifier::LIGHT;
 			precipStr = precipStr.substr(1);
 			break;
 
 			case 'R': // qualifier "RE"
 			if (precipStr[1] == 'E') { 
-				result.q = Qualifier::RECENT;
+				resultQualifier = Qualifier::RECENT;
 				precipStr = precipStr.substr(2);
 			}
 			break;
@@ -3748,10 +3873,10 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 	}
 	// Descriptors SH TS and FZ are allowed
 	if (precipStr.length() < 2) return(error);
-	if (precipStr.substr(0, 2) == "SH") result.d = Descriptor::SHOWERS;
-	if (precipStr.substr(0, 2) == "TS") result.d = Descriptor::THUNDERSTORM;
-	if (precipStr.substr(0, 2) == "FZ") result.d = Descriptor::FREEZING;
-	if (result.d != Descriptor::NONE) precipStr = precipStr.substr(2);
+	if (precipStr.substr(0, 2) == "SH") resultDescriptor = Descriptor::SHOWERS;
+	if (precipStr.substr(0, 2) == "TS") resultDescriptor = Descriptor::THUNDERSTORM;
+	if (precipStr.substr(0, 2) == "FZ") resultDescriptor = Descriptor::FREEZING;
+	if (resultDescriptor != Descriptor::NONE) precipStr = precipStr.substr(2);
 	// Phenomena DZ RA SN SG PL GR GS UP are allowed in any combinations if no 
 	// duplicate phenomena is specified
 	// Descriptors without weather phenomena are not allowed at this point 
@@ -3777,15 +3902,16 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromString(const std::string 
 		if (!w.has_value()) return error;
 		if (isDescriptorShAllowed(*w)) allowShDecriptor = true;
 		if (isDescriptorFzAllowed(*w)) allowFzDecriptor = true;
-		for (auto j = 0u; j < i ; j++)
-			if (result.w[j] == *w) return error;
-		result.w[i] = *w;
-		result.wsz = i + 1;
+		for (auto j = 0u; j < resultWeather.size(); j++)
+			if (resultWeather[j] == *w) return error;
+		resultWeather.push_back(*w);
 		precipStr = precipStr.substr(2);
 	}
 	if (!precipStr.empty()) return error;
-	if (!allowShDecriptor && result.descriptor() == Descriptor::SHOWERS) return error;
-	if (!allowFzDecriptor && result.descriptor() == Descriptor::FREEZING) return error;
+	if (!allowShDecriptor && resultDescriptor == Descriptor::SHOWERS) return error;
+	if (!allowFzDecriptor && resultDescriptor == Descriptor::FREEZING) return error;
+	WeatherPhenomena result;
+	result.data = pack(resultQualifier, resultDescriptor, resultWeather);
 	return result;
 }
 
@@ -3816,6 +3942,38 @@ inline bool WeatherPhenomena::isDescriptorFzAllowed (Weather w) {
 	}
 }
 
+inline uint32_t WeatherPhenomena::pack(Qualifier q, 
+	Descriptor d,
+	size_t wNum,
+	Weather w1,
+	Weather w2,
+	Weather w3,
+	Event e)
+{
+	if (wNum > 3) wNum = 3;
+	uint32_t result = 0;
+	result |= (static_cast<uint32_t>(q) << qualifierShiftBits);
+	result |= (static_cast<uint32_t>(d) << descriptorShiftBits);
+	result |= (static_cast<uint32_t>(wNum) << weatherCountShiftBits);
+	result |= (static_cast<uint32_t>(w1) << weather0ShiftBits);
+	result |= (static_cast<uint32_t>(w2) << weather1ShiftBits);
+	result |= (static_cast<uint32_t>(w3) << weather2ShiftBits);
+	result |= (static_cast<uint32_t>(e) << eventShiftBits);
+	return result;
+}
+
+inline uint32_t WeatherPhenomena::pack(Qualifier q, 
+	Descriptor d,
+	std::vector<Weather> w,
+	Event e)
+{
+	const size_t sz = (w.size() <= 3 ? w.size() : 3);
+	const Weather w1 = (sz >= 1 ? w[0] : Weather::NOT_REPORTED);
+	const Weather w2 = (sz >= 2 ? w[1] : Weather::NOT_REPORTED);
+	const Weather w3 = (sz == 3 ? w[2] : Weather::NOT_REPORTED);
+	return pack(q, d, w.size(), w1, w2, w3, e);
+}
+
 std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 	const std::string & s,
 	const MetafTime & reportTime,
@@ -3840,8 +3998,15 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 		result = previous;
 	}
 
-	if (match.str(matchEvent) == "B") result.ev = Event::BEGINNING;
-	if (match.str(matchEvent) == "E") result.ev = Event::ENDING;
+	Event resultEvent;
+
+	if (match.str(matchEvent) == "B") resultEvent = Event::BEGINNING;
+	if (match.str(matchEvent) == "E") resultEvent = Event::ENDING;
+
+	result.data = pack(result.qualifier(), 
+		result.descriptor(), 
+		result.weather(), 
+		resultEvent);
 
 	unsigned int hour = reportTime.hour();
 	unsigned int minute = static_cast<unsigned int>(std::stoi(match.str(matchMinute)));
@@ -3853,8 +4018,9 @@ std::optional <WeatherPhenomena> WeatherPhenomena::fromWeatherBeginEndString(
 }
 
 bool WeatherPhenomena::isValid() const { 
+	const auto w = weather();
 	// Empty weather phenomena is not valid 
-	if (qualifier() == Qualifier::NONE && descriptor() == Descriptor::NONE && !wsz) 
+	if (qualifier() == Qualifier::NONE && descriptor() == Descriptor::NONE && !w.size()) 
 		return false;
 	// Event time must be valid if present
 	if (tm.has_value() && !tm->isValid()) return false;
