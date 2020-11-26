@@ -12,6 +12,7 @@
 * **Versatile**: recognises large number of group types including rare and regional formats.
 * **Thoroughly tested**: 100% test coverage.
 * **Easy to integrate**: Header-only library, integrated by including a single .hpp file.
+* **WASM**: Metaf works in Webassembly and allows parsing METARs and TAFs on the client.
 
 ## Introduction
 
@@ -31,7 +32,7 @@ Metaf can do the following:
 
 The following compiler are compatible (with C++17 standard enabled):
 
-* emscripten emcc 1.38.28 (based on clang)
+* webassembly / emscripten emcc 1.38.28 (based on clang)
 * gcc 7.4.0
 * clang 8.0.0
 

@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 4;
-	inline static const int patch = 1;
+	inline static const int patch = 2;
 	inline static const char tag [] = "";
 };
 
@@ -6572,12 +6572,14 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	std::smatch match;
 	MiscGroup result;
 
-	if (reportPart == ReportPart::METAR) {
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::RMK) {
 		if (const auto c = parseColourCode(group); c.has_value()) {
 			result.groupType = *c;
 			return result;
 		}
-
+	}
+	
+	if (reportPart == ReportPart::METAR) {
 		if (std::regex_match(group, match, rgxCorrectionObservation)) {
 			result.groupType = Type::CORRECTED_WEATHER_OBSERVATION;
 			result.groupData = match.str(matchValue)[0] - 'A' + 1;

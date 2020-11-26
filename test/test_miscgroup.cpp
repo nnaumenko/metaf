@@ -461,11 +461,27 @@ TEST(MiscGroup, parseColourCodeBlackRed) {
 	EXPECT_FALSE(mg->data().has_value());
 }
 
+TEST(MiscGroup, parseCoulourCodeRmk) {
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("WHT", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("GRN", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("YLO1", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("YLO2", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("AMB", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("RED", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKBLU", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKWHT", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKGRN", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKYLO1", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKYLO2", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKAMB", metaf::ReportPart::RMK).has_value());
+	EXPECT_TRUE(metaf::MiscGroup::parse("BLACKRED", metaf::ReportPart::RMK).has_value());
+}
+
 TEST(MiscGroup, parseCoulourCodeWrongReportPart) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::TAF).has_value());
-	EXPECT_FALSE(metaf::MiscGroup::parse("BLU", metaf::ReportPart::RMK).has_value());
 }
 
 TEST(MiscGroup, parseColourCodeWrongFormat) {
