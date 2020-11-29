@@ -164,7 +164,7 @@ Code BLACK may be specified along with the main colour code. It indicates that t
 | BLACKRED  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKRED`     |                     |
 +-----------+--------------------------------------------------+---------------------+
 
-.. note:: Colour codes are specified in METAR report body or trends rather than in remarks. 
+.. note:: Colour codes are specified in METAR report body or trends or in the METAR report remarks. 
 
 
 Corrected weather observation number

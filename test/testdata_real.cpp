@@ -7402,4 +7402,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 
+	{
+		"LSME", "Emmen Air Base", {2020, 11, 26},
+		"METAR LSME 260550Z 16002KT 1200 R04/P2000N R22/1500N BR OVC002 00/00 Q1024"
+		" RMK AMB"
+		"=",
+		"TAF LSME 260500Z NIL"
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::NIL
+		},
+		0
+	}
 };
