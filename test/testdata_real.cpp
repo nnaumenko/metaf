@@ -7403,6 +7403,16 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"ETHC", "Celle Airport", {2020, 11, 20},
+		"METAR ETHC 201820Z 21002KT 9999 FEW060 03/02 Q1033 BLU+"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
 		"LSME", "Emmen Air Base", {2020, 11, 26},
 		"METAR LSME 260550Z 16002KT 1200 R04/P2000N R22/1500N BR OVC002 00/00 Q1024"
 		" RMK AMB"
@@ -7413,6 +7423,44 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{
 			MetarTafRealData::Attribute::NIL
 		},
+		0
+	},
+
+	{
+		"LSME", "Emmen Air Base", {2020, 11, 27},
+		"METAR LSME 271520Z 00000KT 7000 SCT004 OVC006 02/01 Q1020"
+		" RMK YLO"
+		"=",
+		"TAF LSME 270925Z 2710/2816 VRB03KT 1500 BR OVC002"
+		" PROB40 2710/2712 0500 FG VV001"
+		" BECMG 2711/2713 3500 BKN003"
+		" PROB40 2712/2718 5000 BKN006"
+		" PROB40 2720/2806 0700 FG VV002"
+		" BECMG 2806/2809 BKN006"
+		" PROB40 2810/2816 5000 BKN010"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"ETSH", "Holzdorf Air Base", {2020, 11, 29},
+		"METAR ETSH 291120Z 34004KT 9999 BKN005 BKN020 03/02 Q1025 BLACKYLO"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"ETSH", "Holzdorf Air Base", {2020, 11, 29},
+		"METAR ETSH 292120Z 28002KT 9999 MIFG FEW047 M01/M02 Q1026 BLACKBLU+"
+		"=",
+		"",
+		{},
+		{},
 		0
 	}
 };

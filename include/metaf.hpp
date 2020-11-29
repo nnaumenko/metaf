@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 4;
-	inline static const int patch = 2;
+	inline static const int minor = 5;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -1985,16 +1985,20 @@ public:
 		CORRECTED_WEATHER_OBSERVATION,
 		DENSITY_ALTITUDE,
 		HAILSTONE_SIZE,
+		COLOUR_CODE_BLUE_PLUS,
 		COLOUR_CODE_BLUE,
 		COLOUR_CODE_WHITE,
 		COLOUR_CODE_GREEN,
+		COLOUR_CODE_YELLOW,
 		COLOUR_CODE_YELLOW1,
 		COLOUR_CODE_YELLOW2,
 		COLOUR_CODE_AMBER,
 		COLOUR_CODE_RED,
+		COLOUR_CODE_BLACKBLUE_PLUS,
 		COLOUR_CODE_BLACKBLUE,
 		COLOUR_CODE_BLACKWHITE,
 		COLOUR_CODE_BLACKGREEN,
+		COLOUR_CODE_BLACKYELLOW,
 		COLOUR_CODE_BLACKYELLOW1,
 		COLOUR_CODE_BLACKYELLOW2,
 		COLOUR_CODE_BLACKAMBER,
@@ -6653,16 +6657,20 @@ AppendResult MiscGroup::append(const std::string & group,
 }
 
 std::optional<MiscGroup::Type> MiscGroup::parseColourCode(const std::string & group) {
+	if (group == "BLU+") return Type::COLOUR_CODE_BLUE_PLUS;
 	if (group == "BLU") return Type::COLOUR_CODE_BLUE;
 	if (group == "WHT") return Type::COLOUR_CODE_WHITE;
 	if (group == "GRN") return Type::COLOUR_CODE_GREEN;
+	if (group == "YLO") return Type::COLOUR_CODE_YELLOW;
 	if (group == "YLO1") return Type::COLOUR_CODE_YELLOW1;
 	if (group == "YLO2") return Type::COLOUR_CODE_YELLOW2;
 	if (group == "AMB") return Type::COLOUR_CODE_AMBER;
 	if (group == "RED") return Type::COLOUR_CODE_RED;
+	if (group == "BLACKBLU+") return Type::COLOUR_CODE_BLACKBLUE_PLUS;
 	if (group == "BLACKBLU") return Type::COLOUR_CODE_BLACKBLUE;
 	if (group == "BLACKWHT") return Type::COLOUR_CODE_BLACKWHITE;
 	if (group == "BLACKGRN") return Type::COLOUR_CODE_BLACKGREEN;
+	if (group == "BLACKYLO") return Type::COLOUR_CODE_BLACKYELLOW;
 	if (group == "BLACKYLO1") return Type::COLOUR_CODE_BLACKYELLOW1;
 	if (group == "BLACKYLO2") return Type::COLOUR_CODE_BLACKYELLOW2;
 	if (group == "BLACKAMB") return Type::COLOUR_CODE_BLACKAMBER;

@@ -33,6 +33,10 @@ Type definitions
 
 			Largest hailstone size in inches with increments of 1/4 inch.
 
+		.. cpp:enumerator:: COLOUR_CODE_BLUE_PLUS
+
+			Visibility >8000 m AND no cloud obscuring 3/8 or more below 20000 feet. 
+
 		.. cpp:enumerator:: COLOUR_CODE_BLUE
 
 			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet. 
@@ -44,6 +48,12 @@ Type definitions
 		.. cpp:enumerator:: COLOUR_CODE_GREEN
 
 			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+
+		.. cpp:enumerator:: COLOUR_CODE_YELLOW
+
+			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+
+			.. note:: Instead of :cpp:enumerator:`COLOUR_CODE_YELLOW` some stations may use more precise :cpp:enumerator:`COLOUR_CODE_YELLOW1` and :cpp:enumerator:`COLOUR_CODE_YELLOW2`.
 
 		.. cpp:enumerator:: COLOUR_CODE_YELLOW1
 
@@ -61,6 +71,10 @@ Type definitions
 
 			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
 
+		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE_PLUS
+
+			Same as :cpp:enumerator:`COLOUR_CODE_BLUE_PLUS` but also indicates that aerodrome is closed, for example, due to snow accumulation.
+
 		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE
 
 			Same as :cpp:enumerator:`COLOUR_CODE_BLUE` but also indicates that aerodrome is closed, for example, due to snow accumulation.
@@ -72,6 +86,10 @@ Type definitions
 		.. cpp:enumerator:: COLOUR_CODE_BLACKGREEN
 
 			Same as :cpp:enumerator:`COLOUR_CODE_GREEN` but also indicates that aerodrome is closed.
+
+		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW
+
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW` but also indicates that aerodrome is closed.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW1
 
@@ -126,43 +144,51 @@ Colour codes
 
 Colour codes are used to quickly assess visibility and ceiling conditions. The colour code values specified in the reports are shown below.
 
-+-------+---------------------------------------------+------------+----------+---------------------+
-| Group |:cpp:func:`type()`                           | Visibility | Ceiling  | :cpp:func:`data()`  |
-+=======+=============================================+============+==========+=====================+
-| BLU   | :cpp:enumerator:`Type::COLOUR_CODE_BLUE`    | >8000 m    | >2500 ft | empty std::optional |
-+-------+---------------------------------------------+------------+----------+                     |
-| WHT   | :cpp:enumerator:`Type::COLOUR_CODE_WHITE`   | >5000 m    | >1500 ft |                     |
-+-------+---------------------------------------------+------------+----------+                     |
-| GRN   | :cpp:enumerator:`Type::COLOUR_CODE_GREEN`   | >3700 m    | >700 ft  |                     |
-+-------+---------------------------------------------+------------+----------+                     |
-| YLO1  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW1` | >2500 m    | >500 ft  |                     |
-+-------+---------------------------------------------+------------+----------+                     |
-| YLO2  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW2` | >1600 m    | >300 ft  |                     |
-+-------+---------------------------------------------+------------+----------+                     |
-| AMB   | :cpp:enumerator:`Type::COLOUR_CODE_AMBER`   | >800 m     | >200 ft  |                     |
-+-------+---------------------------------------------+------------+----------+                     |
-| RED   | :cpp:enumerator:`Type::COLOUR_CODE_RED`     | <800 m     | <200 ft  |                     |
-+-------+---------------------------------------------+------------+----------+---------------------+
++-------+----------------------------------------------+------------+----------+---------------------+
+| Group |:cpp:func:`type()`                            | Visibility | Ceiling  | :cpp:func:`data()`  |
++=======+==============================================+============+==========+=====================+
+| BLU+  | :cpp:enumerator:`Type::COLOUR_CODE_BLUE_PLUS`| >8000 m    | >20000 ft| empty std::optional |
++-------+----------------------------------------------+------------+----------+                     |
+| BLU   | :cpp:enumerator:`Type::COLOUR_CODE_BLUE`     | >8000 m    | >2500 ft |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| WHT   | :cpp:enumerator:`Type::COLOUR_CODE_WHITE`    | >5000 m    | >1500 ft |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| GRN   | :cpp:enumerator:`Type::COLOUR_CODE_GREEN`    | >3700 m    | >700 ft  |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| YLO   | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW`   | >1600 m    | >300 ft  |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| YLO1  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW1`  | >2500 m    | >500 ft  |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| YLO2  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW2`  | >1600 m    | >300 ft  |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| AMB   | :cpp:enumerator:`Type::COLOUR_CODE_AMBER`    | >800 m     | >200 ft  |                     |
++-------+----------------------------------------------+------------+----------+                     |
+| RED   | :cpp:enumerator:`Type::COLOUR_CODE_RED`      | <800 m     | <200 ft  |                     |
++-------+----------------------------------------------+------------+----------+---------------------+
 
 Code BLACK may be specified along with the main colour code. It indicates that the aerodrome is closed e.g. due to snow accumulation. The summary of colour codes with code BLACK age shown below.
 
-+-----------+--------------------------------------------------+---------------------+
-| Group     |:cpp:func:`type()`                                | :cpp:func:`data()`  |
-+===========+==================================================+=====================+
-| BLACKBLU  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE`    | empty std::optional |
-+-----------+--------------------------------------------------+                     |
-| BLACKWHT  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKWHITE`   |                     |
-+-----------+--------------------------------------------------+                     |
-| BLACKGRN  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKGREEN`   |                     |
-+-----------+--------------------------------------------------+                     |
-| BLACKYLO1 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW1` |                     |
-+-----------+--------------------------------------------------+                     |
-| BLACKYLO2 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW2` |                     |
-+-----------+--------------------------------------------------+                     |
-| BLACKAMB  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKAMBER`   |                     |
-+-----------+--------------------------------------------------+                     |
-| BLACKRED  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKRED`     |                     |
-+-----------+--------------------------------------------------+---------------------+
++-----------+---------------------------------------------------+---------------------+
+| Group     |:cpp:func:`type()`                                 | :cpp:func:`data()`  |
++===========+===================================================+=====================+
+| BLACKBLU+ | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE_PLUS`| empty std::optional |
++-----------+---------------------------------------------------+                     |
+| BLACKBLU  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE`     |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKWHT  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKWHITE`    |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKGRN  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKGREEN`    |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKYLO  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW`   |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKYLO1 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW1`  |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKYLO2 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW2`  |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKAMB  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKAMBER`    |                     |
++-----------+---------------------------------------------------+                     |
+| BLACKRED  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKRED`      |                     |
++-----------+---------------------------------------------------+---------------------+
 
 .. note:: Colour codes are specified in METAR report body or trends or in the METAR report remarks. 
 
@@ -288,13 +314,11 @@ Regional variations
 
 Colour codes are used in aerodromes operated by air forces of NATO countries.
 
+Instead of colour code Yellow more precise Yellow1 and Yellow2 may be used.
+
 Corrected weather observation number groups and density altitude groups are used only in Canada.
 
 Hailstone size group, sunshine duration group and FROIN group are used in North America only.
-
-
-
-
 
 .. cpp:namespace-pop::
 

@@ -1398,6 +1398,14 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << " inches";
 		break;
 
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE_PLUS:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE_PLUS:
+		result << "Colour code BLUE+: ";
+		result << "visibility &gt;8000 m and ";
+		result << "lowest cloud base height &ge;20000 ft";
+		break;
+
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE:
 		result << colourCodeBlack << "\n";
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE:
@@ -1420,6 +1428,14 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << "Colour code GREEN: ";
 		result << "visibility &gt;3700 m and ";
 		result << "lowest cloud base height &gt;700 ft";
+		break;
+
+		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW:
+		result << colourCodeBlack << "\n";
+		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW:
+		result << "Colour code YELLOW: ";
+		result << "visibility &gt;2500 m and ";
+		result << "lowest cloud base height &gt;500 ft";
 		break;
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1:

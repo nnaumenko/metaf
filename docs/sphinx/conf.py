@@ -26,7 +26,7 @@ author = 'Nick Naumenko'
 # The short X.Y version
 version = '5.4.2'
 # The full version, including alpha/beta/rc tags
-release = '5.4.2'
+release = '5.5.0'
 
 
 # -- General configuration ---------------------------------------------------
