@@ -858,7 +858,7 @@ std::string VisitorExplain::visitPressureGroup(
 	switch(group.type()) {
 		case metaf::PressureGroup::Type::OBSERVED_QNH:
 		result << "Observed mean atmospheric pressure ";
-		result << "(normalised to sea level): ";
+		result << "(normalised to sea level) / altimeter setting: ";
 		result << explainPressure(group.atmosphericPressure());
 		break;
 
@@ -870,6 +870,13 @@ std::string VisitorExplain::visitPressureGroup(
 		case metaf::PressureGroup::Type::OBSERVED_QFE:
 		result << "Observed actual atmospheric pressure: ";
 		result << explainPressure(group.atmosphericPressure());
+		break;
+
+		case metaf::PressureGroup::Type::OBSERVED_SLP:
+		result << "Observed atmospheric pressure normalised to sea level:";
+		result << explainPressure(group.atmosphericPressure());
+		result << "\nThis is a value that might be more accurate for meteorological ";
+		result << "purposes and attempts to correct for non-standard temperatures.";
 		break;
 
 		case metaf::PressureGroup::Type::SLPNO:

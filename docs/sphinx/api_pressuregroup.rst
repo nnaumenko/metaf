@@ -22,7 +22,7 @@ Type definitions
 
 		.. cpp:enumerator:: OBSERVED_QNH
 
-			Indicates that groups contains an observed mean atmospheric pressure normalised to sea level (used in METAR, e.g. ``Q1020``, ``A2981``, or remark ``SLP960``).
+			Indicates that groups contains an observed mean atmospheric pressure normalised to sea level to be used as altimeter setting (used in METAR, for example ``Q1020``, ``A2981``).
 
 		.. cpp:enumerator:: FORECAST_LOWEST_QNH
 
@@ -31,6 +31,12 @@ Type definitions
 		.. cpp:enumerator:: OBSERVED_QFE
 
 			Indicates that group contains an observed actual atmospheric pressure (e.g. remark ``QFE761/1015`` or ``QFE741``). This group is used by some countries which were part of Soviet Union.
+
+		.. cpp:enumerator:: OBSERVED_SLP
+
+			Indicates that groups contains an observed atmospheric pressure normalised to sea level (used in METAR, remarks, for example ``SLP960``).
+
+			.. note:: This is a value that might be more accurate than altimeter setting for meteorological purposes and attempts to correct for non-standard temperatures. 
 
 		.. cpp:enumerator:: SLPNO
 

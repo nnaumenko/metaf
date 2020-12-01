@@ -139,7 +139,7 @@ TEST(PressureGroup, parseSlpRemark) {
 	ASSERT_TRUE(pg.has_value());
 	EXPECT_NEAR(pg->atmosphericPressure().pressure().value(), 998.2, margin);
 	EXPECT_EQ(pg->atmosphericPressure().unit(), metaf::Pressure::Unit::HECTOPASCAL);
-	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_QNH);
+	EXPECT_EQ(pg->type(), metaf::PressureGroup::Type::OBSERVED_SLP);
 }
 
 TEST(PressureGroup, parseSlpRemarkWrongReportPart) {

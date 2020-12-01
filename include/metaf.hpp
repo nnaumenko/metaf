@@ -31,7 +31,7 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 5;
+	inline static const int minor = 6;
 	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
@@ -1465,9 +1465,10 @@ private:
 class PressureGroup {
 public:
 	enum class Type {
-		OBSERVED_QNH,			//Observed mean sea level pressure (METAR)
+		OBSERVED_QNH,			//Observed pressure normalised to sea level (altimeter setting)
 		FORECAST_LOWEST_QNH,	//Forecast lowest sea level pressure
 		OBSERVED_QFE,			//Observed actual (non-normalised) pressure
+		OBSERVED_SLP,			//Observed pressure normailsed to sea level by more accurate calculation
 		SLPNO,					//Mean sea-level pressure information is not available
 		PRES_MISG,				//Atmospheric pressure (altimeter) data is missing
 	};
@@ -5547,7 +5548,7 @@ std::optional<PressureGroup> PressureGroup::parse(const std::string & group,
 		if (const auto pr = Pressure::fromSlpString(group); pr.has_value()) {
 			PressureGroup result;
 			result.p = *pr;
-			result.t = Type::OBSERVED_QNH;
+			result.t = Type::OBSERVED_SLP;
 			return result;
 		}
 		if (const auto pr = Pressure::fromQfeString(group); pr.has_value()) {
