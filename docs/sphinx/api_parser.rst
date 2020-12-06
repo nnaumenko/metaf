@@ -61,6 +61,13 @@ For example, METAR report structured as follows will be parsed without errors: :
 	 14001MPS	6000	NSC	15/14	Q1023	R13/CLRD//	NOSIG=
 
 
+Group ``BLU+`` in practice may be followed by the next group without delimiter.
+
+Due to this, Metaf treats ``+`` character as a delimiter when it is not in front of the group (e.g. in groups such as ``+TSRAGR``). 
+
+For example consider report ``METAR ETHC 251720Z 18005KT 9999 BKN250 05/02 Q1018 BLU+FCST CNL=``, in this case parser will extract ``BLU+``, ``FCST`` and ``CNL`` groups.
+
+
 Case-sensitivity
 """"""""""""""""
 

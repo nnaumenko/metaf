@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 6;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -6876,10 +6876,15 @@ std::string Parser::ReportInput::getNextGroup() {
 
 	size_t groupLen = 0;
 	while (report[pos + groupLen] > ' ') {
+		// Detect end of report or report end char 
 		if (pos >= report.length() || report[pos + groupLen] == reportEndChar) {
 			finished = true;
-			return report.substr(pos, groupLen);
+			break;
+//			return report.substr(pos, groupLen);
 		}
+		// Treat '+' character as a delimiter to extract groups like BLU+ but 
+		// ignore '+' character if it is in front of the group (e.g. +RA)
+		if (groupLen && report[pos+groupLen] == '+') { groupLen++; break; }
 		groupLen++;
 	}
 	const auto prevPos = pos;

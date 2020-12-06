@@ -185,6 +185,11 @@ static bool isVicinity(const metaf::Group & group) {
 	return(std::holds_alternative<metaf::VicinityGroup>(group));
 }
 
+static bool isBluPlus(const metaf::Group & group) {
+	if (!std::holds_alternative<metaf::MiscGroup>(group)) return false;
+	return (std::get<metaf::MiscGroup>(group).type() == metaf::MiscGroup::Type::COLOUR_CODE_BLUE_PLUS);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Test attribute checker
 // Purpose: to confirm that checkAttributesVsMetadata() correctly identifies 
@@ -2217,4 +2222,204 @@ TEST(ParserTafTimeSpanInMetadata, parseMetar) {
 	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
 	EXPECT_FALSE(result.reportMetadata.timeSpanFrom.has_value());
 	EXPECT_FALSE(result.reportMetadata.timeSpanUntil.has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Test BLU+ group
+// Purpose: to confirm that BLU+ group is processed correctly regardless of 
+// its position in the report even when it is not followed by the delimiter.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(ParserBluPlus, delimiter) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+ TEST=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 6u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isUnknown(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "TEST");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::RMK);
+}
+
+TEST(ParserBluPlus, noDelimiter) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+TEST=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 6u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isUnknown(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "TEST");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::RMK);
+}
+
+TEST(ParserBluPlus, last) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 5u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+}
+
+TEST(ParserBluPlus, lastNoReportEndChar) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 5u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+}
+
+TEST(ParserBluPlus, duplicatedNoDelimiter) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+BLU+TEST=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 7u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group)); 
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isUnknown(result.groups.at(6).group));
+	EXPECT_EQ(result.groups.at(6).rawString, "TEST");
+	EXPECT_EQ(result.groups.at(6).reportPart, metaf::ReportPart::RMK);
+}
+
+TEST(ParserBluPlus, duplicatedLastNoDelimiter) {
+	const auto result = metaf::Parser::parse(
+		"METAR ZZZZ 010000Z RMK BLU+BLU+=");
+	EXPECT_EQ(result.reportMetadata.type, metaf::ReportType::METAR);
+	EXPECT_EQ(result.reportMetadata.error, metaf::ReportError::NONE);
+
+	EXPECT_EQ(result.groups.size(), 6u);
+
+	EXPECT_TRUE(isMetar(result.groups.at(0).group));
+	EXPECT_EQ(result.groups.at(0).rawString, "METAR");
+	EXPECT_EQ(result.groups.at(0).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isLocation(result.groups.at(1).group));
+	EXPECT_EQ(result.groups.at(1).rawString, "ZZZZ");
+	EXPECT_EQ(result.groups.at(1).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isReportTime(result.groups.at(2).group));
+	EXPECT_EQ(result.groups.at(2).rawString, "010000Z");
+	EXPECT_EQ(result.groups.at(2).reportPart, metaf::ReportPart::HEADER);
+
+	EXPECT_TRUE(isRmk(result.groups.at(3).group));
+	EXPECT_EQ(result.groups.at(3).rawString, "RMK");
+	EXPECT_EQ(result.groups.at(3).reportPart, metaf::ReportPart::METAR);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(4).group));
+	EXPECT_EQ(result.groups.at(4).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(4).reportPart, metaf::ReportPart::RMK);
+
+	EXPECT_TRUE(isBluPlus(result.groups.at(5).group));
+	EXPECT_EQ(result.groups.at(5).rawString, "BLU+");
+	EXPECT_EQ(result.groups.at(5).reportPart, metaf::ReportPart::RMK);
 }
