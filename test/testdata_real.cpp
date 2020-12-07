@@ -7413,6 +7413,28 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"ETHC", "Celle Airport", {2020, 11, 25},
+		"METAR ETHC 251620Z 18006KT 9999 BKN260 05/02 Q1017 BLU+BLU+"
+		"=",
+		"TAF ETHC 251113Z 2512/2521 15005KT 9999 NSW FEW015 BKN250"
+		"=",
+		{},
+		{},
+		0
+	},
+	
+	{
+		"ETHC", "Celle Airport", {2020, 11, 25},
+		"METAR ETHC 251720Z 18005KT 9999 BKN250 05/02 Q1018 BLU+FCST CNL"
+		"=",
+		"TAF ETHC 251113Z 2512/2521 15005KT 9999 NSW FEW015 BKN250"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
 		"LSME", "Emmen Air Base", {2020, 11, 26},
 		"METAR LSME 260550Z 16002KT 1200 R04/P2000N R22/1500N BR OVC002 00/00 Q1024"
 		" RMK AMB"
