@@ -31,8 +31,8 @@ namespace metaf {
 // Metaf library version
 struct Version {
 	inline static const int major = 5;
-	inline static const int minor = 6;
-	inline static const int patch = 1;
+	inline static const int minor = 7;
+	inline static const int patch = 0;
 	inline static const char tag [] = "";
 };
 
@@ -2004,7 +2004,9 @@ public:
 		COLOUR_CODE_BLACKYELLOW2,
 		COLOUR_CODE_BLACKAMBER,
 		COLOUR_CODE_BLACKRED,
-		FROIN
+		FROIN,
+		ISSUER_ID_FS,
+		ISSUER_ID_FN
 	};
 	Type type() const { return groupType; }
 	std::optional<float> data() const { return groupData; }
@@ -6573,6 +6575,8 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	static const std::regex rgxSunshineDuration("98(\\d\\d\\d)");
 	static const std::regex rgxCorrectionObservation("CC([A-Z])");
 	static const auto matchValue = 1;
+	static const std::regex rgxIssuerId("F([NS])(\\d\\d\\d\\d\\d)");
+	static const auto matchIssuerStation = 1, matchIssuerId = 2;
 
 	std::smatch match;
 	MiscGroup result;
@@ -6580,6 +6584,15 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	if (reportPart == ReportPart::METAR || reportPart == ReportPart::RMK) {
 		if (const auto c = parseColourCode(group); c.has_value()) {
 			result.groupType = *c;
+			return result;
+		}
+	}
+	
+	if (reportPart == ReportPart::TAF) {
+		if (std::regex_match(group, match, rgxIssuerId)) {
+			result.groupType = Type::ISSUER_ID_FS;
+			if (match.str(matchIssuerStation) == "N") result.groupType = Type::ISSUER_ID_FN;
+			result.groupData = std::stoi(match.str(matchIssuerId));
 			return result;
 		}
 	}

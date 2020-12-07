@@ -9,6 +9,7 @@
 #include "metaf.hpp"
 
 const auto marginSunshineDuration = 1.0 / 2;
+const auto marginIssuerId = 1.0 / 2;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Sunshine duration
@@ -557,6 +558,39 @@ TEST(MiscGroup, parseFroinWrongReportPart) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Issuer ID
+// Purpose: to confirm that issuer id groups are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseIssuerIdFn) {
+	const auto mg = metaf::MiscGroup::parse("FN20002", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::ISSUER_ID_FN);
+	EXPECT_TRUE(mg->data().has_value());
+	EXPECT_NEAR(mg->data().value(), 20002.0, marginIssuerId);
+}
+
+TEST(MiscGroup, parseIssuerIdFs) {
+	const auto mg = metaf::MiscGroup::parse("FS30122", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::ISSUER_ID_FS);
+	EXPECT_TRUE(mg->data().has_value());
+	EXPECT_NEAR(mg->data().value(), 30122.0, marginIssuerId);
+}
+
+TEST(MiscGroup, parseIssuerIdWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("FN20002", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FN20002", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FN20002", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FN20002", metaf::ReportPart::METAR).has_value());
+
+	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::METAR).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Miscellaenous appending tests
 // Purpose: to confirm that the groups cannot append in wrong combinations
 ///////////////////////////////////////////////////////////////////////////////
@@ -573,6 +607,8 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	const std::string smg9 = "AMB";
 	const std::string smg10 = "BLACKAMB";
 	const std::string smg11 = "FROIN";
+	const std::string smg12 = "FS49728";
+	const std::string smg13 = "FN07053";
 
 	auto mg1 = metaf::MiscGroup::parse(smg1, metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg1.has_value());
@@ -608,6 +644,12 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	auto mg8 = metaf::MiscGroup::parse(smg11, metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg8.has_value());
 
+	auto mg9 = metaf::MiscGroup::parse(smg12, metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg9.has_value());
+
+	auto mg10 = metaf::MiscGroup::parse(smg13, metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg10.has_value());
+
 	EXPECT_EQ(mg1->append(smg1, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append(smg2, metaf::ReportPart::RMK), 
@@ -629,6 +671,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg1->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->append(smg13, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg1->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -657,6 +703,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append("RMK", metaf::ReportPart::METAR), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg2->append("TEST", metaf::ReportPart::METAR), 
@@ -683,6 +733,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg3->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg3->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->append(smg13, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg3->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -711,6 +765,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg4->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg4->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg4->append("TEST", metaf::ReportPart::RMK), 
@@ -732,11 +790,15 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg5->append(smg8, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(mg6->append(smg9, metaf::ReportPart::RMK), 
+	EXPECT_EQ(mg5->append(smg9, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-	EXPECT_EQ(mg6->append(smg10, metaf::ReportPart::RMK), 
+	EXPECT_EQ(mg5->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg5->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg5->append(smg13, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg5->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -765,6 +827,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg6->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg6->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg6->append("TEST", metaf::ReportPart::RMK), 
@@ -791,6 +857,10 @@ TEST(MiscGroup, appendToCompleteGroups) {
 	EXPECT_EQ(mg7->append(smg10, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg7->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg7->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg7->append(smg13, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg7->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
@@ -819,10 +889,77 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg8->append(smg11, metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg8->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg8->append("RMK", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg8->append("TEST", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mg9->append(smg1, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg2, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg3, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg4, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg5, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg6, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg7, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg8, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg9, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append("RMK", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg9->append("TEST", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(mg10->append(smg1, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg2, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg3, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg4, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg5, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg6, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg7, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg8, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg9, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg10, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg11, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg12, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append(smg13, metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append("RMK", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg10->append("TEST", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -111,6 +111,15 @@ Type definitions
 
 			Indicates frost on the instrument (for example due to fog depositing rime). No data are provided.
 
+		.. cpp:enumerator:: ISSUER_ID_FS
+
+			Identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center San Diego, CA.
+
+		.. cpp:enumerator:: ISSUER_ID_FN
+
+			Identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center Norfolk, VA.
+
+
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
@@ -286,7 +295,7 @@ The examples of sunshine duration groups recognised by Metaf are as follows.
 Largest hailstone size
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Largest hailsone size may be specified in remark section of METAR reports.
+Largest hailstone size may be specified in remark section of METAR reports.
 
 The format is group ``GR`` followed by combination of single-digit integer and/or fraction in inches.
 
@@ -308,6 +317,23 @@ The examples of such groups are shown below.
 +--------------------+----------------------------------------+------------------------+
 
 
+Issuer identifiers
+^^^^^^^^^^^^^^^^^^
+
+Identifier of the person who issued the TAF forecast.
+
+This group is added to military forecasts issued either at The Fleet Weather Center San Diego, CA (FS) or at The Fleet Weather Center Norfolk, VA (FN).
+
++---------+-------------------------------------------------------+------------------------+
+| Group   | :cpp:func:`type()`                                    | :cpp:func:`data()`     |
++=========+=======================================================+========================+
+| FN00205 | :cpp:enumerator:`Type::ISSUER_ID_FN`                  | - std::optional<float> |
+|         |                                                       | - value() == 205.0     |
++---------+-------------------------------------------------------+------------------------+
+| FS30175 | :cpp:enumerator:`Type::ISSUER_ID_FS`                  | - std::optional<float> |
+|         |                                                       | - value() == 30175.0   |
++---------+-------------------------------------------------------+------------------------+
+
 
 Regional variations
 ^^^^^^^^^^^^^^^^^^^
@@ -318,7 +344,9 @@ Instead of colour code Yellow more precise Yellow1 and Yellow2 may be used.
 
 Corrected weather observation number groups and density altitude groups are used only in Canada.
 
-Hailstone size group, sunshine duration group and FROIN group are used in North America only.
+Hailstone size group, sunshine duration group and ``FROIN`` group are used in North America only.
+
+Issuer identifiers FN and FS are used only by US military.
 
 .. cpp:namespace-pop::
 

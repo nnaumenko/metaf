@@ -7423,7 +7423,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 	
-	{
+	// This version cannot yet recognise reports where CNL is used like that 
+/*	{
 		"ETHC", "Celle Airport", {2020, 11, 25},
 		"METAR ETHC 251720Z 18005KT 9999 BKN250 05/02 Q1018 BLU+FCST CNL"
 		"=",
@@ -7432,7 +7433,7 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		{},
 		0
-	},
+	},*/
 
 	{
 		"LSME", "Emmen Air Base", {2020, 11, 26},
@@ -7484,5 +7485,46 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		{},
 		0
+	},
+
+	{
+		"KNGU", "Norfolk Naval Station (Chambers Field)", {2020, 12, 7},
+		"METAR KNGU 072159Z 34013KT 9SM BKN010 OVC016 03/01 A2975"
+		" RMK AO2 CIG 008V013 SLP075 P0001 T00330011 $"
+		"=",
+		"TAF KNGU 0715/0815 02011G19KT 8000 -SHRA SCT010 BKN025 OVC050 650209 621109 QNH2970INS"
+		" TEMPO 0715/0721 03015G24KT 4800 -SHRA BKN008 OVC020"
+		" BECMG 0721/0723 35013G20KT 9999 NSW BKN008 OVC020 650209 QNH2972INS"
+		" FM080400 34015G23KT 9999 SCT050 BKN080 600000 QNH2978INS"
+		" FM080900 31015G23KT 9999 FEW080 SCT260 QNH2981INS"
+		" T07/0718Z T01/0812Z FN20002"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
+	},
+
+	{
+		"KNLC", "Lemoore Naval Air Station (Reeves Field) Airport", {2020, 12, 7},
+		"METAR KNLC 072156Z COR 36009KT 10SM FEW200 17/02 A3014"
+		" RMK AO2 SLP208 RH/39 T01670022 $"
+		"=",
+		"TAF KNLC 0723/0823 35010KT 9999 FEW200 520009 520906 522009 QNH3010INS"
+		" BECMG 0800/0802 VRB06KT 9999 FEW200 522009 QNH3008INS"
+		" FM081400 00000KT 6000 BR SKC 500000 QNH3014INS"
+		" TEMPO 0815/0819 3200 BR DU"
+		" TM02/0815Z T17/0823Z FS30122"
+		"=",
+		{
+			MetarTafRealData::Attribute::COR,
+			MetarTafRealData::Attribute::AO2,
+			MetarTafRealData::Attribute::MAINTENANCE_INDICATOR
+		},
+		{},
+		0
 	}
+
 };

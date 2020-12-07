@@ -1482,6 +1482,19 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << "Frost on the instrument ";
 		result << "(e.g. due to freezing fog depositing rime).";
 		break;
+
+		case metaf::MiscGroup::Type::ISSUER_ID_FN:
+		result << "Report issuer identifier is ";
+		result << static_cast<int>(*group.data());
+		result << "\nThis forecast is issued at The Fleet Weather Center Norfolk, VA.";
+		break;
+
+		case metaf::MiscGroup::Type::ISSUER_ID_FS:
+		result << "Report issuer identifier is ";
+		result << static_cast<int>(*group.data());
+		result << "\nThis forecast is issued at The Fleet Weather Center San Diego, CA (FS).";
+		break;
+
 	}
 	return result.str();
 }

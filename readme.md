@@ -124,14 +124,15 @@ Example of a TAF report is as follows:
 * Sunshine duration
 * Density altitude
 * Largest hailstone size
+* Military report issuer identifier 
 
 ## Roadmap
 
-There are no plans to change the API in the foreseeable future.
+Version 6.0.0 is currently planned (no release date set), with a number of new groups to be added (the candidates are runway wind, additional sea surface groups, first/last report, next scheduled report time remarks, variable cloud cover, additional visibility groups etc).
 
-At this stage the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring.
+There are also plans to change the handling of CNL keyword because some cancelled reports have additional remarks and some reports use CNL as a part of plain-text remark. Currently Metaf is unable to parse such reports.
 
-There are currently no plan to add new group types. If your region uses group formats which you think should be recognised by Metaf, please feel free to open an issue and let me know.
+After version 6.0.0 is released, the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring.
 
 ## Acknowledgements
 
