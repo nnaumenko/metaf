@@ -30,10 +30,10 @@ namespace metaf {
 
 // Metaf library version
 struct Version {
-	inline static const int major = 5;
-	inline static const int minor = 7;
+	inline static const int major = 6;
+	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "";
+	inline static const char tag [] = "phase 1/8";
 };
 
 class KeywordGroup;
@@ -152,6 +152,10 @@ public:
 			dayValue(day), hourValue(hour), minuteValue(minute) {}
 	static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
 	static inline std::optional<MetafTime> fromStringDDHH(const std::string & s);
+	static inline std::optional<MetafTime> fromStringDDHHorHHMM(const std::string &s, 
+		const MetafTime & beginTime);
+	static inline std::optional<MetafTime> fromRemarkString(const std::string &s,
+		const MetafTime & beginTime);
 
 private:
 	std::optional<unsigned int> dayValue;
@@ -2006,10 +2010,18 @@ public:
 		COLOUR_CODE_BLACKRED,
 		FROIN,
 		ISSUER_ID_FS,
-		ISSUER_ID_FN
+		ISSUER_ID_FN,
+		FIRST,
+		LAST,
+		LAST_STAFFED_OBSERVATION,
+		NO_AMENDMENTS_AFTER,
+		NEXT_REPORT_SCHEDULED,
+		AMENDED_AT,
+		CANCELLED_AT
 	};
 	Type type() const { return groupType; }
 	std::optional<float> data() const { return groupData; }
+	std::optional<MetafTime> time() const { return groupTime; }
 	inline bool isValid() const;
 
 	MiscGroup() = default;
@@ -2031,6 +2043,7 @@ private:
 
 	Type groupType;
 	std::optional<float> groupData;
+	std::optional<MetafTime> groupTime;
 	IncompleteText incompleteText = IncompleteText::NONE;
 
 	inline static std::optional<Type> parseColourCode(const std::string & group);
@@ -2654,6 +2667,25 @@ std::optional<MetafTime> MetafTime::fromStringDDHH(const std::string & s) {
 	metafTime.dayValue = day;
 	metafTime.hourValue = *hour;
 	return metafTime;
+}
+
+std::optional<MetafTime> MetafTime::fromStringDDHHorHHMM(const std::string &s, 
+	const MetafTime & beginTime) {
+	// TODO: distinguish between DDHH and HHMM formats based on
+	// report release time or beginning of report applicability period
+}
+
+std::optional<MetafTime> MetafTime::fromRemarkString(const std::string &s,
+	const MetafTime & beginTime) {
+	// TODO: parse day/time strings specified in remarks related to
+	// last/next/amendment/cancellation...
+	// Several formats are possible for this type of group:
+	// DDHH
+	// HHMM
+	// DDHHMM
+	// DDHHMMZ
+	// DDHHMM Z
+	// DD/HHMM
 }
 
 bool MetafTime::isValid() const {
@@ -6596,7 +6628,45 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 			return result;
 		}
 	}
-	
+
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
+		// TODO: parse the following groups
+
+		// Type::FIRST
+		// FISTS
+
+		// Type::LAST
+		// LAST
+		// LAST OBS
+		// LAST OBS/NEXT time
+		// LAST OBS/NXT time
+
+		// Type::LAST_STAFFED_OBSERVATION
+		// LAST STFD OBS
+		// LAST STFD OBS/NEXT time
+		// LAST STFD OBS/NXT time
+		// LAST STFD OBS NEXT time
+		// LAST STFD OBS NXT time
+
+		// Type::NO_AMENDMENTS_AFTER
+		// NO AMDS AFT time
+		// NO AMDS time
+
+		// Type::NEXT_REPORT_SCHEDULED
+		// NEXT time (without preceeding LAST...)
+		// NXT time (without preceeding LAST...)
+		// NEXT/time (without preceeding LAST...)
+		// NXT/time (without preceeding LAST...)
+		// NEXT FCST BY time (without preceeding LAST...)
+		// NXT FCST BY time (without preceeding LAST...)
+
+		// Type::AMENDED_AT
+		// AMD time
+
+		// Type::CANCELLED_AT
+		// CNL time
+	}
+
 	if (reportPart == ReportPart::METAR) {
 		if (std::regex_match(group, match, rgxCorrectionObservation)) {
 			result.groupType = Type::CORRECTED_WEATHER_OBSERVATION;

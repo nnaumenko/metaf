@@ -5,7 +5,7 @@ MiscGroup
 
 .. cpp:class:: MiscGroup
 
-	Stores various data provided in METAR or TAF report.
+	Stores variety of data which semantically do not belong to any other group type. 
 
 .. cpp:namespace-push:: MiscGroup
 
@@ -19,106 +19,161 @@ Type definitions
 
 		.. cpp:enumerator:: SUNSHINE_DURATION_MINUTES
 
-			Sunshine duration in minutes that occurred the previous calendar day (or zero if no sunshine occurred).
+			Sunshine duration that occurred the previous calendar day.
+
+			Use :cpp:func:`data()` to obtain sunshine duration in minutes (the value is zero if no sunshine occurred).
 
 		.. cpp:enumerator:: CORRECTED_WEATHER_OBSERVATION
 
-			This group designates a corrected weather observation; value reports the sequential number of correction, for example 1st, 2nd, 3rd, etc; this group is only used in Canada.
+			This group (coded ``CCA``, ``CCB``, ``CCC``, ``CCD``, etc) designates a corrected weather observation; value reports the sequential number of correction, for example 1st, 2nd, 3rd, etc; this group is only used in Canada.
+
+			Use :cpp:func:`data()` to obtain the number of correction (1 for ``CCA``, 2 for ``CCB``, 3 for ``CCC``, 4 for ``CCD``, etc).
 
 		.. cpp:enumerator:: DENSITY_ALTITUDE
 
-			Density altitude (in feet) reported in remarks. An empty ``std::optional`` indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
+			Density altitude (in feet) reported in remarks. 
+
+			Use :cpp:func:`data()` to obtain the reported density altitude in feet. An empty ``std::optional`` indicates missing density altitude data (coded ``DENSITY ALT MISG`` in remarks).
 
 		.. cpp:enumerator:: HAILSTONE_SIZE
 
-			Largest hailstone size in inches with increments of 1/4 inch.
+			Largest hailstone size in inches with increments of 1/4 inch. 
+
+			Use :cpp:func:`data()` to obtain the hailstone size: 1 for 1/4", 2 for 1/2" (2/4"), 3 for 3/4", 4 for 1" (4/4"), 5 for 1 1/4" (5/4"), etc.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLUE_PLUS
 
-			Visibility >8000 m AND no cloud obscuring 3/8 or more below 20000 feet. 
+			Visibility >8000 m AND no cloud obscuring 3/8 or more below 20000 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLUE
 
-			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet. 
+			Visibility >8000 m AND no cloud obscuring 3/8 or more below 2500 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_WHITE
 
-			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet.
+			Visibility >5000 m AND no cloud obscuring 3/8 or more below 1500 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_GREEN
 
-			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet.
+			Visibility >3700 m AND no cloud obscuring 3/8 or more below 700 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_YELLOW
 
-			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet. No data or time are provided.
 
 			.. note:: Instead of :cpp:enumerator:`COLOUR_CODE_YELLOW` some stations may use more precise :cpp:enumerator:`COLOUR_CODE_YELLOW1` and :cpp:enumerator:`COLOUR_CODE_YELLOW2`.
 
 		.. cpp:enumerator:: COLOUR_CODE_YELLOW1
 
-			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet.
+			Visibility >2500 m AND no cloud obscuring 3/8 or more below 500 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_YELLOW2
 
-			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet.
+			Visibility >1600 m AND no cloud obscuring 3/8 or more below 300 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_AMBER
 
-			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet.
+			Visibility >800 m AND no cloud obscuring 3/8 or more below 200 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_RED
 
-			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet.
+			Visibility <800 m OR clouds obscuring 3/8 or more below 200 feet. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE_PLUS
 
-			Same as :cpp:enumerator:`COLOUR_CODE_BLUE_PLUS` but also indicates that aerodrome is closed, for example, due to snow accumulation.
+			Same as :cpp:enumerator:`COLOUR_CODE_BLUE_PLUS` but also indicates that aerodrome is closed, for example, due to snow accumulation. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKBLUE
 
 			Same as :cpp:enumerator:`COLOUR_CODE_BLUE` but also indicates that aerodrome is closed, for example, due to snow accumulation.
 
+			No data or time are provided.
+
 		.. cpp:enumerator:: COLOUR_CODE_BLACKWHITE
 
-			Same as :cpp:enumerator:`COLOUR_CODE_WHITE` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_WHITE` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKGREEN
 
-			Same as :cpp:enumerator:`COLOUR_CODE_GREEN` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_GREEN` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW
 
 			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW` but also indicates that aerodrome is closed.
 
+			No data or time are provided.
+
 		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW1
 
-			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW1` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW1` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKYELLOW2
 
-			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW2` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_YELLOW2` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKAMBER
 
-			Same as :cpp:enumerator:`COLOUR_CODE_AMBER` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_AMBER` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: COLOUR_CODE_BLACKRED
 
-			Same as :cpp:enumerator:`COLOUR_CODE_RED` but also indicates that aerodrome is closed.
+			Same as :cpp:enumerator:`COLOUR_CODE_RED` but also indicates that aerodrome is closed. No data or time are provided.
 
 		.. cpp:enumerator:: FROIN
 
-			Indicates frost on the instrument (for example due to fog depositing rime). No data are provided.
+			Indicates frost on the instrument (for example due to fog depositing rime). 
+
+			No data or time are provided.
 
 		.. cpp:enumerator:: ISSUER_ID_FS
 
-			Identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center San Diego, CA.
+			Numeric identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center San Diego, CA.
+
+			Use :cpp:func:`data()` to obtain the numeric identifier.
 
 		.. cpp:enumerator:: ISSUER_ID_FN
 
-			Identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center Norfolk, VA.
+			Numeric identifier of the person who issued the forecast; indicates that the forecast was issued at The Fleet Weather Center Norfolk, VA.
 
+			Use :cpp:func:`data()` to obtain the numeric identifier.
+
+		.. cpp:enumerator:: FIRST
+
+			Indicates first manned observation. No data or time are provided.
+
+		.. cpp:enumerator:: LAST
+
+			Indicates last manned observation. No data or time are provided.
+
+		.. cpp:enumerator:: LAST_STAFFED_OBSERVATION
+
+			Indicates last staffed observation. 
+
+			Use :cpp:func:`time()` to obtain the time of next scheduled observation (will return empty ``std::optional`` if no next scheduled observation time was specified).
+
+		.. cpp:enumerator:: NO_AMENDMENTS_AFTER
+
+			Indicates that no amendments are are scheduled after specified time.
+
+			Use :cpp:func:`time()` to obtain the time after which no amendments are scheduled.
+
+		.. cpp:enumerator:: NEXT_REPORT_SCHEDULED
+
+			Specifies the time when the next observation or forecast is scheduled.
+
+			Use :cpp:func:`time()` to obtain the time when the next report is scheduled.
+
+		.. cpp:enumerator:: AMENDED_AT
+
+			Specifies the time when the report was amended.
+
+			Use :cpp:func:`time()` to obtain the time when the amended report was issued.
+
+		.. cpp:enumerator:: CANCELLED_AT
+
+			Specifies the time when the forecast was cancelled.
+
+			Use :cpp:func:`time()` to obtain the time when forecast was cancelled.
 
 
 Acquiring group data
@@ -130,9 +185,11 @@ Acquiring group data
 
 		.. cpp:function:: std::optional<float> data() const
 
-			:returns: The value reported in this group, or empty ``std::optional`` if the value is not reported.
+			:returns: The value reported in this group, or empty ``std::optional`` if the value is not reported or not applicable for this type of group (for example colour codes).
 
-				.. note:: empty ``std::optional`` is always returned for colour codes (for example BLU or BLACKRED).
+		.. cpp:function:: std::optional<MetafTime> time() const
+
+			:returns: The time reported in this group, or empty ``std::optional`` if the time is not applicable for this type of group.
 
 
 Validating
@@ -146,7 +203,9 @@ Validating
 Formats
 -------
 
-:cpp:class:`MiscGroup` represents various formats of uncommon and rare groups recognised by Metaf.
+:cpp:class:`MiscGroup` represents various formats of uncommon, rare and regional group formats recognised by Metaf.
+
+Data represented by MiscGroup semantically does not belong to any other group type.
 
 Colour codes
 ^^^^^^^^^^^^
