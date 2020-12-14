@@ -152,10 +152,13 @@ public:
 			dayValue(day), hourValue(hour), minuteValue(minute) {}
 	static inline std::optional<MetafTime> fromStringDDHHMM(const std::string & s);
 	static inline std::optional<MetafTime> fromStringDDHH(const std::string & s);
+	static inline std::optional<MetafTime> fromStringDDSlashHHMM(const std::string &s);
 	static inline std::optional<MetafTime> fromStringDDHHorHHMM(const std::string &s, 
-		const MetafTime & beginTime);
+		const MetafTime & beginTime,
+		const MetafTime & endTime);
 	static inline std::optional<MetafTime> fromRemarkString(const std::string &s,
-		const MetafTime & beginTime);
+		const MetafTime & beginTime,
+		const MetafTime & endTime);
 
 private:
 	std::optional<unsigned int> dayValue;
@@ -2637,21 +2640,14 @@ std::optional<MetafTime> MetafTime::fromStringDDHHMM(const std::string & s) {
 		const auto hour = strToUint(s, 0, 2);
 		const auto minute = strToUint(s, 2, 2);
 		if (!hour.has_value() || !minute.has_value()) return error;
-		MetafTime metafTime;
-		metafTime.hourValue = *hour;
-		metafTime.minuteValue = *minute;
-		return metafTime;
+		return MetafTime(*hour, *minute);
 	}
 	if (s.length() == 6) {
 		const auto day = strToUint(s, 0, 2);
 		const auto hour = strToUint(s, 2, 2);
 		const auto minute = strToUint(s, 4, 2);
 		if (!day.has_value() || !hour.has_value() || !minute.has_value()) return error;
-		MetafTime metafTime;
-		metafTime.dayValue = day;
-		metafTime.hourValue = *hour;
-		metafTime.minuteValue = *minute;
-		return metafTime;
+		return MetafTime(*day, *hour, *minute);
 	}
 	return error;
 }
@@ -2663,29 +2659,78 @@ std::optional<MetafTime> MetafTime::fromStringDDHH(const std::string & s) {
 	const auto day = strToUint(s, 0, 2);
 	const auto hour = strToUint(s, 2, 2);
 	if (!day.has_value() || !hour.has_value()) return error;
-	MetafTime metafTime;
-	metafTime.dayValue = day;
-	metafTime.hourValue = *hour;
-	return metafTime;
+	return MetafTime(*day, *hour, 0);
 }
 
 std::optional<MetafTime> MetafTime::fromStringDDHHorHHMM(const std::string &s, 
-	const MetafTime & beginTime) {
-	// TODO: distinguish between DDHH and HHMM formats based on
-	// report release time or beginning of report applicability period
+	const MetafTime & beginTime,
+	const MetafTime & endTime)
+{
+	//static const std::regex rgx ("(\\d\\d)(\\d\\d)");
+	static const std::optional<MetafTime> error;
+
+	if (s.length() != 4) return error;
+	const auto first = strToUint(s, 0, 2);  // first two digits
+	const auto second = strToUint(s, 2, 2); // second two digits 
+	if (!first.has_value() || !second.has_value()) return error;
+
+	// Detect whether DDHH or HHMM format may be theoretically valid
+	// If both are valid, proceed to next checks
+	const auto ddhh = MetafTime(*first, *second, 0);
+	const auto hhmm = MetafTime(*first, *second);
+	if (!ddhh.isValid() && !hhmm.isValid()) return error;
+	if (ddhh.isValid() && !hhmm.isValid()) return ddhh;
+	if (!ddhh.isValid() && hhmm.isValid()) return hhmm;
+
+	// Check agains applicable begin time and end time (if end time is available)
+	// If the time is across the end of the month and end value is not available
+	// then combination of day 1 and begin time day 28 or more is valid.
+	// This may glitch for example if the time string is 0115 and the report release 
+	// date is 28th May, this method will return date 1st June and time 15:00 
+	// instead of date 29th May and time 01:15.
+	// Unfortunately there is no better way to resolve this without knowing 
+	// month and year (to avoid possibility of error in last day of February)
+	// at the time of parsing.
+	const auto beginDay = beginTime.day().value_or(0);
+	const auto endDay = endTime.day().value_or(0);
+	if (beginDay == *first || endDay == *first) return ddhh;
+	if (!endDay && beginDay >= 28 && *first == 1) return ddhh; // last day of month
+
+	return hhmm;
+}
+
+std::optional<MetafTime> MetafTime::fromStringDDSlashHHMM(const std::string &s) {
+	//static const std::regex rgx ("(\\d\\d)/(\\d\\d)(\\d\\d)");
+	static const std::optional<MetafTime> error;
+	if (s.length() != 7 || s[2] != '/') return error;
+	const auto d = strToUint(s, 0, 2);
+	const auto h = strToUint(s, 3, 2); 
+	const auto m = strToUint(s, 5, 2);
+	if (!d.has_value() || !h.has_value() || !m.has_value()) return error;
+	return MetafTime(*d, *h, *m);
 }
 
 std::optional<MetafTime> MetafTime::fromRemarkString(const std::string &s,
-	const MetafTime & beginTime) {
-	// TODO: parse day/time strings specified in remarks related to
-	// last/next/amendment/cancellation...
-	// Several formats are possible for this type of group:
-	// DDHH
-	// HHMM
-	// DDHHMM
-	// DDHHMMZ
-	// DDHHMM Z
-	// DD/HHMM
+	const MetafTime & beginTime,
+	const MetafTime & endTime)
+{
+	static const std::optional<MetafTime> error;
+	switch (s.length()) {
+		case 4: // DDHH and HHMM
+		return fromStringDDHHorHHMM(s, beginTime, endTime);
+
+		case 6: // DDHHMM (and DDHHMM Z where Z is separated by delimiter)
+		return fromStringDDHHMM(s);
+
+		case 7:
+		if (s[6] == 'Z') return fromStringDDHHMM(s.substr(0, 6)); // DDHHMMZ
+		if (s[2] == '/') return fromStringDDSlashHHMM(s); // DD/HHMM
+		break;
+
+		default:
+		break;
+	}
+	return error;
 }
 
 bool MetafTime::isValid() const {
@@ -6629,15 +6674,22 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 		}
 	}
 
-	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
-		// TODO: parse the following groups
+	if (reportPart == ReportPart::METAR || 
+		reportPart == ReportPart::TAF ||
+		reportPart == ReportPart::RMK) {
 
-		// Type::FIRST
-		// FISTS
+		if (group == "FIRST") {
+			result.groupType = Type::FIRST;
+			return result;
+		}
+
+		// TODO: parse the following groups
 
 		// Type::LAST
 		// LAST
 		// LAST OBS
+		// LAST OBS NEXT time
+		// LAST OBS NXT time
 		// LAST OBS/NEXT time
 		// LAST OBS/NXT time
 

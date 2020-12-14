@@ -82,6 +82,7 @@ TEST(MetafTime, fromStringDDHHMMwithoutDay) {
 TEST(MetafTime, fromStringDDHHMM_wrongFormat) {
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("12/08:30").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("12/0830").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("A20830").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("//////").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHHMM("20830").has_value());
@@ -108,6 +109,90 @@ TEST(MetafTime, fromStringDDHH_wrongFormat) {
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("12080").has_value());
 	EXPECT_FALSE(metaf::MetafTime::fromStringDDHH("1208Z").has_value());
 }
+
+TEST(MetafTime, fromStringDDSlashHHMM) {
+	const auto t = metaf::MetafTime::fromStringDDSlashHHMM("12/0830");
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 12u);
+	EXPECT_EQ(t->hour(), 8u);
+	EXPECT_EQ(t->minute(), 30u);
+}
+
+TEST(MetafTime, fromStringDDSlashHHMM_wrongFormat) {
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("12/08:30").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("120830").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("A20830").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("//////").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("20830").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("1208030").has_value());
+	EXPECT_FALSE(metaf::MetafTime::fromStringDDSlashHHMM("120830Z").has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Remark formats test
+// Purpose: to confirm that all formats used in schedule remarks (NEXT, NO 
+// AMDS AFT, etc) are parsed correctly.
+// Note: 
+// Note: tests for the detection of DDHH and HHMM format are performed in the
+// next section 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MetafTime, fromRemarkString) {
+	const auto t1 = metaf::MetafTime::fromRemarkString("0830",
+		metaf::MetafTime(12, 3, 0),
+		metaf::MetafTime(13, 3, 0));
+	ASSERT_TRUE(t1.has_value());
+	EXPECT_FALSE(t1->day().has_value());
+	EXPECT_EQ(t1->hour(), 8u);
+	EXPECT_EQ(t1->minute(), 30u);
+
+	const auto t2 = metaf::MetafTime::fromRemarkString("2611",
+		metaf::MetafTime(25, 17, 0),
+		metaf::MetafTime(26, 17, 0));
+	ASSERT_TRUE(t2.has_value());
+	ASSERT_TRUE(t2->day().has_value());
+	EXPECT_EQ(t2->day().value(), 26u);
+	EXPECT_EQ(t2->hour(), 11u);
+	EXPECT_EQ(t2->minute(), 0u);
+
+	const auto t3 = metaf::MetafTime::fromRemarkString("120830",
+		metaf::MetafTime(12, 3, 0),
+		metaf::MetafTime(13, 3, 0));
+	ASSERT_TRUE(t3.has_value());
+	ASSERT_TRUE(t3->day().has_value());
+	EXPECT_EQ(t3->day().value(), 12u);
+	EXPECT_EQ(t3->hour(), 8u);
+	EXPECT_EQ(t3->minute(), 30u);
+
+	const auto t4 = metaf::MetafTime::fromRemarkString("120830Z",
+		metaf::MetafTime(12, 3, 0),
+		metaf::MetafTime(13, 3, 0));
+	ASSERT_TRUE(t4.has_value());
+	ASSERT_TRUE(t4->day().has_value());
+	EXPECT_EQ(t4->day().value(), 12u);
+	EXPECT_EQ(t4->hour(), 8u);
+	EXPECT_EQ(t4->minute(), 30u);
+
+	const auto t5 = metaf::MetafTime::fromRemarkString("12/0830",
+		metaf::MetafTime(12, 3, 0),
+		metaf::MetafTime(13, 3, 0));
+	ASSERT_TRUE(t5.has_value());
+	ASSERT_TRUE(t5->day().has_value());
+	EXPECT_EQ(t5->day().value(), 12u);
+	EXPECT_EQ(t5->hour(), 8u);
+	EXPECT_EQ(t5->minute(), 30u);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Format detection tests
+// Purpose: to confirm that formats DDHH and HHMM are correctly distinguisted
+// based on range vaildity for day, hour and minute, on date of the report, 
+// and on forecast applicability time 
+///////////////////////////////////////////////////////////////////////////////
+
+//TODO
 
 ///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
@@ -416,4 +501,3 @@ TEST(MetafTime, dateBeforeRefDifferentMonthAndYear) {
 	EXPECT_EQ(tDate.month, 12u);
 	EXPECT_EQ(tDate.day, 31u);
 }
-
