@@ -2674,27 +2674,25 @@ std::optional<MetafTime> MetafTime::fromStringDDHHorHHMM(const std::string &s,
 	const auto second = strToUint(s, 2, 2); // second two digits 
 	if (!first.has_value() || !second.has_value()) return error;
 
-	// Detect whether DDHH or HHMM format may be theoretically valid
-	// If both are valid, proceed to next checks
 	const auto ddhh = MetafTime(*first, *second, 0);
 	const auto hhmm = MetafTime(*first, *second);
 	if (!ddhh.isValid() && !hhmm.isValid()) return error;
 	if (ddhh.isValid() && !hhmm.isValid()) return ddhh;
 	if (!ddhh.isValid() && hhmm.isValid()) return hhmm;
 
-	// Check agains applicable begin time and end time (if end time is available)
-	// If the time is across the end of the month and end value is not available
-	// then combination of day 1 and begin time day 28 or more is valid.
-	// This may glitch for example if the time string is 0115 and the report release 
-	// date is 28th May, this method will return date 1st June and time 15:00 
-	// instead of date 29th May and time 01:15.
-	// Unfortunately there is no better way to resolve this without knowing 
-	// month and year (to avoid possibility of error in last day of February)
-	// at the time of parsing.
 	const auto beginDay = beginTime.day().value_or(0);
 	const auto endDay = endTime.day().value_or(0);
-	if (beginDay == *first || endDay == *first) return ddhh;
-	if (!endDay && beginDay >= 28 && *first == 1) return ddhh; // last day of month
+	const auto maybeDay = *first; // Maybe first 2 digits contain day rather than hour?
+	if (beginDay == maybeDay || endDay == maybeDay) return ddhh;
+	if (!endDay) { // no end day provided, must decide based solely on begin day
+		if ((beginDay + 1) == maybeDay) return ddhh;
+		const auto firstDayOfMonth = 1;
+		const auto lastDaysOfMonth = 28; // 28th, 29th, 30th and 31st may be last day of month
+		if (beginDay >= lastDaysOfMonth && maybeDay == firstDayOfMonth) return ddhh;
+		// This may glitch for time such as 0115 and report release date 28th May:
+		// will return day 1 (1st June) 15:00 instead of day 29 (29th May) 01:15.
+		// To avoid this, parser must somehow know number of days in month.
+	}
 
 	return hhmm;
 }

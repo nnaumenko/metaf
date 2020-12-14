@@ -192,7 +192,91 @@ TEST(MetafTime, fromRemarkString) {
 // and on forecast applicability time 
 ///////////////////////////////////////////////////////////////////////////////
 
-//TODO
+TEST(MetafTime, formatDetectionDDHH_dayValue) {
+	const auto t = metaf::MetafTime::fromRemarkString("2508", // hour cannot be 25
+		metaf::MetafTime(0, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 25u);
+	EXPECT_EQ(t->hour(), 8u);
+	EXPECT_EQ(t->minute(), 0u);
+}
+
+TEST(MetafTime, formatDetectionHHMM_hourValue) {
+	const auto t = metaf::MetafTime::fromRemarkString("0008", // day-of-month cannot be 0
+		metaf::MetafTime(0, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	EXPECT_FALSE(t->day().has_value());
+	EXPECT_EQ(t->hour(), 0u);
+	EXPECT_EQ(t->minute(), 8u);
+}
+
+TEST(MetafTime, formatDetectionHHMM_minuteValue) {
+	const auto t = metaf::MetafTime::fromRemarkString("0125", // hour cannot be 25
+		metaf::MetafTime(0, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	EXPECT_FALSE(t->day().has_value());
+	EXPECT_EQ(t->hour(), 1u);
+	EXPECT_EQ(t->minute(), 25u);
+}
+
+TEST(MetafTime, formatDetectionDDHH_beginDay) {
+	const auto t = metaf::MetafTime::fromRemarkString("1507", 
+		metaf::MetafTime(15, 11, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 15u);
+	EXPECT_EQ(t->hour(), 7u);
+	EXPECT_EQ(t->minute(), 0u);
+}
+
+TEST(MetafTime, formatDetectionDDHH_endDay) {
+	const auto t = metaf::MetafTime::fromRemarkString("1607", 
+		metaf::MetafTime(15, 11, 0),
+		metaf::MetafTime(16, 11, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 16u);
+	EXPECT_EQ(t->hour(), 7u);
+	EXPECT_EQ(t->minute(), 0u);
+}
+
+TEST(MetafTime, formatDetectionDDHH_nextDayAfterBeginDay) {
+	const auto t = metaf::MetafTime::fromRemarkString("1607", 
+		metaf::MetafTime(15, 11, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 16u);
+	EXPECT_EQ(t->hour(), 7u);
+	EXPECT_EQ(t->minute(), 0u);
+}
+
+TEST(MetafTime, formatDetectionDDHH_endDayEndOfMonth) {
+	const auto t = metaf::MetafTime::fromRemarkString("0107", 
+		metaf::MetafTime(28, 11, 0),
+		metaf::MetafTime(1, 11, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 1u);
+	EXPECT_EQ(t->hour(), 7u);
+	EXPECT_EQ(t->minute(), 0u);
+}
+
+TEST(MetafTime, formatDetectionDDHH_nextDayAfterBeginEndOfMonth) {
+	const auto t = metaf::MetafTime::fromRemarkString("0107", 
+		metaf::MetafTime(28, 11, 0),
+		metaf::MetafTime(0, 0));
+	ASSERT_TRUE(t.has_value());
+	ASSERT_TRUE(t->day().has_value());
+	EXPECT_EQ(t->day().value(), 1u);
+	EXPECT_EQ(t->hour(), 7u);
+	EXPECT_EQ(t->minute(), 0u);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
