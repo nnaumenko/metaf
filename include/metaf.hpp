@@ -158,7 +158,8 @@ public:
 		const MetafTime & endTime);
 	static inline std::optional<MetafTime> fromRemarkString(const std::string &s,
 		const MetafTime & beginTime,
-		const MetafTime & endTime);
+		const MetafTime & endTime,
+		bool enableHHMM = false);
 
 private:
 	std::optional<unsigned int> dayValue;
@@ -2041,7 +2042,20 @@ private:
 		DENSITY,
 		DENSITY_ALT,
 		GR,
-		GR_INT
+		GR_INT,
+		LAST,
+		LAST_OBS,
+		LAST_OBS_NEXT,
+		LAST_STFD,
+		LAST_STFD_OBS,
+		LAST_STFD_OBS_NEXT,
+		NO,
+		NO_AMDS,
+		NO_AMDS_AFT,
+		NEXT,
+		NEXT_FCST,
+		NEXT_FCST_BY,
+		AMD
 	};
 
 	Type groupType;
@@ -2049,6 +2063,7 @@ private:
 	std::optional<MetafTime> groupTime;
 	IncompleteText incompleteText = IncompleteText::NONE;
 
+	MiscGroup(Type type) : groupType (type) {}
 	inline static std::optional<Type> parseColourCode(const std::string & group);
 	inline bool appendHailstoneFraction (const std::string & group);
 	inline bool appendDensityAltitude (const std::string & group);
@@ -2710,12 +2725,17 @@ std::optional<MetafTime> MetafTime::fromStringDDSlashHHMM(const std::string &s) 
 
 std::optional<MetafTime> MetafTime::fromRemarkString(const std::string &s,
 	const MetafTime & beginTime,
-	const MetafTime & endTime)
+	const MetafTime & endTime,
+	bool enableHHMM)
 {
-	static const std::optional<MetafTime> error;
 	switch (s.length()) {
 		case 4: // DDHH and HHMM
-		return fromStringDDHHorHHMM(s, beginTime, endTime);
+		if (enableHHMM) return fromStringDDHHorHHMM(s, beginTime, endTime);
+		return fromStringDDHH(s);
+
+		case 5:
+		if (s[4] == 'Z') return fromStringDDHH(s.substr(0, 4)); // DDHHZ
+		break;
 
 		case 6: // DDHHMM (and DDHHMM Z where Z is separated by delimiter)
 		return fromStringDDHHMM(s);
@@ -2728,7 +2748,7 @@ std::optional<MetafTime> MetafTime::fromRemarkString(const std::string &s,
 		default:
 		break;
 	}
-	return error;
+	return std::optional<MetafTime>();
 }
 
 bool MetafTime::isValid() const {
@@ -6675,11 +6695,21 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	if (reportPart == ReportPart::METAR || 
 		reportPart == ReportPart::TAF ||
 		reportPart == ReportPart::RMK) {
-
-		if (group == "FIRST") {
-			result.groupType = Type::FIRST;
-			return result;
+		/*
+		if (group == "FIRST") return MiscGroup(Type::FIRST);
+		if (group == "LAST") return MiscGroup(Type::LAST);
+		if (group == "NO") {
+			result.incompleteText = IncompleteText::NO;
+			result.groupType = Type::NO_AMENDMENTS_AFTER;
 		}
+		if (group == "NEXT" || group == "NXT") {
+			result.incompleteText = IncompleteText::NEXT;
+			result.groupType = Type::NEXT_REPORT_SCHEDULED;
+		}
+		if (group == "AMD") {
+			result.incompleteText = IncompleteText::AMD;
+			result.groupType = Type::AMENDED_AT;
+		}*/
 
 		// TODO: parse the following groups
 
