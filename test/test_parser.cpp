@@ -185,6 +185,10 @@ static bool isVicinity(const metaf::Group & group) {
 	return(std::holds_alternative<metaf::VicinityGroup>(group));
 }
 
+static bool isMisc(const metaf::Group & group) {
+	return(std::holds_alternative<metaf::MiscGroup>(group));
+}
+
 static bool isBluPlus(const metaf::Group & group) {
 	if (!std::holds_alternative<metaf::MiscGroup>(group)) return false;
 	return (std::get<metaf::MiscGroup>(group).type() == metaf::MiscGroup::Type::COLOUR_CODE_BLUE_PLUS);
@@ -1633,7 +1637,7 @@ TEST(ParserResultReportPartAndRawString, metar) {
 	EXPECT_EQ(result.groups.at(9).rawString, "RMK");
 	EXPECT_EQ(result.groups.at(9).reportPart, metaf::ReportPart::METAR);
 
-	EXPECT_TRUE(isUnknown(result.groups.at(10).group));
+	EXPECT_TRUE(isMisc(result.groups.at(10).group));
 	EXPECT_EQ(result.groups.at(10).rawString, "LAST");
 	EXPECT_EQ(result.groups.at(10).reportPart, metaf::ReportPart::RMK);
 }
@@ -1712,7 +1716,7 @@ TEST(ParserResultReportPartAndRawString, taf) {
 	EXPECT_EQ(result.groups.at(15).rawString, "RMK");
 	EXPECT_EQ(result.groups.at(15).reportPart, metaf::ReportPart::TAF);
 
-	EXPECT_TRUE(isUnknown(result.groups.at(16).group));
+	EXPECT_TRUE(isMisc(result.groups.at(16).group));
 	EXPECT_EQ(result.groups.at(16).rawString, "LAST");
 	EXPECT_EQ(result.groups.at(16).reportPart, metaf::ReportPart::RMK);
 }

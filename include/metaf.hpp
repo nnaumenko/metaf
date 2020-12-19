@@ -157,8 +157,8 @@ public:
 		const MetafTime & beginTime,
 		const MetafTime & endTime);
 	static inline std::optional<MetafTime> fromRemarkString(const std::string &s,
-		const MetafTime & beginTime,
-		const MetafTime & endTime,
+		const MetafTime & beginTime = MetafTime(0, 0),
+		const MetafTime & endTime = MetafTime(0, 0),
 		bool enableHHMM = false);
 
 private:
@@ -2019,9 +2019,11 @@ public:
 		LAST,
 		LAST_STAFFED_OBSERVATION,
 		NO_AMENDMENTS_AFTER,
-		NEXT_REPORT_SCHEDULED,
+		NEXT,
+		NEXT_FORECAST,
 		AMENDED_AT,
-		CANCELLED_AT
+		CANCELLED_AT,
+		FORECAST_BASED_ON_AUTO_OBSERVATION
 	};
 	Type type() const { return groupType; }
 	std::optional<float> data() const { return groupData; }
@@ -2055,7 +2057,15 @@ private:
 		NEXT,
 		NEXT_FCST,
 		NEXT_FCST_BY,
-		AMD
+		NEXT_FCST_WILL,
+		NEXT_FCST_WILL_BE,
+		NEXT_FCST_WILL_BE_ISSUED,
+		NEXT_FCST_WILL_BE_ISSUED_AT,
+		AMD,
+		FCST,
+		FCST_BASED,
+		FCST_BASED_ON,
+		FCST_BASED_ON_AUTO,
 	};
 
 	Type groupType;
@@ -2063,10 +2073,34 @@ private:
 	std::optional<MetafTime> groupTime;
 	IncompleteText incompleteText = IncompleteText::NONE;
 
-	MiscGroup(Type type) : groupType (type) {}
+	MiscGroup(Type t, IncompleteText it = IncompleteText::NONE) : 
+		groupType(t), incompleteText(it) {}
+
 	inline static std::optional<Type> parseColourCode(const std::string & group);
 	inline bool appendHailstoneFraction (const std::string & group);
 	inline bool appendDensityAltitude (const std::string & group);
+
+	inline AppendResult appendFixed(const std::string & group, 
+		const std::string & expected, 
+		IncompleteText next);
+	inline AppendResult appendTimeWithHHMM(const std::string & group,
+		const std::optional<MetafTime> & reportTime,
+		const std::optional<MetafTime> & applicableFrom,
+		const std::optional<MetafTime> & applicableUntil);
+	inline AppendResult appendTimeWithoutHHMM(const std::string & group);
+
+	static bool isNext(const std::string & s) { 
+		return (s == "NEXT" || s == "NXT");
+	}
+	static bool isObs (const std::string & s) {
+		return (s == "OBS" || s == "OBS." || s == "OB" || s == "OB.");
+	}
+	static bool isObsNext (const std::string & s) {
+		return (s == "OBS/NEXT" || s == "OBS/NXT" || s == "OB/NEXT" || s == "OB/NXT" ||
+				s == "OBS./NEXT" || s == "OBS./NXT" || s == "OB./NEXT" || s == "OB./NXT");
+	}
+	inline static std::optional<MetafTime> nextTime(const std::string & s);
+	inline static std::optional<MetafTime> obsNextTime(const std::string & s);
 };
 
 class UnknownGroup {
@@ -6695,56 +6729,19 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	if (reportPart == ReportPart::METAR || 
 		reportPart == ReportPart::TAF ||
 		reportPart == ReportPart::RMK) {
-		/*
+
 		if (group == "FIRST") return MiscGroup(Type::FIRST);
-		if (group == "LAST") return MiscGroup(Type::LAST);
-		if (group == "NO") {
-			result.incompleteText = IncompleteText::NO;
-			result.groupType = Type::NO_AMENDMENTS_AFTER;
+		if (group == "LAST") return MiscGroup(Type::LAST, IncompleteText::LAST);
+		if (group == "NO") return MiscGroup(Type::NO_AMENDMENTS_AFTER, IncompleteText::NO);
+		if (isNext(group)) return MiscGroup(Type::NEXT, IncompleteText::NEXT);
+		if (group == "AMD")	return MiscGroup(Type::AMENDED_AT, IncompleteText::AMD);
+		if (group == "FCST") return MiscGroup(Type::FORECAST_BASED_ON_AUTO_OBSERVATION, IncompleteText::FCST);
+		if (const auto t = nextTime(group); t.has_value()) {
+			result.groupType = Type::NEXT;
+			result.groupTime = t;
+			return result;
 		}
-		if (group == "NEXT" || group == "NXT") {
-			result.incompleteText = IncompleteText::NEXT;
-			result.groupType = Type::NEXT_REPORT_SCHEDULED;
-		}
-		if (group == "AMD") {
-			result.incompleteText = IncompleteText::AMD;
-			result.groupType = Type::AMENDED_AT;
-		}*/
-
-		// TODO: parse the following groups
-
-		// Type::LAST
-		// LAST
-		// LAST OBS
-		// LAST OBS NEXT time
-		// LAST OBS NXT time
-		// LAST OBS/NEXT time
-		// LAST OBS/NXT time
-
-		// Type::LAST_STAFFED_OBSERVATION
-		// LAST STFD OBS
-		// LAST STFD OBS/NEXT time
-		// LAST STFD OBS/NXT time
-		// LAST STFD OBS NEXT time
-		// LAST STFD OBS NXT time
-
-		// Type::NO_AMENDMENTS_AFTER
-		// NO AMDS AFT time
-		// NO AMDS time
-
-		// Type::NEXT_REPORT_SCHEDULED
-		// NEXT time (without preceeding LAST...)
-		// NXT time (without preceeding LAST...)
-		// NEXT/time (without preceeding LAST...)
-		// NXT/time (without preceeding LAST...)
-		// NEXT FCST BY time (without preceeding LAST...)
-		// NXT FCST BY time (without preceeding LAST...)
-
-		// Type::AMENDED_AT
-		// AMD time
-
-		// Type::CANCELLED_AT
-		// CNL time
+		// TODO: CNL time
 	}
 
 	if (reportPart == ReportPart::METAR) {
@@ -6784,10 +6781,13 @@ AppendResult MiscGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)reportPart;
+	(void)reportPart;
+
 	switch(incompleteText){
 		case IncompleteText::NONE:
 		return AppendResult::NOT_APPENDED;
+
+		// DENSITY ALT, DENSITY ALT MISG
 
 		case IncompleteText::DENSITY:
 		if (group == "ALT") {
@@ -6804,6 +6804,8 @@ AppendResult MiscGroup::append(const std::string & group,
 		if (appendDensityAltitude(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
+		// GR
+
 		case IncompleteText::GR:
 		if (group.length() == 1 && group[0] >= '1' && group[0] <= '9') {
 			groupData = group[0] - '0';
@@ -6817,6 +6819,159 @@ AppendResult MiscGroup::append(const std::string & group,
 		if (appendHailstoneFraction(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
+		// LAST OBS, LAST OBS NEXT time, LAST STFD OBS NEXT time, LAST STFD OBS/NEXT/time, etc 
+
+		case IncompleteText::LAST:
+		if (isObs(group)) {
+			incompleteText = IncompleteText::LAST_OBS;
+			return AppendResult::APPENDED;
+		} 
+		if (isObsNext(group)) {
+			incompleteText = IncompleteText::LAST_OBS_NEXT;
+			return AppendResult::APPENDED;
+		}
+		if (group == "STFD") {
+			groupType = Type::LAST_STAFFED_OBSERVATION;
+			incompleteText = IncompleteText::LAST_STFD; 
+			return AppendResult::APPENDED;
+		}
+		if (const auto t = obsNextTime(group); t.has_value()) {
+			groupTime = t;
+			incompleteText = IncompleteText::NONE; 
+			return AppendResult::APPENDED;
+		}
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::LAST_OBS:
+		if (isNext(group)) {
+			incompleteText = IncompleteText::LAST_OBS_NEXT; 
+			return AppendResult::APPENDED;
+		}
+		if (const auto t = nextTime(group); t.has_value()) {
+			groupTime = t;
+			incompleteText = IncompleteText::LAST_OBS_NEXT; 
+			return AppendResult::APPENDED;
+		}
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::LAST_OBS_NEXT:
+		return appendTimeWithoutHHMM(group);
+
+		case IncompleteText::LAST_STFD:
+		if (isNext(group) || isObsNext(group)) {
+			incompleteText = IncompleteText::LAST_STFD_OBS_NEXT; 
+			return AppendResult::APPENDED;
+		}
+		if (isObs(group)) {
+			incompleteText = IncompleteText::LAST_STFD_OBS;
+			return AppendResult::APPENDED;
+		} 
+		if (const auto t = obsNextTime(group); t.has_value()) {
+			groupTime = t;
+			incompleteText = IncompleteText::NONE; 
+			return AppendResult::APPENDED;
+		}
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::LAST_STFD_OBS:
+		if (isNext(group)) {
+			incompleteText = IncompleteText::LAST_STFD_OBS_NEXT;
+			return AppendResult::APPENDED;
+		}
+		incompleteText = IncompleteText::NONE;
+		if (const auto t = nextTime(group); t.has_value()) {
+			groupTime = t;
+			incompleteText = IncompleteText::LAST_OBS_NEXT; 
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::LAST_STFD_OBS_NEXT:
+		return appendTimeWithoutHHMM(group);
+		return AppendResult::GROUP_INVALIDATED;
+
+		// NO AMDS AFT time
+
+		case IncompleteText::NO:
+		return appendFixed(group, "AMDS", IncompleteText::NO_AMDS);
+
+		case IncompleteText::NO_AMDS:
+		return appendFixed(group, "AFT", IncompleteText::NO_AMDS_AFT);
+
+		case IncompleteText::NO_AMDS_AFT:
+		return appendTimeWithHHMM(group, 
+			reportMetadata.reportTime,
+			reportMetadata.timeSpanFrom,
+			reportMetadata.timeSpanUntil);
+
+		// NEXT FCST BY time, NEXT FCST AT time, NEXT FCST WILL BE ISSUED AT time
+
+		case IncompleteText::NEXT:
+		if (group == "FCST") {
+			groupType = Type::NEXT_FORECAST;
+			incompleteText = IncompleteText::NEXT_FCST;
+			return AppendResult::APPENDED;			
+		}
+		return appendTimeWithoutHHMM(group);
+
+		case IncompleteText::NEXT_FCST:
+		if (group == "BY" || group == "AT") {
+			groupType = Type::NEXT_FORECAST;
+			incompleteText = IncompleteText::NEXT_FCST_BY;
+			return AppendResult::APPENDED;			
+		}
+		if (group == "WILL") {
+			incompleteText = IncompleteText::NEXT_FCST_WILL;
+			return AppendResult::APPENDED;
+		}
+		return appendTimeWithoutHHMM(group);
+
+		case IncompleteText::NEXT_FCST_BY:
+		return appendTimeWithoutHHMM(group);
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::NEXT_FCST_WILL:
+		return appendFixed(group, "BE", IncompleteText::NEXT_FCST_WILL_BE);
+
+		case IncompleteText::NEXT_FCST_WILL_BE:
+		return appendFixed(group, "ISSUED", IncompleteText::NEXT_FCST_WILL_BE_ISSUED);
+
+		case IncompleteText::NEXT_FCST_WILL_BE_ISSUED:
+		if (const auto a = appendTimeWithoutHHMM(group); a == AppendResult::APPENDED) return a;
+		return appendFixed(group, "AT", IncompleteText::NEXT_FCST_WILL_BE_ISSUED);
+
+		case IncompleteText::NEXT_FCST_WILL_BE_ISSUED_AT:
+		return appendTimeWithoutHHMM(group);
+
+		// AMD time
+
+		case IncompleteText::AMD:
+		return appendTimeWithHHMM(group, 
+			reportMetadata.reportTime,
+			reportMetadata.timeSpanFrom,
+			reportMetadata.timeSpanUntil);
+		return AppendResult::GROUP_INVALIDATED;
+
+		// FCST BASED ON AUTO OBS
+
+		case IncompleteText::FCST:
+		return appendFixed(group, "BASED", IncompleteText::FCST_BASED);
+
+		case IncompleteText::FCST_BASED:
+		return appendFixed(group, "ON", IncompleteText::FCST_BASED_ON);
+
+		case IncompleteText::FCST_BASED_ON:
+		return appendFixed(group, "AUTO", IncompleteText::FCST_BASED_ON_AUTO);
+
+		case IncompleteText::FCST_BASED_ON_AUTO:
+		if (isObs(group)) {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;			
+		}
+		return AppendResult::GROUP_INVALIDATED;
 	}
 }
 
@@ -6871,6 +7026,56 @@ bool MiscGroup::appendDensityAltitude(const std::string & group) {
 bool MiscGroup::isValid() const {
 	return (incompleteText == IncompleteText::NONE);
 }
+
+AppendResult MiscGroup::appendFixed(const std::string & group, 
+	const std::string & expected, 
+	IncompleteText next)
+{
+	if (group == expected) { incompleteText = next; return AppendResult::APPENDED; }
+	return AppendResult::GROUP_INVALIDATED;
+}
+
+AppendResult MiscGroup::appendTimeWithHHMM(const std::string & group,
+	const std::optional<MetafTime> & reportTime,
+	const std::optional<MetafTime> & applicableFrom,
+	const std::optional<MetafTime> & applicableUntil)
+{
+	const auto beginTime = applicableFrom.value_or(reportTime.value_or(MetafTime(0, 0)));
+	const auto endTime = applicableUntil.value_or(MetafTime(0, 0));
+	const auto t = MetafTime::fromRemarkString(group, beginTime, endTime, true);
+	if (!t.has_value()) return AppendResult::GROUP_INVALIDATED;
+	groupTime = t;
+	incompleteText = IncompleteText::NONE;
+	return AppendResult::APPENDED;
+}
+
+AppendResult MiscGroup::appendTimeWithoutHHMM(const std::string & group) {
+	const auto t = MetafTime::fromRemarkString(group);
+	if (!t.has_value()) return AppendResult::GROUP_INVALIDATED;
+	groupTime = t;
+	incompleteText = IncompleteText::NONE;
+	return AppendResult::APPENDED;
+}
+
+std::optional<MetafTime> MiscGroup::nextTime(const std::string & s) {
+	//Equivalent regex "NE?XT/((?:.)+)"
+	static const std::optional<MetafTime> error;
+	const auto slashPos = s.find('/');
+	if (slashPos == std::string::npos ||!isNext(s.substr(0, slashPos))) return error;
+	if (slashPos + 1 >= s.length()) return error;
+	return MetafTime::fromRemarkString(s.substr(slashPos + 1));
+}
+
+std::optional<MetafTime> MiscGroup::obsNextTime(const std::string & s) {
+	//Equivalent regex "OB(?:S\.?)?/NE?XT/((?:.)+)"
+	static const std::optional<MetafTime> error;
+	static const auto largestObsStr = std::string("OBS./");
+	const auto slashPos = s.find('/', largestObsStr.length());
+	if (slashPos == std::string::npos ||!isNext(s.substr(0, slashPos))) return error;
+	if (slashPos + 1 >= s.length()) return error;
+	return MetafTime::fromRemarkString(s.substr(slashPos + 1));	
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

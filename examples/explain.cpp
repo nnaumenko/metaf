@@ -1495,6 +1495,73 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << "\nThis forecast is issued at The Fleet Weather Center San Diego, CA (FS).";
 		break;
 
+		case metaf::MiscGroup::Type::FIRST:
+		result << "First manned observation.";
+		break;
+
+		case metaf::MiscGroup::Type::LAST:
+		result << "Last manned observation.";
+		if (group.time().has_value()) {
+			result << "\nNext report is scheduled for " << explainMetafTime(*group.time());
+		}
+		break;
+
+
+		case metaf::MiscGroup::Type::LAST_STAFFED_OBSERVATION:
+		result << "Last staffed observation.";
+		if (group.time().has_value()) {
+			result << "\nNext report is scheduled for " << explainMetafTime(*group.time());
+		}
+		break;
+
+		case metaf::MiscGroup::Type::NO_AMENDMENTS_AFTER:
+		result << "No amendments are scheduled after ";
+		if (group.time().has_value()) {
+			result << explainMetafTime(*group.time());
+		} else {
+			result << "[no time provided].";
+		}
+		break;
+
+		case metaf::MiscGroup::Type::NEXT:
+		result << "Next report is scheduled for ";
+		if (group.time().has_value()) {
+			result << explainMetafTime(*group.time());
+		} else {
+			result << "[no time provided].";
+		}
+		break;
+
+		case metaf::MiscGroup::Type::NEXT_FORECAST:
+		result << "Next forecast is scheduled for ";
+		if (group.time().has_value()) {
+			result << explainMetafTime(*group.time());
+		} else {
+			result << "[no time provided].";
+		}
+		break;
+
+		case metaf::MiscGroup::Type::AMENDED_AT:
+		result << "Report was amended on ";
+		if (group.time().has_value()) {
+			result << explainMetafTime(*group.time());
+		} else {
+			result << "[no time provided].";
+		}
+		break;
+
+		case metaf::MiscGroup::Type::CANCELLED_AT:
+		result << "Forecast was cancelled at ";
+		if (group.time().has_value()) {
+			result << explainMetafTime(*group.time());
+		} else {
+			result << "[no time provided].";
+		}
+		break;
+
+		case metaf::MiscGroup::Type::FORECAST_BASED_ON_AUTO_OBSERVATION:
+		result << "Forecast is based on automated (rather than manned) observations.";
+		break;
 	}
 	return result.str();
 }

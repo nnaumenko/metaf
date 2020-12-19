@@ -143,7 +143,9 @@ Type definitions
 
 		.. cpp:enumerator:: LAST
 
-			Indicates last manned observation. No data or time are provided.
+			Indicates last manned observation. 
+
+			Use :cpp:func:`time()` to obtain the time of next scheduled observation (will return empty ``std::optional`` if no next scheduled observation time was specified).
 
 		.. cpp:enumerator:: LAST_STAFFED_OBSERVATION
 
@@ -157,9 +159,15 @@ Type definitions
 
 			Use :cpp:func:`time()` to obtain the time after which no amendments are scheduled.
 
-		.. cpp:enumerator:: NEXT_REPORT_SCHEDULED
+		.. cpp:enumerator:: NEXT:
 
-			Specifies the time when the next observation or forecast is scheduled.
+			Specifies the time when the next report is scheduled.
+
+			Use :cpp:func:`time()` to obtain the time when the next report is scheduled.
+
+		.. cpp:enumerator:: NEXT_FORECAST:
+
+			Specifies the time when the next forecast is scheduled.
 
 			Use :cpp:func:`time()` to obtain the time when the next report is scheduled.
 
@@ -175,6 +183,11 @@ Type definitions
 
 			Use :cpp:func:`time()` to obtain the time when forecast was cancelled.
 
+		.. cpp:enumerator:: FORECAST_BASED_ON_AUTO_OBSERVATION
+
+			Indicates that the forecast is based on automated observation.
+
+			No data or time are provided.
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
