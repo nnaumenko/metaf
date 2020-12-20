@@ -1500,7 +1500,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		break;
 
 		case metaf::MiscGroup::Type::LAST:
-		result << "Last manned observation.";
+		result << "Last manned observation or last forecast.";
 		if (group.time().has_value()) {
 			result << "\nNext report is scheduled for " << explainMetafTime(*group.time());
 		}

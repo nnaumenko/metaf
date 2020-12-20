@@ -23,12 +23,14 @@ TEST(MiscGroup, parseSunshineDuration) {
 	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_NEAR(mg1->data().value(), 96, marginSunshineDuration);
+	EXPECT_FALSE(mg1->time().has_value());
 
 	const auto mg2 = metaf::MiscGroup::parse("98000", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg2.has_value());
 	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::SUNSHINE_DURATION_MINUTES);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_NEAR(mg2->data().value(), 0, marginSunshineDuration);
+	EXPECT_FALSE(mg2->time().has_value());
 }
 
 TEST(MiscGroup, parseSunshineDurationWrongReportPart) {
@@ -64,12 +66,14 @@ TEST(MiscGroup, parseCorrectedObservation) {
 	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_EQ(static_cast<int>(mg1->data().value()), 1);
+	EXPECT_FALSE(mg1->time().has_value());
 
 	const auto mg2 = metaf::MiscGroup::parse("CCZ", metaf::ReportPart::METAR);
 	ASSERT_TRUE(mg2.has_value());
 	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::CORRECTED_WEATHER_OBSERVATION);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_EQ(static_cast<int>(mg2->data().value()), 26);
+	EXPECT_FALSE(mg2->time().has_value());
 }
 
 TEST(MiscGroup, parseCorrectedObservationWrongReportPart) {
@@ -105,6 +109,7 @@ TEST(MiscGroup, parseDensityAlt) {
 	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::DENSITY_ALTITUDE);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_EQ(static_cast<int>(mg1->data().value()), 100);
+	EXPECT_FALSE(mg1->time().has_value());
 
 	auto mg2 = metaf::MiscGroup::parse("DENSITY", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg2.has_value());
@@ -113,6 +118,7 @@ TEST(MiscGroup, parseDensityAlt) {
 	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::DENSITY_ALTITUDE);
 	ASSERT_TRUE(mg2->data().has_value());
 	EXPECT_EQ(static_cast<int>(mg2->data().value()), 4700);
+	EXPECT_FALSE(mg2->time().has_value());
 }
 
 TEST(MiscGroup, parseDensityAltMisg) {
@@ -123,6 +129,7 @@ TEST(MiscGroup, parseDensityAltMisg) {
 
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::DENSITY_ALTITUDE);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseDensityWrongReportPart) {
@@ -213,10 +220,10 @@ TEST(MiscGroup, parseGr) {
 	ASSERT_TRUE(mg1.has_value());
 	EXPECT_EQ(mg1->append("1", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(mg1->append("3/4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
-
 	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::HAILSTONE_SIZE);
 	ASSERT_TRUE(mg1->data().has_value());
 	EXPECT_EQ(mg1->data().value(), 1.75);
+	EXPECT_FALSE(mg1->time().has_value());
 
 	auto mg2 = metaf::MiscGroup::parse("GR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg2.has_value());
@@ -224,6 +231,7 @@ TEST(MiscGroup, parseGr) {
 	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::HAILSTONE_SIZE);
 	ASSERT_TRUE(mg2->data().has_value());
 	EXPECT_EQ(mg2->data().value(), 0.5);
+	EXPECT_FALSE(mg2->time().has_value());
 
 	auto mg3 = metaf::MiscGroup::parse("GR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg3.has_value());
@@ -231,6 +239,7 @@ TEST(MiscGroup, parseGr) {
 	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::HAILSTONE_SIZE);
 	ASSERT_TRUE(mg3->data().has_value());
 	EXPECT_EQ(mg3->data().value(), 0.25);
+	EXPECT_FALSE(mg3->time().has_value());
 
 	auto mg4 = metaf::MiscGroup::parse("GR", metaf::ReportPart::RMK);
 	ASSERT_TRUE(mg4.has_value());
@@ -238,6 +247,7 @@ TEST(MiscGroup, parseGr) {
 	EXPECT_EQ(mg4->type(), metaf::MiscGroup::Type::HAILSTONE_SIZE);
 	ASSERT_TRUE(mg4->data().has_value());
 	EXPECT_EQ(mg4->data().value(), 0.75);
+	EXPECT_FALSE(mg4->time().has_value());
 }
 
 TEST(MiscGroup, parseGrWrongReportPart) {
@@ -369,6 +379,7 @@ TEST(MiscGroup, parseColourCodeBluePlus) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLUE_PLUS);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlue) {
@@ -376,6 +387,7 @@ TEST(MiscGroup, parseColourCodeBlue) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLUE);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeWhite) {
@@ -383,6 +395,7 @@ TEST(MiscGroup, parseColourCodeWhite) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_WHITE);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeGreen) {
@@ -390,6 +403,7 @@ TEST(MiscGroup, parseColourCodeGreen) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_GREEN);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeYellow) {
@@ -397,6 +411,7 @@ TEST(MiscGroup, parseColourCodeYellow) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_YELLOW);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeYellow1) {
@@ -404,6 +419,7 @@ TEST(MiscGroup, parseColourCodeYellow1) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_YELLOW1);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeYellow2) {
@@ -411,6 +427,7 @@ TEST(MiscGroup, parseColourCodeYellow2) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_YELLOW2);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeAmber) {
@@ -418,6 +435,7 @@ TEST(MiscGroup, parseColourCodeAmber) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_AMBER);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeRed) {
@@ -425,6 +443,7 @@ TEST(MiscGroup, parseColourCodeRed) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_RED);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackBluePlus) {
@@ -432,6 +451,7 @@ TEST(MiscGroup, parseColourCodeBlackBluePlus) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE_PLUS);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackBlue) {
@@ -439,6 +459,7 @@ TEST(MiscGroup, parseColourCodeBlackBlue) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackWhite) {
@@ -446,6 +467,7 @@ TEST(MiscGroup, parseColourCodeBlackWhite) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKWHITE);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackGreen) {
@@ -453,6 +475,7 @@ TEST(MiscGroup, parseColourCodeBlackGreen) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKGREEN);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackYellow) {
@@ -460,6 +483,7 @@ TEST(MiscGroup, parseColourCodeBlackYellow) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackYellow1) {
@@ -467,6 +491,7 @@ TEST(MiscGroup, parseColourCodeBlackYellow1) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackYellow2) {
@@ -474,6 +499,7 @@ TEST(MiscGroup, parseColourCodeBlackYellow2) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW2);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackAmber) {
@@ -481,6 +507,7 @@ TEST(MiscGroup, parseColourCodeBlackAmber) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKAMBER);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseColourCodeBlackRed) {
@@ -488,6 +515,7 @@ TEST(MiscGroup, parseColourCodeBlackRed) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::COLOUR_CODE_BLACKRED);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseCoulourCodeRmk) {
@@ -548,6 +576,7 @@ TEST(MiscGroup, parseFroin) {
 	ASSERT_TRUE(mg.has_value());
 	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::FROIN);
 	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
 }
 
 TEST(MiscGroup, parseFroinWrongReportPart) {
@@ -588,6 +617,494 @@ TEST(MiscGroup, parseIssuerIdWrongReportPart) {
 	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::HEADER).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::MiscGroup::parse("FS30122", metaf::ReportPart::METAR).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// First report
+// Purpose: to confirm that group FIRST is passed correctly and no group can
+// be appended to it.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseFirst) {
+	const auto mg1 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::FIRST);
+	EXPECT_FALSE(mg1->data().has_value());
+	EXPECT_FALSE(mg1->time().has_value());
+
+	const auto mg2 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::FIRST);
+	EXPECT_FALSE(mg2->data().has_value());
+	EXPECT_FALSE(mg2->time().has_value());
+
+	const auto mg3 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::FIRST);
+	EXPECT_FALSE(mg3->data().has_value());
+	EXPECT_FALSE(mg3->time().has_value());
+}
+
+TEST(MiscGroup, parseFirstWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("FIRST", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FIRST", metaf::ReportPart::HEADER).has_value());
+}
+
+TEST(MiscGroup, appendFirst) {
+	auto mg1 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("NEXT", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg2 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("192046Z", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg3 = metaf::MiscGroup::parse("FIRST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("FIRST", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Last report
+// Purpose: to confirm that groups indicating last report, last staffed
+// observation, optionally with next scheduled report time, are parsed and 
+// appended correctly.
+// Note 1/4: The group formats are LAST, LAST OBS, LAST STFD OBS, optionally 
+// followed by NEXT and time of the next scheduled report.
+// Note 2/4: after OBS and NEXT character / may be used as delimiter, for 
+// example: LAST OBS/NEXT xxxxZ or LAST OBS/NEXT/xxxxZ.
+// Note 3/4: OBS may be substituted with OBS., OB, OBS. and NEXT may be 
+// substituted with NXT. The parsing result is the same.
+// Note 4/4: the following day and time formats are recognised for the next
+// scheduled report time: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM.
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+///////////////////////////////////////////////////////////////////////////////
+// Next report
+// Purpose: to confirm that groups NEXT and NXT which specify next scheduled 
+// report time (without preceeding LAST, LAST OBS, or LAST STFD OBS), are 
+// parsed and appended correctly.
+// Note: the format is NEXT or NXT followed by any of the following day and 
+// time formats: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM. Between NEXT or NXT
+// and time delimiter character / may be used, for example NEXT/2807.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseNext) {
+	static const auto nextStr = std::string("NEXT"); 
+	static const auto timeStr = std::string("2009"); 
+
+	auto mg1 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append(timeStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg1->data().has_value());
+	ASSERT_TRUE(mg1->time().has_value());
+	ASSERT_TRUE(mg1->time()->day().has_value());
+	EXPECT_EQ(mg1->time()->day().value(), 20u);
+	EXPECT_EQ(mg1->time()->hour(), 9u);
+	EXPECT_EQ(mg1->time()->minute(), 0u);
+
+	auto mg2 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append(timeStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg2->data().has_value());
+	ASSERT_TRUE(mg2->time().has_value());
+	ASSERT_TRUE(mg2->time()->day().has_value());
+	EXPECT_EQ(mg2->time()->day().value(), 20u);
+	EXPECT_EQ(mg2->time()->hour(), 9u);
+	EXPECT_EQ(mg2->time()->minute(), 0u);
+
+	auto mg3 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append(timeStr, metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("", metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg3->data().has_value());
+	ASSERT_TRUE(mg3->time().has_value());
+	ASSERT_TRUE(mg3->time()->day().has_value());
+	EXPECT_EQ(mg3->time()->day().value(), 20u);
+	EXPECT_EQ(mg3->time()->hour(), 9u);
+	EXPECT_EQ(mg3->time()->minute(), 0u);
+}
+
+TEST(MiscGroup, parseNxt) {
+	static const auto nextStr = std::string("NXT"); 
+	static const auto timeStr = std::string("2009"); 
+
+	auto mg1 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append(timeStr, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg1->data().has_value());
+	ASSERT_TRUE(mg1->time().has_value());
+	ASSERT_TRUE(mg1->time()->day().has_value());
+	EXPECT_EQ(mg1->time()->day().value(), 20u);
+	EXPECT_EQ(mg1->time()->hour(), 9u);
+	EXPECT_EQ(mg1->time()->minute(), 0u);
+
+	auto mg2 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append(timeStr, metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("", metaf::ReportPart::METAR), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg2->data().has_value());
+	ASSERT_TRUE(mg2->time().has_value());
+	ASSERT_TRUE(mg2->time()->day().has_value());
+	EXPECT_EQ(mg2->time()->day().value(), 20u);
+	EXPECT_EQ(mg2->time()->hour(), 9u);
+	EXPECT_EQ(mg2->time()->minute(), 0u);
+
+	auto mg3 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append(timeStr, metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("", metaf::ReportPart::TAF), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg3->data().has_value());
+	ASSERT_TRUE(mg3->time().has_value());
+	ASSERT_TRUE(mg3->time()->day().has_value());
+	EXPECT_EQ(mg3->time()->day().value(), 20u);
+	EXPECT_EQ(mg3->time()->hour(), 9u);
+	EXPECT_EQ(mg3->time()->minute(), 0u);
+}
+
+TEST(MiscGroup, parseNextTimeFormats) {
+	static const auto nextStr = std::string("NEXT"); 
+
+	auto mg1 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("2009", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg1->data().has_value());
+	ASSERT_TRUE(mg1->time().has_value());
+	ASSERT_TRUE(mg1->time()->day().has_value());
+	EXPECT_EQ(mg1->time()->day().value(), 20u);
+	EXPECT_EQ(mg1->time()->hour(), 9u);
+	EXPECT_EQ(mg1->time()->minute(), 0u);
+
+	auto mg2 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("2009Z", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg2->data().has_value());
+	ASSERT_TRUE(mg2->time().has_value());
+	ASSERT_TRUE(mg2->time()->day().has_value());
+	EXPECT_EQ(mg2->time()->day().value(), 20u);
+	EXPECT_EQ(mg2->time()->hour(), 9u);
+	EXPECT_EQ(mg2->time()->minute(), 0u);
+
+	auto mg3 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("200943", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg3->data().has_value());
+	ASSERT_TRUE(mg3->time().has_value());
+	ASSERT_TRUE(mg3->time()->day().has_value());
+	EXPECT_EQ(mg3->time()->day().value(), 20u);
+	EXPECT_EQ(mg3->time()->hour(), 9u);
+	EXPECT_EQ(mg3->time()->minute(), 43u);
+
+	auto mg4 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("200943Z", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg4->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg4->data().has_value());
+	ASSERT_TRUE(mg4->time().has_value());
+	ASSERT_TRUE(mg4->time()->day().has_value());
+	EXPECT_EQ(mg4->time()->day().value(), 20u);
+	EXPECT_EQ(mg4->time()->hour(), 9u);
+	EXPECT_EQ(mg4->time()->minute(), 43u);
+
+	auto mg5 = metaf::MiscGroup::parse(nextStr, metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("20/0943", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg5->type(), metaf::MiscGroup::Type::NEXT);
+	EXPECT_FALSE(mg5->data().has_value());
+	ASSERT_TRUE(mg5->time().has_value());
+	ASSERT_TRUE(mg5->time()->day().has_value());
+	EXPECT_EQ(mg5->time()->day().value(), 20u);
+	EXPECT_EQ(mg3->time()->hour(), 9u);
+	EXPECT_EQ(mg5->time()->minute(), 43u);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// No amendments after
+// Purpose: to confirm that group sequence NO AMDS AFT followed by time are 
+// parsed and appended correctly.
+// Note: the day and time formats are: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM, 
+// also HHMM may be used. See MetafTime tests for additional tests which 
+// confirm that formats DDHH and HHMM are distinguished correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+///////////////////////////////////////////////////////////////////////////////
+// No amendments after
+// Purpose: to confirm that group sequence NO AMDS AFT followed by time are 
+// parsed and appended correctly.
+// Note: the day and time formats are: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM, 
+// also HHMM may be used. See MetafTime tests for additional tests which 
+// confirm that formats DDHH and HHMM are distinguished correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+///////////////////////////////////////////////////////////////////////////////
+// Amended time
+// Purpose: to confirm that group AMD followed by amendment time is parsed and 
+// appended correctly.
+// Note: the day and time formats are: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM, 
+// also HHMM may be used. See MetafTime tests for additional tests which 
+// confirm that formats DDHH and HHMM are distinguished correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+///////////////////////////////////////////////////////////////////////////////
+// Next forecast
+// Purpose: to confirm that group sequences NEXT FCST BY, NEXT FCST AT, 
+// NEXT FCST, and NEXT FCST WILL BE ISSUED AT, followed by time are parsed and 
+// appended correctly. Time formats are: DDHH, DDHHZ, DDHHMMZ, DDHHMM, DD/HHMM.
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO
+
+///////////////////////////////////////////////////////////////////////////////
+// Forecast based on auto observation
+// Purpose: to confirm that group sequence FCST BASED ON AUTO OBS are parsed 
+// and appended correctly. 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseFcstBasedOnAutoObs) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->type(), metaf::MiscGroup::Type::FORECAST_BASED_ON_AUTO_OBSERVATION);
+	EXPECT_FALSE(mg1->data().has_value());
+	EXPECT_FALSE(mg1->time().has_value());
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::METAR);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("ON", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("AUTO", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("OBS", metaf::ReportPart::METAR), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->type(), metaf::MiscGroup::Type::FORECAST_BASED_ON_AUTO_OBSERVATION);
+	EXPECT_FALSE(mg2->data().has_value());
+	EXPECT_FALSE(mg2->time().has_value());
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::TAF);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("BASED", metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("AUTO", metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("OBS", metaf::ReportPart::TAF), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->type(), metaf::MiscGroup::Type::FORECAST_BASED_ON_AUTO_OBSERVATION);
+	EXPECT_FALSE(mg3->data().has_value());
+	EXPECT_FALSE(mg3->time().has_value());
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("FCST", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("FCST", metaf::ReportPart::HEADER).has_value());
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsAppendFcst) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("FCST", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg4 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg5 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsAppendFcstBased) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg4 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg5 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsAppendFcstBasedOn) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("FCST", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg4 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg5 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsAppendFcstBasedOnAuto) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("FCST", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg4 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto mg5 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(MiscGroup, parseFcstBasedOnAutoObsAppendToCompleteGroup) {
+	auto mg1 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg2 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("120700Z", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg3 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("NEXT", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg4 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg4.has_value());
+	EXPECT_EQ(mg4->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg4->append("FCST", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg5 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg5.has_value());
+	EXPECT_EQ(mg5->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg5->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg6 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg6.has_value());
+	EXPECT_EQ(mg6->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg6->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg6->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg6->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg6->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg7 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg7.has_value());
+	EXPECT_EQ(mg7->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg7->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg7->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg7->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg7->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto mg8 = metaf::MiscGroup::parse("FCST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg8.has_value());
+	EXPECT_EQ(mg8->append("BASED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg8->append("ON", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg8->append("AUTO", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg8->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg8->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

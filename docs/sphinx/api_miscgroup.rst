@@ -143,7 +143,7 @@ Type definitions
 
 		.. cpp:enumerator:: LAST
 
-			Indicates last manned observation. 
+			Indicates last manned observation or forecast. 
 
 			Use :cpp:func:`time()` to obtain the time of next scheduled observation (will return empty ``std::optional`` if no next scheduled observation time was specified).
 
