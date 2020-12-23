@@ -1,0 +1,224 @@
+<svg class="railroad-diagram" width="844" height="109" viewBox="0 0 844 109" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20"></path>
+</g>
+<path d="M40 40h10"></path>
+<g class="terminal ">
+<path d="M50 40h0"></path>
+<path d="M104 40h0"></path>
+<rect x="50" y="29" width="54" height="22" rx="10" ry="10"></rect>
+<text x="77" y="44">LAST</text>
+</g>
+<path d="M104 40h10"></path>
+<g>
+<path d="M114 40h0"></path>
+<path d="M499 40h0"></path>
+<path d="M114 40h20"></path>
+<g>
+<path d="M134 40h0"></path>
+<path d="M479 40h0"></path>
+<g>
+<path d="M134 40h0"></path>
+<path d="M276.5 40h0"></path>
+<path d="M134 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M154 20h102.5"></path>
+</g>
+<path d="M256.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M134 40h20"></path>
+<g>
+<path d="M154 40h0"></path>
+<path d="M256.5 40h0"></path>
+<g class="terminal ">
+<path d="M154 40h0"></path>
+<path d="M182.5 40h0"></path>
+<rect x="154" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="168.25" y="44"> </text>
+</g>
+<path d="M182.5 40h10"></path>
+<path d="M192.5 40h10"></path>
+<g class="terminal ">
+<path d="M202.5 40h0"></path>
+<path d="M256.5 40h0"></path>
+<rect x="202.5" y="29" width="54" height="22" rx="10" ry="10"></rect>
+<text x="229.5" y="44">SFTD</text>
+</g>
+</g>
+<path d="M256.5 40h20"></path>
+</g>
+<path d="M276.5 40h10"></path>
+<g class="terminal ">
+<path d="M286.5 40h0"></path>
+<path d="M315 40h0"></path>
+<rect x="286.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="300.75" y="44"> </text>
+</g>
+<path d="M315 40h10"></path>
+<g>
+<path d="M325 40h0"></path>
+<path d="M410.5 40h0"></path>
+<path d="M325 40h20"></path>
+<g class="terminal ">
+<path d="M345 40h0"></path>
+<path d="M390.5 40h0"></path>
+<rect x="345" y="29" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="367.75" y="44">OBS</text>
+</g>
+<path d="M390.5 40h20"></path>
+<path d="M325 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M345 70h4.25"></path>
+<path d="M386.25 70h4.25"></path>
+<rect x="349.25" y="59" width="37" height="22" rx="10" ry="10"></rect>
+<text x="367.75" y="74">OB</text>
+</g>
+<path d="M390.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M410.5 40h0"></path>
+<path d="M479 40h0"></path>
+<path d="M410.5 40h20"></path>
+<g>
+<path d="M430.5 40h28.5"></path>
+</g>
+<path d="M459 40h20"></path>
+<path d="M410.5 40a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M430.5 60h0"></path>
+<path d="M459 60h0"></path>
+<rect x="430.5" y="49" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="444.75" y="64">.</text>
+</g>
+<path d="M459 60a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+</g>
+</g>
+<path d="M479 40h20"></path>
+<path d="M114 40a10 10 0 0 1 10 10v29a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M134 89h345"></path>
+</g>
+<path d="M479 89a10 10 0 0 0 10 -10v-29a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M499 40h0"></path>
+<path d="M567.5 40h0"></path>
+<path d="M499 40h20"></path>
+<g class="terminal ">
+<path d="M519 40h0"></path>
+<path d="M547.5 40h0"></path>
+<rect x="519" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="533.25" y="44"> </text>
+</g>
+<path d="M547.5 40h20"></path>
+<path d="M499 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M519 70h0"></path>
+<path d="M547.5 70h0"></path>
+<rect x="519" y="59" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="533.25" y="74">/</text>
+</g>
+<path d="M547.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M567.5 40h0"></path>
+<path d="M661.5 40h0"></path>
+<path d="M567.5 40h20"></path>
+<g class="terminal ">
+<path d="M587.5 40h0"></path>
+<path d="M641.5 40h0"></path>
+<rect x="587.5" y="29" width="54" height="22" rx="10" ry="10"></rect>
+<text x="614.5" y="44">NEXT</text>
+</g>
+<path d="M641.5 40h20"></path>
+<path d="M567.5 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M587.5 70h4.25"></path>
+<path d="M637.25 70h4.25"></path>
+<rect x="591.75" y="59" width="45.5" height="22" rx="10" ry="10"></rect>
+<text x="614.5" y="74">NXT</text>
+</g>
+<path d="M641.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M661.5 40h0"></path>
+<path d="M730 40h0"></path>
+<path d="M661.5 40h20"></path>
+<g class="terminal ">
+<path d="M681.5 40h0"></path>
+<path d="M710 40h0"></path>
+<rect x="681.5" y="29" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="695.75" y="44"> </text>
+</g>
+<path d="M710 40h20"></path>
+<path d="M661.5 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="terminal ">
+<path d="M681.5 70h0"></path>
+<path d="M710 70h0"></path>
+<rect x="681.5" y="59" width="28.5" height="22" rx="10" ry="10"></rect>
+<text x="695.75" y="74">/</text>
+</g>
+<path d="M710 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M730 40h10"></path>
+<g class="non-terminal ">
+<path d="M740 40h0"></path>
+<path d="M794 40h0"></path>
+<rect x="740" y="29" width="54" height="22"></rect>
+<text x="767" y="44">Time</text>
+</g>
+<path d="M794 40h10"></path>
+<path d="M 804 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+<style>
+	svg {
+		background-color: hsl(30,20%,95%);
+	}
+	path {
+		stroke-width: 3;
+		stroke: black;
+		fill: rgba(0,0,0,0);
+	}
+	text {
+		font: bold 14px monospace;
+		text-anchor: middle;
+		white-space: pre;
+	}
+	text.diagram-text {
+		font-size: 12px;
+	}
+	text.diagram-arrow {
+		font-size: 16px;
+	}
+	text.label {
+		text-anchor: start;
+	}
+	text.comment {
+		font: italic 12px monospace;
+	}
+	g.non-terminal text {
+		/&#42;font-style: italic;&#42;/
+	}
+	rect {
+		stroke-width: 3;
+		stroke: black;
+		fill: hsl(120,100%,90%);
+	}
+	rect.group-box {
+		stroke: gray;
+		stroke-dasharray: 10 5;
+		fill: none;
+	}
+	path.diagram-text {
+		stroke-width: 3;
+		stroke: black;
+		fill: white;
+		cursor: help;
+	}
+	g.diagram-text:hover path.diagram-text {
+		fill: #eee;
+	}</style>
+</svg>
+<!-- 
+	https://tabatkins.github.io/railroad-diagrams/generator.html#Diagram(%0A%20'LAST'%2C%20%0A%20Choice(0%2C%20%0A%20%20Sequence(%0A%20%20%20Optional(Sequence('%20'%2C%20'SFTD'))%2C%0A%20%20%20'%20'%2C%20Choice(0%2C%20'OBS'%2C%20'OB')%2C%20Choice(0%2C%20Skip()%2C%20'.')%2C%0A%20%20)%2C%0A%20%20Skip()%0A%20)%2C%0A%20Choice(0%2C%20'%20'%2C%20'%2F')%2C%0A%20Choice(0%2C%20'NEXT'%2C'NXT')%2C%20Choice(0%2C'%20'%2C'%2F')%2C%0A%20NonTerminal('Time')%20%0A)%0A
+-->

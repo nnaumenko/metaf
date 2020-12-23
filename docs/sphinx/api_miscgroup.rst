@@ -159,13 +159,13 @@ Type definitions
 
 			Use :cpp:func:`time()` to obtain the time after which no amendments are scheduled.
 
-		.. cpp:enumerator:: NEXT:
+		.. cpp:enumerator:: NEXT
 
 			Specifies the time when the next report is scheduled.
 
 			Use :cpp:func:`time()` to obtain the time when the next report is scheduled.
 
-		.. cpp:enumerator:: NEXT_FORECAST:
+		.. cpp:enumerator:: NEXT_FORECAST
 
 			Specifies the time when the next forecast is scheduled.
 
@@ -225,51 +225,51 @@ Colour codes
 
 Colour codes are used to quickly assess visibility and ceiling conditions. The colour code values specified in the reports are shown below.
 
-+-------+----------------------------------------------+------------+----------+---------------------+
-| Group |:cpp:func:`type()`                            | Visibility | Ceiling  | :cpp:func:`data()`  |
-+=======+==============================================+============+==========+=====================+
-| BLU+  | :cpp:enumerator:`Type::COLOUR_CODE_BLUE_PLUS`| >8000 m    | >20000 ft| empty std::optional |
-+-------+----------------------------------------------+------------+----------+                     |
-| BLU   | :cpp:enumerator:`Type::COLOUR_CODE_BLUE`     | >8000 m    | >2500 ft |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| WHT   | :cpp:enumerator:`Type::COLOUR_CODE_WHITE`    | >5000 m    | >1500 ft |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| GRN   | :cpp:enumerator:`Type::COLOUR_CODE_GREEN`    | >3700 m    | >700 ft  |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| YLO   | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW`   | >1600 m    | >300 ft  |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| YLO1  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW1`  | >2500 m    | >500 ft  |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| YLO2  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW2`  | >1600 m    | >300 ft  |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| AMB   | :cpp:enumerator:`Type::COLOUR_CODE_AMBER`    | >800 m     | >200 ft  |                     |
-+-------+----------------------------------------------+------------+----------+                     |
-| RED   | :cpp:enumerator:`Type::COLOUR_CODE_RED`      | <800 m     | <200 ft  |                     |
-+-------+----------------------------------------------+------------+----------+---------------------+
++-------+----------------------------------------------+------------+----------+---------------------+---------------------+
+| Group |:cpp:func:`type()`                            | Visibility | Ceiling  | :cpp:func:`data()`  | :cpp:func:`time()`  |
++=======+==============================================+============+==========+=====================+=====================+
+| BLU+  | :cpp:enumerator:`Type::COLOUR_CODE_BLUE_PLUS`| >8000 m    | >20000 ft| empty std::optional | empty std::optional |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| BLU   | :cpp:enumerator:`Type::COLOUR_CODE_BLUE`     | >8000 m    | >2500 ft |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| WHT   | :cpp:enumerator:`Type::COLOUR_CODE_WHITE`    | >5000 m    | >1500 ft |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| GRN   | :cpp:enumerator:`Type::COLOUR_CODE_GREEN`    | >3700 m    | >700 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| YLO   | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW`   | >1600 m    | >300 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| YLO1  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW1`  | >2500 m    | >500 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| YLO2  | :cpp:enumerator:`Type::COLOUR_CODE_YELLOW2`  | >1600 m    | >300 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| AMB   | :cpp:enumerator:`Type::COLOUR_CODE_AMBER`    | >800 m     | >200 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+                     |                     |
+| RED   | :cpp:enumerator:`Type::COLOUR_CODE_RED`      | <800 m     | <200 ft  |                     |                     |
++-------+----------------------------------------------+------------+----------+---------------------+---------------------+
 
 Code BLACK may be specified along with the main colour code. It indicates that the aerodrome is closed e.g. due to snow accumulation. The summary of colour codes with code BLACK age shown below.
 
-+-----------+---------------------------------------------------+---------------------+
-| Group     |:cpp:func:`type()`                                 | :cpp:func:`data()`  |
-+===========+===================================================+=====================+
-| BLACKBLU+ | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE_PLUS`| empty std::optional |
-+-----------+---------------------------------------------------+                     |
-| BLACKBLU  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE`     |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKWHT  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKWHITE`    |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKGRN  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKGREEN`    |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKYLO  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW`   |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKYLO1 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW1`  |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKYLO2 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW2`  |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKAMB  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKAMBER`    |                     |
-+-----------+---------------------------------------------------+                     |
-| BLACKRED  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKRED`      |                     |
-+-----------+---------------------------------------------------+---------------------+
++-----------+---------------------------------------------------+---------------------+---------------------+
+| Group     |:cpp:func:`type()`                                 | :cpp:func:`data()`  | :cpp:func:`time()`  |
++===========+===================================================+=====================+=====================+
+| BLACKBLU+ | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE_PLUS`| empty std::optional | empty std::optional |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKBLU  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKBLUE`     |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKWHT  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKWHITE`    |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKGRN  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKGREEN`    |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKYLO  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW`   |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKYLO1 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW1`  |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKYLO2 | :cpp:enumerator:`Type::COLOUR_CODE_BLACKYELLOW2`  |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKAMB  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKAMBER`    |                     |                     |
++-----------+---------------------------------------------------+                     |                     |
+| BLACKRED  | :cpp:enumerator:`Type::COLOUR_CODE_BLACKRED`      |                     |                     |
++-----------+---------------------------------------------------+---------------------+---------------------+
 
 .. note:: Colour codes are specified in METAR report body or trends or in the METAR report remarks. 
 
@@ -288,24 +288,24 @@ Metaf can recognise up to 26 corrected observations, from ``CCA`` to ``CCZ``, th
 
 The examples of corrected weather observation number groups recognised by Metaf are as follows.
 
-+-------+-------------------------------------------------------+------------------------+
-| Group |:cpp:func:`type()`                                     | :cpp:func:`data()`     |
-+=======+=======================================================+========================+
-| CCA   | :cpp:enumerator:`Type::CORRECTED_WEATHER_OBSERVATION` | - std::optional<float> |
-|       |                                                       | - value() == 1.0       |
-+-------+                                                       +------------------------+
-| CCB   |                                                       | - std::optional<float> |
-|       |                                                       | - value() == 2.0       |
-+-------+                                                       +------------------------+
-| CCC   |                                                       | - std::optional<float> |
-|       |                                                       | - value() == 3.0       |
-+-------+                                                       +------------------------+
-| CCD   |                                                       | - std::optional<float> |
-|       |                                                       | - value() == 4.0       |
-+-------+                                                       +------------------------+
-| CCZ   |                                                       | - std::optional<float> |
-|       |                                                       | - value() == 26.0      |
-+-------+-------------------------------------------------------+------------------------+
++-------+-------------------------------------------------------+------------------------+---------------------+
+| Group |:cpp:func:`type()`                                     | :cpp:func:`data()`     | :cpp:func:`time()`  |
++=======+=======================================================+========================+=====================+
+| CCA   | :cpp:enumerator:`Type::CORRECTED_WEATHER_OBSERVATION` | - std::optional<float> | empty std::optional |
+|       |                                                       | - value() == 1.0       |                     |
++-------+                                                       +------------------------+                     |
+| CCB   |                                                       | - std::optional<float> |                     |
+|       |                                                       | - value() == 2.0       |                     |
++-------+                                                       +------------------------+                     |
+| CCC   |                                                       | - std::optional<float> |                     |
+|       |                                                       | - value() == 3.0       |                     |
++-------+                                                       +------------------------+                     |
+| CCD   |                                                       | - std::optional<float> |                     |
+|       |                                                       | - value() == 4.0       |                     |
++-------+                                                       +------------------------+                     |
+| CCZ   |                                                       | - std::optional<float> |                     |
+|       |                                                       | - value() == 26.0      |                     |
++-------+-------------------------------------------------------+------------------------+---------------------+
 
 
 Density altitude
@@ -317,17 +317,17 @@ Automated station may specify ``DENSITY ALT MISG`` if the related devices are no
 
 The examples are shown below.
 
-+--------------------+------------------------------------------+------------------------+
-| Groups             | :cpp:func:`type()`                       | :cpp:func:`data()`     |
-+====================+==========================================+========================+
-| DENSITY ALT 300FT  | :cpp:enumerator:`Type::DENSITY_ALTITUDE` | - std::optional<float> |
-|                    |                                          | - value() == 300.0     |
-+--------------------+                                          +------------------------+
-| DENSITY ALT 1100FT |                                          | - std::optional<float> |
-|                    |                                          | - value() == 1100.0    |
-+--------------------+                                          +------------------------+
-| DENSITY ALT MISG   |                                          | empty std::optional    |
-+--------------------+------------------------------------------+------------------------+
++--------------------+------------------------------------------+------------------------+---------------------+
+| Groups             | :cpp:func:`type()`                       | :cpp:func:`data()`     | :cpp:func:`time()`  |
++====================+==========================================+========================+=====================+
+| DENSITY ALT 300FT  | :cpp:enumerator:`Type::DENSITY_ALTITUDE` | - std::optional<float> | empty std::optional |
+|                    |                                          | - value() == 300.0     |                     |
++--------------------+                                          +------------------------+                     |
+| DENSITY ALT 1100FT |                                          | - std::optional<float> |                     |
+|                    |                                          | - value() == 1100.0    |                     |
++--------------------+                                          +------------------------+                     |
+| DENSITY ALT MISG   |                                          | empty std::optional    |                     |
++--------------------+------------------------------------------+------------------------+---------------------+
 
 Metaf recognises any value of density altitude as soon as it is a valid number with at least one digit and ends with ``FT``.
 
@@ -337,11 +337,11 @@ Frost on the instrument
 
 A single FROIN group may be specified in the remarks of METAR report to indicate frost on the instrument (for example due to fog depositing rime).
 
-+--------+----------------------------------+---------------------+
-| Group  | :cpp:func:`type()`               | :cpp:func:`data()`  |
-+========+==================================+=====================+
-| FROIN  | :cpp:enumerator:`Type::FROIN`    | empty std::optional |
-+--------+----------------------------------+---------------------+
++--------+----------------------------------+---------------------+---------------------+
+| Group  | :cpp:func:`type()`               | :cpp:func:`data()`  | :cpp:func:`time()`  |
++========+==================================+=====================+=====================+
+| FROIN  | :cpp:enumerator:`Type::FROIN`    | empty std::optional | empty std::optional |
++--------+----------------------------------+---------------------+---------------------+
 
 
 Sunshine duration
@@ -353,15 +353,15 @@ The group format is digits 98 followed by three-digit value of sunshine duration
 
 The examples of sunshine duration groups recognised by Metaf are as follows.
 
-+-------+---------------------------------------------------+------------------------+
-| Group | :cpp:func:`type()`                                | :cpp:func:`data()`     |
-+=======+===================================================+========================+
-| 98112 | :cpp:enumerator:`Type::SUNSHINE_DURATION_MINUTES` | - std::optional<float> |
-|       |                                                   | - value() == 112.0     |
-+-------+                                                   +------------------------+
-| 98000 |                                                   | - std::optional<float> |
-|       |                                                   | - value() == 0         |
-+-------+---------------------------------------------------+------------------------+
++-------+---------------------------------------------------+------------------------+---------------------+
+| Group | :cpp:func:`type()`                                | :cpp:func:`data()`     | :cpp:func:`time()`  |
++=======+===================================================+========================+=====================+
+| 98112 | :cpp:enumerator:`Type::SUNSHINE_DURATION_MINUTES` | - std::optional<float> | empty std::optional |
+|       |                                                   | - value() == 112.0     |                     |
++-------+                                                   +------------------------+                     |
+| 98000 |                                                   | - std::optional<float> |                     |
+|       |                                                   | - value() == 0         |                     |
++-------+---------------------------------------------------+------------------------+---------------------+
 
 
 Largest hailstone size
@@ -375,36 +375,145 @@ Metaf recognises fraction part specified in quarters of inch: 1/4, 1/2, 3/4.
 
 The examples of such groups are shown below.
 
-+--------------------+----------------------------------------+------------------------+
-| Groups             | :cpp:func:`type()`                     | :cpp:func:`data()`     |
-+====================+========================================+========================+
-| GR 1/2             | :cpp:enumerator:`Type::HAILSTONE_SIZE` | - std::optional<float> |
-|                    |                                        | - value() == 0.5       |
-+--------------------+                                        +------------------------+
-| GR 2 1/4           |                                        | - std::optional<float> |
-|                    |                                        | - value() == 2.25      |
-+--------------------+                                        +------------------------+
-| GR 1 3/4           |                                        | - std::optional<float> |
-|                    |                                        | - value() == 1.75      |
-+--------------------+----------------------------------------+------------------------+
++--------------------+----------------------------------------+------------------------+---------------------+
+| Groups             | :cpp:func:`type()`                     | :cpp:func:`data()`     | :cpp:func:`time()`  |
++====================+========================================+========================+=====================+
+| GR 1/2             | :cpp:enumerator:`Type::HAILSTONE_SIZE` | - std::optional<float> | empty std::optional |
+|                    |                                        | - value() == 0.5       |                     |
++--------------------+                                        +------------------------+                     |
+| GR 2 1/4           |                                        | - std::optional<float> |                     |
+|                    |                                        | - value() == 2.25      |                     |
++--------------------+                                        +------------------------+                     |
+| GR 1 3/4           |                                        | - std::optional<float> |                     |
+|                    |                                        | - value() == 1.75      |                     |
++--------------------+----------------------------------------+------------------------+---------------------+
 
 
 Issuer identifiers
 ^^^^^^^^^^^^^^^^^^
 
-Identifier of the person who issued the TAF forecast.
+Identifier of the person who issued the TAF forecast may be specified in TAFs issued by US Navy.
+
+The format is ``FN`` or ``FS`` followed by 5-digit identifier.
 
 This group is added to military forecasts issued either at The Fleet Weather Center San Diego, CA (FS) or at The Fleet Weather Center Norfolk, VA (FN).
 
-+---------+-------------------------------------------------------+------------------------+
-| Group   | :cpp:func:`type()`                                    | :cpp:func:`data()`     |
-+=========+=======================================================+========================+
-| FN00205 | :cpp:enumerator:`Type::ISSUER_ID_FN`                  | - std::optional<float> |
-|         |                                                       | - value() == 205.0     |
-+---------+-------------------------------------------------------+------------------------+
-| FS30175 | :cpp:enumerator:`Type::ISSUER_ID_FS`                  | - std::optional<float> |
-|         |                                                       | - value() == 30175.0   |
-+---------+-------------------------------------------------------+------------------------+
++---------+-------------------------------------------------------+------------------------+---------------------+
+| Group   | :cpp:func:`type()`                                    | :cpp:func:`data()`     | :cpp:func:`time()`  |
++=========+=======================================================+========================+=====================+
+| FN00205 | :cpp:enumerator:`Type::ISSUER_ID_FN`                  | - std::optional<float> | empty std::optional |
+|         |                                                       | - value() == 205.0     |                     |
++---------+-------------------------------------------------------+------------------------+                     |
+| FS30175 | :cpp:enumerator:`Type::ISSUER_ID_FS`                  | - std::optional<float> |                     |
+|         |                                                       | - value() == 30175.0   |                     |
++---------+-------------------------------------------------------+------------------------+---------------------+
+
+
+First manned observation
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Group ``FIRST`` which indicates first manned observation may be present in reports.
+
++--------+----------------------------------+---------------------+---------------------+
+| Group  | :cpp:func:`type()`               | :cpp:func:`data()`  | :cpp:func:`time()`  |
++========+==================================+=====================+=====================+
+| FIRST  | :cpp:enumerator:`Type::FIRST`    | empty std::optional | empty std::optional |
++--------+----------------------------------+---------------------+---------------------+
+
+
+Last report and last staffed observation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: miscgroup_last.svg
+
+
+Next report scheduled release time 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: miscgroup_next.svg
+
+
+Next forecast scheduled release time 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: miscgroup_next_fcst.svg
+
+
+No scheduled amendments after specified time 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Amendment time 
+^^^^^^^^^^^^^^
+
+
+Cancellation time 
+^^^^^^^^^^^^^^^^^
+
+
+Forecast based on automated observation 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. image:: miscgroup_fcst_based_on_auto_obs.svg
+
+Group sequence ``FCST BASED ON AUTO OBS`` which indicates that the forecast is based on automated (rather than manned) observation may be present in reports.
+
+.. note:: Instead of ``OBS``, variants ``OB.`` and ``OB`` are recognised by Metaf.
+
++-------------------------+----------------------------------+---------------------+---------------------+
+| Group                   | :cpp:func:`type()`               | :cpp:func:`data()`  | :cpp:func:`time()`  |
++=========================+==================================+=====================+=====================+
+| FCST BASED ON AUTO OBS  | :cpp:enumerator:`Type::FIRST`    | empty std::optional | empty std::optional |
++-------------------------+----------------------------------+---------------------+---------------------+
+
+
+Scheduled time formats 
+^^^^^^^^^^^^^^^^^^^^^^
+
+Variety of day/time formats are recognised as a part of scheduled report time groups.
+
+.. image:: miscgroup_time_formats.svg
+
+
+Detection of day-hour and hour-minute time formats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Metaf automatically distingishes between four-digit formats hour-minute (HHMM) and day-hour (DDHH) based on the following considerations:
+
+ - If Z is specified after four-digit group, then format is day-hour.
+ - If four digits are specified after group ``NEXT`` or ``NEXT FCST BY``, etc., then format is day-hour.
+ - If the value of first two digits are greater than 24, then format is day-hour.
+ - If the value of first two digits is zero or value of second two digits is greater than 24, then format is hour-minute.
+
+If the four-digit time group may theoretically represent both hour-minute and day-hour formats, the decision is based on first two digits of the time group.
+
+For METAR reports, report release time is used.
+
+If first two digits of time group match the the report release day-of-month or the day-of-month of next day after the report release day-of-month, then format is day-hour, otherwise the format is hour-minute.
+
+For example consider a METAR report with release time coded ``101530Z``.
+
+Four-digit time group ``1020`` is parsed as 'day 10, 20:00' because first two digits of the time group are the same as report release day 10.
+
+Four-digit time group ``1106`` is parsed as 'day 10, 06:00', because first two digits of the time group match day-of-month following report release day 10.
+
+Four-digit time group ``0815`` is parsed as '08:15' because first two digits of the time group match neither day-of-month of report release time nor day-of-month following report release time.
+
+Four-digit time group ``1210`` is parsed as '12:10' because first two digits of the time group match neither day-of-month of report release time nor day-of-month following report release time.
+
+For TAF reports, two time values 'report applicable from' and 'report applicable until' is used. This time is the time span of the main trend.
+
+If first two digits of time group match the day-of-month of either 'from' or 'until' time when the report is applicabile, then format is day-hour, otherwise the format is hour-minute.
+
+For example, consider a TAF report with time span of the main trend ``1208/1308``.
+
+Four-digit time group ``1207`` is parsed as 'day 12, 07:00' because first two digits of the time group are the same as the day-of-month in the time 'applicable from' (``1208``).
+
+Four-digit time group ``1305`` is parsed as 'day 13, 05:00' because first two digits of the time group are the same as the day-of-month in the time 'applicable until'(``1308``).
+
+Four-digit time group ``1005`` is parsed as '10:05' because first two digits of the time group match neither day-of-month of time 'applicable from' (``1208``) nor time 'applicable until' (``1308``).
+
+Four-digit time group ``1520`` is parsed as '15:20' because first two digits of the time group match neither day-of-month of time 'applicable from' (``1208``) nor time 'applicable until' (``1308``).
 
 
 Regional variations
