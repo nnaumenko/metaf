@@ -6850,7 +6850,7 @@ AppendResult MiscGroup::append(const std::string & group,
 		}
 		if (const auto t = nextTime(group); t.has_value()) {
 			groupTime = t;
-			incompleteText = IncompleteText::LAST_OBS_NEXT; 
+			incompleteText = IncompleteText::NONE; 
 			return AppendResult::APPENDED;
 		}
 		incompleteText = IncompleteText::NONE;
@@ -6884,7 +6884,7 @@ AppendResult MiscGroup::append(const std::string & group,
 		incompleteText = IncompleteText::NONE;
 		if (const auto t = nextTime(group); t.has_value()) {
 			groupTime = t;
-			incompleteText = IncompleteText::LAST_OBS_NEXT; 
+			incompleteText = IncompleteText::NONE; 
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::NOT_APPENDED;
@@ -7071,9 +7071,9 @@ std::optional<MetafTime> MiscGroup::obsNextTime(const std::string & s) {
 	static const std::optional<MetafTime> error;
 	static const auto largestObsStr = std::string("OBS./");
 	const auto slashPos = s.find('/', largestObsStr.length());
-	if (slashPos == std::string::npos ||!isNext(s.substr(0, slashPos))) return error;
+	if (slashPos == std::string::npos ||!isObsNext(s.substr(0, slashPos))) return error;
 	if (slashPos + 1 >= s.length()) return error;
-	return MetafTime::fromRemarkString(s.substr(slashPos + 1));	
+	return MetafTime::fromRemarkString(s.substr(slashPos + 1));
 }
 
 

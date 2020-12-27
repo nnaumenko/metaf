@@ -1058,7 +1058,52 @@ TEST(MiscGroup, parseLastObsNext_ObsNxtVariants) {
 	EXPECT_EQ(mg4->time()->minute(), expectedMinute);
 }
 
-// TODO: LAST OBS/NEXT/time, LAST OBS NEXT/time
+TEST(MiscGroup, parseLastObsNext_SlashDelimiters) {
+	static const auto groupStrTime = std::string("241308Z");
+	static const auto expectedType = metaf::MiscGroup::Type::LAST;
+	static const auto expectedDay = 24u;
+	static const auto expectedHour = 13u;
+	static const auto expectedMinute = 8u;
+
+	auto mg1 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("OBS/NEXT/" + groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->type(), expectedType);
+	EXPECT_FALSE(mg1->data().has_value());
+	ASSERT_TRUE(mg1->time().has_value());
+	ASSERT_TRUE(mg1->time()->day().has_value());
+	EXPECT_EQ(mg1->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg1->time()->hour(), expectedHour);
+	EXPECT_EQ(mg1->time()->minute(), expectedMinute);
+
+	auto mg2 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("NEXT/"+groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->type(), expectedType);
+	EXPECT_FALSE(mg2->data().has_value());
+	ASSERT_TRUE(mg2->time().has_value());
+	ASSERT_TRUE(mg2->time()->day().has_value());
+	EXPECT_EQ(mg2->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg2->time()->hour(), expectedHour);
+	EXPECT_EQ(mg2->time()->minute(), expectedMinute);
+
+	auto mg3 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("OBS/NEXT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append(groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->type(), expectedType);
+	EXPECT_FALSE(mg3->data().has_value());
+	EXPECT_FALSE(mg3->data().has_value());
+	ASSERT_TRUE(mg3->time().has_value());
+	ASSERT_TRUE(mg3->time()->day().has_value());
+	EXPECT_EQ(mg3->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg3->time()->hour(), expectedHour);
+	EXPECT_EQ(mg3->time()->minute(), expectedMinute);
+}
 
 TEST(MiscGroup, parseLastStfdObsNext) {
 	static const auto groupStr1 = std::string("LAST");
@@ -1271,7 +1316,55 @@ TEST(MiscGroup, parseLastSftdObsNext_ObsNxtVariants) {
 	EXPECT_EQ(mg4->time()->minute(), expectedMinute);
 }
 
-// TODO: LAST STFD OBS/NEXT/time, LAST STFD OBS NEXT/time
+TEST(MiscGroup, parseLastStfdObsNext_SlashDelimiters) {
+	static const auto groupStrTime = std::string("241308Z");
+	static const auto expectedType = metaf::MiscGroup::Type::LAST_STAFFED_OBSERVATION;
+	static const auto expectedDay = 24u;
+	static const auto expectedHour = 13u;
+	static const auto expectedMinute = 8u;
+
+	auto mg1 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg1.has_value());
+	EXPECT_EQ(mg1->append("STFD", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("OBS/NEXT/" + groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg1->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg1->type(), expectedType);
+	EXPECT_FALSE(mg1->data().has_value());
+	ASSERT_TRUE(mg1->time().has_value());
+	ASSERT_TRUE(mg1->time()->day().has_value());
+	EXPECT_EQ(mg1->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg1->time()->hour(), expectedHour);
+	EXPECT_EQ(mg1->time()->minute(), expectedMinute);
+
+	auto mg2 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg2.has_value());
+	EXPECT_EQ(mg2->append("STFD", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("OBS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("NEXT/"+groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg2->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg2->type(), expectedType);
+	EXPECT_FALSE(mg2->data().has_value());
+	ASSERT_TRUE(mg2->time().has_value());
+	ASSERT_TRUE(mg2->time()->day().has_value());
+	EXPECT_EQ(mg2->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg2->time()->hour(), expectedHour);
+	EXPECT_EQ(mg2->time()->minute(), expectedMinute);
+
+	auto mg3 = metaf::MiscGroup::parse("LAST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg3.has_value());
+	EXPECT_EQ(mg3->append("STFD", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("OBS/NEXT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append(groupStrTime, metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg3->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(mg3->type(), expectedType);
+	EXPECT_FALSE(mg3->data().has_value());
+	EXPECT_FALSE(mg3->data().has_value());
+	ASSERT_TRUE(mg3->time().has_value());
+	ASSERT_TRUE(mg3->time()->day().has_value());
+	EXPECT_EQ(mg3->time()->day().value(), expectedDay);
+	EXPECT_EQ(mg3->time()->hour(), expectedHour);
+	EXPECT_EQ(mg3->time()->minute(), expectedMinute);
+}
 
 TEST(MiscGroup, parseLastTimeFormats) {
 	static const auto groupStr1 = std::string("LAST"); 
