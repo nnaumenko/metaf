@@ -6899,7 +6899,12 @@ AppendResult MiscGroup::append(const std::string & group,
 		return appendFixed(group, "AMDS", IncompleteText::NO_AMDS);
 
 		case IncompleteText::NO_AMDS:
-		return appendFixed(group, "AFT", IncompleteText::NO_AMDS_AFT);
+		if (const auto a = appendFixed(group, "AFT", IncompleteText::NO_AMDS_AFT);
+			a == AppendResult::APPENDED) return a;
+		return appendTimeWithHHMM(group, 
+			reportMetadata.reportTime,
+			reportMetadata.timeSpanFrom,
+			reportMetadata.timeSpanUntil);
 
 		case IncompleteText::NO_AMDS_AFT:
 		return appendTimeWithHHMM(group, 
