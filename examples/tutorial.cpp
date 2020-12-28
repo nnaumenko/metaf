@@ -277,7 +277,7 @@ int main(int argc, char ** argv) {
 	std::cout << reportTypeMessage(result.reportMetadata.type) << "\n";
 	std::cout << result.groups.size() << " groups parsed\n";
 	MyVisitor visitor;
-	for (const auto groupInfo : result.groups) {
+	for (const auto & groupInfo : result.groups) {
 		std::cout << visitor.visit(groupInfo) << "\n";
 	}
 	return 0;	

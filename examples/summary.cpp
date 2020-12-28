@@ -165,7 +165,7 @@ Cloud cloudFromCloudGroupAmount(Cloud prev, metaf::CloudGroup::Amount newAmount)
 		case metaf::CloudGroup::Amount::SCATTERED:
 		case metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN:
 		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
-		if (prev != Cloud::OVERCAST || prev != Cloud::MOSTLY_CLOUDY) return Cloud::MOSTLY_CLEAR;
+		if (prev != Cloud::OVERCAST && prev != Cloud::MOSTLY_CLOUDY) return Cloud::MOSTLY_CLEAR;
 		return prev;
 
 		case metaf::CloudGroup::Amount::BROKEN:

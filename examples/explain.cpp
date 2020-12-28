@@ -11,7 +11,16 @@
 #include <string_view>
 #include <sstream>
 #include <cmath>
+
+#ifdef __EMSCRIPTEN__
+
 #include <emscripten/emscripten.h>
+
+#else
+
+#include <iostream>
+
+#endif
 
 using namespace std::literals;
 
@@ -1407,6 +1416,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE_PLUS:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE_PLUS:
 		result << "Colour code BLUE+: ";
 		result << "visibility &gt;8000 m and ";
@@ -1415,6 +1425,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKBLUE:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLUE:
 		result << "Colour code BLUE: ";
 		result << "visibility &gt;8000 m and ";
@@ -1423,6 +1434,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKWHITE:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_WHITE:
 		result << "Colour code WHITE: ";
 		result << "visibility &gt;5000 m and ";
@@ -1431,6 +1443,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKGREEN:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_GREEN:
 		result << "Colour code GREEN: ";
 		result << "visibility &gt;3700 m and ";
@@ -1439,6 +1452,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW:
 		result << "Colour code YELLOW: ";
 		result << "visibility &gt;2500 m and ";
@@ -1447,6 +1461,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW1:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW1:
 		result << "Colour code YELLOW 1: ";
 		result << "visibility &gt;2500 m and ";
@@ -1455,6 +1470,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKYELLOW2:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_YELLOW2:
 		result << "Colour code YELLOW 2: ";
 		result << "visibility &gt;1600 m and ";
@@ -1463,6 +1479,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKAMBER:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_AMBER:
 		result << "Colour code AMBER: ";
 		result << "visibility &gt;800 m and ";
@@ -1471,6 +1488,7 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 
 		case metaf::MiscGroup::Type::COLOUR_CODE_BLACKRED:
 		result << colourCodeBlack << "\n";
+		[[fallthrough]];
 		case metaf::MiscGroup::Type::COLOUR_CODE_RED:
 		result << "Colour code RED: ";
 		result << "either visibility &lt;800 m or ";
@@ -1572,10 +1590,9 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		result << "Sun is visible dimly through the cloud layer(s) or obscurations.";
 		break;
 
-		case metaf::MiscGroup::Type::SUN_DIMLY_VISIBLE:
+		case metaf::MiscGroup::Type::MOON_DIMLY_VISIBLE:
 		result << "Moon is visible dimly through the cloud layer(s) or obscurations.";
 		break;
-
 	}
 	return result.str();
 }
@@ -1884,6 +1901,7 @@ std::string VisitorExplain::explainDirection(const metaf::Direction & direction,
 		} else {
 			result << "[unable to produce value in &deg;]";
 		}		
+		[[fallthrough]];
 		case metaf::Direction::Type::VALUE_CARDINAL:
 		if (const auto c = 
 				cardinalDirectionToString(
@@ -2412,7 +2430,7 @@ std::string_view VisitorExplain::weatherPhenomenaDescriptorToString(
 {
 	switch(descriptor) {
 		case metaf::WeatherPhenomena::Descriptor::NONE:
-		return std::string();
+		return std::string_view();
 		
 		case metaf::WeatherPhenomena::Descriptor::SHALLOW:
 		return "shallow";
@@ -2430,10 +2448,10 @@ std::string_view VisitorExplain::weatherPhenomenaDescriptorToString(
 		return "blowing";
 		
 		case metaf::WeatherPhenomena::Descriptor::SHOWERS:
-		return std::string();
+		return std::string_view();
 		
 		case metaf::WeatherPhenomena::Descriptor::THUNDERSTORM:
-		return std::string();
+		return std::string_view();
 		
 		case metaf::WeatherPhenomena::Descriptor::FREEZING:
 		return "freezing";
@@ -2588,7 +2606,7 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 			)
 	};
 
-	for (const auto w : specialWeatherPhenomena) {
+	for (const auto & w : specialWeatherPhenomena) {
 		if (wp.qualifier() == 
 				std::get<metaf::WeatherPhenomena::Qualifier>(w) &&
 			wp.descriptor() == 
@@ -2598,7 +2616,7 @@ std::string_view VisitorExplain::specialWeatherPhenomenaToString(
 			return std::get<std::string_view>(w);
 		}
 	}
-	return std::string();
+	return std::string_view();
 }
 
 std::string_view VisitorExplain::probabilityToString(
@@ -3202,7 +3220,7 @@ extern "C" const char * EMSCRIPTEN_KEEPALIVE explain(const char * input) {
 		result += "</td></tr>";
 	}
 	//Report groups
-	for (const auto groupInfo : parseResult.groups) {
+	for (const auto & groupInfo : parseResult.groups) {
 		result += "<tr><td>";
 		result += groupInfo.rawString;
 		result += "</td><td>";
@@ -3229,6 +3247,43 @@ int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
 	//Using EM_ASM_ because EM_ASM(explain()); gives a warning
 	EM_ASM_(explain(), 0); 
+}
+
+#else
+
+// If compiled without Emscripten / WASM, will decode reports from input pipe,
+// one METAR, SPECI or TAF report per line 
+
+static const auto reportDelimiter = std::string(80, '='); 
+static const auto groupDelimiter = std::string(80, '-'); 
+
+int main(int argc, char ** argv) {
+	(void) argc; (void) argv;
+	std::string report;
+	while (getline(std::cin, report)) {
+		const auto parseResult = metaf::Parser::parse(report);
+		std::cout << reportDelimiter << '\n';
+		std::cout << report << '\n';
+		std::cout << groupDelimiter << '\n';
+		std::cout << "Report type\n" << VisitorExplain::reportTypeToString(
+			parseResult.reportMetadata.type) << '\n';
+		if (parseResult.reportMetadata.error != metaf::ReportError::NONE) {
+			std::cout << groupDelimiter << '\n';
+			std::cout << "Parsing error\n" << VisitorExplain::reportErrorToString(
+				parseResult.reportMetadata.error) << '\n';
+		}
+		VisitorExplain visitor;
+		for (const auto & groupInfo : parseResult.groups) {
+			std::cout << groupDelimiter << '\n';
+			std::cout << groupInfo.rawString << '\n';
+			std::cout << visitor.visit(
+				groupInfo.group, 
+				groupInfo.reportPart, 
+				groupInfo.rawString);
+			std::cout << '\n';
+		}
+	}
+	std::cout << reportDelimiter << '\n';
 }
 
 #endif

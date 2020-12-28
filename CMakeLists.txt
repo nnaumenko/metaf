@@ -56,7 +56,6 @@ if(CMAKE_CXX_COMPILER MATCHES "emcc")
 		LINK_FLAGS "-Oz --shell-file ${PROJECT_SOURCE_DIR}/examples/shellfiles/explain_shell.html -s \"EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']\""
 	)
 
-
 	# Example: Weather summary
 
 	add_executable(example_summary examples/summary.cpp)
@@ -140,7 +139,7 @@ if(CMAKE_CXX_COMPILER MATCHES "emcc")
 else ()
 
 	# Section for gcc and clang
-	# Only tutorial example, and automated tests
+	# Only tutorial and 'explain' examples, and automated tests
 
 	MESSAGE("Making config for others than emcc")
 
@@ -150,7 +149,13 @@ else ()
 		RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
 	)
 
-	add_custom_target(examples ALL DEPENDS example_tutorial)
+	add_executable(example_explain examples/explain.cpp)
+
+	set_target_properties(example_explain PROPERTIES 
+		RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/examples
+	)
+
+	add_custom_target(examples ALL DEPENDS example_tutorial example_explain)
 
 
 	# Automated tests
