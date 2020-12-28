@@ -189,6 +189,25 @@ Type definitions
 
 			No data or time are provided.
 
+		.. cpp:enumerator:: CONTRAILS
+
+			Indicates presense of persistent (> 15 minutes) condensation trails in middle and/or high cloud levels.
+
+			No data or time are provided.
+
+		.. cpp:enumerator:: SUN_DIMLY_VISIBLE
+
+			Indicates that sun is dimly visible through clouds or obscuration.
+
+			No data or time are provided.
+
+		.. cpp:enumerator:: MOON_DIMLY_VISIBLE
+
+			Indicates that moon is dimly visible through clouds or obscuration.
+
+			No data or time are provided.
+
+
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
 

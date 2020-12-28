@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 6;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase 1/8";
+	inline static const char tag [] = "phase 2/8";
 };
 
 class KeywordGroup;
@@ -1361,7 +1361,8 @@ private:
 		CIG_NUM,
 		CHINO,
 		CLD,
-		OBSCURATION
+		OBSCURATION,
+		SKY
 	};
 	IncompleteText incompleteText = IncompleteText::NONE;
 
@@ -2023,7 +2024,10 @@ public:
 		NEXT_FORECAST,
 		AMENDED_AT,
 		CANCELLED_AT,
-		FORECAST_BASED_ON_AUTO_OBSERVATION
+		FORECAST_BASED_ON_AUTO_OBSERVATION,
+		CONTRAILS,
+		SUN_DIMLY_VISIBLE,
+		MOON_DIMLY_VISIBLE
 	};
 	Type type() const { return groupType; }
 	std::optional<float> data() const { return groupData; }
@@ -2066,6 +2070,9 @@ private:
 		FCST_BASED,
 		FCST_BASED_ON,
 		FCST_BASED_ON_AUTO,
+		SUN,
+		MOON,
+		CELESTIAL_DIMLY
 	};
 
 	Type groupType;
@@ -5190,6 +5197,11 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 		if (group == "CLD") return CloudGroup(Type::CLD_MISG, IncompleteText::CLD);
 		if (group == "CIG") return CloudGroup(Type::CEILING, IncompleteText::CIG);
 		if (group == "CHINO") return CloudGroup(Type::CHINO, IncompleteText::CHINO);
+		if (group == "SKY") {
+			auto result = CloudGroup(Type::VERTICAL_VISIBILITY, IncompleteText::SKY);
+			result.amnt = Amount::OBSCURED;
+			return result;
+		}
 		if (const auto ct = CloudType::fromStringObscuration(group); ct.has_value()) {
 			CloudGroup result = CloudGroup(Type::OBSCURATION, IncompleteText::OBSCURATION);
 			result.cldTp = *ct;
@@ -5232,6 +5244,11 @@ AppendResult CloudGroup::append(const std::string & group,
 
 		case IncompleteText::OBSCURATION:
 		return appendObscuration(group);
+
+		case IncompleteText::SKY:
+		if (group != "OBSCURED") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
 	}
 }
 
@@ -6753,25 +6770,17 @@ std::optional<MiscGroup> MiscGroup::parse(const std::string & group,
 	}
 
 	if (reportPart == ReportPart::RMK) {
-		if (group == "GR") {
-			result.groupType = Type::HAILSTONE_SIZE;
-			result.incompleteText = IncompleteText::GR;
-			return result;
-		}
-		if (group == "DENSITY") {
-			result.groupType = Type::DENSITY_ALTITUDE;
-			result.incompleteText = IncompleteText::DENSITY;
-			return result;
-		}
+		if (group == "GR") return MiscGroup(Type::HAILSTONE_SIZE, IncompleteText::GR);
+		if (group == "DENSITY") return MiscGroup(Type::DENSITY_ALTITUDE, IncompleteText::DENSITY);
 		if (std::regex_match(group, match, rgxSunshineDuration)) {
 			result.groupType = Type::SUNSHINE_DURATION_MINUTES;
 			result.groupData = std::stoi(match.str(matchValue));
 			return result;
 		}
-		if (group == "FROIN") {
-			result.groupType = Type::FROIN;
-			return result;
-		}
+		if (group == "FROIN") return MiscGroup(Type::FROIN);
+		if (group == "CONTRAILS") return MiscGroup(Type::CONTRAILS);
+		if (group == "SUN") return MiscGroup(Type::SUN_DIMLY_VISIBLE, IncompleteText::SUN);
+		if (group == "MOON") return MiscGroup(Type::MOON_DIMLY_VISIBLE, IncompleteText::MOON);
 	}
 
 	return std::optional<MiscGroup>();
@@ -6975,6 +6984,21 @@ AppendResult MiscGroup::append(const std::string & group,
 		if (isObs(group)) {
 			incompleteText = IncompleteText::NONE;
 			return AppendResult::APPENDED;			
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::SUN:
+		case IncompleteText::MOON:
+		if (group == "DIMLY" || group == "DMLY") {
+			incompleteText = IncompleteText::CELESTIAL_DIMLY;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::CELESTIAL_DIMLY:
+		if (group == "VISIBLE" || group == "VISBL" || group == "VSBL") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
 	}

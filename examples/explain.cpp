@@ -1562,6 +1562,20 @@ std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,
 		case metaf::MiscGroup::Type::FORECAST_BASED_ON_AUTO_OBSERVATION:
 		result << "Forecast is based on automated (rather than manned) observations.";
 		break;
+
+		case metaf::MiscGroup::Type::CONTRAILS:
+		result << "Middle or high clouds consist in whole or in part of persistent ";
+		result << "(&ge; 15 minutes) condensation trails which do not deteriorate rapidly.";
+		break;
+
+		case metaf::MiscGroup::Type::SUN_DIMLY_VISIBLE:
+		result << "Sun is visible dimly through the cloud layer(s) or obscurations.";
+		break;
+
+		case metaf::MiscGroup::Type::SUN_DIMLY_VISIBLE:
+		result << "Moon is visible dimly through the cloud layer(s) or obscurations.";
+		break;
+
 	}
 	return result.str();
 }

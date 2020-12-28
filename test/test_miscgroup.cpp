@@ -2628,6 +2628,67 @@ TEST(MiscGroup, parseFcstBasedOnAutoObsAppendToCompleteGroup) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Contrails
+// Purpose: to confirm that CONTRAILS group is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseContrails) {
+	const auto mg = metaf::MiscGroup::parse("CONTRAILS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::CONTRAILS);
+	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
+}
+
+TEST(MiscGroup, parseContrailsWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("CONTRAILS", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("CONTRAILS", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("CONTRAILS", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("CONTRAILS", metaf::ReportPart::METAR).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Sun / moon dimly visible
+// Purpose: to confirm that SUN DIMLY VISIBLE and MOON DIMLY VISIBLE group 
+// sequences are parsed and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(MiscGroup, parseSunDimlyVisible) {
+	auto mg = metaf::MiscGroup::parse("SUN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->append("DIMLY", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg->append("VISIBLE", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::SUN_DIMLY_VISIBLE);
+	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
+}
+
+TEST(MiscGroup, parseMoonDimlyVisible) {
+	auto mg = metaf::MiscGroup::parse("MOON", metaf::ReportPart::RMK);
+	ASSERT_TRUE(mg.has_value());
+	EXPECT_EQ(mg->append("DIMLY", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg->append("VISIBLE", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(mg->type(), metaf::MiscGroup::Type::MOON_DIMLY_VISIBLE);
+	EXPECT_FALSE(mg->data().has_value());
+	EXPECT_FALSE(mg->time().has_value());
+}
+
+// TODO: append to wrong groups, append to complete groups
+
+TEST(MiscGroup, parseSunMoonDimlyVisibleWrongReportPart) {
+	EXPECT_FALSE(metaf::MiscGroup::parse("SUN", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("SUN", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("SUN", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("SUN", metaf::ReportPart::METAR).has_value());
+
+	EXPECT_FALSE(metaf::MiscGroup::parse("MOON", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("MOON", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("MOON", metaf::ReportPart::TAF).has_value());
+	EXPECT_FALSE(metaf::MiscGroup::parse("MOON", metaf::ReportPart::METAR).has_value());
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 // Miscellaenous appending tests
 // Purpose: to confirm that the groups cannot append in wrong combinations
 ///////////////////////////////////////////////////////////////////////////////
@@ -2996,7 +3057,6 @@ TEST(MiscGroup, appendToCompleteGroups) {
 		metaf::AppendResult::NOT_APPENDED);
 	EXPECT_EQ(mg10->append("TEST", metaf::ReportPart::RMK), 
 		metaf::AppendResult::NOT_APPENDED);
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3115,3 +3175,5 @@ TEST(MiscGroup, isValidFroin) {
 // TODO: isValid() tests for AMD time
 // TODO: isValid() tests for NO AMDS AFT time
 // TODO: isValid() tests for FCST BASED ON AUTO OBS
+// TOOD: isValid() tests for CONTRAILS
+// TODO: isValid() tests for SUN DIMLY VISIBLE and MOON DIMLY VISIBLE
