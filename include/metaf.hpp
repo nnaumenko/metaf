@@ -5246,9 +5246,11 @@ AppendResult CloudGroup::append(const std::string & group,
 		return appendObscuration(group);
 
 		case IncompleteText::SKY:
-		if (group != "OBSCURED") return AppendResult::GROUP_INVALIDATED;
-		incompleteText = IncompleteText::NONE;
-		return AppendResult::APPENDED;
+		if (group == "OBSCURED" || group == "OBSC") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
 	}
 }
 

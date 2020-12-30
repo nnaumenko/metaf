@@ -443,14 +443,29 @@ TEST(CloudGroup, parseVerticalVisibilityWrongFormat) {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Sky obscured
-// Purpose: to confirm that remark SKY OBSCURED is parsed and appended 
-// correctly
+// Purpose: to confirm that remarks SKY OBSCURED and SKY OBSC are parsed and 
+// appended correctly
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(CloudGroup, parseSkyObscured) {
 	auto cg = metaf::CloudGroup::parse("SKY", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg.has_value());
 	EXPECT_EQ(cg->append("OBSCURED", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+}
+
+TEST(CloudGroup, parseSkyObsc) {
+	auto cg = metaf::CloudGroup::parse("SKY", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("OBSC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
 	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::VERTICAL_VISIBILITY);
 	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OBSCURED);
 	EXPECT_FALSE(cg->verticalVisibility().isReported());

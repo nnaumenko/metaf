@@ -344,7 +344,7 @@ If the sky is obscured (for example by fog), vertical visibility may be specifie
 
 Vertical visibility group is ``VVxxx``: characters ``VV`` followed by three-digit vertical visibility value in hundreds of feet. If the vertical visibility is not reported, the relevant group is coded ``VV///``.
 
-Group ``SKY OBSCURED`` may be specified in the remarks and parsed exactly as ``VV///`` group.
+Group ``SKY OBSCURED`` (or ``SKY OBSC``) may be specified in the remarks and parsed exactly as ``VV///`` group.
 
 Vertical visibility format is the same as :ref:`api_distance:Height`.
 

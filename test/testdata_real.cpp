@@ -7528,6 +7528,56 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"KADU", "Audubon County Airport", {2020, 12, 12},
+		"METAR KADU 121155Z AUTO 36016G25KT 2SM -SN M02/M03 A2991"
+		" RMK AO2 SKY OBSCURED"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"CYCG", "Castlegar/West Kootenay Regional Airport", {2020, 12, 13},
+		"SPECI CYCG 131756Z VRB02KT 10SM -SN FEW022 BKN040 M01/M03 A3013"
+		" RMK CF1SC7 CF TR SUN DIMLY VISBL SLP225"
+		"=",
+		"TAF CYCG 131538Z 1316/1401 VRB03KT P6SM OVC050"
+		" TEMPO 1316/1318 5SM -SN OVC030 FM131800 01005KT P6SM -SN OVC030"
+		" TEMPO 1318/1401 3SM -SN"
+		" PROB30 1318/1401 2SM -SN OVC015"
+		" RMK NXT FCST BY 131900Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
+	},
+
+	{
+		"CYFS", "Fort Simpson Airport", {2020, 12, 18},
+		"METAR CYFS 181200Z VRB02KT 15SM FEW076 FEW092 SCT110 BKN150 BKN250 M31/M34 A3009"
+		" RMK AC1AC2AC2AC1CI2 AC TR FEW STARS DMLY VSBL SLP220"
+		"=",
+		"TAF CYFS 181154Z 1812/1824 VRB03KT P6SM SCT050 OVC110"
+		" TEMPO 1812/1813 5SM -SN BKN050"
+		" FM181300 10005KT P6SM -SN OVC050"
+		" TEMPO 1813/1817 3SM -SN OVC020"
+		" FM181700 10006KT 1SM -SN OVC012"
+		" TEMPO 1817/1824 3SM -SN OVC025"
+		" RMK NXT FCST BY 181800Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
 		"CYAW", "Halifax / CFB Shearwater Heliport", {2020, 12, 23},
 		"SPECI CYAW 231432Z 30024G31KT 15SM BKN033 00/M07 A3005"
 		" RMK SC5 DA-1772FT LAST OBS/NXT 061000 UTC SLP178"
@@ -7546,6 +7596,35 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"KADC", "Wadena Municipal Airport", {2020, 12, 23},
+		"METAR KADC 232035Z AUTO 33021G27KT 2SM HZ M14/M17 A2958"
+		" RMK AO2 VIS 1V5 SKY OBSC"
+		"=",
+		"",
+		{
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0
+	},
+
+	{
+		"CYOD", "CFB Cold Lake", {2020, 12, 24},
+		"METAR CYOD 240400Z 16002KT 15SM OVC070 M08/M11 A2987"
+		" RMK AS8 MOON DIMLY VISBL SLP160"
+		"=",
+		"TAF CYOD 232330Z 2400/2424 VRB03KT P6SM BKN070 OVC250"
+		" BECMG 2404/2406 23005KT"
+		" FM241500 22010KT P6SM SCT250"
+		" RMK NXT FCST BY 240600Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
 		"CYAS", "Kangirsuk Airport", {2020, 12, 24},
 		"METAR CYAS 242000Z 31010KT 13SM -SN OVC021 M19/M23 A2989"
 		" RMK SC8 SNOW COVER TRACE LOOSE LAST STFD OBS NEXT 251300UTC SLP140"
@@ -7558,5 +7637,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		0
 	},
+
+	{
+		"CYVM", "Qikiqtarjuaq Airport", {2020, 12, 24},
+		"METAR CYVM 242200Z 13002KT 6SM -SN OVC044 M17/M19 A2963"
+		" RMK SC8 MOON VISBL SLP035"
+		"=",
+		"TAF CYVM 241838Z 2419/2507 VRB03KT P6SM BKN030"
+		" TEMPO 2419/2507 3SM -SN IC BKN020"
+		" BECMG 2423/2501 19005KT"
+		" RMK NXT FCST BY 250100Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+
+
+
 
 };
