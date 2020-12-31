@@ -156,15 +156,12 @@ Cloud cloudFromCloudGroupAmount(Cloud prev, metaf::CloudGroup::Amount newAmount)
 		case metaf::CloudGroup::Amount::NCD:
 		case metaf::CloudGroup::Amount::NONE_CLR:
 		case metaf::CloudGroup::Amount::NONE_SKC:
-		case metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED:
 		if (prev == Cloud::NOT_SPECIFIED) return Cloud::CLEAR;
 		return prev;
 
 		case metaf::CloudGroup::Amount::NSC:
 		case metaf::CloudGroup::Amount::FEW:
 		case metaf::CloudGroup::Amount::SCATTERED:
-		case metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN:
-		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
 		if (prev != Cloud::OVERCAST && prev != Cloud::MOSTLY_CLOUDY) return Cloud::MOSTLY_CLEAR;
 		return prev;
 

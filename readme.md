@@ -95,7 +95,7 @@ Example of a TAF report is as follows:
 * Wind shear, peak wind and wind shift information
 * Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles
 * Surface visibility and visibility from air traffic control tower.
-* Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', and detailed cloud layers information specified in remarks
+* Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', contrails presence and detailed cloud layers information specified in remarks
 * Cloud cover of variable density and variable ceiling height
 * Indicator of no significant cloud and good visibility CAVOK
 * Indicatiors for certain secondary locations (e.g. wind shear in the lower levels at path of runway approach, ceiling, etc), and indicators for missing visibility or ceiling data. 
@@ -124,15 +124,13 @@ Example of a TAF report is as follows:
 * Sunshine duration
 * Density altitude
 * Largest hailstone size
-* Military report issuer identifier 
+* Military report issuer identifier
+* Report schedule and stauts remarks FIRST, LAST, NEXT, etc
+* Remarks indicating visibility of sun and moon
 
 ## Roadmap
 
-Version 6.0.0 is currently planned (no release date set), with a number of new groups to be added (the candidates are runway wind, additional sea surface groups, first/last report, next scheduled report time remarks, variable cloud cover, additional visibility groups etc).
-
-There are also plans to change the handling of CNL keyword because some cancelled reports have additional remarks and some reports use CNL as a part of plain-text remark. Currently Metaf is unable to parse such reports.
-
-After version 6.0.0 is released, the priority is to fix bugs, improve test coverage and documentation, and perform 'under the hood' changes such as optimisation and refactoring.
+After version 6.0.0 the priority is to fix bugs, improve test coverage and documentation, , perform 'under the hood' changes such as optimisation and refactoring, and add alternative variants for group which Metaf is already able to parse.
 
 ## Acknowledgements
 

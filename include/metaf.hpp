@@ -1280,7 +1280,8 @@ public:
 		VARIABLE_CEILING,
 		CHINO,
 		CLD_MISG,
-		OBSCURATION
+		OBSCURATION,
+		VARIABLE_COVER
 	};
 	enum class Amount {
 		NOT_REPORTED,
@@ -1292,10 +1293,7 @@ public:
 		SCATTERED,
 		BROKEN,
 		OVERCAST,
-		OBSCURED,
-		VARIABLE_FEW_SCATTERED,
-		VARIABLE_SCATTERED_BROKEN,
-		VARIABLE_BROKEN_OVERCAST
+		OBSCURED
 	};
 	enum class ConvectiveType {
 		NONE,
@@ -1309,7 +1307,8 @@ public:
 	inline Distance height() const {
 		if (type() != Type::CLOUD_LAYER && 
 			type() != Type::CEILING &&
-			type() != Type::OBSCURATION) return heightNotReported;
+			type() != Type::OBSCURATION && 
+			type() != Type::VARIABLE_COVER) return heightNotReported;
 		return heightOrVertVis;
 	}
 	inline Distance minHeight() const {
@@ -1327,6 +1326,7 @@ public:
 	inline std::optional<CloudType> cloudType() const;
 	std::optional<Runway> runway() const { return rw; }
 	std::optional<Direction> direction() const { return dir; }
+	Amount variableAmount() const { return varAmnt; }
 	bool isValid() const { 
 		if (rw.has_value() && !rw->isValid()) return false;
 		if (dir.has_value() && !dir->isValid()) return false;
@@ -1351,6 +1351,7 @@ private:
 	std::optional<Runway> rw;
 	std::optional<Direction> dir;
 	CloudType cldTp;
+	Amount varAmnt = Amount::NOT_REPORTED;
 	static const inline auto heightNotReported = Distance(Distance::Unit::FEET);
 
 	enum class IncompleteText {
@@ -5223,7 +5224,7 @@ AppendResult CloudGroup::append(const std::string & group,
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::RMK_AMOUNT:
-		if (group != "V") return AppendResult::GROUP_INVALIDATED;
+		if (group != "V") return AppendResult::GROUP_INVALIDATED; //TODO: total cloud amount
 		incompleteText = IncompleteText::RMK_AMOUNT_V;
 		return AppendResult::APPENDED;
 
@@ -5297,12 +5298,12 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	CloudGroup result;
-	result.tp = Type::CLOUD_LAYER;
+	result.tp = Type::VARIABLE_COVER;
 	result.incompleteText = IncompleteText::RMK_AMOUNT;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	// Not checking for VV here because 3-char amount length guaranteed by regex
-	if (!amount.has_value()) return notRecognised;
+	if (!amount.has_value() || *amount == Amount::NOT_REPORTED) return notRecognised;
 	result.amnt = *amount;
 
 	if (const std::string heightStr = match.str(matchHeight); !heightStr.empty()) {
@@ -5320,14 +5321,11 @@ unsigned int CloudGroup::amountToMaxOkta(Amount a) {
 		return 2;
 
 		case Amount::SCATTERED:
-		case Amount::VARIABLE_FEW_SCATTERED:
 		return 4;
 		
-		case Amount::VARIABLE_SCATTERED_BROKEN:
 		case Amount::BROKEN:
 		return 7;
 		
-		case Amount::VARIABLE_BROKEN_OVERCAST:
 		case Amount::OVERCAST:
 		case Amount::OBSCURED:
 		return 8;
@@ -5352,10 +5350,14 @@ CloudType::Type CloudGroup::convectiveTypeToCloudTypeType(ConvectiveType t) {
 
 std::optional<CloudType> CloudGroup::cloudType() const {
 	const auto cldConvType = convectiveTypeToCloudTypeType(convectiveType());
-	const auto cldOkta = amountToMaxOkta(amount());
+	auto cldOkta = amountToMaxOkta(amount());
 	switch (type()) {
 		case Type::CLOUD_LAYER:
 		case Type::CEILING:
+		case Type::VARIABLE_COVER:
+		if (const auto varCldOkta = amountToMaxOkta(variableAmount()); varCldOkta) {
+			if (varCldOkta > cldOkta) cldOkta = varCldOkta;
+		}
 		return CloudType(cldConvType, height(), cldOkta);
 
 		case Type::VARIABLE_CEILING:
@@ -5390,16 +5392,12 @@ std::optional<CloudGroup::ConvectiveType> CloudGroup::convectiveTypeFromString(
 }
 
 AppendResult CloudGroup::appendVariableCloudAmount(const std::string & group) {
-	const auto newAmount = amountFromString(group); 
-	if (!newAmount.has_value()) return AppendResult::GROUP_INVALIDATED;
-	const auto a1 = amount();
-	const auto a2 = *newAmount;
-	auto result = Amount::NOT_REPORTED;
-	if (a1 == Amount::FEW && a2 == Amount::SCATTERED) result = Amount::VARIABLE_FEW_SCATTERED;
-	if (a1 == Amount::SCATTERED && a2 == Amount::BROKEN) result = Amount::VARIABLE_SCATTERED_BROKEN;
-	if (a1 == Amount::BROKEN && a2 == Amount::OVERCAST) result = Amount::VARIABLE_BROKEN_OVERCAST;
-	if (result == Amount::NOT_REPORTED) return AppendResult::GROUP_INVALIDATED;
-	amnt = result;
+	const auto newAmount = amountFromString(group);
+	if (!newAmount.has_value() || 
+		newAmount == amnt || 
+		*newAmount == Amount::OBSCURED || 
+		*newAmount == Amount::NOT_REPORTED) return AppendResult::GROUP_INVALIDATED;
+	varAmnt = *newAmount;
 	incompleteText = IncompleteText::NONE;
 	return AppendResult::APPENDED;
 }

@@ -757,6 +757,16 @@ std::string VisitorExplain::visitCloudGroup(
 			result << explainCloudType(ct.value());
 		}
 		break;
+
+		case metaf::CloudGroup::Type::VARIABLE_COVER:
+		result << "Cloud cover is variable between ";
+		result << cloudAmountToString(group.amount());
+		result << " and ";
+		result << cloudAmountToString(group.variableAmount());
+		if (group.height().isReported()) {
+			result << "\nCloud base height ";
+			result << explainDistance(group.height());
+		}
 	}
 	return result.str();
 }
@@ -2371,15 +2381,6 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 
 		case metaf::CloudGroup::Amount::OBSCURED:
 		return "Sky obscured";
-
-		case metaf::CloudGroup::Amount::VARIABLE_FEW_SCATTERED:
-		return "Sky cover variable between few and scattered clouds (sky coverage variable between 1/8 and 4/8)";
-
-		case metaf::CloudGroup::Amount::VARIABLE_SCATTERED_BROKEN:
-		return "Sky cover variable between scattered and broken clouds (sky coverage variable between 3/8 and 7/8)";
-
-		case metaf::CloudGroup::Amount::VARIABLE_BROKEN_OVERCAST:
-		return "Sky cover variable between broken clouds and overcast (sky coverage variable between 5/8 and 8/8)";
 	}
 }
 
