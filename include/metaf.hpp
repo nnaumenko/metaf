@@ -1281,7 +1281,9 @@ public:
 		CHINO,
 		CLD_MISG,
 		OBSCURATION,
-		VARIABLE_COVER
+		VARIABLE_COVER,
+		CIG_RAG,
+		CIG_DFUS
 	};
 	enum class Amount {
 		NOT_REPORTED,
@@ -1930,7 +1932,8 @@ public:
 		SMOKE,
 		BLOWING_SNOW,
 		BLOWING_SAND,
-		BLOWING_DUST
+		BLOWING_DUST,
+		LOWER_CEILING
 	};
 	Type type() const { return t; }
 	Distance distance() const { return dist; }
@@ -1964,7 +1967,8 @@ private:
 		EXPECT_DIR2_MOV,	// Expect second direction sector
 		EXPECT_DIR2,		// Expect second direction sector
 		EXPECT_MOV,			// Expect MOV
-		EXPECT_MOVDIR		// Expect cardinal direction of movement
+		EXPECT_MOVDIR,		// Expect cardinal direction of movement
+		EXPECT_LWR,			// CIG previously specified, now expecting LWR
 	};
 	IncompleteType incompleteType = IncompleteType::NONE;
 	AppendResult expectNext(IncompleteType newType) {
@@ -1982,6 +1986,7 @@ private:
 	VicinityGroup(Type tp) : t(tp) {
 		incompleteType = IncompleteType::EXPECT_DIST_DIR1;
 		if (type() == Type::ROTOR_CLOUD) incompleteType = IncompleteType::EXPECT_CLD;
+		if (type() == Type::LOWER_CEILING) incompleteType = IncompleteType::EXPECT_LWR;
 	}
 
 	inline bool appendDir1(const std::string & str);
@@ -5232,6 +5237,16 @@ AppendResult CloudGroup::append(const std::string & group,
 		return appendVariableCloudAmount(group);
 
 		case IncompleteText::CIG:
+		if (group == "RAG") {
+			tp = Type::CIG_RAG; 
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (group == "DFUS") {
+			tp = Type::CIG_DFUS; 
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
 		return appendCeiling(group);
 
 		case IncompleteText::CIG_NUM:
@@ -6603,6 +6618,7 @@ std::optional<VicinityGroup> VicinityGroup::parse(
 	if (group == "BLSA") return VicinityGroup(Type::BLOWING_SAND);
 	if (group == "MIFG") return VicinityGroup(Type::FOG_SHALLOW);
 	if (group == "BCFG") return VicinityGroup(Type::FOG_PATCHES);
+	if (group == "CIG") return VicinityGroup(Type::LOWER_CEILING);
 	return notRecognised;
 }
 
@@ -6618,6 +6634,10 @@ AppendResult VicinityGroup::append(const std::string & group,
 
 		case IncompleteType::EXPECT_CLD:
 		if (group == "CLD") return expectNext(IncompleteType::EXPECT_DIST_DIR1);
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteType::EXPECT_LWR:
+		if (group == "LWR") return expectNext(IncompleteType::EXPECT_DIST_DIR1);
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteType::EXPECT_DIST_DIR1:

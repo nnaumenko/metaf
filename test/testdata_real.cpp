@@ -5908,6 +5908,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"CYXX", "Abbotsford International Airport", {2019, 1, 3}, 
+		"METAR CYXX 030100Z 04008KT 7SM -RA OVC035 03/02 A3005"
+		" RMK NS8 CIG DFUS SLP180"
+		"=",
+		"TAF CYXX 030540Z 0306/0406 01008KT P6SM -RA BKN030 OVC050"
+		" TEMPO 0306/0310 4SM -RA BR SCT008 OVC020"
+		" FM031000 04008KT 6SM -RA BR FEW004 SCT008 OVC020"
+		" TEMPO 0310/0321 2SM RA BR SCT004 OVC008"
+		" FM032100 17010KT P6SM -RA SCT010 OVC030"
+		" TEMPO 0321/0406 3SM -SHRA BR OVC010"
+		" RMK NXT FCST BY 031200Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
 		"CYHD", "Dryden Regional Airport", {2019, 1, 3}, 
 		"METAR CYHD 032000Z AUTO 24008KT 9SM BKN009 OVC100 00/M01 A2941"
 		" RMK RVR MISG SLP988"
@@ -7230,7 +7248,23 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		{},
 		0
 	},
-	
+
+	{
+		"PAJN", "Juneau International Airport", {2020, 01, 02},
+		"METAR PAJN 021253Z 13009KT 10SM FEW009 BKN055 OVC075 M01/M05 A2974"
+		" RMK AO2 SLP071 CIG LWR N-SE T10061050"
+		"=",
+		"TAF PAJN 021122Z 0212/0312 10008KT 6SM -SHSN BKN040 OVC050"
+		" FM021800 11012G20KT 3SM -SHSN BR BKN025 OVC040"
+		" FM030600 11008KT P6SM VCSH BKN050"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
+		{},
+		0		
+	},
+
 	{
 		"BGJN", "Ilulissat Airport", {2020, 2, 2},
 		"BGJN 022250Z AUTO 07002KT 8000NDV -SG SCT055/// BKN070/// M16/M19 Q1003"
@@ -7288,6 +7322,24 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" INTER 2421/2506 3000 SHRA BKN012"
 		"=",
 		{},
+		{},
+		0
+	},
+
+	{
+		"KDAY", "James M Cox Dayton International Airport", {2020, 3, 27},
+		"METAR KDAY 271056Z 11009KT 10SM FEW031 FEW039 OVC170 11/08 A2985"
+		" RMK AO2 SLP106 CIG LWR DSNT S-SW T01110083"
+		"=",
+		"TAF KDAY 271126Z 2712/2812 06006KT P6SM OVC050"
+		" FM271300 08008KT P6SM -SHRA BKN015 OVC050"
+		" FM272000 08010KT 5SM BR BKN012 OVC060"
+		" FM280300 09009KT 4SM -SHRA OVC009"
+		" FM281000 17007KT 6SM SHRA OVC012"
+		"=",
+		{
+			MetarTafRealData::Attribute::AO2
+		},
 		{},
 		0
 	},
@@ -7578,6 +7630,22 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"CYCB", "Cambridge Bay Airport", {2020, 12, 21},
+		"SPECI CYCB 211924Z 29009KT 3SM -SN FEW006 OVC012 M28/M32 A2994"
+		" RMK SF1SC7 CIG RAG CIG LWR SE SLP147"
+		"=",
+		"TAF CYCB 211838Z 2119/2207 30012KT P6SM -SN SCT015 BKN030"
+		" TEMPO 2119/2207 4SM -SN OVC015"
+		" RMK NXT FCST BY 220100Z"
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI
+		},
+		{},
+		0
+	},
+
+	{
 		"CYAW", "Halifax / CFB Shearwater Heliport", {2020, 12, 23},
 		"SPECI CYAW 231432Z 30024G31KT 15SM BKN033 00/M07 A3005"
 		" RMK SC5 DA-1772FT LAST OBS/NXT 061000 UTC SLP178"
@@ -7647,6 +7715,38 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		" TEMPO 2419/2507 3SM -SN IC BKN020"
 		" BECMG 2423/2501 19005KT"
 		" RMK NXT FCST BY 250100Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CYEV", "Inuvik Mike Zubko Airport", {2020, 12, 28}, 
+		"METAR CYEV 280300Z 24003KT 220V280 5SM -SN BR OVC004 M20/M22 A2983"
+		" RMK ST8 MOON VISBL SLP112="
+		"=",
+		"TAF CYEV 280038Z 2801/2813 VRB03KT P6SM OVC004"
+		" TEMPO 2801/2807 2SM -SN OVC008"
+		" FM280700 09005KT P6SM OVC015"
+		" TEMPO 2807/2813 2SM -SN BR OVC007"
+		" RMK NXT FCST BY 280700Z"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"CYEG", "Edmonton International Airport", {2020, 12, 29}, 
+		"METAR CYEG 292000Z 22005KT 20SM SCT230 M10/M15 A2998"
+		" RMK CI3 CONTRAILS SLP203"
+		"=",
+		"TAF CYEG 291738Z 2918/3018 27005KT P6SM FEW100 FEW230"
+		" BECMG 2919/2921 20005KT"
+		" FM300300 24008KT P6SM BKN100 BKN200"
+		" FM301400 24006KT P6SM SCT100 SCT240"
+		" RMK NXT FCST BY 292100Z"
 		"=",
 		{},
 		{},

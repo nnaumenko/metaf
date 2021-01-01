@@ -767,6 +767,15 @@ std::string VisitorExplain::visitCloudGroup(
 			result << "\nCloud base height ";
 			result << explainDistance(group.height());
 		}
+
+		case metaf::CloudGroup::Type::CIG_RAG:
+		result << "Ceiling is ragged";
+		break;
+
+		case metaf::CloudGroup::Type::CIG_DFUS:
+		result << "Ceiling is diffuse";
+		break;
+
 	}
 	return result.str();
 }
@@ -1358,6 +1367,10 @@ std::string VisitorExplain::visitVicinityGroup(
 
 		case metaf::VicinityGroup::Type::BLOWING_DUST:
 		result << "Blowing dust";
+		break;
+
+		case metaf::VicinityGroup::Type::LOWER_CEILING:
+		result << "Lower ceiling";
 		break;
 	}
 	result << " observed";

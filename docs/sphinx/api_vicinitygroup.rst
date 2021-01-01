@@ -87,6 +87,10 @@ Type definitions
 
 			Blowing dust.
 
+		.. cpp:enumerator:: LOWER_CEILING
+
+			Lower ceiling towards direction or direction sector.
+
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^

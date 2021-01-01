@@ -1747,6 +1747,48 @@ TEST(CloudGroup, parseObscurationVolcanicAsh) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Tests for CIG RAG and CIG DFUS
+// Purpose: to confirm that groups CIG RAG AND CIG DFUS included in remarks 
+// are parsed and appended correctly 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudGroup, parseCigRag) {
+	auto cg = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("RAG", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CIG_RAG);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, parseCigDfus) {
+	auto cg = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("DFUS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CIG_DFUS);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+// TODO: additional appending tests
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for cloudType()
 // Purpose: to confirm that cloudType() method correctly initialises a
 // CloudType instance 

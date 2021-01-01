@@ -62,6 +62,13 @@ Type definitions
 
 			Indicates the that cloud cover is variable between :cpp:func:`amount()` and :cpp:func:`variableAmount()` values. :cpp:func:`height()` also may return a base height value if it was specified in the group.
 
+		.. cpp:enumerator:: CIG_RAG
+
+			Indicates ragged ceiling. No further details are provided.
+
+		.. cpp:enumerator:: CIG_DFUS
+
+			Indicates diffuse ceiling. No further details are provided.
 
 	.. cpp:enum-class:: Amount
 

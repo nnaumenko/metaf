@@ -333,6 +333,23 @@ TEST(VicinityGroup, parseROTOR_CLD_N) {
 	EXPECT_TRUE(vg->isValid());
 }
 
+TEST(VicinityGroup, parseCIG_LWR_N) {
+	auto vg = metaf::VicinityGroup::parse("CIG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("LWR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("N", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	
+	EXPECT_EQ(vg->type(), metaf::VicinityGroup::Type::LOWER_CEILING);
+	EXPECT_EQ(vg->distance().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_FALSE(vg->distance().isReported());
+	EXPECT_EQ(vg->movingDirection().cardinal(), metaf::Direction::Cardinal::NOT_REPORTED);
+	EXPECT_EQ(vg->directions().size(), 1u);
+	EXPECT_EQ(vg->directions().at(0).cardinal(), metaf::Direction::Cardinal::N);
+	EXPECT_TRUE(vg->isValid());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Direction tests
 // Purpose: to confirm that directions and direction sectors in vicinity group 
