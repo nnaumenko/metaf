@@ -20,13 +20,13 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Metaf'
-copyright = '2018-2020, Nick Naumenko'
+copyright = '2018-2021, Nick Naumenko'
 author = 'Nick Naumenko'
 
 # The short X.Y version
 version = '6.0.0'
 # The full version, including alpha/beta/rc tags
-release = '6.0.0 phase 1/8'
+release = '6.0.0 phase 2/8'
 
 
 # -- General configuration ---------------------------------------------------
