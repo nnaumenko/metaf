@@ -263,6 +263,42 @@ TEST(CloudType, parseHazeNoHeight) {
 	EXPECT_TRUE(ct->isValid());
 }
 
+TEST(CloudType, parseVolcanicAshNoHeight) {
+	const auto ct = metaf::CloudType::fromString("VA2");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::VOLCANIC_ASH);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 2u);
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseHailNoHeight) {
+	const auto ct = metaf::CloudType::fromString("GR4");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::HAIL);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 4u);
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseDustStormNoHeight) {
+	const auto ct = metaf::CloudType::fromString("DS8");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::DUSTSTORM);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 8u);
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseSandStormNoHeight) {
+	const auto ct = metaf::CloudType::fromString("SS8");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SANDSTORM);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_EQ(ct->okta(), 8u);
+	EXPECT_TRUE(ct->isValid());
+}
+
 TEST(CloudType, parseInvalidOktaNoHeight) {
 	const auto ct1 = metaf::CloudType::fromString("SC0");
 	ASSERT_TRUE(ct1.has_value());

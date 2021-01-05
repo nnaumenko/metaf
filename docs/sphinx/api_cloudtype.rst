@@ -134,6 +134,18 @@ Type definitions
 
 			Obscuration: volcanic ash.
 
+		.. cpp:enumerator:: HAIL
+
+			Obscuration: hail.
+
+		.. cpp:enumerator:: DUSTSTORM
+
+			Obscuration: duststorm.
+
+		.. cpp:enumerator:: SANDSTORM
+
+			Obscuration: sandstorm.
+
 Acquiring the data
 ^^^^^^^^^^^^^^^^^^
 

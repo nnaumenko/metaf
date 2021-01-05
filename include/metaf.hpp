@@ -805,7 +805,10 @@ public:
 		FOG,
 		MIST,
 		HAZE,
-		VOLCANIC_ASH
+		VOLCANIC_ASH,
+		HAIL,
+		DUSTSTORM,
+		SANDSTORM
 	};
 	Type type() const { return tp; }
 	Distance height() const { return ht; }
@@ -4267,6 +4270,9 @@ CloudType::Type CloudType::cloudTypeOrObscurationFromString(const std::string & 
 	if (s == "BR")    return Type::MIST;
 	if (s == "HZ")    return Type::HAZE;
 	if (s == "VA") 	  return Type::VOLCANIC_ASH;
+	if (s == "GR")	  return Type::HAIL;
+	if (s == "SS")    return Type::SANDSTORM;
+	if (s == "DS")    return Type::DUSTSTORM;
 	return Type::NOT_REPORTED;
 }
 
@@ -5238,12 +5244,12 @@ AppendResult CloudGroup::append(const std::string & group,
 
 		case IncompleteText::CIG:
 		if (group == "RAG") {
-			tp = Type::CIG_RAG; 
+			tp = Type::CIG_RAG;
 			incompleteText = IncompleteText::NONE;
 			return AppendResult::APPENDED;
 		}
 		if (group == "DFUS") {
-			tp = Type::CIG_DFUS; 
+			tp = Type::CIG_DFUS;
 			incompleteText = IncompleteText::NONE;
 			return AppendResult::APPENDED;
 		}

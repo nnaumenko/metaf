@@ -767,6 +767,7 @@ std::string VisitorExplain::visitCloudGroup(
 			result << "\nCloud base height ";
 			result << explainDistance(group.height());
 		}
+		break;
 
 		case metaf::CloudGroup::Type::CIG_RAG:
 		result << "Ceiling is ragged";
@@ -2993,6 +2994,16 @@ std::string_view VisitorExplain::cloudTypeToString(
 
 		case metaf::CloudType::Type::VOLCANIC_ASH:
 		return "volcanic ash";
+
+		case metaf::CloudType::Type::HAIL:
+		return "hail";
+
+		case metaf::CloudType::Type::DUSTSTORM:
+		return "dust storm";
+
+		case metaf::CloudType::Type::SANDSTORM:
+		return "sand storm";
+
 	}
 }
 
