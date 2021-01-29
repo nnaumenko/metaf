@@ -15,14 +15,17 @@
 #include <regex>
 #include <sstream>
 
+#include <iostream>
+#include <fstream>
+#include <memory>
+#include <map>
+#include <chrono>
+
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// Get an index from type included in variant type at compile time.
-/// @tparam V Variant type to search for index.
-/// @tparam T Type which index must be returned.
-/// @return Index of type T in variant V; or variant size if V does not contain T.
+/// Get an index from type included in variant type at compile time
 template<typename V, typename T, size_t I = 0>
 constexpr size_t variant_index() {
     if constexpr (I >= variant_size_v<V>) {
@@ -38,9 +41,6 @@ constexpr size_t variant_index() {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// @details MUST be modified accordingly if Group is modified
-/// @param index Value obtained from index() method of Group variant.
-/// @return Name of the group in human-readable form.
 string_view groupName (size_t index) {
 	switch (index) {
 		case variant_index<metaf::Group, metaf::KeywordGroup>():
@@ -113,280 +113,376 @@ string_view groupName (size_t index) {
 	}
 }
 
+string_view reportPartName (metaf::ReportPart rp) {
+	switch (rp) {
+		case metaf::ReportPart::UNKNOWN:	return "unknown";
+		case metaf::ReportPart::HEADER:		return "header";
+		case metaf::ReportPart::METAR:		return "metar";
+		case metaf::ReportPart::TAF:		return "taf";
+		case metaf::ReportPart::RMK:		return "remark";
+	}
+}
+
+size_t reportPartIndex (metaf::ReportPart rp) {
+	switch (rp) {
+		case metaf::ReportPart::UNKNOWN: 	return 0;
+		case metaf::ReportPart::HEADER:		return 1;
+		case metaf::ReportPart::METAR:		return 2;
+		case metaf::ReportPart::TAF:		return 3;
+		case metaf::ReportPart::RMK:		return 4;
+	}
+}
+
+std::optional<metaf::ReportPart> reportPartFromName (const string & name) {
+	if (name == "unknown") return metaf::ReportPart::UNKNOWN;
+	if (name == "header") return metaf::ReportPart::HEADER;
+	if (name == "metar") return metaf::ReportPart::METAR;
+	if (name == "taf") return metaf::ReportPart::TAF;
+	if (name == "remark") return metaf::ReportPart::RMK;
+	return std::optional<metaf::ReportPart>();
+}
+
+std::optional<metaf::ReportPart> reportPartFromIndex (size_t index) {
+	switch (index) {
+		case 0: 	return metaf::ReportPart::UNKNOWN;
+		case 1:		return metaf::ReportPart::HEADER;
+		case 2:		return metaf::ReportPart::METAR;
+		case 3:		return metaf::ReportPart::TAF;
+		case 4:		return metaf::ReportPart::RMK;
+		default: 	return std::optional<metaf::ReportPart>();
+	}
+}
+
+static const size_t reportPartSize = 5;
+
 ///////////////////////////////////////////////////////////////////////////////
 
-/// Performance checker. Runs process() and displays performance stats.
-class PerformanceCheckerBase {
+class PerformanceStats {
 public:
-	void run(ostream & output);
-protected:
-	string_view getItemName() { return itemName; }
-	void setItemName(string_view name) { itemName = name; }
-	virtual int process() = 0;
+	PerformanceStats() = default;
+	void add(const string & name, uint64_t microsec, uint64_t items) {
+		stats[name].microsec += microsec;
+		stats[name].items += items;
+	}
+	void print(const string & name, ostream & output = cout) const;
+	void print(ostream & output = cout) const;
 private:
-	string_view itemName = "item";
+	struct Data {
+		Data() = default;
+		uint64_t microsec = 0;
+		uint64_t items = 0;
+	};
+	map<string, Data> stats;
 };
 
-void PerformanceCheckerBase::run(ostream & output) {
-	auto beginTime = chrono::system_clock::now();
-	auto itemCount = this->process();
-	auto endTime = chrono::system_clock::now();
-	if (!itemCount) {
-		output << "Test failed.\n";
+void PerformanceStats::print(const string & name, ostream & output) const {
+	auto quantity = [&] (const string & itemname, uint64_t quantity) {
+		if (!quantity) return "<1 " + itemname;
+		return to_string(quantity) + " " + itemname + ((quantity > 1) ? "s" : "");
+	};
+	if (!stats.count(name)) {
+		output << "No performance stats exist for " << name << ".\n";
 		return;
 	}
-	auto totalTime = chrono::microseconds(endTime - beginTime);
-	auto averageTimePerItem = chrono::microseconds(totalTime / itemCount);
-	if (totalTime.count()) {
-		output << totalTime.count() << " microseconds, ";
-	} else {
-		output << "<1 microsecond, ";
+	const auto items = stats.at(name).items;
+	if (!items) {
+		output << "No processed " << name << "s.\n";
+		return;
 	}
-	output << itemCount << " " << getItemName() << "s, ";
-	if (averageTimePerItem.count()) {
-		output << averageTimePerItem.count() << " microseconds per " << getItemName() << ", ";	
-	} else {
-		output << "<1 microsecond per " << getItemName() << ", ";	
+	const auto microsec = stats.at(name).microsec;
+	output << quantity("microsecond", microsec) << ", ";
+	output << quantity(name, items) << ", ";
+	static const uint64_t microsecondsPerSecond = 1000000;
+	const auto itemsPerSecond = microsecondsPerSecond * items / microsec;
+	output << quantity(name, itemsPerSecond) << " per second.\n";
+}
+
+void PerformanceStats::print(ostream & output) const {
+	for (const auto & stat : stats) {
+		print(stat.first, output);
 	}
-	static const auto microsecondsPerSecond = chrono::microseconds(chrono::seconds(1)).count();
-	if (averageTimePerItem.count()) {
-		output << microsecondsPerSecond / averageTimePerItem.count();
-		output << " " << getItemName() << "s per second";
-	} else {
-		output << ">" << microsecondsPerSecond << " " << getItemName() << "s per second";
-	}
-	output << "\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// Parses all METAR and TAF reports from testdata_real.cpp and displays 
-/// performance stats of parsing entire report.
-class ParserPerformanceChecker : public PerformanceCheckerBase {
+class BatchProcess {
 public:
-	ParserPerformanceChecker() { setItemName("report"); }
-protected:
-	virtual int process();
+	BatchProcess() = default;
+	virtual const vector<string> & getCurrentBatch() const = 0;
+	virtual bool nextBatch() = 0;
+	virtual size_t totalSize() const = 0;
+	virtual ~BatchProcess() {}
 };
 
-int ParserPerformanceChecker::process() {
-	auto reportCount = 0;
-	for (const auto & data : testdata::realDataSet) {
- 		if (!data.metar.empty()) {
-			metaf::Parser::parse(data.metar);
-			reportCount++;
-		}
-		if (!data.taf.empty()) {
-			metaf::Parser::parse(data.taf);
-			reportCount++;
-		}
-	}
-	return reportCount;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-/// Parses a number of groups and displays performance stats.
-class GroupPerformanceChecker : public PerformanceCheckerBase {
+class BatchFromMemory : public BatchProcess {
 public:
-	GroupPerformanceChecker(const vector<pair<string, metaf::ReportPart>> & srcs, 
-		size_t idx) : sources(&srcs), index(idx) {setItemName("group"); }
-protected:
-	virtual int process();
+	BatchFromMemory() = default;
+	BatchFromMemory(const vector<string> * src) : shallowLoadedBatch(src) {}
+	BatchFromMemory(vector<string> src) : loadedBatch(move(src)) {}
+	virtual const vector<string> & getCurrentBatch() const {
+		if (shallowLoadedBatch) return *shallowLoadedBatch;
+		return loadedBatch;
+	}
+	virtual bool nextBatch() { return false; }
+	virtual size_t totalSize() const { return getCurrentBatch().size(); }
+	virtual ~BatchFromMemory() {}
 private:
-	const vector<pair<string, metaf::ReportPart>> * sources = nullptr;
-	size_t index = 0;
+	vector<string> loadedBatch;
+	const vector<string> * shallowLoadedBatch = nullptr;
 };
 
-int GroupPerformanceChecker::process() {
-	int groupCount = 0;
-	static const auto testRepetitions = 300;
-	for (auto i = 0; i < testRepetitions; i++) {
-		for (auto src : *sources) {
-			const auto parseResult = 
-				metaf::GroupParser::parse(get<string>(src), 
-					get<metaf::ReportPart>(src),
-					metaf::missingMetadata);
-			(void)parseResult;
-			(void)index;
-			//if (parseResult.index() != index) return 0;
-			groupCount++;
-		}
-	}
-	return groupCount;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-
-/// Splits METAR or TAF report into individual groups and saves group string 
-/// along with associated report parts. The strings associated with a certain
-/// group type can be acquired for use in tests.
-class GroupsTestSet {
+class BatchFromTestdataReal : public BatchFromMemory {
 public:
-	GroupsTestSet();
-	size_t size() { return testSet.size(); }
-	const vector<pair<string, metaf::ReportPart>> & groupSet(size_t index) { 
-		return testSet.at(index);
+	BatchFromTestdataReal(size_t repetitions);
+	virtual bool nextBatch() {
+		if (repetitionsLeft) repetitionsLeft--;
+		if (!repetitionsLeft) return false;
+		return true;
 	}
-	size_t totalGroups() {
-		auto count = 0;
-		for (const auto gs : testSet) { count += gs.size(); }
-		return count;
-	}
-	void displayStats(ostream & output);
-	void runPerformanceTests(ostream & output);
+	virtual size_t totalSize() const { return getCurrentBatch().size() * repetitionsTotal; }
+	virtual ~BatchFromTestdataReal() {}
 private:
-	vector <vector<pair<string, metaf::ReportPart>>> testSet;
-	void getGroupsFromReport(const std::string & report);
+	size_t repetitionsLeft = 0;
+	size_t repetitionsTotal = 0;
+	static vector<string> getReports();
 };
 
-GroupsTestSet::GroupsTestSet() {
-	testSet.resize(variant_size_v<metaf::Group>);
+BatchFromTestdataReal::BatchFromTestdataReal(size_t repetitions) : 
+	BatchFromMemory(getReports()), 
+	repetitionsLeft(repetitions), 
+	repetitionsTotal(repetitions)
+{}
+
+vector<string> BatchFromTestdataReal::getReports() {
+	vector<string> result;
 	for (const auto & data : testdata::realDataSet) {
- 		if (!data.metar.empty()) getGroupsFromReport(data.metar);
-		if (!data.taf.empty()) getGroupsFromReport(data.taf);
-	}
+ 		if (!data.metar.empty()) result.push_back(data.metar);
+		if (!data.taf.empty()) result.push_back(data.taf);
+	}		
+	return result;
 }
 
-void GroupsTestSet::getGroupsFromReport(const std::string & report)
-{
-	const auto parseResult = metaf::Parser::parse(report);
-	for (const auto gr : parseResult.groups) {
-		std::istringstream iss(gr.rawString);
-		std::vector<std::string> individualGroups(
-			std::istream_iterator<std::string>{iss},
-            std::istream_iterator<std::string>());
-		for (const auto grstr : individualGroups) {
-			auto resultPair = make_pair(grstr, gr.reportPart);
-			const auto index = gr.group.index();
-			testSet.at(index).push_back(resultPair);
-		}
+class BatchFromFile : public BatchProcess{
+public:
+	BatchFromFile() = default;
+	BatchFromFile(const string & path, size_t sz) : f(path), batchSize(sz), fpath(path) {
+		loadedBatch.reserve(batchSize);
+		nextBatch();
 	}
+	virtual const vector<string> & getCurrentBatch() const { return loadedBatch; }
+	virtual bool nextBatch();
+	virtual size_t totalSize() const;
+	virtual ~BatchFromFile() {}
+private:
+	vector<string> loadedBatch;
+	ifstream f;
+	size_t batchSize;
+	string fpath;
+	mutable size_t totalFileSize = 0;
+};
+
+bool BatchFromFile::nextBatch() {
+	loadedBatch.clear();
+	if (!f.is_open()) { loadedBatch.shrink_to_fit(); return false; }
+	for (auto i = 0u; i < batchSize; i++) {
+		std::string s;
+		if (!getline(f, s)) { loadedBatch.shrink_to_fit(); return false; }
+		loadedBatch.push_back(move(s));
+	}
+	return true;
 }
 
-void GroupsTestSet::displayStats(ostream & output) {
-	output << "Group statistics\n";
-	for (auto i=0u; i<size(); i++) {
-		output << groupName(i) << ": " << groupSet(i).size() << " groups";
-		output << " (" << (100.0 * groupSet(i).size() / totalGroups()) << "%)";
-		output << "\n";
-	}
-	output << "Total: " << totalGroups() << " groups\n";
-}
-
-void GroupsTestSet::runPerformanceTests(ostream & output) {
-	for (auto i=0u; i<size(); i++) {
-		output << "Checking performance of " << groupName(i) << "\n";
-		GroupPerformanceChecker checker(groupSet(i), i);
-		checker.run(output);
-		output << "\n";
-	}
+size_t BatchFromFile::totalSize() const {
+	if (totalFileSize) return totalFileSize;
+	ifstream f(fpath);
+	const size_t sz = 
+		count(istreambuf_iterator<char>(f), istreambuf_iterator<char>(), '\n');
+	totalFileSize = sz;
+	return totalFileSize;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void addGroup(const string & group, vector< pair<int, string> > & dst) {
-	for (auto i=0u; i<dst.size(); i++) {
-		if (get<string>(dst[i]) == group) {
-			//found group in dst, increment counter
-			auto count = get<int>(dst[i]);
-			auto temp = make_pair(++count, get<string>(dst[i]));
-			swap(dst[i], temp);
-			return;
-		}
-	}
-	//group not found in dst, add
-	dst.push_back(make_pair(1, group));
+class Archive {
+public:
+	Archive() = default;
+	virtual bool add(string s) = 0;
+	virtual unique_ptr<BatchProcess> getBatchProcess(size_t desiredSize) = 0;
+	virtual size_t size() const = 0;
+	void print(ostream out);
+	virtual ~Archive() {}
+};
+
+void Archive::print(ostream out) {
+	const auto bpSize = 1000; //arbitrary number
+	auto bp = getBatchProcess(bpSize);
+	do {
+		for (const auto & record : bp->getCurrentBatch()) 
+			cout << record << 'n';
+	} while (bp->nextBatch());
 }
 
-int addPlainTextGroups(const metaf::ParseResult & src, vector< pair<int, string> > & dst){
-	auto count = 0;	
-	for (const auto & gr : src.groups) {
-		if (holds_alternative<metaf::UnknownGroup>(gr.group)) {
-			std::istringstream iss(gr.rawString);
-			std::istream_iterator<std::string> iter(iss);
-			while (iter != std::istream_iterator<std::string>()) {
-				addGroup(*iter, dst);
-				iter++;	
-			    count++;
+class ArchiveToMemory : public Archive {
+public:
+	ArchiveToMemory() = default;
+	virtual bool add(string s) { storage.push_back(move(s)); return true; }
+	virtual unique_ptr<BatchProcess> getBatchProcess(size_t desiredSize) { 
+		(void)desiredSize;
+		return make_unique<BatchFromMemory>(&storage);
+	}
+	virtual size_t size() const { return storage.size(); }
+	virtual ~ArchiveToMemory() {}
+private:
+	vector<string> storage;
+};
+
+class ArchiveToFile : public Archive {
+public:
+	ArchiveToFile() = delete;
+	ArchiveToFile(const string & path) : 
+		outFilePath(path), outfile(path, ios_base::out | ios_base::trunc) {}
+	virtual bool add(string s) {
+		if (!outfile.is_open()) outfile.open(outFilePath, ios_base::out | ios_base::app);
+		outfile << s;
+		if (s.back() != '\n') outfile << '\n';
+		count++;
+		return true;
+	}
+	virtual unique_ptr<BatchProcess> getBatchProcess(size_t desiredSize) {
+		outfile.close();
+		return make_unique<BatchFromFile>(outFilePath, desiredSize);
+	}
+	virtual size_t size() const { return count; }
+	virtual ~ArchiveToFile() {}
+private:
+	string outFilePath;
+	ofstream outfile;
+	size_t count = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class Archiver {
+public:
+	Archiver(bool files = false);
+	void addGroup(const metaf::GroupInfo & groupInfo);
+	void addResult(const metaf::ParseResult & result);
+	unique_ptr<BatchProcess>getBatchProcess(size_t index, metaf::ReportPart reportPart);
+	void addErrorReport(metaf::ReportError e, const std::string & report);
+	unique_ptr<BatchProcess>getBatchProcess(metaf::ReportError e, metaf::ReportPart reportPart);
+private:
+	static const auto size = variant_size_v<metaf::Group>;
+	array<unique_ptr<Archive>, size * reportPartSize> archives;
+	size_t groupIndex(const metaf::Group & group, metaf::ReportPart reportPart) {
+		return groupIndex(group.index(), reportPartIndex(reportPart));
+	}
+	size_t groupIndex(size_t groupIndex, size_t reportPartIndex) {
+		return groupIndex * reportPartSize + reportPartIndex;
+	}
+	void makeGroupArchives(bool files);
+	void makeErrorArchives(bool files);
+};
+
+Archiver::Archiver(bool files) {
+	makeGroupArchives(files);
+	makeErrorArchives(files);
+}
+
+void Archiver::makeGroupArchives(bool files) {
+	for (auto i = 0u; i < variant_size_v<metaf::Group>; i++) {
+		for (auto j = 0u; j < reportPartSize; j++) {
+			auto idx = groupIndex(i, j);
+			if (files) {
+				const auto reportPart = reportPartFromIndex(j).value();
+				const string filename = string(groupName(i)) + string("-") + 
+					string(reportPartName(reportPart)) + string(".txt");
+				archives.at(idx) = make_unique<ArchiveToFile>(filename);
+			} else {
+				archives.at(idx) = make_unique<ArchiveToMemory>();			
 			}
 		}
 	}
+}
+
+void Archiver::makeErrorArchives(bool files) {
+	//TODO
+}
+
+void Archiver::addGroup(const metaf::GroupInfo & groupInfo) {
+	auto idx = groupIndex(groupInfo.group.index(), reportPartIndex(groupInfo.reportPart));
+	archives.at(idx)->add(groupInfo.rawString);
+}
+
+void Archiver::addResult(const metaf::ParseResult & result) {
+	for (const auto & gi : result.groups) {
+		addGroup(gi);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+class ParserPerformanceTester {
+public:
+	ParserPerformanceTester(size_t repetitions);
+	ParserPerformanceTester(const string & filePath, size_t batchSize);
+	size_t getTestSetSize() const { return src->totalSize(); }
+	void test();
+	void setStats(PerformanceStats & s) { stats = &s; }
+	PerformanceStats * getStats() const { return stats; }
+	void setArchiver(Archiver & a) { archiver = &a; }
+	Archiver * getArchiver() const { return archiver; }
+private:
+	unique_ptr<BatchProcess> src;
+	PerformanceStats * stats = nullptr;
+	Archiver * archiver = nullptr;
+	bool verbose = true;
+	static size_t countGroups(const vector<metaf::ParseResult> & result);
+};
+
+ParserPerformanceTester::ParserPerformanceTester(size_t repetitions) :
+	src(make_unique<BatchFromTestdataReal>(repetitions))
+{}
+
+ParserPerformanceTester::ParserPerformanceTester(const string & filePath, size_t batchSize) :
+	src(make_unique<BatchFromFile>(filePath, batchSize))
+{}
+
+// TODO: archive reports with errors too
+// TODO: calculate percentage of reports with errors
+// TODO: calculate percentage of unrecognised groups
+// TODO: collate unrecognised groups and display most frequent ones
+void ParserPerformanceTester::test() {
+	if (!stats || !archiver) return;
+	size_t reportCount = 0;
+	do {
+		vector<metaf::ParseResult> result;
+		const auto batchSize = src->getCurrentBatch().size();
+		result.reserve(batchSize);
+		const auto beginTime = chrono::system_clock::now();
+		for (const auto & report : src->getCurrentBatch()) {
+			result.push_back(metaf::Parser::parse(report));
+		}
+		const auto endTime = chrono::system_clock::now();
+		auto totalTimeMicrosec = 
+			chrono::duration_cast<chrono::microseconds>(endTime - beginTime).count();
+		if (stats) {
+			stats->add("report", totalTimeMicrosec, batchSize);
+			stats->add("group", totalTimeMicrosec, countGroups(result));
+		}
+		reportCount += batchSize;
+		if (verbose) {
+			cout << "Processed " << reportCount << " reports of " << getTestSetSize();
+			cout << " (" << reportCount * 100 / getTestSetSize() << "%)\n";
+		}
+	} while (src->nextBatch());
+}
+
+size_t ParserPerformanceTester::countGroups(const vector<metaf::ParseResult> & result) {
+	size_t count = 0;
+	for (const auto & r : result) {
+		count += r.groups.size();
+	} 
 	return count;
-}
-
-void printFlaggedGroups(vector< pair<int, string> > flaggedGroups) {
-	cout << "Groups not recognised by parser, sorted by occurrence frequency:" << endl;
-	static const string occurredHeader = "Occurred";
-	static const string groupHeader = "Group text";
-	static const string separator = "    ";
-	cout << occurredHeader << separator << groupHeader << endl;
-	for (const auto & data : flaggedGroups) {
-		static const auto minCountSize = occurredHeader.length();
-		string count = to_string(get<int>(data));
-		if (count.length() < minCountSize) {
-			count = string(minCountSize - count.length(), ' ') + count;
-		}
-		cout << count << separator << get<string>(data) << endl;
-	}
-	cout << endl;
-}
-
-void printFlaggedReports(vector< pair<int, string> > flaggedReports) {
-	cout << "Reports which contain groups not recognised by parser, sorted by number or groups:" << endl;
-	for (const auto & data : flaggedReports) {
-		cout << "Unrecognised groups: " << get<int>(data) << endl;
-		cout << "Report: " << get<string>(data) << endl << endl;
-	}
-	cout << endl;
-}
-
-void printGroupStats(int total, int unrecognised, const string & type) {
-	const auto recognised = total - unrecognised;
-	cout << "Total " << total << " " << type << " groups, ";
-	cout << unrecognised << " groups not recognised, ";
-	cout << recognised << " groups parsed successfully" << endl;
-	static const float roundingFactor = 100.0; //round to 2 digits after decimal point
-	const float unrecognisedPercent = 
-		static_cast<int>((unrecognised * 100.0 / total) * roundingFactor) / roundingFactor;
-	const float recognisedPercent = 
-		static_cast<int>((recognised * 100.0 / total) * roundingFactor) / roundingFactor;
-	cout << unrecognisedPercent << " % not recognised, ";
-	cout << recognisedPercent << " % parsed successfully";
-	cout << endl << endl;
-}
-
-void checkRecognisedGroups() {
-	cout << "Detecting non-recognised groups in testdata::realDataSet" << endl;
-	vector< pair<int, string> > flaggedGroups;	
-	vector< pair<int, string> > flaggedReports;
-	auto metarTotalGroupCount = 0;
-	auto tafTotalGroupCount = 0;
-	auto metarUnrecognisedGroupCount = 0;
-	auto tafUnrecognisedGroupCount = 0;
-	for (const auto & data : testdata::realDataSet) {
- 		if (!data.metar.empty()) {
-			const auto parseResult = metaf::Parser::parse(data.metar);
-			auto count = addPlainTextGroups(parseResult, flaggedGroups);
-			if (count) flaggedReports.push_back(make_pair(count, data.metar));
-			metarTotalGroupCount += parseResult.groups.size();
-			metarUnrecognisedGroupCount += count;
-		}
-		if (!data.taf.empty()) {
-			const auto parseResult = metaf::Parser::parse(data.taf);
-			auto count = addPlainTextGroups(parseResult, flaggedGroups);
-			if (count) flaggedReports.push_back(make_pair(count, data.taf));
-			tafTotalGroupCount += parseResult.groups.size();
-			tafUnrecognisedGroupCount += count;
-		}
-	}
-	printGroupStats(metarTotalGroupCount, metarUnrecognisedGroupCount, "METAR");
-	printGroupStats(tafTotalGroupCount, tafUnrecognisedGroupCount, "TAF");
-	sort(flaggedGroups.begin(), flaggedGroups.end(), greater< pair<int, string> >());
-	sort(flaggedReports.begin(), flaggedReports.end(), greater< pair<int, string> >());
-	printFlaggedGroups(flaggedGroups);
-	printFlaggedReports(flaggedReports);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -440,20 +536,22 @@ void printDataSize(){
 
 int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
+
+	PerformanceStats stats;
+	Archiver archiver;
+
 	{
-		cout << "Checking parser performance\n";
-		ParserPerformanceChecker checker;
-		checker.run(cout);
-		cout << "\n";
+		static const size_t testDataRealRepetitions = 300;
+		cout << "Checking overall parser performance\n";
+		ParserPerformanceTester tester(testDataRealRepetitions);
+		cout << "Test set size is " << tester.getTestSetSize() << '\n';
+		tester.setStats(stats);
+		tester.setArchiver(archiver);
+		tester.test();
+		stats.print("report");
+		stats.print("group");
+		cout << '\n';
 	}
-	{
-		cout << "Checking group performance\n";
-		GroupsTestSet groupsTestSet;
-		groupsTestSet.displayStats(cout);
-		cout << "\n";
-		groupsTestSet.runPerformanceTests(cout);
-		cout << "\n";
-	}
-	checkRecognisedGroups();
+
 	printDataSize();
 }
