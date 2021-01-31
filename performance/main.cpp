@@ -133,27 +133,78 @@ size_t reportPartIndex (metaf::ReportPart rp) {
 	}
 }
 
-std::optional<metaf::ReportPart> reportPartFromName (const string & name) {
+optional<metaf::ReportPart> reportPartFromName (const string & name) {
 	if (name == "unknown") return metaf::ReportPart::UNKNOWN;
 	if (name == "header") return metaf::ReportPart::HEADER;
 	if (name == "metar") return metaf::ReportPart::METAR;
 	if (name == "taf") return metaf::ReportPart::TAF;
 	if (name == "remark") return metaf::ReportPart::RMK;
-	return std::optional<metaf::ReportPart>();
+	return optional<metaf::ReportPart>();
 }
 
-std::optional<metaf::ReportPart> reportPartFromIndex (size_t index) {
+optional<metaf::ReportPart> reportPartFromIndex (size_t index) {
 	switch (index) {
 		case 0: 	return metaf::ReportPart::UNKNOWN;
 		case 1:		return metaf::ReportPart::HEADER;
 		case 2:		return metaf::ReportPart::METAR;
 		case 3:		return metaf::ReportPart::TAF;
 		case 4:		return metaf::ReportPart::RMK;
-		default: 	return std::optional<metaf::ReportPart>();
+		default: 	return optional<metaf::ReportPart>();
+	}
+}
+
+string reportErrorName(metaf::ReportError e) {
+	switch (e) {
+		case metaf::ReportError::NONE:
+		return "no error";
+
+		case metaf::ReportError::EMPTY_REPORT:
+		return "empty report";
+
+		case metaf::ReportError::EXPECTED_REPORT_TYPE_OR_LOCATION:
+		return "expected report_type_or_location";
+
+		case metaf::ReportError::EXPECTED_LOCATION:
+		return "expected location";
+
+		case metaf::ReportError::EXPECTED_REPORT_TIME:
+		return "expected report time";
+
+		case metaf::ReportError::EXPECTED_TIME_SPAN:
+		return "expected time span";
+
+		case metaf::ReportError::UNEXPECTED_REPORT_END:
+		return "unexpected report end";
+
+		case metaf::ReportError::UNEXPECTED_GROUP_AFTER_NIL:
+		return "unexpected group after NIL";
+
+		case metaf::ReportError::UNEXPECTED_GROUP_AFTER_CNL:
+		return "unexpected group after CNL";
+
+		case metaf::ReportError::UNEXPECTED_NIL_OR_CNL_IN_REPORT_BODY:
+		return "unexpected NIL or CNL in report body";
+
+		case metaf::ReportError::AMD_ALLOWED_IN_TAF_ONLY:
+		return "unexpected AMD in non TAF report";
+
+		case metaf::ReportError::CNL_ALLOWED_IN_TAF_ONLY:
+		return "unexpected CNL in non TAF report";
+
+		case metaf::ReportError::MAINTENANCE_INDICATOR_ALLOWED_IN_METAR_ONLY:
+		return "unexpected maintenance indicator in TAF report";
+
+		case metaf::ReportError::REPORT_TOO_LARGE:
+		return "report too large";
+
+		default:
+		return "unknown error";
 	}
 }
 
 static const size_t reportPartSize = 5;
+static const size_t reportErrorSize = 14;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -174,6 +225,7 @@ private:
 	};
 	map<string, Data> stats;
 };
+
 
 void PerformanceStats::print(const string & name, ostream & output) const {
 	auto quantity = [&] (const string & itemname, uint64_t quantity) {
@@ -303,22 +355,60 @@ size_t BatchFromFile::totalSize() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+class FrequencyStats {
+public:
+	FrequencyStats() = default;
+	void add(const string & str) {
+		stats[str]++;
+	}
+	void add(unique_ptr<BatchProcess> src);
+	void compensateRepetitions(uint64_t repetitions) {
+		for (auto & e : stats) {
+			e.second = e.second / repetitions;
+		}
+	}
+	void printDescending(ostream & output) const;
+private:
+	map<string, uint64_t> stats;
+};
+
+void FrequencyStats::add(unique_ptr<BatchProcess> src) {
+	do {
+		for (const auto & s : src->getCurrentBatch()) {
+			add(s);
+		}
+	} while (src->nextBatch());
+}
+
+void FrequencyStats::printDescending(ostream & out) const {
+	multimap<uint64_t, string_view> statsByNumber;
+	for (const auto & e : stats) {
+		statsByNumber.insert({e.second, e.first});
+	}
+	for (auto i = statsByNumber.rbegin(); i != statsByNumber.rend() ; i++) {
+		out << i->first << ": " << i->second << '\n';
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 class Archive {
 public:
 	Archive() = default;
 	virtual bool add(string s) = 0;
 	virtual unique_ptr<BatchProcess> getBatchProcess(size_t desiredSize) = 0;
 	virtual size_t size() const = 0;
-	void print(ostream out);
+	void print(ostream & out);
 	virtual ~Archive() {}
 };
 
-void Archive::print(ostream out) {
+void Archive::print(ostream & out) {
 	const auto bpSize = 1000; //arbitrary number
 	auto bp = getBatchProcess(bpSize);
 	do {
-		for (const auto & record : bp->getCurrentBatch()) 
-			cout << record << 'n';
+		for (const auto & record : bp->getCurrentBatch()) {
+			out << record << 'n';
+		}
 	} while (bp->nextBatch());
 }
 
@@ -367,12 +457,14 @@ public:
 	Archiver(bool files = false);
 	void addGroup(const metaf::GroupInfo & groupInfo);
 	void addResult(const metaf::ParseResult & result);
-	unique_ptr<BatchProcess>getBatchProcess(size_t index, metaf::ReportPart reportPart);
+	unique_ptr<BatchProcess>getBatchGroup(size_t index, metaf::ReportPart reportPart);
 	void addErrorReport(metaf::ReportError e, const std::string & report);
-	unique_ptr<BatchProcess>getBatchProcess(metaf::ReportError e, metaf::ReportPart reportPart);
+	unique_ptr<BatchProcess>getBatchReportError(size_t index, metaf::ReportPart reportPart);
+	bool printErrorReports(ostream & out) const; 
 private:
 	static const auto size = variant_size_v<metaf::Group>;
 	array<unique_ptr<Archive>, size * reportPartSize> archives;
+	unique_ptr<Archive> errorReports;
 	size_t groupIndex(const metaf::Group & group, metaf::ReportPart reportPart) {
 		return groupIndex(group.index(), reportPartIndex(reportPart));
 	}
@@ -405,7 +497,11 @@ void Archiver::makeGroupArchives(bool files) {
 }
 
 void Archiver::makeErrorArchives(bool files) {
-	//TODO
+	if (!files) {
+		errorReports = make_unique<ArchiveToMemory>();
+		return;
+	}
+	errorReports = make_unique<ArchiveToFile>("reportError");
 }
 
 void Archiver::addGroup(const metaf::GroupInfo & groupInfo) {
@@ -417,6 +513,25 @@ void Archiver::addResult(const metaf::ParseResult & result) {
 	for (const auto & gi : result.groups) {
 		addGroup(gi);
 	}
+}
+
+unique_ptr<BatchProcess> Archiver::getBatchGroup(size_t index, metaf::ReportPart reportPart) {
+	const auto idx = groupIndex(index, reportPartIndex(reportPart));
+	const auto batchSize = 1000; // arbitrary number
+	return archives.at(idx)->getBatchProcess(batchSize);
+}
+
+void Archiver::addErrorReport(metaf::ReportError e, const std::string & report) {
+	errorReports->add(reportErrorName(e));
+	errorReports->add(report);
+}
+
+bool Archiver::printErrorReports(ostream & out) const {
+	const auto s = errorReports->size();
+	if (!s) return false;
+	out << "Reports with errors: " << s / 2 << '\n';
+	errorReports->print(out);
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -436,7 +551,13 @@ private:
 	PerformanceStats * stats = nullptr;
 	Archiver * archiver = nullptr;
 	bool verbose = true;
-	static size_t countGroups(const vector<metaf::ParseResult> & result);
+	uint64_t reportCount = 0;
+	uint64_t groupCount = 0;
+
+	static uint64_t countGroups(const vector<metaf::ParseResult> & result);
+	void toArchives(const vector<metaf::ParseResult> & result, const vector<string> & batch);
+	void toStats(const vector<metaf::ParseResult> & result, uint64_t totalTimeMicrosec);
+	void verbosePrintBatch();
 };
 
 ParserPerformanceTester::ParserPerformanceTester(size_t repetitions) :
@@ -452,46 +573,83 @@ ParserPerformanceTester::ParserPerformanceTester(const string & filePath, size_t
 // TODO: calculate percentage of unrecognised groups
 // TODO: collate unrecognised groups and display most frequent ones
 void ParserPerformanceTester::test() {
-	if (!stats || !archiver) return;
-	size_t reportCount = 0;
+	reportCount = 0;
+	groupCount = 0;
 	do {
 		vector<metaf::ParseResult> result;
 		const auto batchSize = src->getCurrentBatch().size();
 		result.reserve(batchSize);
+		const auto currentBatch = src->getCurrentBatch();
 		const auto beginTime = chrono::system_clock::now();
-		for (const auto & report : src->getCurrentBatch()) {
+		for (const auto & report : currentBatch) {
 			result.push_back(metaf::Parser::parse(report));
 		}
 		const auto endTime = chrono::system_clock::now();
 		auto totalTimeMicrosec = 
 			chrono::duration_cast<chrono::microseconds>(endTime - beginTime).count();
-		if (stats) {
-			stats->add("report", totalTimeMicrosec, batchSize);
-			stats->add("group", totalTimeMicrosec, countGroups(result));
-		}
-		reportCount += batchSize;
-		if (verbose) {
-			cout << "Processed " << reportCount << " reports of " << getTestSetSize();
-			cout << " (" << reportCount * 100 / getTestSetSize() << "%)\n";
-		}
+		toStats(result, totalTimeMicrosec);
+		toArchives(result, currentBatch);
+		if (verbose) verbosePrintBatch();
 	} while (src->nextBatch());
 }
 
-size_t ParserPerformanceTester::countGroups(const vector<metaf::ParseResult> & result) {
-	size_t count = 0;
+uint64_t ParserPerformanceTester::countGroups(const vector<metaf::ParseResult> & result) {
+	uint64_t count = 0;
 	for (const auto & r : result) {
 		count += r.groups.size();
 	} 
 	return count;
 }
 
+void ParserPerformanceTester::toArchives(const vector<metaf::ParseResult> & result, 
+	const vector<string> & batch)
+{
+	if (!archiver) return;
+	for (auto i = 0u; i < result.size(); i++) { // assume result.size() == batch.size()
+		if (auto e = result.at(i).reportMetadata.error; e != metaf::ReportError::NONE) {
+			archiver->addErrorReport(e, batch.at(i));
+		}
+		archiver->addResult(result.at(i));
+	} 
+}
+
+void ParserPerformanceTester::toStats(const vector<metaf::ParseResult> & result, 
+	uint64_t totalTimeMicrosec)
+{
+	if (!stats) return;
+	auto gc = countGroups(result);
+	stats->add("report", totalTimeMicrosec, result.size());
+	stats->add("group", totalTimeMicrosec, gc);
+	reportCount += result.size();
+	groupCount += gc;
+}
+
+void ParserPerformanceTester::verbosePrintBatch() {
+	if (!verbose) return;
+	cout << "Processed " << reportCount << " reports of " << getTestSetSize();
+	cout << " (" << reportCount * 100 / getTestSetSize() << "%)";
+	cout << ", " << groupCount << " groups parsed\n";
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
+class GroupPerformanceTester {
+public:
+	GroupPerformanceTester(Archiver & a) : archiver(&a) {}
+private:
+	Archiver * archiver = nullptr;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/*
 void printSize(string_view name, size_t size) {
 	cout << "Size of " << name << ' ' << size << endl;
 }
-
+*/
 void printDataSize(){
+	auto printSize = [] (string_view name, size_t size){
+		cout << "Size of " << name << ' ' << size << endl;
+	};
 	cout << "Data type sizes:" << endl; 	
 	printSize("Runway", sizeof(metaf::Runway));
 	printSize("MetafTime", sizeof(metaf::MetafTime));
@@ -537,20 +695,43 @@ void printDataSize(){
 int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
 
+	static const size_t testDataRealRepetitions = 300;
+
 	PerformanceStats stats;
 	Archiver archiver;
-
+	
 	{
-		static const size_t testDataRealRepetitions = 300;
 		cout << "Checking overall parser performance\n";
 		ParserPerformanceTester tester(testDataRealRepetitions);
 		cout << "Test set size is " << tester.getTestSetSize() << '\n';
 		tester.setStats(stats);
 		tester.setArchiver(archiver);
 		tester.test();
+		cout << '\n';
+
 		stats.print("report");
 		stats.print("group");
 		cout << '\n';
+	}
+
+	{
+		cout << "Reports not recognised by the parser:\n";
+		if (!archiver.printErrorReports(cout)) 
+			cout << "no report errors, all reports parsed successfully\n";
+		cout << '\n';
+	}
+	
+	{
+		cout << "Groups not recognised by the parser:\n";
+		const auto unknowGroupIndex = variant_index<metaf::Group, metaf::UnknownGroup>();
+		FrequencyStats unknownGroupStats;
+		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::UNKNOWN));
+		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::HEADER));
+		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::METAR));
+		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::TAF));
+		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::RMK));
+		unknownGroupStats.compensateRepetitions(testDataRealRepetitions);
+		unknownGroupStats.printDescending(cout);
 	}
 
 	printDataSize();
