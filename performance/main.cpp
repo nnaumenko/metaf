@@ -203,8 +203,6 @@ string reportErrorName(metaf::ReportError e) {
 }
 
 static const size_t reportPartSize = 5;
-static const size_t reportErrorSize = 14;
-
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -546,11 +544,12 @@ public:
 	PerformanceStats * getStats() const { return stats; }
 	void setArchiver(Archiver & a) { archiver = &a; }
 	Archiver * getArchiver() const { return archiver; }
+	void setVerbose(bool v) { verbose = v; }
 private:
 	unique_ptr<BatchProcess> src;
 	PerformanceStats * stats = nullptr;
 	Archiver * archiver = nullptr;
-	bool verbose = true;
+	bool verbose = false;
 	uint64_t reportCount = 0;
 	uint64_t groupCount = 0;
 
@@ -568,10 +567,6 @@ ParserPerformanceTester::ParserPerformanceTester(const string & filePath, size_t
 	src(make_unique<BatchFromFile>(filePath, batchSize))
 {}
 
-// TODO: archive reports with errors too
-// TODO: calculate percentage of reports with errors
-// TODO: calculate percentage of unrecognised groups
-// TODO: collate unrecognised groups and display most frequent ones
 void ParserPerformanceTester::test() {
 	reportCount = 0;
 	groupCount = 0;
@@ -635,17 +630,136 @@ void ParserPerformanceTester::verbosePrintBatch() {
 
 class GroupPerformanceTester {
 public:
-	GroupPerformanceTester(Archiver & a) : archiver(&a) {}
+	GroupPerformanceTester(Archiver * a, PerformanceStats * s) : 
+		archiver(a), stats(s) {}
+	void test();
+	void setVerbose(bool v) { verbose = v; }
 private:
 	Archiver * archiver = nullptr;
+	PerformanceStats * stats = nullptr;
+	bool verbose = false;
+
+	void testGroupType(int index);
+	void testGroupReportPart(int index, metaf::ReportPart reportPart);
+	static vector<vector<string>> prepareBatch(const vector<string> & src);
+	static vector<string> splitToGroups(string s);
+	metaf::ReportMetadata makeDummyMetadata(metaf::ReportPart rp);
 };
 
-///////////////////////////////////////////////////////////////////////////////
-/*
-void printSize(string_view name, size_t size) {
-	cout << "Size of " << name << ' ' << size << endl;
+void GroupPerformanceTester::test() {
+	testGroupType(variant_index<metaf::Group, metaf::KeywordGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::LocationGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::ReportTimeGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::TrendGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::WindGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::VisibilityGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::CloudGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::TemperatureGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::PressureGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::RunwayStateGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::SeaSurfaceGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::PrecipitationGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::LayerForecastGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::PressureTendencyGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::CloudTypesGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::LowMidHighCloudGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::LightningGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::VicinityGroup>());
+	testGroupType(variant_index<metaf::Group, metaf::MiscGroup>());
 }
-*/
+
+void GroupPerformanceTester::testGroupType(int index) {
+	if (verbose) { cout << "Testing " << groupName(index) << '\n'; }
+	testGroupReportPart(index, metaf::ReportPart::UNKNOWN);
+	testGroupReportPart(index, metaf::ReportPart::HEADER);
+	testGroupReportPart(index, metaf::ReportPart::METAR);
+	testGroupReportPart(index, metaf::ReportPart::TAF);
+	testGroupReportPart(index, metaf::ReportPart::RMK);
+}
+
+void GroupPerformanceTester::testGroupReportPart(int index, metaf::ReportPart reportPart) {
+	if (!stats || !archiver) return;
+	if (index == variant_index<metaf::Group, metaf::UnknownGroup>()) return;
+	const auto metadata = makeDummyMetadata(reportPart);
+	auto src = archiver->getBatchGroup(index, reportPart);
+	do {
+		const auto batch = prepareBatch(src->getCurrentBatch());
+		const auto beginTime = chrono::system_clock::now();
+		for (const auto & groups : batch) {
+			auto g = metaf::GroupParser::parse(groups.at(0), reportPart, metadata);
+			for (auto i = 1u; i < groups.size() ; i++) {
+				std::visit([&](auto && gr) -> void { 
+					gr.append(groups.at(i), reportPart, metadata);
+				}, g);
+			}
+		}
+		const auto endTime = chrono::system_clock::now();
+		auto totalTimeMicrosec = 
+			chrono::duration_cast<chrono::microseconds>(endTime - beginTime).count();
+		stats->add(string(groupName(index)), totalTimeMicrosec, batch.size());
+	} while(src->nextBatch());
+}
+
+vector<vector<string>> GroupPerformanceTester::prepareBatch(const vector<string> & src) {
+	vector<vector<string>> result;
+	for (const auto & a : src) {
+		if (a.length()) result.push_back(splitToGroups(a));		
+	}
+	return result;
+}
+
+vector<string> GroupPerformanceTester::splitToGroups(string s) {
+	const auto delimiter = ' ';
+	istringstream in(s);
+	vector<string> result;
+	std::string group;
+	while (std::getline(in, group, delimiter)) {
+		result.push_back(group);
+	}
+	return result;
+}
+
+metaf::ReportMetadata GroupPerformanceTester::makeDummyMetadata(metaf::ReportPart rp) {
+	metaf::ReportMetadata metadata;
+	metadata.type = metaf::ReportType::METAR;
+	metadata.reportTime = metaf::MetafTime(1, 0, 0);
+	metadata.icaoLocation = "ZZZZ";
+	if (rp == metaf::ReportPart::TAF) {
+		metadata.type = metaf::ReportType::TAF;
+		metadata.timeSpanFrom = metaf::MetafTime(1, 1, 0);
+		metadata.timeSpanUntil = metaf::MetafTime(1, 13, 0);
+	}
+	return metadata;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void printGroupStats(PerformanceStats & stats){
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::KeywordGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::LocationGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::ReportTimeGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::TrendGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::WindGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::VisibilityGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::CloudGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::WeatherGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::TemperatureGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::PressureGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::RunwayStateGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::SeaSurfaceGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::MinMaxTemperatureGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::PrecipitationGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::LayerForecastGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::PressureTendencyGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::CloudTypesGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::LowMidHighCloudGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::LightningGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::VicinityGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::MiscGroup>())));
+	stats.print(string(groupName(variant_index<metaf::Group, metaf::UnknownGroup>())));
+}
+
 void printDataSize(){
 	auto printSize = [] (string_view name, size_t size){
 		cout << "Size of " << name << ' ' << size << endl;
@@ -692,6 +806,18 @@ void printDataSize(){
 	cout << endl;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+#ifdef __EMSCRIPTEN__
+
+static const bool wasm = true;
+
+#else 
+
+static const bool wasm = false;
+
+#endif
+
 int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
 
@@ -705,7 +831,8 @@ int main(int argc, char ** argv) {
 		ParserPerformanceTester tester(testDataRealRepetitions);
 		cout << "Test set size is " << tester.getTestSetSize() << '\n';
 		tester.setStats(stats);
-		tester.setArchiver(archiver);
+		if (!wasm) tester.setArchiver(archiver);
+		if (!wasm) tester.setVerbose(true);
 		tester.test();
 		cout << '\n';
 
@@ -714,15 +841,15 @@ int main(int argc, char ** argv) {
 		cout << '\n';
 	}
 
-	{
+	if (!wasm) {
 		cout << "Reports not recognised by the parser:\n";
 		if (!archiver.printErrorReports(cout)) 
 			cout << "no report errors, all reports parsed successfully\n";
 		cout << '\n';
 	}
 	
-	{
-		cout << "Groups not recognised by the parser:\n";
+	if (!wasm) {
+		cout << "Groups not recognised by the parser (by occurrence number):\n";
 		const auto unknowGroupIndex = variant_index<metaf::Group, metaf::UnknownGroup>();
 		FrequencyStats unknownGroupStats;
 		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::UNKNOWN));
@@ -732,7 +859,28 @@ int main(int argc, char ** argv) {
 		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::RMK));
 		unknownGroupStats.compensateRepetitions(testDataRealRepetitions);
 		unknownGroupStats.printDescending(cout);
+		cout << '\n';
 	}
 
-	printDataSize();
+	if (!wasm) {
+		cout << "Checking group performance\n";
+		GroupPerformanceTester tester(&archiver, &stats);
+		tester.setVerbose(true);
+		tester.test();
+		cout << '\n';
+
+		printGroupStats(stats);
+		cout << '\n';
+	}
+
+	{
+		// TODO: test set stats
+		// percentage of reports with errors
+		// percentage of unrecognised groups
+		// percentage of each individual group type
+	}
+
+	if (!wasm) {
+		printDataSize();
+	}
 }
