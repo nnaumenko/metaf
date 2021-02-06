@@ -10,7 +10,7 @@ Parser class
 
 		Parser class is used to parse strings which contain raw METAR or TAF reports, check for syntax errors, autodetect report type and produce a vector of individual groups.
 
-			.. cpp:function:: static ParseResult parse (const std::string & report, size_t groupLimit = 100)
+			.. cpp:function:: static ParseResult parse (const std::string & report, size_t groupLimit = 200)
 
 				Parses a METAR or TAF report, checks its syntax, detects report type and parses each group separately.
 
@@ -20,11 +20,27 @@ Parser class
 
 				:param report: String which contains a METAR or TAF report.
 
-				:param groupLimit: Maximum number of the groups allowed in the report. Limiting the number of groups allows detecting large chunks of text/HTML/XML/JSON/etc. errorneously appended at the end of the METAR or TAF report. The default value of 100 is an arbitrarily set large number which would not prevent even large reports from being parsed, and generates error for malformed reports which are beyound reasonable size.
+				:param groupLimit: Maximum number of the groups allowed in the report. Limiting the number of groups allows detecting large chunks of text/HTML/XML/JSON/etc. errorneously appended at the end of the METAR or TAF report. The value must be large enough to allow parsing of valid large reports and small enough to generate error when malformed reports are being parsed.
 
-				.. note:: Presence of this parameter also guarantees that the parsing process cannot become an infinite loop in all cases.
+					.. note:: Presence of this parameter also guarantees that the parsing process cannot become an infinite loop in all cases.
 
+					The default value of 200 is based on the following TAF released on 15th May 2020, at Iwakuni Marine Corps Air Station, Japan. 
 
+					This TAF has 12 trends 155 groups. ::
+
+						TAF RJOI 1505/1605 16012KT 8000 -SHRA BR BKN030 BKN100 OVC150 651409 622304 510006 520604 581006 551609 QNH2990INS
+						TEMPO 1505/1511 14010KT 3200 SHRA BR SCT010 FEW025CB BKN025 BKN080 OVC140
+						FM151100 16010KT 4800 -SHRA BR VCTS FEW008 BKN010 FEW020CB BKN020 BKN080 OVC140 651409 622304 510006 520604 581006 551609 QNH2987INS
+						TEMPO 1511/1516 2400 SHRA BR
+						FM151600 18009KT 3200 SHRA BR VCTS BKN008 FEW020CB BKN020 OVC080 651409 622303 510006 520604 581006 551609 QNH2980INS
+						TEMPO 1516/1521 1600 SHRA BR BKN006 BKN015 OVC060
+						FM152100 04010KT 4800 -SHRA BR VCTS BKN008 FEW020CB BKN020 BKN080 OVC140 651409 622303 510006 520604 581006 551609 QNH2978INS
+						TEMPO 1521/1600 3200 SHRA BR
+						FM160000 35010KT 4800 -SHRA BR VCTS BKN008 FEW020CB BKN020 BKN080 OVC140 651409 622303 510006 520604 581006 551609 QNH2974INS
+						TEMPO 1600/1603 6000 -SHRA BR BKN010 BKN020 BKN080 OVC140
+						FM170300 16008KT 8000 -SHRA BR BKN010 BKN025 BKN080 OVC140 651409 622303 510006 520604 581006 551609 QNH2972INS
+						TEMPO 1703/1705 9000 BR VCSH SCT008 BKN025 BKN080 BKN140 OVC220 T23/1505Z T15/1521Z=
+				
 Parsing rules and report syntax
 -------------------------------
 

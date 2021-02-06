@@ -32,7 +32,7 @@ namespace metaf {
 struct Version {
 	inline static const int major = 5;
 	inline static const int minor = 7;
-	inline static const int patch = 0;
+	inline static const int patch = 1;
 	inline static const char tag [] = "";
 };
 
@@ -2154,7 +2154,7 @@ struct ParseResult {
 
 class Parser {
 public:
-	static inline ParseResult parse (const std::string & report, size_t groupLimit = 100); 
+	static inline ParseResult parse (const std::string & report, size_t groupLimit = 200);
 
 private:
 	static inline bool appendToLastResultGroup(ParseResult & result,

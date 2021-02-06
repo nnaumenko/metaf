@@ -126,6 +126,15 @@ Example of a TAF report is as follows:
 * Largest hailstone size
 * Military report issuer identifier 
 
+## Performance
+
+The following statistics were acquired by parsing all METAR and TAF reports collected during year 2020. The parsing was done using single thread and the statistics do not include IO operations' lag.
+
+	1973075048 microseconds, 76416000 reports, 38729 reports per second.
+	1973075048 microseconds, 916172097 groups, 464337 groups per second.
+
+Basically, it took 33 minutes to parse all METARs and TAFs from 2020 using one CPU core on the old laptop with i5 CPU.
+
 ## Roadmap
 
 Version 6.0.0 is currently planned (no release date set), with a number of new groups to be added (the candidates are runway wind, additional sea surface groups, first/last report, next scheduled report time remarks, variable cloud cover, additional visibility groups etc).
