@@ -316,6 +316,7 @@ class BatchFromFile : public BatchProcess{
 public:
 	BatchFromFile() = default;
 	BatchFromFile(const string & path, size_t sz) : f(path), batchSize(sz), fpath(path) {
+		if (!f) throw ios_base::failure("Cannot open file for reading " + path);
 		loadedBatch.reserve(batchSize);
 		nextBatch();
 	}
@@ -405,7 +406,7 @@ void Archive::print(ostream & out) {
 	auto bp = getBatchProcess(bpSize);
 	do {
 		for (const auto & record : bp->getCurrentBatch()) {
-			out << record << 'n';
+			out << record << '\n';
 		}
 	} while (bp->nextBatch());
 }
@@ -428,7 +429,10 @@ class ArchiveToFile : public Archive {
 public:
 	ArchiveToFile() = delete;
 	ArchiveToFile(const string & path) : 
-		outFilePath(path), outfile(path, ios_base::out | ios_base::trunc) {}
+		outFilePath(path), outfile(path, ios_base::out | ios_base::trunc)
+	{
+		if (!outfile) throw ("Cannot open file for writing " + path);
+	}
 	virtual bool add(string s) {
 		if (!outfile.is_open()) outfile.open(outFilePath, ios_base::out | ios_base::app);
 		outfile << s;
@@ -808,6 +812,50 @@ void printDataSize(){
 
 ///////////////////////////////////////////////////////////////////////////////
 
+struct CommandLineParameters {
+	CommandLineParameters() = default;
+	string inputFile;
+	bool help = false;
+	bool inputFromInternalTestData = true;
+	bool exportInternalTestData = false;
+	bool checkGroupPerformance = true;
+	bool printErrorReports = true;
+	bool printUnknownGroups = true;
+	bool printTestSetStats = true;
+	bool printDataSize = true;
+};
+
+CommandLineParameters setCommandLineParameters(int argc, char ** argv) {
+	CommandLineParameters result;
+	for (int i = 1; i < argc; i++) {
+		if (string(argv[i]) == "--help") result.help = true;
+		if (string(argv[i]) == "--expint") result.exportInternalTestData = true; 
+		if (string(argv[i]) == "--nogroups") result.checkGroupPerformance = false; 
+		if (string(argv[i]) == "--noerror") result.printErrorReports = false; 
+		if (string(argv[i]) == "--nounkn") result.printUnknownGroups = false; 
+		if (string(argv[i]) == "--nostats") result.printTestSetStats = false; 
+		if (string(argv[i]) == "--nosize") result.printDataSize = false; 
+	}
+
+	if (argc > 1 && argv[argc - 1][0] != '-' && argv[argc - 1][1] != '-') {
+		result.inputFile = string(argv[argc - 1]);
+		result.inputFromInternalTestData = false;
+	} 
+	return result;
+}
+
+CommandLineParameters setWasmParameters() {
+	CommandLineParameters result;
+	result.checkGroupPerformance = false;
+	result.printErrorReports = false;
+	result.printUnknownGroups = false;
+	result.printTestSetStats = false;
+	result.printDataSize = false;
+	return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 #ifdef __EMSCRIPTEN__
 
 static const bool wasm = true;
@@ -818,22 +866,66 @@ static const bool wasm = false;
 
 #endif
 
+static const auto inputBatchSize = 64000;
+
 int main(int argc, char ** argv) {
 	(void) argc; (void) argv;
+
+	CommandLineParameters params;
+	params = setCommandLineParameters(argc, argv);
+	if (wasm) params = setWasmParameters();
 
 	static const size_t testDataRealRepetitions = 300;
 
 	PerformanceStats stats;
-	Archiver archiver;
+	Archiver archiver(!params.inputFromInternalTestData);
+
+	if (params.help) {
+		cout << "Usage: performance [options] [input_file]\n\n";
+		cout << "Input file must contain one METAR or TAF per line\n";
+		cout << "If input file is not specified the internal collection of test data is used\n\n";
+		cout << "Options:\n";
+		cout << "--help 		Display help and stop\n";
+		cout << "--expint 	Export contents of internal collection of test data and stop\n";
+		cout << "--nogroups	Do not check group performance\n";
+		cout << "--noerror 	Do not display reports which parser failed to parse\n";
+		cout << "--nounkn 	Do not display groups which parser failed to recognise\n";
+		cout << "--nostats 	Do not display group statistics\n";
+		cout << "--nosize 	Do not display data size in memory\n";
+		return 0;
+	}
 	
-	{
+	if (params.exportInternalTestData) {
+		const string extFile = "testdatareal.txt";
+		cout << "Exporting internal test data to " << extFile << '\n';
+		ofstream f(extFile, ios_base::out | ios_base::trunc);
+		for (const auto & data : testdata::realDataSet) {
+	 		if (!data.metar.empty()) f << data.metar << '\n';
+		}		
+		for (const auto & data : testdata::realDataSet) {
+	 		if (!data.taf.empty()) f << data.taf << '\n';
+		}
+		cout << "Internal test data export complete\n\n";
+		return 0;
+	}
+
+	if (true) {
+		unique_ptr<ParserPerformanceTester> tester;
 		cout << "Checking overall parser performance\n";
-		ParserPerformanceTester tester(testDataRealRepetitions);
-		cout << "Test set size is " << tester.getTestSetSize() << '\n';
-		tester.setStats(stats);
-		if (!wasm) tester.setArchiver(archiver);
-		if (!wasm) tester.setVerbose(true);
-		tester.test();
+		if (params.inputFromInternalTestData) {
+			cout << "Using internal data set\n";
+			tester = make_unique<ParserPerformanceTester> (testDataRealRepetitions);
+		} else {
+			cout << "Using data set from file " << params.inputFile << '\n';
+			tester = make_unique<ParserPerformanceTester> (params.inputFile, inputBatchSize);
+		}
+		cout << "Test set size is " << tester->getTestSetSize() << '\n';
+		tester->setStats(stats);
+		if (!wasm) {
+			tester->setArchiver(archiver);
+			tester->setVerbose(true);
+		}
+		tester->test();
 		cout << '\n';
 
 		stats.print("report");
@@ -841,14 +933,14 @@ int main(int argc, char ** argv) {
 		cout << '\n';
 	}
 
-	if (!wasm) {
+	if (params.printErrorReports) {
 		cout << "Reports not recognised by the parser:\n";
 		if (!archiver.printErrorReports(cout)) 
 			cout << "no report errors, all reports parsed successfully\n";
 		cout << '\n';
 	}
 	
-	if (!wasm) {
+	if (params.printUnknownGroups) {
 		cout << "Groups not recognised by the parser (by occurrence number):\n";
 		const auto unknowGroupIndex = variant_index<metaf::Group, metaf::UnknownGroup>();
 		FrequencyStats unknownGroupStats;
@@ -857,12 +949,13 @@ int main(int argc, char ** argv) {
 		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::METAR));
 		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::TAF));
 		unknownGroupStats.add(archiver.getBatchGroup(unknowGroupIndex, metaf::ReportPart::RMK));
-		unknownGroupStats.compensateRepetitions(testDataRealRepetitions);
+		if (params.inputFromInternalTestData) 
+			unknownGroupStats.compensateRepetitions(testDataRealRepetitions);
 		unknownGroupStats.printDescending(cout);
 		cout << '\n';
 	}
 
-	if (!wasm) {
+	if (params.checkGroupPerformance) {
 		cout << "Checking group performance\n";
 		GroupPerformanceTester tester(&archiver, &stats);
 		tester.setVerbose(true);
@@ -873,14 +966,14 @@ int main(int argc, char ** argv) {
 		cout << '\n';
 	}
 
-	{
+	if (params.printTestSetStats) {
 		// TODO: test set stats
 		// percentage of reports with errors
 		// percentage of unrecognised groups
 		// percentage of each individual group type
 	}
 
-	if (!wasm) {
+	if (params.printDataSize) {
 		printDataSize();
 	}
 }
