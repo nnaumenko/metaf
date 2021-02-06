@@ -120,7 +120,6 @@ if(CMAKE_CXX_COMPILER MATCHES "emcc")
 
 
 	# Performance check
-	# TODO: fix compatibility with gcc
 
 	add_executable(performance 
 		${PROJECT_SOURCE_DIR}/performance/main.cpp 
@@ -139,7 +138,7 @@ if(CMAKE_CXX_COMPILER MATCHES "emcc")
 else ()
 
 	# Section for gcc and clang
-	# Only tutorial and 'explain' examples, and automated tests
+	# Tutorial example, performance checker and automated tests
 
 	MESSAGE("Making config for others than emcc")
 
@@ -193,6 +192,21 @@ else ()
 	set_target_properties(tests PROPERTIES 
 		RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/test
 		LINK_FLAGS ${TEST_LINK_FLAGS}
+	)
+
+	# Performance check
+
+	add_executable(performance 
+		${PROJECT_SOURCE_DIR}/performance/main.cpp 
+		${PROJECT_SOURCE_DIR}/test/testdata_real.cpp
+	)
+
+	set_target_properties(performance PROPERTIES 
+		RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin/performance
+	)
+
+	target_include_directories(performance PRIVATE 
+		${PROJECT_SOURCE_DIR}/test
 	)
 
 endif()

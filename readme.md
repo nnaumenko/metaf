@@ -128,6 +128,15 @@ Example of a TAF report is as follows:
 * Report schedule and stauts remarks FIRST, LAST, NEXT, etc
 * Remarks indicating visibility of sun and moon
 
+## Performance
+
+The following statistics were acquired by parsing all METAR and TAF reports collected during year 2020. The parsing was done using single thread and the statistics do not include IO operations' lag.
+
+	1973075048 microseconds, 76416000 reports, 38729 reports per second.
+	1973075048 microseconds, 916172097 groups, 464337 groups per second.
+
+Basically, it took 33 minutes to parse all METARs and TAFs from 2020 using one CPU core on the old laptop with i5 CPU.
+
 ## Roadmap
 
 After version 6.0.0 the priority is to fix bugs, improve test coverage and documentation, , perform 'under the hood' changes such as optimisation and refactoring, and add alternative variants for group which Metaf is already able to parse.

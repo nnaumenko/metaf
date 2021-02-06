@@ -2235,7 +2235,7 @@ struct ParseResult {
 
 class Parser {
 public:
-	static inline ParseResult parse (const std::string & report, size_t groupLimit = 100); 
+	static inline ParseResult parse (const std::string & report, size_t groupLimit = 200);
 
 private:
 	static inline bool appendToLastResultGroup(ParseResult & result,
