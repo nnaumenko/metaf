@@ -1823,6 +1823,188 @@ TEST(WindGroup, parseWsWrongReportPart) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Wind data estimated
+// Purpose: to confirm that groups identifiying wind shear at lower levels for 
+// one runway are parsed and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WindGroup, parseWndDataEstd) {
+	const std::string wind = "WND";
+
+	auto wg1 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("ESTD", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg1->direction().isReported());
+	EXPECT_FALSE(wg1->windSpeed().isReported());
+	EXPECT_FALSE(wg1->gustSpeed().isReported());
+	EXPECT_FALSE(wg1->height().isReported());
+	EXPECT_FALSE(wg1->varSectorBegin().isReported());
+	EXPECT_FALSE(wg1->varSectorEnd().isReported());
+	EXPECT_FALSE(wg1->eventTime().has_value());
+	EXPECT_FALSE(wg1->runway().has_value());
+
+	auto wg2 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("ESTMD", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg2->direction().isReported());
+	EXPECT_FALSE(wg2->windSpeed().isReported());
+	EXPECT_FALSE(wg2->gustSpeed().isReported());
+	EXPECT_FALSE(wg2->height().isReported());
+	EXPECT_FALSE(wg2->varSectorBegin().isReported());
+	EXPECT_FALSE(wg2->varSectorEnd().isReported());
+	EXPECT_FALSE(wg2->eventTime().has_value());
+	EXPECT_FALSE(wg2->runway().has_value());
+
+	auto wg3 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("EST", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg3->direction().isReported());
+	EXPECT_FALSE(wg3->windSpeed().isReported());
+	EXPECT_FALSE(wg3->gustSpeed().isReported());
+	EXPECT_FALSE(wg3->height().isReported());
+	EXPECT_FALSE(wg3->varSectorBegin().isReported());
+	EXPECT_FALSE(wg3->varSectorEnd().isReported());
+	EXPECT_FALSE(wg3->eventTime().has_value());
+	EXPECT_FALSE(wg3->runway().has_value());
+}
+
+TEST(WindGroup, parseWindDataEstd) {
+	const std::string wind = "WIND";
+
+	auto wg1 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("ESTD", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg1->direction().isReported());
+	EXPECT_FALSE(wg1->windSpeed().isReported());
+	EXPECT_FALSE(wg1->gustSpeed().isReported());
+	EXPECT_FALSE(wg1->height().isReported());
+	EXPECT_FALSE(wg1->varSectorBegin().isReported());
+	EXPECT_FALSE(wg1->varSectorEnd().isReported());
+	EXPECT_FALSE(wg1->eventTime().has_value());
+	EXPECT_FALSE(wg1->runway().has_value());
+
+	auto wg2 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("ESTMD", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg2->direction().isReported());
+	EXPECT_FALSE(wg2->windSpeed().isReported());
+	EXPECT_FALSE(wg2->gustSpeed().isReported());
+	EXPECT_FALSE(wg2->height().isReported());
+	EXPECT_FALSE(wg2->varSectorBegin().isReported());
+	EXPECT_FALSE(wg2->varSectorEnd().isReported());
+	EXPECT_FALSE(wg2->eventTime().has_value());
+	EXPECT_FALSE(wg2->runway().has_value());
+
+	auto wg3 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("EST", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->type(), metaf::WindGroup::Type::WIND_DATA_ESTIMATED);
+	EXPECT_FALSE(wg3->direction().isReported());
+	EXPECT_FALSE(wg3->windSpeed().isReported());
+	EXPECT_FALSE(wg3->gustSpeed().isReported());
+	EXPECT_FALSE(wg3->height().isReported());
+	EXPECT_FALSE(wg3->varSectorBegin().isReported());
+	EXPECT_FALSE(wg3->varSectorEnd().isReported());
+	EXPECT_FALSE(wg3->eventTime().has_value());
+	EXPECT_FALSE(wg3->runway().has_value());
+}
+
+TEST(WindGroup, appendOtherToWndData) {
+	static const char gs[] = "WND";
+
+	auto wg1 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("04008KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("/////KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg4->append(gs, metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WindGroup, appendOtherToWindData) {
+	static const char gs[] = "WIND";
+
+	auto wg1 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("04008KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("/////KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("DATA", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg4->append(gs, metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WindGroup, windMisg) {
+	// WND MISG is a valid group but WIND MISG is not
+	auto wg1 = metaf::WindGroup::parse("WIND", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
 // Purpose: to confirm that isValid() method returns true for all values
 ///////////////////////////////////////////////////////////////////////////////

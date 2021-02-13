@@ -538,7 +538,11 @@ std::string VisitorExplain::visitWindGroup(
 		break;
 
 		case metaf::WindGroup::Type::WND_MISG:
-		result << "Wind data is missing";
+		result << "Wind data are missing";
+		break;
+
+		case metaf::WindGroup::Type::WIND_DATA_ESTIMATED:
+		result << "Wind data are estimated";
 		break;
 	}
 	return result.str();

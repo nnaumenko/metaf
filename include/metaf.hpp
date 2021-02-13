@@ -1082,7 +1082,8 @@ public:
 		WIND_SHIFT_FROPA,
 		PEAK_WIND,
 		WSCONDS,
-		WND_MISG
+		WND_MISG,
+		WIND_DATA_ESTIMATED
 	};
 	Type type() const { return windType; }
 	Direction direction() const { return windDir; }
@@ -1109,6 +1110,8 @@ private:
 		PK,
 		PK_WND,
 		WND,
+		WIND,
+		WIND_DATA,
 		WS,
 		WS_ALL
 	};
@@ -4631,6 +4634,7 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 		if (group == "WSHFT") return WindGroup(Type::WIND_SHIFT);
 		if (group == "PK") return WindGroup(Type::PEAK_WIND, IncompleteText::PK);
 		if (group == "WND") return WindGroup(Type::WND_MISG, IncompleteText::WND);
+		if (group == "WIND") return WindGroup(Type::WIND_DATA_ESTIMATED, IncompleteText::WIND);
 	}
 
 	if (reportPart != ReportPart::METAR &&
@@ -4686,6 +4690,11 @@ AppendResult WindGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
+	auto isEstimated = [] (const std::string & s) {
+		if (s == "ESTD" || s == "EST" || s == "ESTMD") return true;
+		return false;
+	};
+
 	(void)reportPart; (void)reportMetadata;
 	//Append variable wind sector group to surface wind group
 	switch (incompleteText) {
@@ -4699,15 +4708,46 @@ AppendResult WindGroup::append(const std::string & group,
 		case IncompleteText::PK:
 		if (group != "WND") return AppendResult::GROUP_INVALIDATED;
 		incompleteText = IncompleteText::PK_WND;
-		return AppendResult::APPENDED;		
+		return AppendResult::APPENDED;
 
 		case IncompleteText::PK_WND:
 		return appendPeakWind(group, reportMetadata);
 
 		case IncompleteText::WND:
-		if (group != "MISG") return AppendResult::GROUP_INVALIDATED;
-		incompleteText = IncompleteText::NONE;
-		return AppendResult::APPENDED;
+		if (group == "DATA") {
+			windType = Type::WIND_DATA_ESTIMATED;
+			incompleteText = IncompleteText::WIND_DATA;
+			return AppendResult::APPENDED;
+		}
+		if (isEstimated(group)) {
+			windType = Type::WIND_DATA_ESTIMATED;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (group == "MISG") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::WIND:
+		if (isEstimated(group)) {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (group == "DATA") {
+			incompleteText = IncompleteText::WIND_DATA;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::WIND_DATA:
+		if (isEstimated(group)) {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
 
 		case IncompleteText::WS_ALL:
 		if (group != "RWY") return AppendResult::GROUP_INVALIDATED;

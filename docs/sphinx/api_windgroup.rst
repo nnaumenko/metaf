@@ -63,8 +63,11 @@ Type definitions
 
 		.. cpp:enumerator:: WND_MISG
 
-			Indicates that wind data is missing. No further details are provided.
+			Indicates that wind data are missing. No further details are provided.
 
+		.. cpp:enumerator:: WIND_DATA_ESTIMATED
+
+			Indicates that wind data are estimated. No further details are provided.
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
