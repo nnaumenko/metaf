@@ -69,6 +69,13 @@ Type definitions
 
 			Indicates that wind data are estimated. No further details are provided.
 
+		.. cpp:enumerator:: WIND_AT_HEIGHT
+
+			Specifies wind at certain height. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, and :cpp:func:`height()` for the height for which the wind was specified.
+
+		.. note::If calm wind (no wind) reported at height, Metaf generates WindGroup with type :cpp:enumerator:`Type::WIND_AT_HEIGHT`.
+
+
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
 

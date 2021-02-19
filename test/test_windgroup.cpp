@@ -2005,6 +2005,152 @@ TEST(WindGroup, windMisg) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Wind at height
+// Purpose: to confirm that remark groups which specify wind at height are 
+// parsed and appended correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WindGroup, parseWindAtHeight) {
+	const std::string wind = "WIND";
+
+	auto wg1 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("15030G42KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg1->type(), metaf::WindGroup::Type::WIND_AT_HEIGHT);
+	EXPECT_EQ(wg1->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg1->direction().degrees().has_value());
+	EXPECT_EQ(wg1->direction().degrees().value(), 150u);
+	ASSERT_TRUE(wg1->windSpeed().speed().has_value());
+	EXPECT_EQ(wg1->windSpeed().speed().value(), 30u);
+	EXPECT_EQ(wg1->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	ASSERT_TRUE(wg1->gustSpeed().speed().has_value());
+	EXPECT_EQ(wg1->gustSpeed().speed().value(), 42u);
+	EXPECT_EQ(wg1->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_TRUE(wg1->height().distance().has_value());
+	EXPECT_EQ(wg1->height().distance().value(), 1200);
+	EXPECT_EQ(wg1->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(wg1->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg1->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg1->eventTime().has_value());
+	EXPECT_FALSE(wg1->runway().has_value());
+
+	auto wg2 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("1138FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("VRB02KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg2->type(), metaf::WindGroup::Type::WIND_AT_HEIGHT);
+	EXPECT_EQ(wg2->direction().type(), metaf::Direction::Type::VARIABLE);
+	ASSERT_TRUE(wg2->windSpeed().speed().has_value());
+	EXPECT_EQ(wg2->windSpeed().speed().value(), 2u);
+	EXPECT_FALSE(wg2->gustSpeed().speed().has_value());
+	EXPECT_TRUE(wg2->height().isReported());
+	EXPECT_TRUE(wg2->height().distance().has_value());
+	EXPECT_EQ(wg2->height().distance().value(), 1138);
+	EXPECT_EQ(wg2->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(wg2->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg2->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg2->eventTime().has_value());
+	EXPECT_FALSE(wg2->runway().has_value());
+
+	auto wg3 = metaf::WindGroup::parse(wind, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("/////KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg3->type(), metaf::WindGroup::Type::WIND_AT_HEIGHT);
+	EXPECT_EQ(wg3->direction().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg3->windSpeed().speed().has_value());
+	EXPECT_FALSE(wg3->gustSpeed().speed().has_value());
+	EXPECT_TRUE(wg3->height().distance().has_value());
+	EXPECT_EQ(wg3->height().distance().value(), 1200);
+	EXPECT_EQ(wg3->height().unit(), metaf::Distance::Unit::FEET);
+	EXPECT_EQ(wg3->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg3->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg3->eventTime().has_value());
+	EXPECT_FALSE(wg3->runway().has_value());
+}
+
+TEST(WindGroup, appendOtherToWindHeight) {
+	static const char gs[] = "WIND";
+
+	auto wg1 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg1->append("MISG", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg2->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg3->append("KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg4->append(gs, metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg5 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	EXPECT_EQ(wg5->append("1200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg5->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WindGroup, windHeightWrongFormat) {
+	static const char gs[] = "WIND";
+
+	auto wg1 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg1.has_value());
+	EXPECT_EQ(wg1->append("1200/FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg2 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg2.has_value());
+	EXPECT_EQ(wg2->append("01200FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg3 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg3.has_value());
+	EXPECT_EQ(wg3->append("120FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg4 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg4.has_value());
+	EXPECT_EQ(wg4->append("2A30FT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto wg5 = metaf::WindGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg5.has_value());
+	EXPECT_EQ(wg5->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
 // Purpose: to confirm that isValid() method returns true for all values
 ///////////////////////////////////////////////////////////////////////////////

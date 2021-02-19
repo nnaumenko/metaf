@@ -544,6 +544,20 @@ std::string VisitorExplain::visitWindGroup(
 		case metaf::WindGroup::Type::WIND_DATA_ESTIMATED:
 		result << "Wind data are estimated";
 		break;
+
+		case metaf::WindGroup::Type::WIND_AT_HEIGHT:
+		result << "Wind at height ";
+		result << explainDistance(group.height());
+		result << ":\n";
+		result << "Wind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "Wind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
+		break;
 	}
 	return result.str();
 }

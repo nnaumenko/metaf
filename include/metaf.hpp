@@ -1083,7 +1083,8 @@ public:
 		PEAK_WIND,
 		WSCONDS,
 		WND_MISG,
-		WIND_DATA_ESTIMATED
+		WIND_DATA_ESTIMATED,
+		WIND_AT_HEIGHT
 	};
 	Type type() const { return windType; }
 	Direction direction() const { return windDir; }
@@ -1112,6 +1113,7 @@ private:
 		WND,
 		WIND,
 		WIND_DATA,
+		WIND_HEIGHT,
 		WS,
 		WS_ALL
 	};
@@ -1124,6 +1126,9 @@ private:
 	inline AppendResult appendWindShift(const std::string & group,
 		const ReportMetadata & reportMetadata);
 	inline AppendResult appendVariableSector(const std::string & group);
+	inline bool appendHeightString(const std::string & group);
+	inline AppendResult appendWindAtHeight(const std::string & group, 
+		const ReportMetadata & metadata);
 
 	Type windType;
 	Direction windDir;
@@ -4239,7 +4244,6 @@ std::optional<CloudType> CloudType::fromStringObscuration(const std::string & s)
 	return CloudType(type, Distance(), 0);
 }
 
-
 CloudType::Type CloudType::cloudTypeFromString(const std::string & s) {
 	if (s == "CB")    return Type::CUMULONIMBUS;
 	if (s == "TCU")   return Type::TOWERING_CUMULUS;
@@ -4719,15 +4723,16 @@ AppendResult WindGroup::append(const std::string & group,
 			incompleteText = IncompleteText::WIND_DATA;
 			return AppendResult::APPENDED;
 		}
+		if (group == "MISG") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
 		if (isEstimated(group)) {
 			windType = Type::WIND_DATA_ESTIMATED;
 			incompleteText = IncompleteText::NONE;
 			return AppendResult::APPENDED;
 		}
-		if (group == "MISG") {
-			incompleteText = IncompleteText::NONE;
-			return AppendResult::APPENDED;
-		}
+		if (appendHeightString(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteText::WIND:
@@ -4739,6 +4744,7 @@ AppendResult WindGroup::append(const std::string & group,
 			incompleteText = IncompleteText::WIND_DATA;
 			return AppendResult::APPENDED;
 		}
+		if (appendHeightString(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteText::WIND_DATA:
@@ -4748,6 +4754,8 @@ AppendResult WindGroup::append(const std::string & group,
 		}
 		return AppendResult::GROUP_INVALIDATED;
 
+		case IncompleteText::WIND_HEIGHT:
+		return appendWindAtHeight(group, reportMetadata);		
 
 		case IncompleteText::WS_ALL:
 		if (group != "RWY") return AppendResult::GROUP_INVALIDATED;
@@ -4861,6 +4869,32 @@ AppendResult WindGroup::appendWindShift(const std::string & group,
 		return AppendResult::APPENDED;
 	}
 	return AppendResult::NOT_APPENDED;
+}
+
+bool WindGroup::appendHeightString(const std::string & group) {
+	// equivalent regex \d\d\d\dFT
+	if (group.length() != 6) return false;
+	if (group[4] != 'F' && group[5] != 'T') return false;
+	const auto d = Distance::fromRvrString(group.substr(0, 4), true);
+	if (!d.has_value()) return false;
+	windType = Type::WIND_AT_HEIGHT;
+	wShHeight = *d;
+	incompleteText = IncompleteText::WIND_HEIGHT;
+	return true;
+}
+
+AppendResult WindGroup::appendWindAtHeight(const std::string & group, 
+	const ReportMetadata & reportMetadata)
+{
+	const auto wg = WindGroup::parse(group, ReportPart::METAR, reportMetadata);
+	if (!wg.has_value()) return AppendResult::GROUP_INVALIDATED;
+	if (wg->type() != Type::SURFACE_WIND && wg->type() != Type::SURFACE_WIND_CALM)
+		return AppendResult::GROUP_INVALIDATED;
+	windDir = wg->windDir;
+	wSpeed = wg->wSpeed;
+	gSpeed = wg->gSpeed;
+	incompleteText = IncompleteText::NONE;
+	return AppendResult::APPENDED;
 }
 
 bool WindGroup::isValid() const {

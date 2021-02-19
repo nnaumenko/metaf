@@ -7455,6 +7455,40 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"ENBR", "Bergen Airport Flesland", {2020, 11, 1},
+		"METAR ENBR 010850Z 15020G30KT 9999 -SHRA SCT017CB BKN020 10/07 Q0997"
+		" TEMPO SHRA BKN020CB"
+		" RMK WIND 1200FT 15030G42KT"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"ENSD", "Sandane Airport (Anda)", {2020, 11, 5},
+		"METAR ENSD 051850Z 06009KT 6000 -DZ BKN001 08/08 Q1020"
+		" RMK WIND 1138FT VRB02KT"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"ENBR", "Bergen Airport Flesland", {2020, 11, 19},
+		"METAR ENBR 192150Z 32006KT 6000 SHSN VV009 01/00 Q1018"
+		" RMK WIND 1200FT /////KT"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
 		"ETHC", "Celle Airport", {2020, 11, 20},
 		"METAR ETHC 201820Z 21002KT 9999 FEW060 03/02 Q1033 BLU+"
 		"=",
