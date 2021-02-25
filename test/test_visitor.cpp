@@ -249,7 +249,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TrendGroup>()]), 3);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WindGroup>()]), 14);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VisibilityGroup>()]), 18);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 29);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::CloudGroup>()]), 31);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::WeatherGroup>()]), 9);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TemperatureGroup>()]), 13);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::PressureGroup>()]), 16);
@@ -264,7 +264,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 2);
-	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 3);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -520,7 +520,8 @@ TEST(Visitor, visitorNonVoid) {
 		"pressure:A2994 "
 		"keyword:RMK "
 		"cloudtypes:SC1ST4SC1SC1AC1 "
-		"unknown:SC TR AC TR "
+		"cloud:SC TR "
+		"cloud:AC TR "
 		"cloud:CIG RAG "
 		"visibility:VIS SW 15 "
 		"pressure:SLP144 "s

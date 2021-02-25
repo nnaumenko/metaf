@@ -30,6 +30,8 @@ Type definitions
 
 			Use :cpp:func:`amount()` for cloud amount, :cpp:func:`height()` for base height, and :cpp:func:`convectiveType()` for significant convective type.
 
+			If amount of clouds is trace, use also :cpp:func:`cloudType()` for cloud type.
+
 		.. cpp:enumerator:: VERTICAL_VISIBILITY
 
 			Sky is obscured and vertical visibility is indicated instead of cloud data. Use :cpp:func:`verticalVisibility()` for vertical visibility value. :cpp:func:`amount()` will return  :cpp:enumerator:`Amount::OBSCURED`.
@@ -119,6 +121,10 @@ Type definitions
 		.. cpp:enumerator:: OBSCURED
 
 			Sky obscured; vertical visibility reported instead.
+
+		.. cpp:enumerator:: TRACE
+
+			Trace amount of clouds.
 
 	.. cpp:enum-class:: ConvectiveType
 

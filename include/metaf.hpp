@@ -812,17 +812,19 @@ public:
 	};
 	Type type() const { return tp; }
 	Distance height() const { return ht; }
-	unsigned int okta() const { return okt; }
-	bool isValid() const { return (okt >= 1u && okt <= 8u); }
+	std::optional<unsigned int> okta() const { return okt; }
+	bool isValid() const { return (okt.value_or(0) <= 8u); }
 
 	CloudType() = default;
-	CloudType(Type t, Distance h, unsigned int o) : tp(t), ht(h), okt(o) {}
+	CloudType(Type t, Distance h) : tp(t), ht(h) {}
+	CloudType(Type t, Distance h, std::optional<unsigned int> o) : tp(t), ht(h), okt(o) {}
 	static inline std::optional<CloudType> fromString(const std::string & s);
 	static inline std::optional<CloudType> fromStringObscuration(const std::string & s);
+	static inline std::optional<CloudType> fromStringCloud(const std::string & s);
 private:
 	Type tp = Type::NOT_REPORTED;
 	Distance ht;
-	unsigned int okt = 0u;
+	std::optional<unsigned int> okt;
 
 	static inline Type cloudTypeFromString(const std::string & s);
 	static inline Type cloudTypeOrObscurationFromString(const std::string & s);
@@ -1306,7 +1308,8 @@ public:
 		SCATTERED,
 		BROKEN,
 		OVERCAST,
-		OBSCURED
+		OBSCURED,
+		TRACE
 	};
 	enum class ConvectiveType {
 		NONE,
@@ -1376,7 +1379,8 @@ private:
 		CHINO,
 		CLD,
 		OBSCURATION,
-		SKY
+		SKY,
+		CLOUD_TYPE
 	};
 	IncompleteText incompleteText = IncompleteText::NONE;
 
@@ -1390,7 +1394,7 @@ private:
 	inline AppendResult appendCeiling(const std::string & group);
 	inline AppendResult appendRunwayOrCardinalDirection(const std::string & group);
 	inline AppendResult appendObscuration(const std::string & group);
-	static inline unsigned int amountToMaxOkta(Amount a);
+	static inline std::optional<unsigned int> amountToMaxOkta(Amount a);
 	static inline CloudType::Type convectiveTypeToCloudTypeType(ConvectiveType t);
 };
 
@@ -4206,7 +4210,7 @@ bool WeatherPhenomena::isValid() const {
 std::optional<CloudType> CloudType::fromString(const std::string & s) {
 	static const std::optional<CloudType> error;
 	if (s.empty()) return error;
-	if (s[0] >= '0' && s[0] <= '9') {
+	if (s[0] >= '1' && s[0] <= '8') {
 		// Format with height 8NS070 or 3TCU022 (6 or 7 chars)
 		// std::regex("(\d)([A-Z][A-Z][A-Z]?)(\d\d\d)")
 		if (s.length() != 6 && s.length() != 7) return error;
@@ -4224,7 +4228,7 @@ std::optional<CloudType> CloudType::fromString(const std::string & s) {
 		// std::regex("([A-Z][A-Z]+)(\d)")
 		if (s.length() < 3) return error;
 		const auto oktaCh = s[s.length() - 1];
-		if (oktaCh < '0' || oktaCh > '9') return error;
+		if (oktaCh < '1' || oktaCh > '8') return error;
 		const auto typeValue = 
 			cloudTypeOrObscurationFromString(s.substr(0, s.length() - 1));
 		if (typeValue == Type::NOT_REPORTED) return error;
@@ -4241,7 +4245,13 @@ std::optional<CloudType> CloudType::fromStringObscuration(const std::string & s)
 	if (s == "FU") type = Type::SMOKE;
 	if (s == "FG") type = Type::FOG;
 	if (type == Type::NOT_REPORTED) return std::optional<CloudType>();
-	return CloudType(type, Distance(), 0);
+	return CloudType(type, Distance());
+}
+
+std::optional<CloudType> CloudType::fromStringCloud(const std::string & s) {
+	auto type = cloudTypeFromString(s);
+	if (type == Type::NOT_REPORTED) return std::optional<CloudType>();
+	return CloudType(type, Distance());
 }
 
 CloudType::Type CloudType::cloudTypeFromString(const std::string & s) {
@@ -5293,6 +5303,12 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 			result.cldTp = *ct;
 			return result;
 		}
+		if (const auto ct = CloudType::fromStringCloud(group); ct.has_value()) {
+			CloudGroup result = CloudGroup(Type::CLOUD_LAYER, IncompleteText::CLOUD_TYPE);	
+			result.amnt = Amount::TRACE;
+			result.cldTp = CloudType(ct->type(), Distance(), 0);
+			return result;
+		}
 		return parseVariableCloudLayer(group); 
 	}
 	return std::optional<CloudGroup>();
@@ -5347,6 +5363,11 @@ AppendResult CloudGroup::append(const std::string & group,
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::CLOUD_TYPE:
+		if (group != "TR") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
 	}
 }
 
@@ -5410,7 +5431,7 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	return result;
 }
 
-unsigned int CloudGroup::amountToMaxOkta(Amount a) {
+std::optional<unsigned int> CloudGroup::amountToMaxOkta(Amount a) {
 	switch (a) {
 		case Amount::FEW:
 		return 2;
@@ -5425,8 +5446,11 @@ unsigned int CloudGroup::amountToMaxOkta(Amount a) {
 		case Amount::OBSCURED:
 		return 8;
 
-		default:
+		case Amount::TRACE:
 		return 0;
+
+		default:
+		return std::optional<unsigned int>();
 	}
 }
 
@@ -5444,26 +5468,31 @@ CloudType::Type CloudGroup::convectiveTypeToCloudTypeType(ConvectiveType t) {
 }
 
 std::optional<CloudType> CloudGroup::cloudType() const {
-	const auto cldConvType = convectiveTypeToCloudTypeType(convectiveType());
+	CloudType::Type cldType = cldTp.type();
+	if (cldType == CloudType::Type::NOT_REPORTED)
+		cldType = convectiveTypeToCloudTypeType(convectiveType());
+	auto cldHt = height();
 	auto cldOkta = amountToMaxOkta(amount());
 	switch (type()) {
 		case Type::CLOUD_LAYER:
 		case Type::CEILING:
 		case Type::VARIABLE_COVER:
 		if (const auto varCldOkta = amountToMaxOkta(variableAmount()); varCldOkta) {
-			if (varCldOkta > cldOkta) cldOkta = varCldOkta;
-		}
-		return CloudType(cldConvType, height(), cldOkta);
+        		if (varCldOkta.value_or(0) > cldOkta.value_or(0)) cldOkta = varCldOkta;
+        }
+        break;
 
 		case Type::VARIABLE_CEILING:
-		return CloudType(cldConvType, minHeight(), cldOkta);
+		cldHt = minHeight();
+		break;
 
 		case Type::OBSCURATION:
-		return cldTp;
+		break;
 
 		default:
 		return std::optional<CloudType>();
 	}
+	return CloudType(cldType, cldHt, cldOkta);
 }
 
 std::optional<CloudGroup::Amount> CloudGroup::amountFromString(const std::string & s) {

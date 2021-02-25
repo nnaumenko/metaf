@@ -157,9 +157,9 @@ Acquiring the data
 
 		:returns: Height of the cloud base; may be a non-reported value if the base height is not reported or cannot be included in this format.
 
-	.. cpp:function:: unsigned int okta() const
+	.. cpp:function:: std::optional<unsigned int> okta() const
 
-		:returns: Sky coverage in 1/8th (e.g. 3 okta means that this cloud covers 3/8 of the sky).
+		:returns: Sky coverage in 1/8th (e.g. 3 okta means that this cloud covers 3/8 of the sky), or 0 trace amount of clouds is present. If cloud amount is not known, an empty ``std::optional`` is returned.
 
 
 Validating
@@ -167,7 +167,7 @@ Validating
 
 	.. cpp:function:: bool isValid() const
 
-		:returns: ``true`` if the octa value is in range 1 to 8, and ``false`` otherwise.
+		:returns: always returns ``true``.
 
 .. cpp:namespace-pop::
 
@@ -176,6 +176,8 @@ Formats
 -------
 
 Metaf recognises two formats of cloud types: with and without cloud base height.
+
+Okta digit must be in valid range from 1 to 8, otherwise Metaf does not recognise the format. For example, formats ``NS9`` or ``0CU008`` are not recognised.
 
 
 Format without cloud base height
@@ -229,6 +231,9 @@ FU   :cpp:enumerator:`Type::SMOKE`
 FG   :cpp:enumerator:`Type::FOG`
 BR   :cpp:enumerator:`Type::MIST`
 HZ   :cpp:enumerator:`Type::HAZE`
+GR   :cpp:enumerator:`Type::HAIL`
+DS   :cpp:enumerator:`Type::DUSTSTORM`
+SS   :cpp:enumerator:`Type::SANDSTORM`
 ==== ===============================================
 
 

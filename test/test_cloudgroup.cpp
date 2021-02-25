@@ -1789,6 +1789,67 @@ TEST(CloudGroup, parseCigDfus) {
 // TODO: additional appending tests
 
 ///////////////////////////////////////////////////////////////////////////////
+// Tests for trace amount groups
+// Purpose: to confirm that groups TR xx and TR xxx included in remarks 
+// are parsed and appended correctly 
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudGroup, parseTraceAmount) {
+	auto cg = metaf::CloudGroup::parse("CF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::CLOUD_LAYER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::TRACE);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, parseTraceAmountObscuration) {
+	auto cg1 = metaf::CloudGroup::parse("BLSN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto cg2 = metaf::CloudGroup::parse("BLSA", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto cg3 = metaf::CloudGroup::parse("BLDU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto cg4 = metaf::CloudGroup::parse("VA", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_EQ(cg4->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto cg5 = metaf::CloudGroup::parse("FU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_EQ(cg5->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto cg6 = metaf::CloudGroup::parse("FG", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_EQ(cg6->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(CloudGroup, parseTraceAmountObscurationNotRecognised) {
+	EXPECT_FALSE(metaf::CloudGroup::parse("IC", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("RA", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("DZ", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("SN", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("BR", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("HZ", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("GR", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("SS", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudGroup::parse("DS", metaf::ReportPart::RMK).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for cloudType()
 // Purpose: to confirm that cloudType() method correctly initialises a
 // CloudType instance 
@@ -1858,7 +1919,8 @@ TEST(CloudGroup, cloudTypeCloudLayer) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 11700, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 2u);
+	EXPECT_TRUE(ct1->okta().has_value());
+	EXPECT_EQ(ct1->okta().value(), 2u);
 
 	const auto cg2 = metaf::CloudGroup::parse("SCT040", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg2.has_value());
@@ -1871,7 +1933,8 @@ TEST(CloudGroup, cloudTypeCloudLayer) {
 	ASSERT_TRUE(ct2->height().distance().has_value());
 	EXPECT_NEAR(ct2->height().distance().value(), 4000, heightMargin);
 	EXPECT_EQ(ct2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct2->okta(), 4u);
+	EXPECT_TRUE(ct2->okta().has_value());
+	EXPECT_EQ(ct2->okta().value(), 4u);
 
 	const auto cg3 = metaf::CloudGroup::parse("BKN026", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg3.has_value());
@@ -1884,7 +1947,8 @@ TEST(CloudGroup, cloudTypeCloudLayer) {
 	ASSERT_TRUE(ct3->height().distance().has_value());
 	EXPECT_NEAR(ct3->height().distance().value(), 2600, heightMargin);
 	EXPECT_EQ(ct3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct3->okta(), 7u);
+	EXPECT_TRUE(ct3->okta().has_value());
+	EXPECT_EQ(ct3->okta().value(), 7u);
 
 	const auto cg4 = metaf::CloudGroup::parse("OVC002", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg4.has_value());
@@ -1897,7 +1961,8 @@ TEST(CloudGroup, cloudTypeCloudLayer) {
 	ASSERT_TRUE(ct4->height().distance().has_value());
 	EXPECT_NEAR(ct4->height().distance().value(), 200, heightMargin);
 	EXPECT_EQ(ct4->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct4->okta(), 8u);
+	EXPECT_TRUE(ct4->okta().has_value());
+	EXPECT_EQ(ct4->okta().value(), 8u);
 }
 
 TEST(CloudGroup, cloudTypeCloudLayerType) {
@@ -1912,7 +1977,8 @@ TEST(CloudGroup, cloudTypeCloudLayerType) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 4u);
+	EXPECT_TRUE(ct1->okta().has_value());
+	EXPECT_EQ(ct1->okta().value(), 4u);
 
 	const auto cg2 = metaf::CloudGroup::parse("BKN012CB", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg2.has_value());
@@ -1925,7 +1991,8 @@ TEST(CloudGroup, cloudTypeCloudLayerType) {
 	ASSERT_TRUE(ct2->height().distance().has_value());
 	EXPECT_NEAR(ct2->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(ct2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct2->okta(), 7u);
+	EXPECT_TRUE(ct2->okta().has_value());
+	EXPECT_EQ(ct2->okta().value(), 7u);
 }
 
 TEST(CloudGroup, cloudTypeCloudLayerNotReported) {
@@ -1940,7 +2007,7 @@ TEST(CloudGroup, cloudTypeCloudLayerNotReported) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 7400, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 0u);
+	EXPECT_FALSE(ct1->okta().has_value());
 
 	const auto cg2 = metaf::CloudGroup::parse("FEW///", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg2.has_value());
@@ -1949,7 +2016,8 @@ TEST(CloudGroup, cloudTypeCloudLayerNotReported) {
 
 	EXPECT_EQ(ct2->type(), metaf::CloudType::Type::NOT_REPORTED);
 	EXPECT_FALSE(ct2->height().isReported());
-	EXPECT_EQ(ct2->okta(), 2u);
+	EXPECT_TRUE(ct2->okta().has_value());
+	EXPECT_EQ(ct2->okta().value(), 2u);
 
 	const auto cg3 = metaf::CloudGroup::parse("SCT016///", metaf::ReportPart::METAR);
 	ASSERT_TRUE(cg3.has_value());
@@ -1962,7 +2030,8 @@ TEST(CloudGroup, cloudTypeCloudLayerNotReported) {
 	ASSERT_TRUE(ct3->height().distance().has_value());
 	EXPECT_NEAR(ct3->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(ct3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct3->okta(), 4u);
+	EXPECT_TRUE(ct3->okta().has_value());
+	EXPECT_EQ(ct3->okta().value(), 4u);
 }
 
 TEST(CloudGroup, cloudTypeCloudLayerVariable) {
@@ -1979,7 +2048,8 @@ TEST(CloudGroup, cloudTypeCloudLayerVariable) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 1600, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 4u);
+	EXPECT_TRUE(ct1->okta().has_value());
+	EXPECT_EQ(ct1->okta().value(), 4u);
 
 	auto cg2 = metaf::CloudGroup::parse("SCT", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
@@ -1990,7 +2060,8 @@ TEST(CloudGroup, cloudTypeCloudLayerVariable) {
 
 	EXPECT_EQ(ct2->type(), metaf::CloudType::Type::NOT_REPORTED);
 	EXPECT_FALSE(ct2->height().isReported());
-	EXPECT_EQ(ct2->okta(), 7u);
+	EXPECT_TRUE(ct2->okta().has_value());
+	EXPECT_EQ(ct2->okta().value(), 7u);
 
 	auto cg3 = metaf::CloudGroup::parse("BKN", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
@@ -2001,7 +2072,8 @@ TEST(CloudGroup, cloudTypeCloudLayerVariable) {
 
 	EXPECT_EQ(ct3->type(), metaf::CloudType::Type::NOT_REPORTED);
 	EXPECT_FALSE(ct3->height().isReported());
-	EXPECT_EQ(ct3->okta(), 8u);
+	EXPECT_TRUE(ct3->okta().has_value());
+	EXPECT_EQ(ct3->okta().value(), 8u);
 }
 
 TEST(CloudGroup, cloudTypeCeiling) {
@@ -2018,7 +2090,7 @@ TEST(CloudGroup, cloudTypeCeiling) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 0u);
+	EXPECT_FALSE(ct1->okta().has_value());
 
 	auto cg2 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
@@ -2033,7 +2105,7 @@ TEST(CloudGroup, cloudTypeCeiling) {
 	ASSERT_TRUE(ct2->height().distance().has_value());
 	EXPECT_NEAR(ct2->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(ct2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct2->okta(), 0u);
+	EXPECT_FALSE(ct2->okta().has_value());
 
 	auto cg3 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
@@ -2048,7 +2120,7 @@ TEST(CloudGroup, cloudTypeCeiling) {
 	ASSERT_TRUE(ct3->height().distance().has_value());
 	EXPECT_NEAR(ct3->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(ct3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct3->okta(), 0u);
+	EXPECT_FALSE(ct3->okta().has_value());
 }
 
 TEST(CloudGroup, cloudTypeCeilingVariable) {
@@ -2065,7 +2137,7 @@ TEST(CloudGroup, cloudTypeCeilingVariable) {
 	ASSERT_TRUE(ct1->height().distance().has_value());
 	EXPECT_NEAR(ct1->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 0u);
+	EXPECT_FALSE(ct1->okta().has_value());
 
 	auto cg2 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
@@ -2080,7 +2152,7 @@ TEST(CloudGroup, cloudTypeCeilingVariable) {
 	ASSERT_TRUE(ct2->height().distance().has_value());
 	EXPECT_NEAR(ct2->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(ct2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct2->okta(), 0u);
+	EXPECT_FALSE(ct2->okta().has_value());
 
 	auto cg3 = metaf::CloudGroup::parse("CIG", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
@@ -2095,7 +2167,149 @@ TEST(CloudGroup, cloudTypeCeilingVariable) {
 	ASSERT_TRUE(ct3->height().distance().has_value());
 	EXPECT_NEAR(ct3->height().distance().value(), 1200, heightMargin);
 	EXPECT_EQ(ct3->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct3->okta(), 0u);
+	EXPECT_FALSE(ct3->okta().has_value());
+}
+
+TEST(CloudGroup, cloudTypeTraceAmount) {
+	auto cg1 = metaf::CloudGroup::parse("CF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct1 = cg1->cloudType();
+	ASSERT_TRUE(ct1.has_value());
+	EXPECT_EQ(ct1->type(), metaf::CloudType::Type::CUMULUS_FRACTUS);
+	EXPECT_FALSE(ct1->height().isReported());
+	EXPECT_TRUE(ct1->okta().has_value());
+	EXPECT_EQ(ct1->okta().value(), 0u);
+
+	auto cg2 = metaf::CloudGroup::parse("SF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct2 = cg2->cloudType();
+	ASSERT_TRUE(ct2.has_value());
+	EXPECT_EQ(ct2->type(), metaf::CloudType::Type::STRATUS_FRACTUS);
+	EXPECT_FALSE(ct2->height().isReported());
+	EXPECT_TRUE(ct2->okta().has_value());
+	EXPECT_EQ(ct2->okta().value(), 0u);
+
+	auto cg3 = metaf::CloudGroup::parse("CU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct3 = cg3->cloudType();
+	ASSERT_TRUE(ct3.has_value());
+	EXPECT_EQ(ct3->type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_FALSE(ct3->height().isReported());
+	EXPECT_TRUE(ct3->okta().has_value());
+	EXPECT_EQ(ct3->okta().value(), 0u);
+
+	auto cg4 = metaf::CloudGroup::parse("ST", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_EQ(cg4->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct4 = cg4->cloudType();
+	ASSERT_TRUE(ct4.has_value());
+	EXPECT_EQ(ct4->type(), metaf::CloudType::Type::STRATUS);
+	EXPECT_FALSE(ct4->height().isReported());
+	EXPECT_TRUE(ct4->okta().has_value());
+	EXPECT_EQ(ct4->okta().value(), 0u);
+
+	auto cg5 = metaf::CloudGroup::parse("SC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_EQ(cg5->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct5 = cg5->cloudType();
+	ASSERT_TRUE(ct5.has_value());
+	EXPECT_EQ(ct5->type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ct5->height().isReported());
+	EXPECT_TRUE(ct5->okta().has_value());
+	EXPECT_EQ(ct5->okta().value(), 0u);
+
+	auto cg6 = metaf::CloudGroup::parse("TCU", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_EQ(cg6->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct6 = cg6->cloudType();
+	ASSERT_TRUE(ct6.has_value());
+	EXPECT_EQ(ct6->type(), metaf::CloudType::Type::TOWERING_CUMULUS);
+	EXPECT_FALSE(ct6->height().isReported());
+	EXPECT_TRUE(ct6->okta().has_value());
+	EXPECT_EQ(ct6->okta().value(), 0u);
+
+	auto cg7 = metaf::CloudGroup::parse("AC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg7.has_value());
+	EXPECT_EQ(cg7->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct7 = cg7->cloudType();
+	ASSERT_TRUE(ct7.has_value());
+	EXPECT_EQ(ct7->type(), metaf::CloudType::Type::ALTOCUMULUS);
+	EXPECT_FALSE(ct7->height().isReported());
+	EXPECT_TRUE(ct7->okta().has_value());
+	EXPECT_EQ(ct7->okta().value(), 0u);
+
+	auto cg8 = metaf::CloudGroup::parse("ACC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg8.has_value());
+	EXPECT_EQ(cg8->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct8 = cg8->cloudType();
+	ASSERT_TRUE(ct8.has_value());
+	EXPECT_EQ(ct8->type(), metaf::CloudType::Type::ALTOCUMULUS_CASTELLANUS);
+	EXPECT_FALSE(ct8->height().isReported());
+	EXPECT_TRUE(ct8->okta().has_value());
+	EXPECT_EQ(ct8->okta().value(), 0u);
+
+	auto cg9 = metaf::CloudGroup::parse("AS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg9.has_value());
+	EXPECT_EQ(cg9->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct9 = cg9->cloudType();
+	ASSERT_TRUE(ct9.has_value());
+	EXPECT_EQ(ct9->type(), metaf::CloudType::Type::ALTOSTRATUS);
+	EXPECT_FALSE(ct9->height().isReported());
+	EXPECT_TRUE(ct9->okta().has_value());
+	EXPECT_EQ(ct9->okta().value(), 0u);
+
+	auto cg10 = metaf::CloudGroup::parse("NS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg10.has_value());
+	EXPECT_EQ(cg10->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct10 = cg10->cloudType();
+	ASSERT_TRUE(ct10.has_value());
+	EXPECT_EQ(ct10->type(), metaf::CloudType::Type::NIMBOSTRATUS);
+	EXPECT_FALSE(ct10->height().isReported());
+	EXPECT_TRUE(ct10->okta().has_value());
+	EXPECT_EQ(ct10->okta().value(), 0u);
+
+	auto cg11 = metaf::CloudGroup::parse("CC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg11.has_value());
+	EXPECT_EQ(cg11->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct11 = cg11->cloudType();
+	ASSERT_TRUE(ct11.has_value());
+	EXPECT_EQ(ct11->type(), metaf::CloudType::Type::CIRROCUMULUS);
+	EXPECT_FALSE(ct11->height().isReported());
+	EXPECT_TRUE(ct11->okta().has_value());
+	EXPECT_EQ(ct11->okta().value(), 0u);
+
+	auto cg12 = metaf::CloudGroup::parse("CS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg12.has_value());
+	EXPECT_EQ(cg12->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct12 = cg12->cloudType();
+	ASSERT_TRUE(ct12.has_value());
+	EXPECT_EQ(ct12->type(), metaf::CloudType::Type::CIRROSTRATUS);
+	EXPECT_FALSE(ct12->height().isReported());
+	EXPECT_TRUE(ct12->okta().has_value());
+	EXPECT_EQ(ct12->okta().value(), 0u);
+
+	auto cg13 = metaf::CloudGroup::parse("CI", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg13.has_value());
+	EXPECT_EQ(cg13->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct13 = cg13->cloudType();
+	ASSERT_TRUE(ct13.has_value());
+	EXPECT_EQ(ct13->type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ct13->height().isReported());
+	EXPECT_TRUE(ct13->okta().has_value());
+	EXPECT_EQ(ct13->okta().value(), 0u);
+
+	auto cg14 = metaf::CloudGroup::parse("CB", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg14.has_value());
+	EXPECT_EQ(cg14->append("TR", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	const auto ct14 = cg14->cloudType();
+	ASSERT_TRUE(ct14.has_value());
+	EXPECT_EQ(ct14->type(), metaf::CloudType::Type::CUMULONIMBUS);
+	EXPECT_FALSE(ct14->height().isReported());
+	EXPECT_TRUE(ct14->okta().has_value());
+	EXPECT_EQ(ct14->okta().value(), 0u);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

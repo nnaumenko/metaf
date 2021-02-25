@@ -2169,10 +2169,19 @@ std::string VisitorExplain::explainDirectionSector(
 
 std::string VisitorExplain::explainCloudType(const metaf::CloudType ct) {
 	std::ostringstream result;
-	result << cloudTypeToString(ct.type());
-	result << " covering ";
-	result << ct.okta();
-	result << "/8 of the sky";
+	if (!ct.okta().has_value()) {
+		result << "Unknown amount of ";
+		result << cloudTypeToString(ct.type());
+	} else {
+		result << cloudTypeToString(ct.type());
+		result << " covering ";
+		if (const auto okta = *ct.okta(); okta) {
+			result << okta;
+			result << "/8 of the sky";		
+		} else {
+			result << "&lt;1/8 of the sky";
+		}
+	}
 	if (const auto h = ct.height(); h.isReported()) {
 		result << ", base height ";
 		result << explainDistance(ct.height());
@@ -2413,6 +2422,9 @@ std::string_view VisitorExplain::cloudAmountToString(metaf::CloudGroup::Amount a
 
 		case metaf::CloudGroup::Amount::OBSCURED:
 		return "Sky obscured";
+
+		case metaf::CloudGroup::Amount::TRACE:
+		return "Trace amount of clouds";
 	}
 }
 

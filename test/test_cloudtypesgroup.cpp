@@ -122,6 +122,11 @@ TEST(CloudTypesGroup, parseFormatWithoutHeightWrongFormat) {
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2AB5CI3", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2CI3AB5", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudTypesGroup::parse("CF2/CI3", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("AC4CI9", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("SC0", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("BLSN9SC1SC1CI3", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("0NS035", metaf::ReportPart::RMK).has_value());
+	EXPECT_FALSE(metaf::CloudTypesGroup::parse("9NS035", metaf::ReportPart::RMK).has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -313,26 +318,4 @@ TEST(CloudTypesGroup, isValidTrue) {
 	const auto ctg4 = metaf::CloudTypesGroup::parse("8NS035", metaf::ReportPart::RMK);
 	ASSERT_TRUE(ctg4.has_value());
 	EXPECT_TRUE(ctg4->isValid());
-}
-
-TEST(CloudTypesGroup, isValidFalse) {
-	const auto ctg1 = metaf::CloudTypesGroup::parse("AC4CI9", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg1.has_value());
-	EXPECT_FALSE(ctg1->isValid());
-
-	const auto ctg2 = metaf::CloudTypesGroup::parse("SC0", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg2.has_value());
-	EXPECT_FALSE(ctg2->isValid());
-
-	const auto ctg3 = metaf::CloudTypesGroup::parse("BLSN9SC1SC1CI3", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg3.has_value());
-	EXPECT_FALSE(ctg3->isValid());
-
-	const auto ctg4 = metaf::CloudTypesGroup::parse("0NS035", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg4.has_value());
-	EXPECT_FALSE(ctg4->isValid());
-
-	const auto ctg5 = metaf::CloudTypesGroup::parse("9NS035", metaf::ReportPart::RMK);
-	ASSERT_TRUE(ctg5.has_value());
-	EXPECT_FALSE(ctg5->isValid());
 }

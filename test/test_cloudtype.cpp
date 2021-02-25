@@ -19,8 +19,8 @@ TEST(CloudType, constructor) {
 	const auto ct = metaf::CloudType();
 	EXPECT_EQ(ct.type(), metaf::CloudType::Type::NOT_REPORTED);
 	EXPECT_FALSE(ct.height().isReported());
-	EXPECT_EQ(ct.okta(), 0u);
-	EXPECT_FALSE(ct.isValid());
+	EXPECT_FALSE(ct.okta().has_value());
+	EXPECT_TRUE(ct.isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,8 @@ TEST(CloudType, parseCumulonimbusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULONIMBUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 5u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 5u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -43,7 +44,8 @@ TEST(CloudType, parseToweringCumulusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::TOWERING_CUMULUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -52,7 +54,8 @@ TEST(CloudType, parseCumulusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 2u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 2u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -61,7 +64,8 @@ TEST(CloudType, parseCumulusFractusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULUS_FRACTUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 1u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 1u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -70,7 +74,8 @@ TEST(CloudType, parseStratocumulusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATOCUMULUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 7u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 7u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -79,7 +84,8 @@ TEST(CloudType, parseNimbostratusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::NIMBOSTRATUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -88,7 +94,8 @@ TEST(CloudType, parseStratusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -97,7 +104,8 @@ TEST(CloudType, parseStratusFractusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATUS_FRACTUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 4u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 4u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -106,7 +114,8 @@ TEST(CloudType, parseAltostratusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOSTRATUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -115,7 +124,8 @@ TEST(CloudType, parseAltocumulusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOCUMULUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -124,7 +134,8 @@ TEST(CloudType, parseAltocumulusCastellanusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOCUMULUS_CASTELLANUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -133,7 +144,8 @@ TEST(CloudType, parseCirrusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRRUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -142,7 +154,8 @@ TEST(CloudType, parseCirrostratusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRROSTRATUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -151,7 +164,8 @@ TEST(CloudType, parseCirrocumulusNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRROCUMULUS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 5u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 5u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -160,7 +174,8 @@ TEST(CloudType, parseBlowingSnowNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SNOW);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 4u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 4u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -169,7 +184,8 @@ TEST(CloudType, parseBlowingDustNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_DUST);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -178,7 +194,8 @@ TEST(CloudType, parseBlowingSandNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SAND);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -187,7 +204,8 @@ TEST(CloudType, parseIceCrystalsNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ICE_CRYSTALS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 2u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 2u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -196,7 +214,8 @@ TEST(CloudType, parseRainNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::RAIN);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -205,7 +224,8 @@ TEST(CloudType, parseDrizzleNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::DRIZZLE);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 1u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 1u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -214,7 +234,8 @@ TEST(CloudType, parseSnowNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SNOW);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -223,7 +244,8 @@ TEST(CloudType, parseIcePelletsNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ICE_PELLETS);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 5u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 5u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -232,7 +254,8 @@ TEST(CloudType, parseSmokeNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SMOKE);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -241,7 +264,8 @@ TEST(CloudType, parseFogNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -250,7 +274,8 @@ TEST(CloudType, parseMistNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::MIST);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 3u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 3u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -259,7 +284,8 @@ TEST(CloudType, parseHazeNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::HAZE);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 7u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 7u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -268,7 +294,8 @@ TEST(CloudType, parseVolcanicAshNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::VOLCANIC_ASH);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 2u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 2u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -277,7 +304,8 @@ TEST(CloudType, parseHailNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::HAIL);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 4u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 4u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -286,7 +314,8 @@ TEST(CloudType, parseDustStormNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::DUSTSTORM);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -295,24 +324,17 @@ TEST(CloudType, parseSandStormNoHeight) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SANDSTORM);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseInvalidOktaNoHeight) {
 	const auto ct1 = metaf::CloudType::fromString("SC0");
-	ASSERT_TRUE(ct1.has_value());
-	EXPECT_EQ(ct1->type(), metaf::CloudType::Type::STRATOCUMULUS);
-	EXPECT_FALSE(ct1->height().isReported());
-	EXPECT_EQ(ct1->okta(), 0u);
-	EXPECT_FALSE(ct1->isValid());
+	EXPECT_FALSE(ct1.has_value());
 
 	const auto ct2 = metaf::CloudType::fromString("SC9");
-	ASSERT_TRUE(ct2.has_value());
-	EXPECT_EQ(ct2->type(), metaf::CloudType::Type::STRATOCUMULUS);
-	EXPECT_FALSE(ct2->height().isReported());
-	EXPECT_EQ(ct2->okta(), 9u);
-	EXPECT_FALSE(ct2->isValid());
+	EXPECT_FALSE(ct2.has_value());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -331,7 +353,8 @@ TEST(CloudType, parseCumulonimbusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 2500, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 1u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 1u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -344,7 +367,8 @@ TEST(CloudType, parseToweringCumulusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 1u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 1u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -357,7 +381,8 @@ TEST(CloudType, parseCumulusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 2000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -370,7 +395,8 @@ TEST(CloudType, parseStratocumulusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 6000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -383,7 +409,8 @@ TEST(CloudType, parseNimbostratusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 3500, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -396,7 +423,8 @@ TEST(CloudType, parseStratusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 500, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 1u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 1u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -409,7 +437,8 @@ TEST(CloudType, parseAltostratusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 10000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 8u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 8u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -422,7 +451,8 @@ TEST(CloudType, parseAltocumulusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 15000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 7u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 7u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -435,32 +465,17 @@ TEST(CloudType, parseCirrusWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 23000, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 5u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 5u);
 	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseInvalidOktaWithHeight) {
 	const auto ct1 = metaf::CloudType::fromString("0CU025");
-	ASSERT_TRUE(ct1.has_value());
-	EXPECT_EQ(ct1->type(), metaf::CloudType::Type::CUMULUS);
-	EXPECT_TRUE(ct1->height().isReported());
-	EXPECT_EQ(ct1->height().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(ct1->height().distance().has_value());
-	EXPECT_NEAR(ct1->height().distance().value(), 2500, heightMargin);
-	EXPECT_EQ(ct1->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct1->okta(), 0u);
-	EXPECT_FALSE(ct1->isValid());
+	EXPECT_FALSE(ct1.has_value());
 
 	const auto ct2 = metaf::CloudType::fromString("9CU025");
-	ASSERT_TRUE(ct2.has_value());
-	EXPECT_EQ(ct2->type(), metaf::CloudType::Type::CUMULUS);
-	EXPECT_TRUE(ct2->height().isReported());
-	EXPECT_EQ(ct2->height().modifier(), metaf::Distance::Modifier::NONE);
-	ASSERT_TRUE(ct2->height().distance().has_value());
-	EXPECT_NEAR(ct2->height().distance().value(), 2500, heightMargin);
-	EXPECT_EQ(ct2->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct2->okta(), 9u);
-	EXPECT_FALSE(ct2->isValid());
+	EXPECT_FALSE(ct2.has_value());
 }
 
 TEST(CloudType, parseGroundBasedWithHeight) {
@@ -472,7 +487,8 @@ TEST(CloudType, parseGroundBasedWithHeight) {
 	ASSERT_TRUE(ct->height().distance().has_value());
 	EXPECT_NEAR(ct->height().distance().value(), 0, heightMargin);
 	EXPECT_EQ(ct->height().unit(), metaf::Distance::Unit::FEET);
-	EXPECT_EQ(ct->okta(), 6u);
+	ASSERT_TRUE(ct->okta().has_value());
+	EXPECT_EQ(ct->okta().value(), 6u);
 	EXPECT_TRUE(ct->isValid());
 }
 
@@ -513,8 +529,8 @@ TEST(CloudType, parseObscurationBlowingSnow) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SNOW);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseObscurationBlowingDust) {
@@ -522,8 +538,8 @@ TEST(CloudType, parseObscurationBlowingDust) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_DUST);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseObscurationBlowingSand) {
@@ -531,8 +547,8 @@ TEST(CloudType, parseObscurationBlowingSand) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::BLOWING_SAND);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseObscurationFog) {
@@ -540,8 +556,8 @@ TEST(CloudType, parseObscurationFog) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::FOG);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseObscurationSmoke) {
@@ -549,8 +565,8 @@ TEST(CloudType, parseObscurationSmoke) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::SMOKE);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 TEST(CloudType, parseObscurationVolcanicAsh) {
@@ -558,8 +574,8 @@ TEST(CloudType, parseObscurationVolcanicAsh) {
 	ASSERT_TRUE(ct.has_value());
 	EXPECT_EQ(ct->type(), metaf::CloudType::Type::VOLCANIC_ASH);
 	EXPECT_FALSE(ct->height().isReported());
-	EXPECT_EQ(ct->okta(), 0u);
-	EXPECT_FALSE(ct->isValid());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
