@@ -618,3 +618,153 @@ TEST(CloudType, parseOther) {
 	EXPECT_FALSE(metaf::CloudType::fromString("3CB0015").has_value());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Parse cloud type format
+// Purpose: to confirm that all cloud types are parsed correctly, and that 
+// obscurations are not parsed.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudType, parseCumulonimbusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CB");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULONIMBUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseToweringCumulusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("TCU");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::TOWERING_CUMULUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseCumulusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CU");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseCumulusFractusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CF");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CUMULUS_FRACTUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseStratocumulusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("SC");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATOCUMULUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseNimbostratusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("NS");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::NIMBOSTRATUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseStratusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("ST");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseStratusFractusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("SF");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::STRATUS_FRACTUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseAltostratusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("AS");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOSTRATUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseAltocumulusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("AC");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOCUMULUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseAltocumulusCastellanusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("ACC");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::ALTOCUMULUS_CASTELLANUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseCirrusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CI");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRRUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseCirrostratusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CS");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRROSTRATUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, parseCirrocumulusType) {
+	const auto ct = metaf::CloudType::fromStringCloud("CC");
+	ASSERT_TRUE(ct.has_value());
+	EXPECT_EQ(ct->type(), metaf::CloudType::Type::CIRROCUMULUS);
+	EXPECT_FALSE(ct->height().isReported());
+	EXPECT_FALSE(ct->okta().has_value());
+	EXPECT_TRUE(ct->isValid());
+}
+
+TEST(CloudType, fromStringCloudObscurations) {
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("BLSN").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("BLDU").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("BLSA").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("IC").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("RA").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("DZ").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("SN").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("PL").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("FU").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("FG").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("BR").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("HZ").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("VA").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("GR").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("SS").has_value());
+	EXPECT_FALSE(metaf::CloudType::fromStringCloud("DS").has_value());
+}
