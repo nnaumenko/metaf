@@ -1571,7 +1571,8 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		"=",
 		"",
 		{
-			MetarTafRealData::Attribute::AUTO
+			MetarTafRealData::Attribute::AUTO,
+			MetarTafRealData::Attribute::AO1
 		},
 		{},
 		0

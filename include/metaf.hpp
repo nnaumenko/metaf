@@ -4323,10 +4323,10 @@ std::optional<KeywordGroup> KeywordGroup::parse(const std::string & group,
 		if (group == "RMK") return KeywordGroup(Type::RMK);
 	}
 	if (reportPart == ReportPart::RMK) {
-		if (group == "AO1") return KeywordGroup(Type::AO1);
-		if (group == "AO2") return KeywordGroup(Type::AO2);
-		if (group == "AO1A") return KeywordGroup(Type::AO1A);
-		if (group == "AO2A") return KeywordGroup(Type::AO2A);
+		if (group == "AO1" || group == "A01") return KeywordGroup(Type::AO1);
+		if (group == "AO2" || group == "A02") return KeywordGroup(Type::AO2);
+		if (group == "AO1A" || group == "A01A") return KeywordGroup(Type::AO1A);
+		if (group == "AO2A" || group == "A02A") return KeywordGroup(Type::AO2A);
 		if (group == "NOSPECI") return KeywordGroup(Type::NOSPECI);
 	}
 	if (group == "$") return KeywordGroup(Type::MAINTENANCE_INDICATOR);

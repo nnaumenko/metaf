@@ -208,8 +208,36 @@ TEST(KeywordGroup, parseAo1) {
 	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
+TEST(KeywordGroup, parseA01) {
+	static const char gs[] = "A01";
+	static const auto type = metaf::KeywordGroup::Type::AO1;
+
+	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
 TEST(KeywordGroup, parseAo2) {
 	static const char gs[] = "AO2";
+	static const auto type = metaf::KeywordGroup::Type::AO2;
+
+	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(KeywordGroup, parseA02) {
+	static const char gs[] = "A02";
 	static const auto type = metaf::KeywordGroup::Type::AO2;
 
 	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
@@ -236,8 +264,36 @@ TEST(KeywordGroup, parseAo1a) {
 	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
 }
 
+TEST(KeywordGroup, parseA01a) {
+	static const char gs[] = "A01A";
+	static const auto type = metaf::KeywordGroup::Type::AO1A;
+
+	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
 TEST(KeywordGroup, parseAo2a) {
 	static const char gs[] = "AO2A";
+	static const auto type = metaf::KeywordGroup::Type::AO2A;
+
+	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
+	ASSERT_TRUE(fg.has_value());
+	EXPECT_EQ(fg->type(), type);
+
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::KeywordGroup::parse(gs, metaf::ReportPart::TAF).has_value());
+}
+
+TEST(KeywordGroup, parseA02a) {
+	static const char gs[] = "A02A";
 	static const auto type = metaf::KeywordGroup::Type::AO2A;
 
 	auto fg = metaf::KeywordGroup::parse(gs, metaf::ReportPart::RMK);
