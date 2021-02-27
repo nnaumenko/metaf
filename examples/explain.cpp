@@ -558,6 +558,34 @@ std::string VisitorExplain::visitWindGroup(
 			result << explainSpeed(group.gustSpeed());
 		}
 		break;
+
+		case metaf::WindGroup::Type::RUNWAY_WIND:
+		result << "Wind at " << explainRunway(*group.runway());
+		result << "\nWind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "\nWind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
+		break;
+
+		case metaf::WindGroup::Type::RUNWAY_WIND_WITH_VARIABLE_SECTOR:
+		result << "Wind at " << explainRunway(*group.runway());
+		result << "\nWind direction: ";
+		result << explainDirection(group.direction(), true);
+		result << "\nWind speed: ";
+		result << explainSpeed(group.windSpeed());
+		if (group.gustSpeed().isReported()) {
+			result << "\nGust speed: ";
+			result << explainSpeed(group.gustSpeed());
+		}
+		result << "\nVariable wind direction sector from ";
+		result << explainDirection(group.varSectorBegin()); 
+		result << " clockwise to ";
+		result << explainDirection(group.varSectorEnd());
+		break;
 	}
 	return result.str();
 }

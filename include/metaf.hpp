@@ -1086,7 +1086,9 @@ public:
 		WSCONDS,
 		WND_MISG,
 		WIND_DATA_ESTIMATED,
-		WIND_AT_HEIGHT
+		WIND_AT_HEIGHT,
+		RUNWAY_WIND,
+		RUNWAY_WIND_WITH_VARIABLE_SECTOR
 	};
 	Type type() const { return windType; }
 	Direction direction() const { return windDir; }
@@ -1117,10 +1119,14 @@ private:
 		WIND_DATA,
 		WIND_HEIGHT,
 		WS,
-		WS_ALL
+		WS_ALL,
+		RUNWAY,
+		RUNWAY_WIND
 	};
 	WindGroup(Type type, IncompleteText incomplete = IncompleteText::NONE) :
 		windType(type), incompleteText(incomplete) {}
+	static inline std::optional<WindGroup> parseSurfaceWindOrWindShear(
+		const std::string & group);
 	static inline std::optional<WindGroup> parseVariableSector(
 		const std::string & group);
 	inline AppendResult appendPeakWind(const std::string & group,
@@ -1143,7 +1149,6 @@ private:
 	std::optional<Runway> rw;
 
 	IncompleteText incompleteText = IncompleteText::NONE;
-
 };
 
 class VisibilityGroup {
@@ -4636,8 +4641,6 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 		const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
-	static const std::optional<WindGroup> notRecognised;
-
 	if (reportPart == ReportPart::METAR) {
 		if (group == "WS") return WindGroup(Type::WIND_SHEAR_IN_LOWER_LAYERS, IncompleteText::WS);
 	}
@@ -4649,55 +4652,19 @@ std::optional<WindGroup> WindGroup::parse(const std::string & group,
 		if (group == "PK") return WindGroup(Type::PEAK_WIND, IncompleteText::PK);
 		if (group == "WND") return WindGroup(Type::WND_MISG, IncompleteText::WND);
 		if (group == "WIND") return WindGroup(Type::WIND_DATA_ESTIMATED, IncompleteText::WIND);
-	}
-
-	if (reportPart != ReportPart::METAR &&
-		reportPart != ReportPart::TAF) return notRecognised;
-
-	if (const auto result = parseVariableSector(group); result.has_value())
-		return *result;
-
-	static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
-		"(\\d\\d0|VRB|///)([1-9]?\\d\\d|//)(?:G([1-9]?\\d\\d))?([KM][TMP][HS]?)");
-	static const auto matchWindShearHeight = 1, matchWindDir = 2;
-	static const auto matchWindSpeed = 3, matchWindGust = 4, matchWindUnit = 5;
-
-	// Surface wind or wind shear, e.g. dd0ssKT or dd0ssGggMPS or WShhhdd0ssGggKT
-	if (std::smatch match; std::regex_match(group, match, windRgx)) {
-		const auto speedUnit = Speed::unitFromString(match.str(matchWindUnit));
-		if (!speedUnit.has_value()) return notRecognised;
-		const auto speed = Speed::fromString(match.str(matchWindSpeed), *speedUnit);
-		if (!speed.has_value()) return notRecognised;
-
-		WindGroup result;
-
-		if (!match.length(matchWindShearHeight) && 
-			!match.length(matchWindGust) &&
-			match.str(matchWindDir) == "000" &&
-			match.str(matchWindSpeed) == "00")
-		{
-			//00000KT or 00000MPS or 00000KMH: calm wind
-			result.windType = Type::SURFACE_WIND_CALM;
-			result.wSpeed = *speed;
-			return result;
+		if (const auto r = Runway::fromString(group, true); r.has_value()) {
+			WindGroup wg;
+			wg.windType = Type::RUNWAY_WIND;
+			wg.incompleteText = IncompleteText::RUNWAY;
+			wg.rw = r;
+			return wg;
 		}
-
-		const auto dir = Direction::fromDegreesString(match.str(matchWindDir));
-		if (!dir.has_value()) return notRecognised;
-		result.windDir = *dir;
-		result.wSpeed = *speed;
-		const auto gust = Speed::fromString(match.str(matchWindGust), *speedUnit);
-		if (gust.has_value()) result.gSpeed = *gust;
-		const auto wsHeight = Distance::fromHeightString(match.str(matchWindShearHeight));
-		result.windType = Type::SURFACE_WIND;
-		if (wsHeight.has_value()) {
-			result.windType = Type::WIND_SHEAR;
-			result.wShHeight = *wsHeight;
-		}
-		return result;
 	}
-
-	return notRecognised;
+	if (reportPart == ReportPart::METAR || reportPart == ReportPart::TAF) {
+		if (const auto wg = parseSurfaceWindOrWindShear(group); wg.has_value()) return *wg;
+		if (const auto wg = parseVariableSector(group); wg.has_value()) return *wg;
+	}
+	return std::optional<WindGroup>();
 }
 
 AppendResult WindGroup::append(const std::string & group,
@@ -4784,7 +4751,72 @@ AppendResult WindGroup::append(const std::string & group,
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::RUNWAY:
+		if (const auto wg = WindGroup::parseSurfaceWindOrWindShear(group); wg.has_value()) {
+			if (wg->type() != Type::SURFACE_WIND && wg->type() != Type::SURFACE_WIND_CALM) 
+				return AppendResult::GROUP_INVALIDATED;
+			windDir = wg->windDir;
+			wSpeed = wg->wSpeed;
+			gSpeed = wg->gSpeed;
+			incompleteText = IncompleteText::RUNWAY_WIND;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::RUNWAY_WIND:
+		if (const auto wg = WindGroup::parseVariableSector(group); wg.has_value()) {
+			windType = Type::RUNWAY_WIND_WITH_VARIABLE_SECTOR;
+			vsecBegin = wg->vsecBegin;
+			vsecEnd = wg->vsecEnd;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::NOT_APPENDED;
 	}
+}
+
+std::optional<WindGroup> WindGroup::parseSurfaceWindOrWindShear(const std::string & group) {
+	static const std::optional<WindGroup> notRecognised;
+	WindGroup result;
+
+	static const std::regex windRgx("(?:WS(\\d\\d\\d)/)?"
+		"(\\d\\d0|VRB|///)([1-9]?\\d\\d|//)(?:G([1-9]?\\d\\d))?([KM][TMP][HS]?)");
+	static const auto matchWindShearHeight = 1, matchWindDir = 2;
+	static const auto matchWindSpeed = 3, matchWindGust = 4, matchWindUnit = 5;
+	std::smatch match;
+
+	if (!std::regex_match(group, match, windRgx)) return notRecognised;
+
+	const auto speedUnit = Speed::unitFromString(match.str(matchWindUnit));
+	if (!speedUnit.has_value()) return notRecognised;
+	const auto speed = Speed::fromString(match.str(matchWindSpeed), *speedUnit);
+	if (!speed.has_value()) return notRecognised;
+
+	if (!match.length(matchWindShearHeight) && 
+		!match.length(matchWindGust) &&
+		match.str(matchWindDir) == "000" &&
+		match.str(matchWindSpeed) == "00")
+	{
+		//00000KT or 00000MPS or 00000KMH: calm wind
+		result.windType = Type::SURFACE_WIND_CALM;
+		result.wSpeed = *speed;
+		return result;
+	}
+
+	const auto dir = Direction::fromDegreesString(match.str(matchWindDir));
+	if (!dir.has_value()) return notRecognised;
+	result.windDir = *dir;
+	result.wSpeed = *speed;
+	const auto gust = Speed::fromString(match.str(matchWindGust), *speedUnit);
+	if (gust.has_value()) result.gSpeed = *gust;
+	const auto wsHeight = Distance::fromHeightString(match.str(matchWindShearHeight));
+	result.windType = Type::SURFACE_WIND;
+	if (wsHeight.has_value()) {
+		result.windType = Type::WIND_SHEAR;
+		result.wShHeight = *wsHeight;
+	}
+	return result;
 }
 
 std::optional<WindGroup> WindGroup::parseVariableSector(const std::string & group) {

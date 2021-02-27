@@ -2151,6 +2151,235 @@ TEST(WindGroup, windHeightWrongFormat) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Runway wind
+// Purpose: to confirm that remark groups which specify runway wind data, 
+// optionally with gusts, variable direction, non-reported data, variable wind 
+// sector are parsed correctly and malformed groups are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WindGroup, parseRunwayWind) {
+	auto wg = metaf::WindGroup::parse("RWY21R", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("03008KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 30u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 8u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 21u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::RIGHT);
+}
+
+TEST(WindGroup, parseRunwayWindAlternativeRunwayFormat) {
+	auto wg = metaf::WindGroup::parse("R21R", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("03008KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 30u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 8u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 21u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::RIGHT);
+}
+
+TEST(WindGroup, parseRunwayWindMps) {
+	auto wg = metaf::WindGroup::parse("RWY21R", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("03008MPS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 30u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 8u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::METERS_PER_SECOND);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 21u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::RIGHT);
+}
+
+TEST(WindGroup, parseRunwayWindKmh) {
+	auto wg = metaf::WindGroup::parse("RWY21R", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("03008KMH", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 30u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 8u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KILOMETERS_PER_HOUR);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 21u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::RIGHT);
+}
+
+TEST(WindGroup, parseRunwayWindGusts) {
+	auto wg = metaf::WindGroup::parse("RWY03L", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("18020G31KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 180u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 20u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	ASSERT_TRUE(wg->gustSpeed().speed().has_value());
+	EXPECT_EQ(wg->gustSpeed().speed().value(), 31u);
+	EXPECT_EQ(wg->gustSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 3u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::LEFT);
+}
+
+TEST(WindGroup, parseRunwayWindNotReported) {
+	auto wg = metaf::WindGroup::parse("RWY11", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("/////KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->direction().degrees().has_value());
+	EXPECT_FALSE(wg->windSpeed().speed().has_value());
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 11u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::NONE);
+}
+
+TEST(WindGroup, parseRunwayWindVariable) {
+	auto wg = metaf::WindGroup::parse("RWY21L", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("VRB01KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VARIABLE);
+	EXPECT_FALSE(wg->direction().degrees().has_value());
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 1u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::NOT_REPORTED);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 21u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::LEFT);
+}
+
+TEST(WindGroup, parseRunwayWindVariableSector) {
+	auto wg = metaf::WindGroup::parse("RWY17", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("04010KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->append("010V090", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(wg->type(), metaf::WindGroup::Type::RUNWAY_WIND_WITH_VARIABLE_SECTOR);
+	EXPECT_EQ(wg->direction().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->direction().degrees().has_value());
+	EXPECT_EQ(wg->direction().degrees().value(), 40u);
+	ASSERT_TRUE(wg->windSpeed().speed().has_value());
+	EXPECT_EQ(wg->windSpeed().speed().value(), 10u);
+	EXPECT_EQ(wg->windSpeed().unit(), metaf::Speed::Unit::KNOTS);
+	EXPECT_FALSE(wg->gustSpeed().speed().has_value());
+	EXPECT_FALSE(wg->height().isReported());
+	EXPECT_EQ(wg->varSectorBegin().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->varSectorBegin().degrees().has_value());
+	EXPECT_EQ(wg->varSectorBegin().degrees().value(), 10u);
+	EXPECT_EQ(wg->varSectorEnd().type(), metaf::Direction::Type::VALUE_DEGREES);
+	ASSERT_TRUE(wg->varSectorEnd().degrees().has_value());
+	EXPECT_EQ(wg->varSectorEnd().degrees().value(), 90u);
+	EXPECT_FALSE(wg->eventTime().has_value());
+	ASSERT_TRUE(wg->runway().has_value());
+	EXPECT_EQ(wg->runway()->number(), 17u);
+	EXPECT_EQ(wg->runway()->designator(), metaf::Runway::Designator::NONE);
+}
+
+TEST(WindGroup, parseRunwayWindWrongReportPart) {
+	EXPECT_FALSE(metaf::WindGroup::parse("RWY21L", metaf::ReportPart::UNKNOWN).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("RWY21L", metaf::ReportPart::HEADER).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("RWY21L", metaf::ReportPart::METAR).has_value());
+	EXPECT_FALSE(metaf::WindGroup::parse("RWY21L", metaf::ReportPart::TAF).has_value());
+}
+
+TEST(WindGroup, parseRunwayWindAppendWindShear) {
+	auto wg = metaf::WindGroup::parse("RWY29", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("WS020/18025KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WindGroup, parseRunwayWindAppendVarSectorToRunway) {
+	auto wg = metaf::WindGroup::parse("RWY29", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("200V320", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(WindGroup, parseRunwayWindWrongFormat) {
+	auto wg = metaf::WindGroup::parse("RWY29", metaf::ReportPart::RMK);
+	ASSERT_TRUE(wg.has_value());
+	EXPECT_EQ(wg->append("1825KT", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Tests for isValid()
 // Purpose: to confirm that isValid() method returns true for all values
 ///////////////////////////////////////////////////////////////////////////////

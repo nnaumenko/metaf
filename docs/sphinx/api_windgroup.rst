@@ -73,8 +73,19 @@ Type definitions
 
 			Specifies wind at certain height. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, and :cpp:func:`height()` for the height for which the wind was specified.
 
-		.. note::If calm wind (no wind) reported at height, Metaf generates WindGroup with type :cpp:enumerator:`Type::WIND_AT_HEIGHT`.
+			.. note::If calm wind (no wind) reported at height, Metaf generates WindGroup with type :cpp:enumerator:`Type::WIND_AT_HEIGHT`; there is no separate WindGroup type for calm wind at height.
 
+		.. cpp:enumerator:: RUNWAY_WIND
+
+			Specifies wind for a runway. Use :cpp:func:`direction()` for wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, and :cpp:func:`runway()` for runway.
+
+			.. note::If calm wind (no wind) reported for a runway, Metaf generates WindGroup with type :cpp:enumerator:`Type::RUNWAY_WIND`; there is no separate WindGroup type for calm wind at runway.
+
+		.. cpp:enumerator:: RUNWAY_WIND_WITH_VARIABLE_SECTOR
+
+			Specifies wind for a runway indicating that the wind direction is variable within a sector. Use :cpp:func:`direction()` for mean wind direction, :cpp:func:`windSpeed()` for sustained wind speed, :cpp:func:`gustSpeed()` for gust speed, :cpp:func:`varSectorBegin()` for beginning sector direction, and :cpp:func:`varSectorEnd()` for ending sector direction, and :cpp:func:`runway()` for runway.
+
+			.. note::Wind direction sector is defined from beginning direction clockwise to the ending direction.
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^
