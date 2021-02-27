@@ -111,25 +111,25 @@ Type definitions
 
 		.. cpp:enumerator:: AO1
 
-			Represents group ``AO1``.
+			Represents group ``AO1`` (or alternative spelling ``A01``).
 
 			Indicates an automated station without precipitation discriminator.
 
 		.. cpp:enumerator:: AO2
 
-			Represents group ``AO2``.
+			Represents group ``AO2`` (or alternative spelling ``A02``).
 
 			Indicates an automated station with precipitation discriminator.
 
 		.. cpp:enumerator:: AO1A
 
-			Represents group ``AO1A``.
+			Represents group ``AO1A`` (or alternative spelling ``A01A``).
 
 			Indicates an automated station without precipitation discriminator and denotes an automated observation augmented by a human observer.
 
 		.. cpp:enumerator:: AO2A
 
-			Represents group ``AO2A``.
+			Represents group ``AO2A`` (or alternative spelling ``A02A``).
 
 			Indicates an automated station with precipitation discriminator and denotes an automated observation augmented by a human observer.
 
@@ -194,3 +194,5 @@ Regional variations
 ``CAVOK`` is not used in North America.
 
 ``AO1``, ``AO1A``, ``AO2``, ``AO2A`` and ``NOSPECI`` are used only in North America.
+
+``AO1``, ``AO1A``, ``AO2``, ``AO2A`` are commonly specified using zero instead of letter ``O``: ``A01``, ``A01A``, ``A02``, ``A02A``. Metaf parses these alternative groups exactly as the standard groups.
