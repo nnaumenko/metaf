@@ -694,7 +694,7 @@ TEST(CloudGroup, parseVariableCloudCoverWrongReportPart) {
 
 TEST(CloudGroup, parseVariableCloudCoverWrongFormatFirstCover) {
 	EXPECT_FALSE(metaf::CloudGroup::parse("CLR", metaf::ReportPart::RMK).has_value());
-	EXPECT_FALSE(metaf::CloudGroup::parse("SKC", metaf::ReportPart::RMK).has_value());
+	// SKC is valid in ReportPart::RMK as a total cloud cover indicator, since version 6
 	EXPECT_FALSE(metaf::CloudGroup::parse("NCD", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudGroup::parse("NSC", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudGroup::parse("AAA", metaf::ReportPart::RMK).has_value());
@@ -723,27 +723,29 @@ TEST(CloudGroup, parseVariableCloudCoverWrongFormatFirstCover) {
 }
 
 TEST(CloudGroup, parseVariableCloudCoverWrongFormatV) {
-	auto cg1 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	// Note: cloud amount without height in remarks not followed by 'V' represents 
+	// total cloud cover since version 6 and is a valid standalone group
+	auto cg1 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg1.has_value());
 	EXPECT_EQ(cg1->append("A", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto cg2 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	auto cg2 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg2.has_value());
 	EXPECT_EQ(cg2->append("BKN", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto cg3 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	auto cg3 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg3.has_value());
 	EXPECT_EQ(cg3->append("BKN010", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto cg4 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	auto cg4 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg4.has_value());
 	EXPECT_EQ(cg4->append("///", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto cg5 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	auto cg5 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg5.has_value());
 	EXPECT_EQ(cg5->append("VV002", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 
-	auto cg6 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	auto cg6 = metaf::CloudGroup::parse("FEW010", metaf::ReportPart::RMK);
 	ASSERT_TRUE(cg6.has_value());
 	EXPECT_EQ(cg6->append("VV", metaf::ReportPart::RMK), metaf::AppendResult::GROUP_INVALIDATED);
 }
@@ -1046,7 +1048,7 @@ TEST(CloudGroup, parseNoCloudWrongReportPart) {
 	static const std::string s2("SKC");
 	EXPECT_FALSE(metaf::CloudGroup::parse(s2, metaf::ReportPart::UNKNOWN).has_value());
 	EXPECT_FALSE(metaf::CloudGroup::parse(s2, metaf::ReportPart::HEADER).has_value());
-	EXPECT_FALSE(metaf::CloudGroup::parse(s2, metaf::ReportPart::RMK).has_value());
+	// SKC is valid in ReportPart::RMK as a total cloud cover indicator, since version 6
 
 	static const std::string s3("NCD");
 	EXPECT_FALSE(metaf::CloudGroup::parse(s3, metaf::ReportPart::UNKNOWN).has_value());
@@ -1847,6 +1849,118 @@ TEST(CloudGroup, parseTraceAmountObscurationNotRecognised) {
 	EXPECT_FALSE(metaf::CloudGroup::parse("GR", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudGroup::parse("SS", metaf::ReportPart::RMK).has_value());
 	EXPECT_FALSE(metaf::CloudGroup::parse("DS", metaf::ReportPart::RMK).has_value());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Tests for total cloud cover
+// Purpose: to confirm that groups SKC, FEW, SCT, BKN, OVC included in remarks 
+// are parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(CloudGroup, totalCoverClear) {
+	const auto cg = metaf::CloudGroup::parse("SKC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOTAL_COVER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::NONE_SKC);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, totalCoverFew) {
+	const auto cg = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOTAL_COVER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::FEW);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, totalCoverScattered) {
+	const auto cg = metaf::CloudGroup::parse("SCT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOTAL_COVER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::SCATTERED);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, totalCoverBroken) {
+	const auto cg = metaf::CloudGroup::parse("BKN", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOTAL_COVER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::BROKEN);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, totalCoverOvercast) {
+	const auto cg = metaf::CloudGroup::parse("OVC", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg.has_value());
+	EXPECT_EQ(cg->type(), metaf::CloudGroup::Type::TOTAL_COVER);
+	EXPECT_EQ(cg->amount(), metaf::CloudGroup::Amount::OVERCAST);
+	EXPECT_FALSE(cg->height().isReported());
+	EXPECT_EQ(cg->convectiveType(), metaf::CloudGroup::ConvectiveType::NONE);
+	EXPECT_FALSE(cg->verticalVisibility().isReported());
+	EXPECT_FALSE(cg->minHeight().isReported());
+	EXPECT_FALSE(cg->maxHeight().isReported());
+	EXPECT_FALSE(cg->runway().has_value());
+	EXPECT_FALSE(cg->direction().has_value());
+	EXPECT_EQ(cg->variableAmount(), metaf::CloudGroup::Amount::NOT_REPORTED);
+}
+
+TEST(CloudGroup, parseTotalCloudCoverAppend) {
+	// Note: see also variable cloud cover tests
+	auto cg1 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg1.has_value());
+	EXPECT_EQ(cg1->append("A", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg2 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg2.has_value());
+	EXPECT_EQ(cg2->append("BKN", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg3 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg3.has_value());
+	EXPECT_EQ(cg3->append("BKN010", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg4 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg4.has_value());
+	EXPECT_EQ(cg4->append("///", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg5 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg5.has_value());
+	EXPECT_EQ(cg5->append("VV002", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg6 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg6.has_value());
+	EXPECT_EQ(cg6->append("VV", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	auto cg7 = metaf::CloudGroup::parse("FEW", metaf::ReportPart::RMK);
+	ASSERT_TRUE(cg7.has_value());
+	EXPECT_EQ(cg7->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

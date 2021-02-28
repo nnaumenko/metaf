@@ -1301,7 +1301,8 @@ public:
 		OBSCURATION,
 		VARIABLE_COVER,
 		CIG_RAG,
-		CIG_DFUS
+		CIG_DFUS,
+		TOTAL_COVER
 	};
 	enum class Amount {
 		NOT_REPORTED,
@@ -1391,8 +1392,10 @@ private:
 
 	CloudGroup(Type t, IncompleteText it) : tp(t), incompleteText(it) {}
 	CloudGroup(Type t, Amount a = Amount::NOT_REPORTED) : tp(t), amnt(a) {}
+	static inline CloudGroup totalCover(Amount a);
 	static inline std::optional<CloudGroup> parseCloudLayerOrVertVis(const std::string & s);
-	static inline std::optional<CloudGroup> parseVariableCloudLayer(const std::string & s);
+	static inline std::optional<CloudGroup> parseVariableOrTotalCloudLayer(
+		const std::string & s);
 	static inline std::optional<Amount> amountFromString(const std::string & s);
 	static inline std::optional<ConvectiveType> convectiveTypeFromString(const std::string & s);
 	inline AppendResult appendVariableCloudAmount(const std::string & group);
@@ -5325,6 +5328,7 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 		if (group == "CLD") return CloudGroup(Type::CLD_MISG, IncompleteText::CLD);
 		if (group == "CIG") return CloudGroup(Type::CEILING, IncompleteText::CIG);
 		if (group == "CHINO") return CloudGroup(Type::CHINO, IncompleteText::CHINO);
+		if (group == "SKC") return CloudGroup(Type::TOTAL_COVER, Amount::NONE_SKC);
 		if (group == "SKY") {
 			auto result = CloudGroup(Type::VERTICAL_VISIBILITY, IncompleteText::SKY);
 			result.amnt = Amount::OBSCURED;
@@ -5341,7 +5345,7 @@ std::optional<CloudGroup> CloudGroup::parse(const std::string & group,
 			result.cldTp = CloudType(ct->type(), Distance(), 0);
 			return result;
 		}
-		return parseVariableCloudLayer(group); 
+		return parseVariableOrTotalCloudLayer(group); 
 	}
 	return std::optional<CloudGroup>();
 }
@@ -5354,10 +5358,16 @@ AppendResult CloudGroup::append(const std::string & group,
 
 	switch (incompleteText) {
 		case IncompleteText::NONE:
+		if (type() != Type::TOTAL_COVER) return AppendResult::NOT_APPENDED; 
+		if (group == "V") {
+			tp = Type::VARIABLE_COVER;
+			incompleteText = IncompleteText::RMK_AMOUNT_V;
+			return AppendResult::APPENDED;
+		}
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::RMK_AMOUNT:
-		if (group != "V") return AppendResult::GROUP_INVALIDATED; //TODO: total cloud amount
+		if (group != "V") return AppendResult::GROUP_INVALIDATED;
 		incompleteText = IncompleteText::RMK_AMOUNT_V;
 		return AppendResult::APPENDED;
 
@@ -5437,7 +5447,7 @@ std::optional<CloudGroup> CloudGroup::parseCloudLayerOrVertVis(const std::string
 	return result;
 }
 
-std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string & s) {
+std::optional<CloudGroup> CloudGroup::parseVariableOrTotalCloudLayer(const std::string & s) {
 	static const std::optional<CloudGroup> notRecognised;
 
 	std::smatch match;
@@ -5446,8 +5456,8 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 	if (!std::regex_match(s, match, rgx)) return notRecognised;
 
 	CloudGroup result;
-	result.tp = Type::VARIABLE_COVER;
-	result.incompleteText = IncompleteText::RMK_AMOUNT;
+	result.tp = Type::TOTAL_COVER;
+	result.incompleteText = IncompleteText::NONE;
 
 	const auto amount = amountFromString(match.str(matchAmount));
 	// Not checking for VV here because 3-char amount length guaranteed by regex
@@ -5458,6 +5468,8 @@ std::optional<CloudGroup> CloudGroup::parseVariableCloudLayer(const std::string 
 		const auto height = Distance::fromHeightString(heightStr);
 		if (!height.has_value()) return notRecognised;
 		result.heightOrVertVis = *height;
+		result.tp = Type::VARIABLE_COVER;
+		result.incompleteText = IncompleteText::RMK_AMOUNT;
 	}
 
 	return result;

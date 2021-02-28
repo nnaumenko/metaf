@@ -72,6 +72,10 @@ Type definitions
 
 			Indicates diffuse ceiling. No further details are provided.
 
+		.. cpp:enumerator:: TOTAL_COVER
+
+			Total cloud coverage. Use :cpp:func:`amount()` for the total cloud coverage amount.
+
 	.. cpp:enum-class:: Amount
 
 		Amount (cover) of the cloud layer.

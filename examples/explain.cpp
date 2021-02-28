@@ -823,6 +823,11 @@ std::string VisitorExplain::visitCloudGroup(
 		result << "Ceiling is diffuse";
 		break;
 
+		case metaf::CloudGroup::Type::TOTAL_COVER:
+		result << "Total cloud cover: ";
+		result << cloudAmountToString(group.amount());
+		break;
+
 	}
 	return result.str();
 }
