@@ -93,8 +93,8 @@ Example of a TAF report is as follows:
 * Report issue time
 * Wind direction, speed and gust speed, remarks indicating that wind data are estimated
 * Wind shear, wind at specified height, peak wind and wind shift information
-* Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles
-* Surface visibility and visibility from air traffic control tower.
+* Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles, remarks for minimum & maximum visibility values and visibility towards the sea
+* Surface visibility and visibility from air traffic control tower
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', contrails presence and detailed cloud layers information specified in remarks, observed trace amount of clouds 
 * Cloud cover of variable density and variable ceiling height
 * Indicator of no significant cloud and good visibility CAVOK
@@ -142,8 +142,8 @@ Basically, it took 33 minutes to parse all METARs and TAFs from 2020 using one C
 Version 6.0.0 is upcoming, the improvements are planned in 8 phases:
 
 Phase 1: Add report schedule remarks.
-Phase 2: (we are here) Add alternatively spelled keywords, new cloud groups, new wind groups.
-Phase 3: Add new visibility groups and sea surface groups.
+Phase 2: Add alternatively spelled keywords, new cloud groups, new wind groups.
+Phase 3: (we are here) Add new visibility groups and sea surface groups.
 Phase 4: Add new mountain/valley visibility groups.
 Phase 5: Add new weather, precipitation and icing groups.
 Phase 6: Add various regional groups.

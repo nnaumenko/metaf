@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 6;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase 2/8";
+	inline static const char tag [] = "phase 3/8";
 };
 
 class KeywordGroup;
@@ -303,6 +303,9 @@ public:
 	static inline std::optional<Distance> fromKmString(const std::string & s);
 	static inline Distance makeDistant();
 	static inline Distance makeVicinity();
+	inline void mToKm() {
+		if (distUnit == Unit::METERS && dist.has_value()) dist = *dist * 1000;
+	}
 private:
 	Modifier distModifier = Modifier::NONE;
 	std::optional<unsigned int> dist;
@@ -1170,7 +1173,10 @@ public:
 		VIS_MISG,
 		RVR_MISG,
 		RVRNO,
-		VISNO
+		VISNO,
+		MINIMUM,
+		MAXIMUM,
+		TOWARDS_SEA
 	};
 	enum class Trend {
 		NONE,
@@ -1223,7 +1229,13 @@ private:
 		SFC_OR_TWR_VIS,
 		SFC_OR_TWR_VIS_INTEGER,
 		RVR,
-		VISNO
+		VISNO,
+		VIS_MIN,
+		VIS_MAX,
+		VIS_MAX_DIR,
+		VIS_MAX_INT,
+		VIS_MAR,
+		VIS_MAR_INT
 	};
 
 	inline VisibilityGroup(Type t, IncompleteText i) : visType(t), incompleteText(i) {}
@@ -1273,6 +1285,7 @@ private:
 		IncompleteText next = IncompleteText::NONE);
 	inline bool appendVariableMeters(const std::string & group, 
 		IncompleteText next = IncompleteText::NONE);
+	inline bool appendVisMaxMar(const std::string & group, bool kmOnly = false);
 
 	static inline Trend trendFromString(const std::string & s);
 
@@ -5012,6 +5025,21 @@ AppendResult VisibilityGroup::append(const std::string & group,
 			incompleteText = IncompleteText::NONE;
 			return AppendResult::APPENDED; 
 		}
+		if (group == "MIN") {
+			visType = Type::MINIMUM;
+			incompleteText = IncompleteText::VIS_MIN;
+			return AppendResult::APPENDED; 
+		}
+		if (group == "MAX") {
+			visType = Type::MAXIMUM;
+			incompleteText = IncompleteText::VIS_MAX;
+			return AppendResult::APPENDED; 
+		}
+		if (group == "MAR") {
+			visType = Type::TOWARDS_SEA;
+			incompleteText = IncompleteText::VIS_MAR;
+			return AppendResult::APPENDED;
+		}
 		if (appendDirection(group, IncompleteText::VIS_DIR)) return AppendResult::APPENDED;
 		if (appendInteger(group, IncompleteText::VIS_INTEGER)) return AppendResult::APPENDED;
 		if (appendFraction(group, IncompleteText::VIS_FRACTION_OR_METERS)) return AppendResult::APPENDED;
@@ -5090,6 +5118,57 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		if (appendDirection(group)) return AppendResult::APPENDED;
 		incompleteText = IncompleteText::NONE;
 		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::VIS_MIN:
+		if (const auto vg = fromMeters(group); vg.has_value()) {
+			if (vg->type() != Type::PREVAILING && vg->type() != Type::DIRECTIONAL)
+				return AppendResult::GROUP_INVALIDATED;
+			if (!vg->vis.isReported()) return AppendResult::GROUP_INVALIDATED;
+			vis = vg->vis;
+			dir = vg->dir;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_MAX:
+		if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
+			dir = d;
+			incompleteText = IncompleteText::VIS_MAX_DIR;
+			return AppendResult::APPENDED;
+		}
+		if (appendVisMaxMar(group, true)) {
+			incompleteText = IncompleteText::VIS_MAX_INT;
+			vis.mToKm();
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_MAX_DIR:
+		if (appendVisMaxMar(group), true) {
+			incompleteText = IncompleteText::VIS_MAX_INT;
+			vis.mToKm();
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_MAX_INT:
+		if (group != "KM") return AppendResult::GROUP_INVALIDATED;
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
+		
+		case IncompleteText::VIS_MAR:
+		if (appendVisMaxMar(group)) {
+			incompleteText = IncompleteText::VIS_MAR_INT;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_MAR_INT:
+		if (group != "KM" && group != "M") return AppendResult::GROUP_INVALIDATED;
+		if (group == "KM") vis.mToKm();
+		incompleteText = IncompleteText::NONE;
+		return AppendResult::APPENDED;
 	}
 }
 
@@ -5169,7 +5248,6 @@ bool VisibilityGroup::appendFractionToIncompleteInteger(const std::string & grou
 	incompleteText = next;
 	return true;
 }
-
 
 bool VisibilityGroup::appendDirection(const std::string & group, IncompleteText next) {
 	if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
@@ -5293,6 +5371,16 @@ bool VisibilityGroup::appendVariableMeters(const std::string & group, Incomplete
 	return true;
 }
 
+bool VisibilityGroup::appendVisMaxMar(const std::string & group, bool kmOnly) {
+	static const auto minLen = 1u;
+	const auto maxLen = kmOnly ? 2u : 4u;
+	if (group.length() < minLen || group.length() > maxLen) return false;
+	const auto val = strToUint(group, 0, group.length());
+	if (!val.has_value()) return false;
+	vis = Distance(*val, Distance::Unit::METERS);
+	return true;
+}
+
 VisibilityGroup::Trend VisibilityGroup::trendFromString(const std::string & s) {
 	if (s == "/") return Trend::NOT_REPORTED;
 	if (s == "U") return Trend::UPWARD;
@@ -5300,7 +5388,6 @@ VisibilityGroup::Trend VisibilityGroup::trendFromString(const std::string & s) {
 	if (s == "D") return Trend::DOWNWARD;
 	return Trend::NONE;
 }
-
 
 bool VisibilityGroup::isValid() const {
 	if (const auto max = visMax.toUnit(vis.unit()); max.has_value()) {

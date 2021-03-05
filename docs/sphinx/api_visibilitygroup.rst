@@ -90,6 +90,18 @@ Type definitions
 
 			Indicates that the visibility data is not available for a particular runway or in a particular cardinal direction. Use :cpp:func:`runway()` or :cpp:func:`direction()`, if both methods return non-reported values, no further details were specified.
 
+		.. cpp:enumerator:: MINIMUM
+
+			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the minimum visibility is observed. Cardinal direction is not always specified.
+
+		.. cpp:enumerator:: MAXIMUM
+
+			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the maximum visibility is observed. Cardinal direction is not always specified.
+
+		.. cpp:enumerator:: TOWARDS_SEA
+
+			Visibility in direction towards sea. Use :cpp:func:`visibility()`.
+
 
 Acquiring group data
 ^^^^^^^^^^^^^^^^^^^^

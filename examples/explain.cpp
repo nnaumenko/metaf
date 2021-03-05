@@ -720,6 +720,15 @@ std::string VisitorExplain::visitVisibilityGroup(
 			result << " in the direction of " << explainDirection(*d);
 		}
 		break;
+
+		case metaf::VisibilityGroup::Type::MINIMUM:
+		result << "Minimum visibility ";
+		if (group.direction().isValue()) {
+			result << "(towards " << explainDirection(group.direction().value()) << ")";
+		}
+		result << " is " << explainDistance(group.visibility());
+		break;
+
 	}
 	return result.str();
 }
