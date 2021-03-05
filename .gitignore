@@ -38,6 +38,9 @@ $RECYCLE.BIN/
 # Project files
 # *.sublime-project
 
+# VSCode
+*.vscode
+
 # ----------------
 # Project-specific
 # ----------------
