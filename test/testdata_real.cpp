@@ -7869,6 +7869,17 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 
+
+	{
+		"LIBY", "Santa Maria di Leuca Station", {2021, 1, 9}, 
+		"METAR LIBY 091755Z ///03KT 8000 -DZ OVC012 12/10 Q1012"
+		" RMK OVC QUK / QUL / VIS MAR 8 KM VIS MAX 80 KM VIS MIN 8000=",
+		"",
+		{},
+		{},
+		0
+	},
+
 	{
 		"RJOP", "Komatsushima Heliport", {2021, 1, 10}, 
 		"SPECI RJOP 100502Z 28023G34KT 9999 FEW030 05/M06 Q1021"
@@ -7931,7 +7942,233 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 		0
 	},
 
+
+	{
+		"LIQC", "Capri Island Heliport", {2021, 2, 1}, 
+		"METAR LIQC 010455Z 05006KT CAVOK 12/04 Q1026"
+		" RMK SKC QUK / QUL / VIS MAR 40 KM VIS MIN 9999"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIMK", "Torino-Bric della Croce Station", {2021, 2, 1}, 
+		"METAR LIMK 010655Z 35005KT 0050 FG VV/// 01/01 Q0996"
+		" RMK VAL INVIS VIS MIN 0050"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIRG", "Guidonia Air Base", {2021, 2, 3}, 
+		"METAR LIRG 031655Z 20003KT CAVOK 13/05 Q1029"
+		" RMK SKC MON NE LIB NC VIS MIN 9999 BLU"
+		"=",
+		"TAF LIRG 031400Z 0315/0324 15012KT 9999 BKN040"
+		" TEMPO 0316/0318 SCT040"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIMU", "Cape Mele Station", {2021, 2, 3}, 
+		"METAR LIMU 031655Z 24010KT 0050 -RA FG VV001 11/11 Q1012"
+		" RMK QUK / QUL / VIS MAR 50 M VIS MIN 0050"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIBH", "Marina di Ginosa Heliport", {2021, 2, 4}, 
+		"METAR LIBH 040955Z VRB03KT 0700 FG OVC003 14/12 Q1016"
+		" RMK OVC QUK 1 QUL 0 VIS MAR 700 M VIS MIN 0700"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIBH", "Marina di Ginosa Heliport", {2021, 2, 4}, 
+		"METAR LIBH 041155Z 15003KT 8000 BR NSC 15/12 Q1015"
+		" RMK BKN BKN200 QUK 1 QUL 0 VIS MAR 8 KM VIS MIN 8000"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIED", "Decimomannu Air Base", {2021, 2, 5}, 
+		"METAR LIED 050855Z 29002KT 0800 0500N BCFG BR SCT001 10/07 Q1014"
+		" RMK BKN SCT200 VIS MAX NE 2500 M VIS MIN 0500N WIND THR35 29002KT WIND THR17 30002KT RED"
+		"=",
+		"TAF LIED 050800Z 0509/0518 VRB03KT 4000 BR SCT005"
+		" BECMG 0509/0511 CAVOK"
+		" BECMG 0510/0512 15012KT"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIBA", "Amendola Air Base", {2021, 2, 5}, 
+		"METAR LIBA 051455Z 08007KT CAVOK 13/10 Q1017"
+		" RMK BKN BKN220 VIS MIN 9999SW WIND THR11 08008KT WIND THR29 /////KT BLU"
+		"=",
+		"TAF COR LIBA 051400Z 0515/0524 10010KT CAVOK"
+		" TEMPO 0515/0518 9999 SCT060"
+		" BECMG 0519/0521 6000 NSC"
+		" BECMG 0922/0924 3000 BR SCT005"
+		"=",
+		{},
+		{
+			MetarTafRealData::Attribute::COR
+		},
+		0
+	},
+
+	{
+		"LIMN", "Cameri Air Base [MIL]", {2021, 2, 5}, 
+		"METAR LIMN 051655Z /////KT 2500 BR OVC007 09/08 Q1016"
+		" RMK OVC VIS MIN 2500 YLO"
+		"=",
+		"TAF LIMN 051400Z 0515/0524 VRB03KT 3000 BR BKN010"
+		" TEMPO 0515/0517 5000 BR"
+		" BECMG 0517/0519 0600 FG OVC002"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIEB", "Cape Bellavista Station", {2021, 2, 6}, 
+		"METAR LIEB 061755Z 22006KT 2000 BCFG SCT000 13/11 Q1006"
+		" RMK SCT QUK / QUL / VIS MAR 0 M MON INVIS VIS MIN 2000"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIMN", "Cameri Air Base [MIL]", {2021, 2, 8}, 
+		"METAR LIMN 080655Z /////KT 0200 FG BKN001 01/01 Q0992"
+		" RMK BKN VIS MIN 0200 RED"
+		"=",
+		"TAF LIMN 080500Z 0806/0815 28003KT 0200 FG OVC001"
+		" BECMG 0806/0808 1500 BR SCT010"
+		" BECMG 0808/0810 8000 NSW NSC"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIMN", "Cameri Air Base [MIL]", {2021, 2, 8}, 
+		"SPECI LIMN 080724Z /////KT 1000 0600S BCFG NSC 01/01 Q0992"
+		" RMK SKC VIS MIN 0600S RED"
+		"=",
+		"TAF LIMN 080500Z 0806/0815 28003KT 0200 FG OVC001"
+		" BECMG 0806/0808 1500 BR SCT010"
+		" BECMG 0808/0810 8000 NSW NSC"
+		"=",
+		{
+			MetarTafRealData::Attribute::SPECI			
+		},
+		{},
+		0
+	},
+
+	{
+		"LIVT", "Trieste Barcola Station", {2021, 2, 10}, 
+		"METAR LIVT 101055Z /////KT CAVOK 15/10 Q0999"
+		" RMK SKC QUK / QUL / // VIS MAR /M VIS MIN 9999"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIQO", "Monte Argentario Station", {2021, 2, 13}, 
+		"METAR LIQO 131255Z 05025KT 9999 FEW010 04/02 Q1015"
+		" RMK FEW VAL NIL NC VIS MAX N 60 KM VIS MIN 9999"
+		"=",
+		"",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIPC", "Cervia Air Base", {2021, 2, 23}, 
+		"METAR LIPC 232155Z 35002KT 0000 FG VV001 03/01 Q1037"
+		" RMK VIS MIN 0000 WIND THR11 33002KT WIND THR29 /////KT RED"
+		"=",
+		"TAF LIPC 232000Z 2321/2406 VRB02KT 0200 FG OVC001"
+		" TEMPO 2321/2406 0000 FG VV001"
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
+		"LIVT", "Trieste Barcola Station", {2021, 2, 24}, 
+		"METAR LIVT 240855Z /////KT 1200 BR BKN003 05/05 Q1035"
+		" RMK BKN QUK 0 QUL 0 VIS MAR 1200 M VIS MIN 1200=",
+		"",
+		{},
+		{},
+		0
+	}
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
