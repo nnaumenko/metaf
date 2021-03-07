@@ -1232,10 +1232,9 @@ private:
 		VISNO,
 		VIS_MIN,
 		VIS_MAX,
-		VIS_MAX_DIR,
-		VIS_MAX_INT,
 		VIS_MAR,
-		VIS_MAR_INT
+		VIS_MAX_DIR,
+		VIS_MAX_MAR_INT
 	};
 
 	inline VisibilityGroup(Type t, IncompleteText i) : visType(t), incompleteText(i) {}
@@ -1285,7 +1284,7 @@ private:
 		IncompleteText next = IncompleteText::NONE);
 	inline bool appendVariableMeters(const std::string & group, 
 		IncompleteText next = IncompleteText::NONE);
-	inline bool appendVisMaxMar(const std::string & group, bool kmOnly = false);
+	inline bool appendVisMaxMar(const std::string & group);
 
 	static inline Trend trendFromString(const std::string & s);
 
@@ -5137,34 +5136,25 @@ AppendResult VisibilityGroup::append(const std::string & group,
 			incompleteText = IncompleteText::VIS_MAX_DIR;
 			return AppendResult::APPENDED;
 		}
-		if (appendVisMaxMar(group, true)) {
-			incompleteText = IncompleteText::VIS_MAX_INT;
-			vis.mToKm();
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;
-
 		case IncompleteText::VIS_MAX_DIR:
-		if (appendVisMaxMar(group), true) {
-			incompleteText = IncompleteText::VIS_MAX_INT;
-			vis.mToKm();
-			return AppendResult::APPENDED;
-		}
-		return AppendResult::GROUP_INVALIDATED;
-
-		case IncompleteText::VIS_MAX_INT:
-		if (group != "KM") return AppendResult::GROUP_INVALIDATED;
-		incompleteText = IncompleteText::NONE;
-		return AppendResult::APPENDED;
-		
-		case IncompleteText::VIS_MAR:
 		if (appendVisMaxMar(group)) {
-			incompleteText = IncompleteText::VIS_MAR_INT;
+			incompleteText = IncompleteText::VIS_MAX_MAR_INT;
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
 
-		case IncompleteText::VIS_MAR_INT:
+		case IncompleteText::VIS_MAR:
+		if (group == "/M") {
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
+		if (appendVisMaxMar(group)) {
+			incompleteText = IncompleteText::VIS_MAX_MAR_INT;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
+		case IncompleteText::VIS_MAX_MAR_INT:
 		if (group != "KM" && group != "M") return AppendResult::GROUP_INVALIDATED;
 		if (group == "KM") vis.mToKm();
 		incompleteText = IncompleteText::NONE;
@@ -5371,10 +5361,8 @@ bool VisibilityGroup::appendVariableMeters(const std::string & group, Incomplete
 	return true;
 }
 
-bool VisibilityGroup::appendVisMaxMar(const std::string & group, bool kmOnly) {
-	static const auto minLen = 1u;
-	const auto maxLen = kmOnly ? 2u : 4u;
-	if (group.length() < minLen || group.length() > maxLen) return false;
+bool VisibilityGroup::appendVisMaxMar(const std::string & group) {
+	if (group.length() < 1u || group.length() > 4u) return false;
 	const auto val = strToUint(group, 0, group.length());
 	if (!val.has_value()) return false;
 	vis = Distance(*val, Distance::Unit::METERS);

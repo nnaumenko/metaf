@@ -723,12 +723,24 @@ std::string VisitorExplain::visitVisibilityGroup(
 
 		case metaf::VisibilityGroup::Type::MINIMUM:
 		result << "Minimum visibility ";
-		if (group.direction().isValue()) {
+		if (group.direction().has_value() && group.direction()->isValue()) {
 			result << "(towards " << explainDirection(group.direction().value()) << ")";
 		}
 		result << " is " << explainDistance(group.visibility());
 		break;
 
+		case metaf::VisibilityGroup::Type::MAXIMUM:
+		result << "Maximum visibility ";
+		if (group.direction().has_value() && group.direction()->isValue()) {
+			result << "(towards " << explainDirection(group.direction().value()) << ")";
+		}
+		result << " is " << explainDistance(group.visibility());
+		break;
+
+		case metaf::VisibilityGroup::Type::TOWARDS_SEA:
+		result << "Visibility towards the sea is ";
+		result << explainDistance(group.visibility());
+		break;
 	}
 	return result.str();
 }
