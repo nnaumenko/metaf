@@ -646,6 +646,11 @@ std::string VisitorExplain::visitVisibilityGroup(
 		result << explainDistance(group.visibility());
 		break;
 
+		case metaf::VisibilityGroup::Type::ROOFTOP:
+		result << "Visibility from building rooftop is ";
+		result << explainDistance(group.visibility());
+		break;
+
 		case metaf::VisibilityGroup::Type::SECTOR:
 		result << "Sector visibility is ";
 		result << explainDistance(group.visibility());

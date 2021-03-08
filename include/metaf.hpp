@@ -1164,6 +1164,7 @@ public:
 		RVR,
 		SURFACE,
 		TOWER,
+		ROOFTOP,
 		SECTOR,
 		VARIABLE_PREVAILING,
 		VARIABLE_DIRECTIONAL,
@@ -1225,9 +1226,9 @@ private:
 		VIS_DIR,
 		VIS_DIR_INTEGER,
 		VIS_DIR_VAR_MAX_INT,
-		SFC_OR_TWR,
-		SFC_OR_TWR_VIS,
-		SFC_OR_TWR_VIS_INTEGER,
+		SFC_OR_TWR_OR_ROOF,
+		SFC_OR_TWR_OR_ROOF_VIS,
+		SFC_OR_TWR_OR_ROOF_VIS_INTEGER,
 		RVR,
 		VISNO,
 		VIS_MIN,
@@ -4979,9 +4980,11 @@ std::optional<VisibilityGroup> VisibilityGroup::parse(const std::string & group,
 		if (group == "VIS") 
 			return VisibilityGroup(Type::PREVAILING, IncompleteText::VIS);
 		if (group == "SFC")
-			return VisibilityGroup(Type::SURFACE, IncompleteText::SFC_OR_TWR);
+			return VisibilityGroup(Type::SURFACE, IncompleteText::SFC_OR_TWR_OR_ROOF);
 		if (group == "TWR")
-			return VisibilityGroup(Type::TOWER, IncompleteText::SFC_OR_TWR);
+			return VisibilityGroup(Type::TOWER, IncompleteText::SFC_OR_TWR_OR_ROOF);
+		if (group == "ROOF")
+			return VisibilityGroup(Type::ROOFTOP, IncompleteText::SFC_OR_TWR_OR_ROOF);
 		if (group == "RVRNO") 
 			return VisibilityGroup(Type::RVRNO, IncompleteText::NONE);
 		if (group == "VISNO") 
@@ -5086,20 +5089,21 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		incompleteText = IncompleteText::NONE;
 		return AppendResult::NOT_APPENDED;
 
-		case IncompleteText::SFC_OR_TWR:
+		case IncompleteText::SFC_OR_TWR_OR_ROOF:
 		if (group == "VIS") {
-			incompleteText = IncompleteText::SFC_OR_TWR_VIS;
+			incompleteText = IncompleteText::SFC_OR_TWR_OR_ROOF_VIS;
 			return AppendResult::APPENDED;
 		}
 		return AppendResult::GROUP_INVALIDATED;
 
-		case IncompleteText::SFC_OR_TWR_VIS:
-		if (appendInteger(group, IncompleteText::SFC_OR_TWR_VIS_INTEGER)) return AppendResult::APPENDED;
+		case IncompleteText::SFC_OR_TWR_OR_ROOF_VIS:
+		if (appendInteger(group, IncompleteText::SFC_OR_TWR_OR_ROOF_VIS_INTEGER)) 
+			return AppendResult::APPENDED;
 		if (appendFraction(group)) return AppendResult::APPENDED;
 		if (appendMeters(group)) return AppendResult::APPENDED;
 		return AppendResult::GROUP_INVALIDATED;
 
-		case IncompleteText::SFC_OR_TWR_VIS_INTEGER:
+		case IncompleteText::SFC_OR_TWR_OR_ROOF_VIS_INTEGER:
 		if (appendFraction(group)) return AppendResult::APPENDED;
 		if (appendVariable(group)) return AppendResult::GROUP_INVALIDATED;
 		incompleteText = IncompleteText::NONE;

@@ -8043,6 +8043,21 @@ const std::vector<testdata::MetarTafRealData> testdata::realDataSet = {
 	},
 
 	{
+		"CYBB", "Kugaaruk Airport", {2021, 2, 5}, 
+		"METAR CYBB 051700Z 01015G22KT 1SM BLSN BKN010 M32/M36 A3003"
+		" RMK BLSN3ST4 ROOF VIS 15 SLP175"
+		"=",
+		"TAF CYBB 161438Z 1615/1624 25015G25KT P6SM SCT040 BKN110"
+		" TEMPO 1615/1618 3SM -SN IC BLSN BKN040 OVC080"
+		" FM161800 28012KT P6SM SCT040 SCT100"
+		" RMK NXT FCST BY 161900Z="
+		"=",
+		{},
+		{},
+		0
+	},
+
+	{
 		"LIMN", "Cameri Air Base [MIL]", {2021, 2, 5}, 
 		"METAR LIMN 051655Z /////KT 2500 BR OVC007 09/08 Q1016"
 		" RMK OVC VIS MIN 2500 YLO"

@@ -50,6 +50,10 @@ Type definitions
 
 			Visibility from aerodrome's air traffic control tower. Use :cpp:func:`visibility()`.
 
+		.. cpp:enumerator:: ROOFTOP
+
+			Visibility at rooftop level. Use :cpp:func:`visibility()`.
+
 		.. cpp:enumerator:: SECTOR
 
 			Sector visibility for a range of cardinal directions. Use :cpp:func:`visibility()` and :cpp:func:`sectorDirections()`.
@@ -92,11 +96,11 @@ Type definitions
 
 		.. cpp:enumerator:: MINIMUM
 
-			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the minimum visibility is observed. Cardinal direction is not always specified.
+			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the minimum visibility is observed. Cardinal direction is optional and is not always specified.
 
 		.. cpp:enumerator:: MAXIMUM
 
-			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the maximum visibility is observed. Cardinal direction is not always specified.
+			Minimum visibility value. Use :cpp:func:`visibility()` for visibility value and :cpp:func:`direction()` for cardinal direction towards which the maximum visibility is observed. Cardinal direction is optional and is not always specified.
 
 		.. cpp:enumerator:: TOWARDS_SEA
 

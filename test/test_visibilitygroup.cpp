@@ -5085,6 +5085,376 @@ TEST(VisibilityGroup, parseRmkAppendToCompleteTwrVis) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Rooftop visibility in statute miles and meters
+// Purpose: to confirm that rooftop visibility groups specified in remarks 
+// (e.g. ROOF VIS 1 3/4, ROOF VIS 1/8, ROOF VIS 4, ROOF VIS 15, ROOF VIS 4000) 
+// are parsed and appended correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(VisibilityGroup, parseRmkRoofVisIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 3.0/4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisInteger) {
+	auto vg1 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+
+	EXPECT_EQ(vg1->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg1->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg1->direction().has_value());
+
+	EXPECT_EQ(vg1->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg1->visibility().isReported());
+	ASSERT_TRUE(vg1->visibility().distance().has_value());
+	EXPECT_NEAR(vg1->visibility().distance().value(), 4, margin);
+	EXPECT_EQ(vg1->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg1->minVisibility().isReported());
+	EXPECT_FALSE(vg1->maxVisibility().isReported());
+	EXPECT_EQ(vg1->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg1->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg1->isValid());
+
+	auto vg2 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+
+	EXPECT_EQ(vg2->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("15", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg2->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg2->direction().has_value());
+
+	EXPECT_EQ(vg2->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg2->visibility().isReported());
+	ASSERT_TRUE(vg2->visibility().distance().has_value());
+	EXPECT_NEAR(vg2->visibility().distance().value(), 15, margin);
+	EXPECT_EQ(vg2->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg2->minVisibility().isReported());
+	EXPECT_FALSE(vg2->maxVisibility().isReported());
+	EXPECT_EQ(vg2->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg2->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg2->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisFraction) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/8", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 8.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisMeters) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1500", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::NONE);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1500, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofMeters9999) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("9999", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 10000, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::METERS);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisModifierIntegerFraction) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 + 1.0 / 4.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisModifierInteger) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("P6", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::MORE_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	ASSERT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 6, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisModifierFraction) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("M1/16", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::ROOFTOP);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+
+	EXPECT_EQ(vg->visibility().modifier(), metaf::Distance::Modifier::LESS_THAN);
+	EXPECT_TRUE(vg->visibility().isReported());
+	EXPECT_TRUE(vg->visibility().distance().has_value());
+	EXPECT_NEAR(vg->visibility().distance().value(), 1.0 / 16.0, margin);
+	EXPECT_EQ(vg->visibility().unit(), metaf::Distance::Unit::STATUTE_MILES);
+
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Malformed rooftop visibility groups
+// Purpose: to confirm that malformed rooftop visibility groups are not parsed 
+// or appended.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(VisibilityGroup, parseRmkRoofVisAppendRunway) {
+	auto vg1 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	ASSERT_EQ(vg1->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	ASSERT_EQ(vg1->append("4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("R18", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	ASSERT_EQ(vg2->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	ASSERT_EQ(vg2->append("4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("RWY18", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+}
+
+TEST(VisibilityGroup, parseRmkRoofVisIncorrectDirectional) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkAppendOtherToRoof) {
+	auto vg1 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("1/8", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("2", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+}
+
+TEST(VisibilityGroup, parseRmkAppendOtherToRoofVis) {
+	auto vg1 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("W", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("1/8SM", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->append("////SM", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg4 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg4->append("////", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkAppendVariableToRoof) {
+	auto vg1 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg1.has_value());
+	EXPECT_EQ(vg1->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg1->append("1V2", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg2 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg2.has_value());
+	EXPECT_EQ(vg2->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg2->append("1/8V1/4", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg3 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg3.has_value());
+	EXPECT_EQ(vg3->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg3->append("1/2V1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+
+	auto vg4 = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg4.has_value());
+	EXPECT_EQ(vg4->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg4->append("1", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg4->append("1/2V1", metaf::ReportPart::RMK), 
+		metaf::AppendResult::GROUP_INVALIDATED);
+}
+
+TEST(VisibilityGroup, parseRmkAppendToCompleteRoofVis) {
+	auto vg = metaf::VisibilityGroup::parse("ROOF", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+	EXPECT_EQ(vg->append("VIS", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("3", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("3", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1V3", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("1/2V3", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("2", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_EQ(vg->append("RWY22", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Non-variable runway visual range in meters and feet
 // Purpose: to confirm that non-variable runway visual range groups (including 
 // values with modifiers and groups with trends) are parsed correctly

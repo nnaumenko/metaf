@@ -94,7 +94,7 @@ Example of a TAF report is as follows:
 * Wind direction, speed and gust speed, remarks indicating that wind data are estimated
 * Wind shear, wind at specified height, peak wind and wind shift information
 * Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles, remarks for minimum & maximum visibility values and visibility towards the sea
-* Surface visibility and visibility from air traffic control tower
+* Surface visibility, visibility from air traffic control tower and from rooftop
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', contrails presence and detailed cloud layers information specified in remarks, observed trace amount of clouds 
 * Cloud cover of variable density and variable ceiling height
 * Indicator of no significant cloud and good visibility CAVOK
@@ -147,8 +147,8 @@ Phase 3: (we are here) Add new visibility groups and sea surface groups.
 Phase 4: Add new mountain/valley visibility groups.
 Phase 5: Add new weather, precipitation and icing groups.
 Phase 6: Add various regional groups.
-Phase 7: Restructure parser.
-Phase 8: Tidy up and preparing for version 6.0.0 release.
+Phase 7: Make METAR and TAF report model more flexible and allow parsing of more report header formats.
+Phase 8: Tidy up and prepare for version 6.0.0 release.
 
 The phases and their order may be changed when version v6 is being worked upon.
 
