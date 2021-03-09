@@ -1171,6 +1171,8 @@ public:
 		VARIABLE_RUNWAY,
 		VARIABLE_RVR,
 		VARIABLE_SECTOR,
+		LOWER_DIRECTIONAL,
+		LOWER_SECTOR,
 		VIS_MISG,
 		RVR_MISG,
 		RVRNO,
@@ -5072,6 +5074,12 @@ AppendResult VisibilityGroup::append(const std::string & group,
 		return AppendResult::GROUP_INVALIDATED;
 
 		case IncompleteText::VIS_DIR:
+		if (group == "LWR") {
+			if (visType == Type::DIRECTIONAL) visType = Type::LOWER_DIRECTIONAL;
+			if (visType == Type::SECTOR) visType = Type::LOWER_SECTOR;
+			incompleteText = IncompleteText::NONE;
+			return AppendResult::APPENDED;
+		}
 		if (appendInteger(group, IncompleteText::VIS_DIR_INTEGER)) return AppendResult::APPENDED;
 		if (appendVariable(group, IncompleteText::VIS_DIR_VAR_MAX_INT)) return AppendResult::APPENDED;
 		if (appendFraction(group)) return AppendResult::APPENDED;
@@ -5140,6 +5148,12 @@ AppendResult VisibilityGroup::append(const std::string & group,
 			incompleteText = IncompleteText::VIS_MAX_DIR;
 			return AppendResult::APPENDED;
 		}
+		if (appendVisMaxMar(group)) {
+			incompleteText = IncompleteText::VIS_MAX_MAR_INT;
+			return AppendResult::APPENDED;
+		}
+		return AppendResult::GROUP_INVALIDATED;
+
 		case IncompleteText::VIS_MAX_DIR:
 		if (appendVisMaxMar(group)) {
 			incompleteText = IncompleteText::VIS_MAX_MAR_INT;

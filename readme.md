@@ -93,7 +93,7 @@ Example of a TAF report is as follows:
 * Report issue time
 * Wind direction, speed and gust speed, remarks indicating that wind data are estimated
 * Wind shear, wind at specified height, peak wind and wind shift information
-* Prevailing or directional visibility (including variable visibility groups specified in remarks) in meters or statute miles, remarks for minimum & maximum visibility values and visibility towards the sea
+* Prevailing or directional visibility (including variable or lower visibility groups specified in remarks) in meters or statute miles, remarks for minimum & maximum visibility values and visibility towards the sea
 * Surface visibility, visibility from air traffic control tower and from rooftop
 * Cloud layer information, clear sky conditions, 'no significant cloud' / 'no cloud detected information', contrails presence and detailed cloud layers information specified in remarks, observed trace amount of clouds 
 * Cloud cover of variable density and variable ceiling height

@@ -78,6 +78,14 @@ Type definitions
 
 			Sector visibility for a range of cardinal directions. Use :cpp:func:`minVisibility()`, :cpp:func:`maxVisibility()` and :cpp:func:`sectorDirections()`.
 
+		.. cpp:enumerator:: LOWER_DIRECTIONAL
+
+			Lower visibility towards a cardinal direction. Use :cpp:func:`direction()`.
+
+		.. cpp:enumerator:: LOWER_SECTOR
+
+			Lower visibility within a range of cardinal directions. Use :cpp:func:`sectorDirections()`.
+
 		.. cpp:enumerator:: VIS_MISG
 
 			Indicates that visibility data is missing (coded ``VIS MISG`` in the remarks), no further details are specified.

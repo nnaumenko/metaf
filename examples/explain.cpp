@@ -704,6 +704,16 @@ std::string VisitorExplain::visitVisibilityGroup(
 		result << explainDirectionSector(group.sectorDirections());
 		break;
 
+		case metaf::VisibilityGroup::Type::LOWER_DIRECTIONAL:
+		result << "Lower visibility towards ";
+		result << explainDirection(group.direction().value());
+		break;
+	
+		case metaf::VisibilityGroup::Type::LOWER_SECTOR:
+		result << "Sector visibility is lower in the following directions: ";
+		result << explainDirectionSector(group.sectorDirections());
+		break;
+
 		case metaf::VisibilityGroup::Type::VIS_MISG:
 		result << "Visibility data missing";
 		break;

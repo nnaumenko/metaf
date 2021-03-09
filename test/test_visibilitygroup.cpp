@@ -6866,3 +6866,59 @@ TEST(VisibilityGroup, parseVisMarNotReported) {
 }
 
 // TODO: tests for wrong format of VIS MAR groups
+
+///////////////////////////////////////////////////////////////////////////////
+// Test parsing of lower visibility towards the direction or direction sector,
+// specified in remarks (e.g. VIS N LWR, VIS S-NW LWR).
+// Purpose: to confirm that lower visibility groups are parsed and appended
+// correctly.
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(VisibilityGroup, parseRmkVisLwrDirection) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("NW", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("LWR", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::LOWER_DIRECTIONAL);
+	EXPECT_EQ(vg->direction()->type(), metaf::Direction::Type::VALUE_CARDINAL);
+	EXPECT_EQ(vg->direction()->cardinal(), metaf::Direction::Cardinal::NW);
+	EXPECT_FALSE(vg->runway().has_value());
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 0u);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
+
+TEST(VisibilityGroup, parseRmkVisLwrSector) {
+	auto vg = metaf::VisibilityGroup::parse("VIS", metaf::ReportPart::RMK);
+	ASSERT_TRUE(vg.has_value());
+
+	EXPECT_EQ(vg->append("SW-N", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("LWR", metaf::ReportPart::RMK), 
+		metaf::AppendResult::APPENDED);
+	EXPECT_EQ(vg->append("", metaf::ReportPart::RMK), 
+		metaf::AppendResult::NOT_APPENDED);
+
+	EXPECT_EQ(vg->type(), metaf::VisibilityGroup::Type::LOWER_SECTOR);
+	EXPECT_FALSE(vg->direction().has_value());
+	EXPECT_FALSE(vg->runway().has_value());
+	EXPECT_FALSE(vg->visibility().isReported());
+	EXPECT_FALSE(vg->minVisibility().isReported());
+	EXPECT_FALSE(vg->maxVisibility().isReported());
+	EXPECT_EQ(vg->sectorDirections().size(), 4u);
+	EXPECT_EQ(vg->sectorDirections().at(0).cardinal(), metaf::Direction::Cardinal::SW);
+	EXPECT_EQ(vg->sectorDirections().at(1).cardinal(), metaf::Direction::Cardinal::W);
+	EXPECT_EQ(vg->sectorDirections().at(2).cardinal(), metaf::Direction::Cardinal::NW);
+	EXPECT_EQ(vg->sectorDirections().at(3).cardinal(), metaf::Direction::Cardinal::N);
+	EXPECT_EQ(vg->trend(), metaf::VisibilityGroup::Trend::NONE);
+	EXPECT_TRUE(vg->isValid());
+}
