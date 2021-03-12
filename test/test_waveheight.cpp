@@ -145,6 +145,12 @@ TEST(WaveHeight, fromStringStateOfSurfaceWrongFormat) {
 	EXPECT_FALSE(metaf::WaveHeight::fromString("SA").has_value());
 }	
 
+///////////////////////////////////////////////////////////////////////////////
+// Parse wave height
+// Purpose: to confirm that strings which contain wave height in decimeters
+// are parsed correctly and other string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
 TEST(WaveHeight, fromStringWaveHeightThreeDigit) {
 	const auto wh1 = metaf::WaveHeight::fromString("H105");
 	ASSERT_TRUE(wh1.has_value());
@@ -217,12 +223,6 @@ TEST(WaveHeight, fromStringWaveHeightWrongFormat) {
 	EXPECT_FALSE(metaf::WaveHeight::fromString("H////").has_value());
 	EXPECT_FALSE(metaf::WaveHeight::fromString("H00A").has_value());
 }	
-
-///////////////////////////////////////////////////////////////////////////////
-// Parse wave height
-// Purpose: to confirm that strings which contain wave height in decimeters
-// are parsed correctly and other string formats are not parsed
-///////////////////////////////////////////////////////////////////////////////
 
 TEST(WaveHeight, stateOfSurfaceCalmGlassy) {
 	const auto wh1 = metaf::WaveHeight::fromString("H000");
@@ -391,3 +391,142 @@ TEST(WaveHeight, fromStringWrongDesignator) {
 	EXPECT_FALSE(metaf::WaveHeight::fromString("X59").has_value());
 	EXPECT_FALSE(metaf::WaveHeight::fromString("X5").has_value());
 }	
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse QUK code (same as descriptive state of sea surface)
+// Purpose: to confirm that QUK Q-code string which contains the same 
+// descriptive state of sea surface as above is parsed correctly and other 
+// string formats are not parsed
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(WaveHeight, fromQukStringCalmGlassy) {
+	const auto wh = metaf::WaveHeight::fromQukString("0");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::CALM_GLASSY);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 0.0, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringCalmRippled) {
+	const auto wh = metaf::WaveHeight::fromQukString("1");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::CALM_RIPPLED);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 0.1, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringSmooth) {
+	const auto wh = metaf::WaveHeight::fromQukString("2");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::SMOOTH);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 0.5, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringSlight) {
+	const auto wh = metaf::WaveHeight::fromQukString("3");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::SLIGHT);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 1.2, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringModerate) {
+	const auto wh = metaf::WaveHeight::fromQukString("4");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::MODERATE);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 2.5, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringRough) {
+	const auto wh = metaf::WaveHeight::fromQukString("5");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::ROUGH);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 4.0, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringVeryRough) {
+	const auto wh = metaf::WaveHeight::fromQukString("6");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::VERY_ROUGH);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 6.0, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringHigh) {
+	const auto wh = metaf::WaveHeight::fromQukString("7");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::HIGH);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 9.0, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringVeryHigh) {
+	const auto wh = metaf::WaveHeight::fromQukString("8");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::VERY_HIGH);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 14.0, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringPhenomenal) {
+	const auto wh = metaf::WaveHeight::fromQukString("9");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::PHENOMENAL);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	ASSERT_TRUE(wh->waveHeight().has_value());
+	EXPECT_NEAR(wh->waveHeight().value(), 14.1, margin);
+	EXPECT_TRUE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringNotReported) {
+	const auto wh = metaf::WaveHeight::fromQukString("/");
+	ASSERT_TRUE(wh.has_value());
+	EXPECT_EQ(wh->type(), metaf::WaveHeight::Type::STATE_OF_SURFACE);
+	EXPECT_EQ(wh->stateOfSurface(), metaf::WaveHeight::StateOfSurface::NOT_REPORTED);
+	EXPECT_EQ(wh->unit(), metaf::WaveHeight::Unit::METERS);
+	EXPECT_FALSE(wh->waveHeight().has_value());
+	EXPECT_FALSE(wh->isReported());
+}
+
+TEST(WaveHeight, fromQukStringWrongFormat) {
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("S1").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("H04").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("01").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("1/").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("A").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("A1").has_value());
+	EXPECT_FALSE(metaf::WaveHeight::fromQukString("1A").has_value());
+}	
+

@@ -561,15 +561,16 @@ public:
 
 	WaveHeight() = default;
 	static inline std::optional<WaveHeight> fromString(const std::string & s);
+	static inline std::optional<WaveHeight> fromQukString(const std::string & s);
 
 private:
 	Type whType = Type::STATE_OF_SURFACE;
 	std::optional<unsigned int> whValue; //in decimeters, muliply by 0.1 to get value in meters
 	static const inline auto waveHeightDecimalPointShift = 0.1;
 	static const Unit whUnit = Unit::METERS;
-private:
+
 	static inline std::optional<unsigned int> waveHeightFromStateOfSurfaceChar(char c);
-private:
+
 	//Values below are in decimeters, muliply by 0.1 to get value in meters
 	static const inline auto maxWaveHeightCalmGlassy = 0;
 	static const inline auto maxWaveHeightCalmRippled = 1;
@@ -1620,9 +1621,24 @@ private:
 
 class SeaSurfaceGroup {
 public:
+	enum class Swell {
+		LOW_SHORT_MEDIUM,
+		LOW_LONG,
+		MODERATE_SHORT,
+		MODERATE_MEDIUM,
+		MODERATE_LONG,
+		HIGH_SHORT,
+		HIGH_MEDIUM,
+		HIGH_LONG,
+		MIXED,
+		NOT_REPORTED,
+		NOT_SPECIFIED
+	};
+
 	Temperature surfaceTemperature() const { return t; }
 	WaveHeight waves() const { return wh; }
-	bool isValid() const { return true; }
+	Swell swell() const { return sw; }
+	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
 
 	SeaSurfaceGroup() = default;
 	static inline std::optional<SeaSurfaceGroup> parse(
@@ -1634,8 +1650,20 @@ public:
 		const ReportMetadata & reportMetadata = missingMetadata);
 
 private:
+	enum class IncompleteText {
+		NONE,
+		QUK,
+		QUK_INT,
+		QUK_INT_QUL,
+		QUK_INT_QUL_INT,
+		QUL,
+		QUL_INT
+	};
+
 	Temperature t;
 	WaveHeight wh;
+	Swell sw = Swell::NOT_SPECIFIED;
+ 	IncompleteText incompleteText = IncompleteText::NONE;
 };
 
 class MinMaxTemperatureGroup {
@@ -3865,6 +3893,18 @@ std::optional<WaveHeight> WaveHeight::fromString(const std::string & s) {
 		return wh;
 	}
 	return error;
+}
+
+std::optional<WaveHeight> WaveHeight::fromQukString(const std::string & s) {
+	static const std::optional<WaveHeight> error;
+	if (s.length() != 1) return error;
+	WaveHeight wh;
+	if (s == "/") { wh.whType = Type::STATE_OF_SURFACE; return wh; }
+	auto h = waveHeightFromStateOfSurfaceChar(s[0]);
+	if (!h.has_value()) return error;
+	wh.whType = Type::STATE_OF_SURFACE;
+	wh.whValue = *h;
+	return wh;
 }
 
 std::optional<float> WaveHeight::toUnit(Unit unit) const {
@@ -6099,6 +6139,9 @@ std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 		const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata;
+	SeaSurfaceGroup result;
+	if (group == "QUK") { result.incompleteText = IncompleteText::QUK; return result; }
+	if (group == "QUL") { result.incompleteText = IncompleteText::QUL; return result; }
 	static const std::optional<SeaSurfaceGroup> notRecognised;
 	if (reportPart != ReportPart::METAR) return notRecognised;
 	static const std::regex rgx ("W(\\d\\d|//)/([HS](?:\\d\\d?\\d?|///|/))");
@@ -6109,7 +6152,6 @@ std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 	if (!temp.has_value()) return notRecognised;
 	const auto waveHeight = WaveHeight::fromString(match.str(matchWaveHeight));
 	if (!waveHeight.has_value()) return notRecognised;
-	SeaSurfaceGroup result;
 	result.t = *temp;
 	result.wh = *waveHeight;
 	return result;
@@ -6120,7 +6162,30 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 	const ReportMetadata & reportMetadata)
 {
 	(void)reportMetadata; (void)group; (void)reportPart;
-	return AppendResult::NOT_APPENDED;
+	switch (incompleteText) {
+		case IncompleteText::NONE:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUK:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUK_INT:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUK_INT_QUL:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUK_INT_QUL_INT:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUL:
+		return AppendResult::NOT_APPENDED;
+
+		case IncompleteText::QUL_INT:
+		return AppendResult::NOT_APPENDED;
+	}
+
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
