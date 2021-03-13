@@ -163,6 +163,10 @@ Code :cpp:enum:`WaveHeight::StateOfSurface`                     Wave height
 
 For example, ``S4`` means moderate waves (wave height 1.25 to 2.5 meters).
 
+Alternatively, state of sea surface may be stated in remark QUK followed by single digit code of sea surface state. The format of the code is the same as above.
+
+For example, ``QUK 4`` means moderate waves (wave height 1.25 to 2.5 meters).
+
 
 Wave height value
 ^^^^^^^^^^^^^^^^^

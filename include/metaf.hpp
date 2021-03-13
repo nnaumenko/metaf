@@ -1622,6 +1622,7 @@ private:
 class SeaSurfaceGroup {
 public:
 	enum class Swell {
+		NONE,
 		LOW_SHORT_MEDIUM,
 		LOW_LONG,
 		MODERATE_SHORT,
@@ -1638,6 +1639,7 @@ public:
 	Temperature surfaceTemperature() const { return t; }
 	WaveHeight waves() const { return wh; }
 	Swell swell() const { return sw; }
+	Direction swellDirection() const { return swd; }
 	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
 
 	SeaSurfaceGroup() = default;
@@ -1653,17 +1655,17 @@ private:
 	enum class IncompleteText {
 		NONE,
 		QUK,
-		QUK_INT,
-		QUK_INT_QUL,
-		QUK_INT_QUL_INT,
 		QUL,
-		QUL_INT
+		QUL_INT,
 	};
 
 	Temperature t;
 	WaveHeight wh;
 	Swell sw = Swell::NOT_SPECIFIED;
+	Direction swd;
  	IncompleteText incompleteText = IncompleteText::NONE;
+
+	inline std::optional<Swell> parseSwell(const std::string & group);
 };
 
 class MinMaxTemperatureGroup {
@@ -6164,28 +6166,56 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 	(void)reportMetadata; (void)group; (void)reportPart;
 	switch (incompleteText) {
 		case IncompleteText::NONE:
+		if (group == "QUL" && sw == Swell::NOT_SPECIFIED) {
+			incompleteText = IncompleteText::QUL;
+			return AppendResult::APPENDED;
+		}
+		if (group == "QUK" && !waves().isReported()) {
+			incompleteText = IncompleteText::QUK;
+			return AppendResult::APPENDED;
+		}
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::QUK:
-		return AppendResult::NOT_APPENDED;
-
-		case IncompleteText::QUK_INT:
-		return AppendResult::NOT_APPENDED;
-
-		case IncompleteText::QUK_INT_QUL:
-		return AppendResult::NOT_APPENDED;
-
-		case IncompleteText::QUK_INT_QUL_INT:
+		incompleteText = IncompleteText::NONE;
+		if (const auto w = WaveHeight::fromQukString(group); w.has_value()) {
+			wh = *w;
+			return AppendResult::APPENDED;
+		}
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::QUL:
+		if (const auto s = parseSwell(group); s.has_value()) {
+			sw = *s;
+			incompleteText = IncompleteText::QUL_INT;
+			return AppendResult::APPENDED;
+		}
+		incompleteText = IncompleteText::NONE;
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::QUL_INT:
+		incompleteText = IncompleteText::NONE;
+		if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
+			swd = *d;
+			return AppendResult::APPENDED;
+		}
 		return AppendResult::NOT_APPENDED;
 	}
+}
 
-
+std::optional<SeaSurfaceGroup::Swell> SeaSurfaceGroup::parseSwell(const std::string & group) {
+	if (group == "0") return Swell::NONE;
+	if (group == "1") return Swell::LOW_SHORT_MEDIUM;
+	if (group == "2") return Swell::LOW_LONG;
+	if (group == "3") return Swell::MODERATE_SHORT;
+	if (group == "4") return Swell::MODERATE_MEDIUM;
+	if (group == "5") return Swell::MODERATE_LONG;
+	if (group == "6") return Swell::HIGH_SHORT;
+	if (group == "7") return Swell::HIGH_MEDIUM;
+	if (group == "8") return Swell::HIGH_LONG;
+	if (group == "9") return Swell::LOW_LONG;
+	if (group == "/") return Swell::NOT_REPORTED;
+	return std::optional<Swell>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
