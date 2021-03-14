@@ -182,8 +182,8 @@ private:
 		metaf::RunwayStateGroup::Deposits deposits);
 	static std::string_view runwayStateExtentToString(
 		metaf::RunwayStateGroup::Extent extent);
-	static std::string_view precipitationGroupTypeToString(
-		metaf::PrecipitationGroup::Type type);
+	static std::string_view swellToString(
+		metaf::SeaSurfaceGroup::Swell swell);
 	static std::string_view layerForecastGroupTypeToString(
 		metaf::LayerForecastGroup::Type type);
 	static std::string_view pressureTendencyTypeToString(
@@ -1059,11 +1059,19 @@ std::string VisitorExplain::visitSeaSurfaceGroup(const metaf::SeaSurfaceGroup & 
 {
 	(void)reportPart; (void)rawString;
 	std::ostringstream result;
-	if (!group.isValid()) result << groupNotValidMessage << "\n";
+	if (!group.isValid()) result << groupNotValidMessage << '\n';
 
-	result << "Sea surface temperature ";
-	result << explainTemperature(group.surfaceTemperature()) << ", ";
-	result << explainWaveHeight(group.waves());
+	if (group.surfaceTemperature().isReported()) {
+		result << "Sea surface temperature ";
+		result << explainTemperature(group.surfaceTemperature()) << '\n';
+	}
+	if (group.waves().isReported()) {
+		result << explainWaveHeight(group.waves()) << '\n';
+	}
+	if (group.swell() != metaf::SeaSurfaceGroup::Swell::NOT_SPECIFIED) {
+		result << swellToString(group.swell()) << ", direction is ";
+		result << explainDirection(group.swellDirection());
+	}
 	return result.str();
 }
 
@@ -2844,6 +2852,56 @@ std::string_view VisitorExplain::runwayStateExtentToString(
 
 		case metaf::RunwayStateGroup::Extent::RESERVED_8:
 		return "[reserved_extent_value 8]";
+	}
+}
+
+std::string_view VisitorExplain::swellToString(
+	metaf::SeaSurfaceGroup::Swell swell)
+{
+	switch (swell) {
+		case metaf::SeaSurfaceGroup::Swell::NONE:
+		return "no swell observed";
+
+		case metaf::SeaSurfaceGroup::Swell::LOW_SHORT_MEDIUM:
+		return "low (less than 2 m / 7 ft high), "
+				"short or medium (less than 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::LOW_LONG:
+		return "low (less than 2 m / 7 ft high), "
+				"long (more than 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::MODERATE_SHORT:
+		return "moderate (2 m / 7 ft to 4 m / 13 ft high), "
+				"short (less than 100 m / 328 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::MODERATE_MEDIUM:
+		return "moderate (2 m / 7 ft to 4 m / 13 ft high), "
+				"medium (100 m / 328 ft to 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::MODERATE_LONG:
+		return "moderate (2 m / 7 ft to 4 m / 13 ft high), "
+				"long (more than 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::HIGH_SHORT:
+		return "high (more than 4 m / 13 ft high), "
+				"short (less than 100 m / 328 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::HIGH_MEDIUM:
+		return "high (more than 4 m / 13 ft high), "
+				"medium (100 m / 328 ft to 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::HIGH_LONG:
+		return "high (more than 4 m / 13 ft high), "
+				"long (more than 200 m / 656 ft long)";
+
+		case metaf::SeaSurfaceGroup::Swell::MIXED:
+		return "mixed patterns, unable to identify the swell";
+
+		case metaf::SeaSurfaceGroup::Swell::NOT_REPORTED:
+		return "swell not reported";
+
+		case metaf::SeaSurfaceGroup::Swell::NOT_SPECIFIED:
+		return "swell not specified";
 	}
 }
 

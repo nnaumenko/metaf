@@ -154,7 +154,10 @@ The phases and their order may be changed when version v6 is being worked upon.
 
 After these 8 phases are complete, version 6.0.0 is merged into master and released.
 
-After version 6.0.0 the priority is to fix bugs, improve test coverage and documentation, perform 'under the hood' changes such as optimisation and refactoring, and add alternative variants for group which Metaf is already able to parse.
+After version 6.0.0 the priority is to fix bugs, improve test coverage and documentation, perform 'under the hood' changes such as optimisation and refactoring, and add alternative variants/formats for groups which Metaf is already able to parse.
+
+Since currently Metaf vastly outgrew its original form, it makes sense now to switch to a lexer-parser approach under the hood (without API changes). It is included in the long-term plans, however not a priority at the moment.
+
 
 ## Acknowledgements
 

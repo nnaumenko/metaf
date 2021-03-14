@@ -8,7 +8,7 @@ SeaSurfaceGroup class
 
 	.. cpp:class:: SeaSurfaceGroup
 
-		Stores information about temperature of sea surface along with descriptive state of sea surface or wave height. This group is used by oil platforms.
+		Stores information about temperature of sea surface along with descriptive state of sea surface or wave height. Optionally swell may be reported is specified in remarks and has remark format. This group is used at oil platforms, helipads located on structures in the sea. In remark form this group is used by stations in Italy located near the coast.
 
 .. cpp:namespace-push:: SeaSurfaceGroup
 
@@ -94,6 +94,6 @@ Validating
 
 	.. cpp:function:: bool isValid() const
 
-		:returns: Always returns ``true``.
+		:returns: Always returns ``true`` for groups specified in METAR body. For remarks returns ``true`` if the group sequence was syntaxically correct, otherwise returns ``false``.
 
 .. cpp:namespace-pop::

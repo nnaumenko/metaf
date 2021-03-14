@@ -1640,7 +1640,7 @@ public:
 	WaveHeight waves() const { return wh; }
 	Swell swell() const { return sw; }
 	Direction swellDirection() const { return swd; }
-	bool isValid() const { return (incompleteText == IncompleteText::NONE); }
+	bool isValid() const { return (incompleteText == IncompleteText::NONE && seqValid); }
 
 	SeaSurfaceGroup() = default;
 	static inline std::optional<SeaSurfaceGroup> parse(
@@ -1664,6 +1664,7 @@ private:
 	Swell sw = Swell::NOT_SPECIFIED;
 	Direction swd;
  	IncompleteText incompleteText = IncompleteText::NONE;
+ 	bool seqValid = true;
 
 	inline std::optional<Swell> parseSwell(const std::string & group);
 };
@@ -6163,7 +6164,8 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata; (void)group; (void)reportPart;
+	(void)reportMetadata;
+	if (reportPart != ReportPart::RMK || !seqValid) return AppendResult::NOT_APPENDED;
 	switch (incompleteText) {
 		case IncompleteText::NONE:
 		if (group == "QUL" && sw == Swell::NOT_SPECIFIED) {
@@ -6182,6 +6184,8 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 			wh = *w;
 			return AppendResult::APPENDED;
 		}
+		if (sw == Swell::NOT_SPECIFIED && !waves().isReported()) return AppendResult::GROUP_INVALIDATED;
+		seqValid = false;
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::QUL:
@@ -6190,15 +6194,22 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 			incompleteText = IncompleteText::QUL_INT;
 			return AppendResult::APPENDED;
 		}
+		if (sw == Swell::NOT_SPECIFIED && !waves().isReported()) return AppendResult::GROUP_INVALIDATED;
 		incompleteText = IncompleteText::NONE;
+		seqValid = false;
 		return AppendResult::NOT_APPENDED;
 
 		case IncompleteText::QUL_INT:
+		if (group == "QUK" && !waves().isReported()) {
+			incompleteText = IncompleteText::QUK;
+			return AppendResult::APPENDED;
+		}
 		incompleteText = IncompleteText::NONE;
 		if (const auto d = Direction::fromCardinalString(group); d.has_value()) {
 			swd = *d;
 			return AppendResult::APPENDED;
 		}
+		if (sw == Swell::NOT_SPECIFIED && !waves().isReported()) return AppendResult::GROUP_INVALIDATED;
 		return AppendResult::NOT_APPENDED;
 	}
 }
