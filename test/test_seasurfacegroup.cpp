@@ -1189,4 +1189,92 @@ TEST(SeaSurfaceGroup, parseQulIntDirQukAppendWrongGroup) {
 	EXPECT_FALSE(ssg7->isValid());
 }
 
-//TODO: test all swell values
+// Test all QUL codes to make sure they correspond to correct SeaSurfaceGroup::Swell values
+
+TEST(SeaSurfaceGroup, parseQul0) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("0", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::NONE);
+}
+
+TEST(SeaSurfaceGroup, parseQul1) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("1", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::LOW_SHORT_MEDIUM);
+}
+
+TEST(SeaSurfaceGroup, parseQul2) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("2", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::LOW_LONG);
+}
+
+TEST(SeaSurfaceGroup, parseQul3) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("3", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::MODERATE_SHORT);
+}
+
+TEST(SeaSurfaceGroup, parseQul4) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("4", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::MODERATE_MEDIUM);
+}
+
+TEST(SeaSurfaceGroup, parseQul5) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("5", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::MODERATE_LONG);
+}
+
+TEST(SeaSurfaceGroup, parseQul6) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("6", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::HIGH_SHORT);
+}
+
+TEST(SeaSurfaceGroup, parseQul7) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("7", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::HIGH_MEDIUM);
+}
+
+TEST(SeaSurfaceGroup, parseQul8) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("8", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::HIGH_LONG);
+}
+
+TEST(SeaSurfaceGroup, parseQul9) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("9", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::MIXED);
+}
+
+TEST(SeaSurfaceGroup, parseQulSolidus) {
+	auto ssg = metaf::SeaSurfaceGroup::parse("QUL", metaf::ReportPart::RMK);
+	EXPECT_EQ(ssg->append("/", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(ssg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+	EXPECT_TRUE(ssg->isValid());
+	EXPECT_EQ(ssg->swell(), metaf::SeaSurfaceGroup::Swell::NOT_REPORTED);
+}

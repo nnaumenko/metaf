@@ -1664,6 +1664,7 @@ private:
 	Swell sw = Swell::NOT_SPECIFIED;
 	Direction swd;
  	IncompleteText incompleteText = IncompleteText::NONE;
+	bool metarGroup = true;
  	bool seqValid = true;
 
 	inline std::optional<Swell> parseSwell(const std::string & group);
@@ -6143,8 +6144,16 @@ std::optional<SeaSurfaceGroup> SeaSurfaceGroup::parse(const std::string & group,
 {
 	(void)reportMetadata;
 	SeaSurfaceGroup result;
-	if (group == "QUK") { result.incompleteText = IncompleteText::QUK; return result; }
-	if (group == "QUL") { result.incompleteText = IncompleteText::QUL; return result; }
+	if (group == "QUK") { 
+		result.incompleteText = IncompleteText::QUK; 
+		result.metarGroup = false; 
+		return result;
+	}
+	if (group == "QUL") { 
+		result.incompleteText = IncompleteText::QUL; 
+		result.metarGroup = false; 
+		return result;
+	}
 	static const std::optional<SeaSurfaceGroup> notRecognised;
 	if (reportPart != ReportPart::METAR) return notRecognised;
 	static const std::regex rgx ("W(\\d\\d|//)/([HS](?:\\d\\d?\\d?|///|/))");
@@ -6164,8 +6173,8 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata)
 {
-	(void)reportMetadata;
-	if (reportPart != ReportPart::RMK || !seqValid) return AppendResult::NOT_APPENDED;
+	(void)reportPart; (void)reportMetadata;
+	if (metarGroup || !seqValid) return AppendResult::NOT_APPENDED;
 	switch (incompleteText) {
 		case IncompleteText::NONE:
 		if (group == "QUL" && sw == Swell::NOT_SPECIFIED) {
@@ -6209,7 +6218,6 @@ AppendResult SeaSurfaceGroup::append(const std::string & group,
 			swd = *d;
 			return AppendResult::APPENDED;
 		}
-		if (sw == Swell::NOT_SPECIFIED && !waves().isReported()) return AppendResult::GROUP_INVALIDATED;
 		return AppendResult::NOT_APPENDED;
 	}
 }
@@ -6224,7 +6232,7 @@ std::optional<SeaSurfaceGroup::Swell> SeaSurfaceGroup::parseSwell(const std::str
 	if (group == "6") return Swell::HIGH_SHORT;
 	if (group == "7") return Swell::HIGH_MEDIUM;
 	if (group == "8") return Swell::HIGH_LONG;
-	if (group == "9") return Swell::LOW_LONG;
+	if (group == "9") return Swell::MIXED;
 	if (group == "/") return Swell::NOT_REPORTED;
 	return std::optional<Swell>();
 }
