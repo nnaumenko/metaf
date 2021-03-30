@@ -143,8 +143,8 @@ Version 6.0.0 is upcoming, the improvements are planned in 8 phases:
 
 Phase 1: Add report schedule remarks.
 Phase 2: Add alternatively spelled keywords, new cloud groups, new wind groups.
-Phase 3: (we are here) Add new visibility groups and sea surface groups.
-Phase 4: Add new mountain/valley visibility groups.
+Phase 3: Add new visibility groups and sea surface groups.
+Phase 4: (we are here) Add new mountain/valley visibility groups.
 Phase 5: Add new weather, precipitation and icing groups.
 Phase 6: Add various regional groups.
 Phase 7: Make METAR and TAF report model more flexible and allow parsing of more report header formats.

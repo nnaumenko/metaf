@@ -67,6 +67,8 @@ See :doc:`tutorial` for the tutorial which uses a Visitor.
 
 	.. cpp:function:: protected T visitVicinityGroup(const VicinityGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
+	.. cpp:function:: protected virtual T visitTerrainGroup(const TerrainGroup & group, ReportPart reportPart, const std::string & rawString) = 0
+
 	.. cpp:function:: protected virtual T visitMiscGroup(const MiscGroup & group, ReportPart reportPart, const std::string & rawString) = 0
 
 	.. cpp:function:: protected virtual T visitUnknownGroup(const UnknownGroup & group, ReportPart reportPart, const std::string & rawString) = 0

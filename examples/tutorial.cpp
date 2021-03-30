@@ -248,6 +248,15 @@ class MyVisitor : public Visitor<std::string> {
 		return ("Events in vicinity: " + rawString);
 	}
 
+	virtual std::string visitTerrainGroup(
+		const TerrainGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("Terrain Feature Data: " + rawString);
+	}
+
 	virtual std::string visitMiscGroup(
 		const MiscGroup & group,
 		ReportPart reportPart,

@@ -469,6 +469,15 @@ Now add to class MyVisitor the following group handling methods ::
 		return ("Events in vicinity: " + rawString);
 	}
 
+	virtual std::string visitTerrainGroup(
+		const TerrainGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("Terrain Data: " + rawString);
+	}
+
 	virtual std::string visitMiscGroup(
 		const MiscGroup & group,
 		ReportPart reportPart,

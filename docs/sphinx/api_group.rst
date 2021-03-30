@@ -7,5 +7,5 @@ Group is an ``std::variant`` which holds all group classes. It is used by :cpp:c
 
 Group is defined as follows.
 
-.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, LowMidHighCloudGroup, LightningGroup, VicinityGroup, MiscGroup, UnknownGroup>
+.. cpp:type:: Group = std::variant<KeywordGroup, LocationGroup, ReportTimeGroup, TrendGroup, WindGroup, VisibilityGroup, CloudGroup, WeatherGroup, TemperatureGroup, PressureGroup, RunwayStateGroup, SeaSurfaceGroup, MinMaxTemperatureGroup, PrecipitationGroup, LayerForecastGroup, PressureTendencyGroup, CloudTypesGroup, LowMidHighCloudGroup, LightningGroup, VicinityGroup, TerrainGroup, MiscGroup, UnknownGroup>
 

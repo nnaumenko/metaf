@@ -103,6 +103,9 @@ string_view groupName (size_t index) {
 		case variant_index<metaf::Group, metaf::VicinityGroup>():
 		return "VicinityGroup";
 
+		case variant_index<metaf::Group, metaf::TerrainGroup>():
+		return "TerrainGroup";
+
 		case variant_index<metaf::Group, metaf::MiscGroup>():
 		return "MiscGroup";
 

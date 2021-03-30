@@ -217,6 +217,14 @@ protected:
 		count[variant_index<metaf::Group, metaf::VicinityGroup>()]++;
 	}
 
+	virtual void visitTerrainGroup(const metaf::TerrainGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart; (void)rawString;
+		count[variant_index<metaf::Group, metaf::TerrainGroup>()]++;
+	}
+
 	virtual void visitMiscGroup(const metaf::MiscGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString)
@@ -263,6 +271,7 @@ TEST(Visitor, visitorVoid) {
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LowMidHighCloudGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::LightningGroup>()]), 1);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::VicinityGroup>()]), 1);
+	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::TerrainGroup>()]), 0); // TODO
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::MiscGroup>()]), 2);
 	EXPECT_EQ((v.count[variant_index<metaf::Group, metaf::UnknownGroup>()]), 2);
 }
@@ -416,6 +425,14 @@ protected:
 	{
 		(void)group; (void)reportPart;
 		return ("vicinity:"s + rawString);
+	}
+
+	virtual std::string visitTerrainGroup(const metaf::TerrainGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString)
+	{
+		(void)group; (void)reportPart;
+		return ("terrain:"s + rawString);
 	}
 
 	virtual std::string visitMiscGroup(const metaf::MiscGroup & group,
@@ -638,7 +655,7 @@ TEST(Visitor, visitorNonVoid) {
 		"temperature:T02940067 "
 		"pressuretendency:58025 "s
 	);
-}
+} // TODO: add terrain group
 
 ///////////////////////////////////////////////////////////////////////////////
 // Invalid group passed to visitors

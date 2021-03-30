@@ -113,6 +113,10 @@ private:
 		const metaf::VicinityGroup & group,
 		metaf::ReportPart reportPart,
 		const std::string & rawString);
+	virtual std::string visitTerrainGroup(
+		const metaf::TerrainGroup & group,
+		metaf::ReportPart reportPart,
+		const std::string & rawString);
 	virtual std::string visitMiscGroup(
 		const metaf::MiscGroup & group,
 		metaf::ReportPart reportPart,
@@ -1486,6 +1490,14 @@ std::string VisitorExplain::visitVicinityGroup(
 
 	return result.str();
 
+}
+
+std::string VisitorExplain::visitTerrainGroup(const metaf::TerrainGroup & group,
+	metaf::ReportPart reportPart,
+	const std::string & rawString)
+{
+	//TODO
+	return ("Terrain feature data");
 }
 
 std::string VisitorExplain::visitMiscGroup(const metaf::MiscGroup & group,

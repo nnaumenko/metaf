@@ -33,7 +33,7 @@ struct Version {
 	inline static const int major = 6;
 	inline static const int minor = 0;
 	inline static const int patch = 0;
-	inline static const char tag [] = "phase 3/8";
+	inline static const char tag [] = "phase 4/8";
 };
 
 class KeywordGroup;
@@ -56,6 +56,7 @@ class CloudTypesGroup;
 class LowMidHighCloudGroup;
 class LightningGroup;
 class VicinityGroup;
+class TerrainGroup;
 class MiscGroup;
 class UnknownGroup;
 
@@ -80,6 +81,7 @@ using Group = std::variant<
 	LowMidHighCloudGroup,
 	LightningGroup,
 	VicinityGroup,
+	TerrainGroup,
 	MiscGroup,
 	UnknownGroup
 >;
@@ -381,6 +383,7 @@ public:
 	static inline Cardinal rotateOctantClockwise(Cardinal cardinal);
 
 	Direction() = default;
+	inline Direction(Cardinal c); // TODO: separate tests
 	static inline std::optional<Direction> fromCardinalString(const std::string & s,
 		bool enableOhdAlqds = false,
 		bool enableUnknown = false);
@@ -391,7 +394,7 @@ public:
 private:
 	unsigned int dirDegrees = 0;
 	Type dirType = Type::NOT_REPORTED;
-private:
+
 	static const inline unsigned int maxDegrees = 360;
 	static const inline unsigned int octantSize = 45u;
 	static const inline unsigned int degreesTrueNorth = 360;
@@ -403,7 +406,6 @@ private:
 	static const inline unsigned int degreesSouthWest = 225;
 	static const inline unsigned int degreesSouthEast = 135;
 
-	inline Direction(Cardinal c);
 };
 
 class Pressure {
@@ -832,6 +834,75 @@ private:
 
 	static inline Type cloudTypeFromString(const std::string & s);
 	static inline Type cloudTypeOrObscurationFromString(const std::string & s);
+};
+
+class TerrainVisibility {
+public:
+	enum class Description {
+		NOT_SPECIFIED,
+		MOUNTAINS_NOT_OBSCURED, // MON LIB
+		MOUNTAINS_IN_SCATTERED_CLOUDS, // MON CLD SCT
+		MOUNTAINS_SUMMITS_IN_CLOUDS, // MON CLD CIME
+		MOUNTAINS_SLOPES_IN_CLOUDS, // MON VERS INC
+		MOUNTAINS_OBSERVED_SIDE_VISIBILE, // MON CNS POST
+		MOUNTAINS_MOSTLY_IN_CLOUDS, // MON GEN INC
+		MOUNTAINS_IN_CLOUDS, // MON INC
+		MOUNTAINS_INVISIBLE, // MON INVIS
+		MOUNTAINS_OBSCURED, // MT OBSC
+		VALLEYS_NOT_OBSCURED, // VAL NIL
+		VALLEYS_IN_MIST, // VAL FOSCHIA
+		VALLEYS_IN_LOW_MIST, // VAL FOSCHIA SKC SUP
+		VALLEYS_IN_FOG, // VAL NEBBIA
+		VALLEYS_IN_SCATTERED_FOG, // VAL NEBBIA SCT
+		VALLEYS_IN_SCATTERED_CLOUDS, // VAL CLD SCT
+		VALLEYS_IN_SCATTERED_CLOUDS_FOG_BELOW, // VAL CLD SCT NEBBIA INF
+		VALLEYS_IN_CLOUD_LAYER, // VAL MAR CLD
+		VALLEYS_INVISIBLE // VAL INVIS
+	};
+	Direction direction() const { return Direction(dir); }
+	Description description() const { return desc; };
+	bool isTrendNoChanges() const { return trNoChanges; }
+	bool isTrendCumulusFormation() const { return trCumulusFormation; }
+	bool isTrendIntermittentFog() const { return trIntermittentFog; }
+	bool isTrendChanging() const { return trChanging; }
+	bool isTrendStratification() const { return trStratification; }
+	bool isTrendRising() const { return trRising; }
+	bool isTrendLowering() const { return trLowering; }
+	bool isTrendDiminising() const { return trDiminishing; }
+	bool isTrendIncreasing() const { return trIncreasing; }
+	bool isTrendSlowly() const { return trSlowly; }
+	bool isTrendRapidly() const { return trRadpidly; }
+	bool isValid() const;
+
+	inline static std::optional<Description> descriptionFromStringMountain(const std::string & s);
+	inline static std::optional<Description> descriptionFromStringValley(const std::string & s);
+	inline bool addTrend(const std::string & trendStr);
+	bool addIntFog() { if (trIntermittentFog) return false; trIntermittentFog = true; return true; }
+	bool addDirection(Direction::Cardinal d) {
+		if (dir != Direction::Cardinal::ALQDS) return false;
+		dir = d;
+		return true;
+	}
+	bool addDescription(Description d) {
+		if (desc != Description::NOT_SPECIFIED) return false;
+		desc = d;
+		return true;
+	}
+
+private:
+	Direction::Cardinal dir = Direction::Cardinal::ALQDS;
+	Description desc = Description::NOT_SPECIFIED;
+	bool trNoChanges = false; // NC
+	bool trCumulusFormation = false; // CUF
+	bool trIntermittentFog = false; // NEBBIA INTER
+	bool trChanging = false; // VAR
+	bool trStratification = false; // STF
+	bool trRising = false; // ELEV
+	bool trLowering = false; // ABB
+	bool trDiminishing = false; // DIM
+	bool trIncreasing = false; // AUM
+	bool trSlowly = false; // SLW
+	bool trRadpidly = false; // RAPID
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2064,6 +2135,28 @@ private:
 	inline bool appendDistance(const std::string & str);
 };
 
+class TerrainGroup {
+public:
+	enum class Type {
+		TERRAIN_VISIBILITY
+	};
+	Type type() const { return tp; }
+	inline std::vector<TerrainVisibility> terrainVisibility() const;
+	inline bool isValid() const;
+
+	TerrainGroup() = default;
+	static inline std::optional<TerrainGroup> parse(const std::string & group,
+		ReportPart reportPart,
+		const ReportMetadata & reportMetadata = missingMetadata);
+	inline AppendResult append(const std::string & group,
+		ReportPart reportPart = ReportPart::UNKNOWN,
+		const ReportMetadata & reportMetadata = missingMetadata);
+
+private:
+	Type tp = Type::TERRAIN_VISIBILITY;
+	// TODO
+};
+
 class MiscGroup {
 public:
 	enum class Type {
@@ -2459,6 +2552,9 @@ protected:
 	virtual T visitVicinityGroup(const VicinityGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
+	virtual T visitTerrainGroup(const TerrainGroup & group,
+		ReportPart reportPart,
+		const std::string & rawString) = 0;
 	virtual T visitMiscGroup(const MiscGroup & group,
 		ReportPart reportPart,
 		const std::string & rawString) = 0;
@@ -2531,6 +2627,9 @@ inline T Visitor<T>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
 		return this->visitVicinityGroup(*gr, reportPart, rawString);
+	}
+	if (const auto gr = std::get_if<TerrainGroup>(&group); gr) {
+		return this->visitTerrainGroup(*gr, reportPart, rawString);
 	}
 	if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
 		return this->visitMiscGroup(*gr, reportPart, rawString);
@@ -2624,6 +2723,10 @@ inline void Visitor<void>::visit(const Group & group,
 	}
 	if (const auto gr = std::get_if<VicinityGroup>(&group); gr) {
 		this->visitVicinityGroup(*gr, reportPart, rawString);
+		return;
+	}
+	if (const auto gr = std::get_if<TerrainGroup>(&group); gr) {
+		this->visitTerrainGroup(*gr, reportPart, rawString);
 		return;
 	}
 	if (const auto gr = std::get_if<MiscGroup>(&group); gr) {
@@ -4270,6 +4373,29 @@ bool WeatherPhenomena::isValid() const {
 	}
 	// Everything else is valid
 	return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::optional<TerrainVisibility::Description> TerrainVisibility::descriptionFromStringMountain(
+	const std::string & s)
+{
+	// TODO
+	(void) s;
+	return std::optional<Description>();
+}
+
+std::optional<TerrainVisibility::Description> TerrainVisibility::descriptionFromStringValley(
+	const std::string & s)
+{
+	// TODO
+	(void) s;
+	return std::optional<Description>();
+}
+
+bool TerrainVisibility::addTrend(const std::string & trendStr) {
+	(void) trendStr;
+	return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -7089,6 +7215,34 @@ std::vector<Direction> VicinityGroup::directions() const {
 		if (!r2_alreadyPresent) result.push_back(r2);
 	}
 	return result;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+std::vector<TerrainVisibility> TerrainGroup::terrainVisibility() const {
+	// TODO
+	return std::vector<TerrainVisibility>();
+}
+
+bool TerrainGroup::isValid() const {
+	// TODO
+	return true;
+}
+
+std::optional<TerrainGroup> TerrainGroup::parse(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata) {
+	//TODO
+	(void) group; (void)reportPart; (void)reportMetadata;
+	return std::optional<TerrainGroup>();
+}
+
+AppendResult TerrainGroup::append(const std::string & group,
+	ReportPart reportPart,
+	const ReportMetadata & reportMetadata) {
+	//TODO
+	(void) group; (void)reportPart; (void)reportMetadata;
+	return AppendResult::NOT_APPENDED;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
