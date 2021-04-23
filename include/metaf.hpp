@@ -874,22 +874,29 @@ public:
 	bool isTrendRapidly() const { return trRadpidly; }
 	bool isValid() const;
 
-	inline static std::optional<Description> descriptionFromStringMountain(const std::string & s);
-	inline static std::optional<Description> descriptionFromStringValley(const std::string & s);
-	inline bool addTrend(const std::string & trendStr);
-	bool addIntFog() { if (trIntermittentFog) return false; trIntermittentFog = true; return true; }
-	bool addDirection(Direction::Cardinal d) {
-		if (dir != Direction::Cardinal::ALQDS) return false;
-		dir = d;
-		return true;
-	}
-	bool addDescription(Description d) {
-		if (desc != Description::NOT_SPECIFIED) return false;
-		desc = d;
-		return true;
-	}
+	TerrainVisibility(std::string s);
+	inline bool addString(const std::string & s);
 
 private:
+	enum class IncompleteText {
+		EMPTY,
+		NONE,
+		MON,
+		VAL,
+		MT,
+		MON_CLD,
+		MON_VERS,
+		MON_CNS,
+		MON_GEN,
+		VAL_FOSCHIA,
+		VAL_FOSCHIA_SKC, 
+		VAL_NEBBIA,
+		VAL_CLD,
+		VAL_CLD_SCT,
+		VAL_CLD_SCT_NEBBIA,
+		VAL_MAR
+	};
+	IncompleteText incompleteText = IncompleteText::EMPTY;
 	Direction::Cardinal dir = Direction::Cardinal::ALQDS;
 	Description desc = Description::NOT_SPECIFIED;
 	bool trNoChanges = false; // NC
@@ -903,6 +910,18 @@ private:
 	bool trIncreasing = false; // AUM
 	bool trSlowly = false; // SLW
 	bool trRadpidly = false; // RAPID
+
+	bool addIntFog() { if (trIntermittentFog) return false; trIntermittentFog = true; return true; }
+	bool addDirection(Direction::Cardinal d) {
+		if (dir != Direction::Cardinal::ALQDS) return false;
+		dir = d;
+		return true;
+	}
+	bool addDescription(Description d) {
+		if (desc != Description::NOT_SPECIFIED) return false;
+		desc = d;
+		return true;
+	}
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -4377,24 +4396,89 @@ bool WeatherPhenomena::isValid() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::optional<TerrainVisibility::Description> TerrainVisibility::descriptionFromStringMountain(
-	const std::string & s)
-{
-	// TODO
-	(void) s;
-	return std::optional<Description>();
-}
+bool TerrainVisibility::addString(const std::string & s) {
+	switch (incompleteText) {
+		case IncompleteText::EMPTY:
+		if (s == "MON") { incompleteText = IncompleteText::MON; return true; }
+		if (s == "VAL") { incompleteText = IncompleteText::VAL; return true; }
+		if (s == "MT") { incompleteText = IncompleteText::MT; return true; }
+		return false;
 
-std::optional<TerrainVisibility::Description> TerrainVisibility::descriptionFromStringValley(
-	const std::string & s)
-{
-	// TODO
-	(void) s;
-	return std::optional<Description>();
-}
+		case IncompleteText::NONE:
+		return false;
 
-bool TerrainVisibility::addTrend(const std::string & trendStr) {
-	(void) trendStr;
+		case IncompleteText::MT:
+		if (s == "OBSC") return addDescription(Description::MOUNTAINS_OBSCURED);
+		return false;
+
+		case IncompleteText::MON:
+		if (s == "LIB") return addDescription(Description::MOUNTAINS_NOT_OBSCURED);
+		if (s == "INC") return addDescription(Description::MOUNTAINS_IN_CLOUDS);
+		if (s == "INVIS") return addDescription(Description::MOUNTAINS_INVISIBLE);
+		if (s == "CLD") { incompleteText = IncompleteText::MON_CLD; return true; }
+		if (s == "VERS") { incompleteText = IncompleteText::MON_VERS; return true; }
+		if (s == "GEN") { incompleteText = IncompleteText::MON_GEN; return true; }
+		if (s == "CNS") { incompleteText = IncompleteText::MON_CNS; return true; }
+		return false;
+
+		case IncompleteText::VAL:
+		if (s == "NIL") return addDescription(Description::VALLEYS_NOT_OBSCURED);
+		if (s == "INVIS") return addDescription(Description::VALLEYS_INVISIBLE);
+		if (s == "FOSCHIA") { incompleteText = IncompleteText::VAL_FOSCHIA; return true; }
+		if (s == "NEBBIA") { incompleteText = IncompleteText::VAL_NEBBIA; return true; }
+		if (s == "CLD") { incompleteText = IncompleteText::VAL_CLD; return true; }
+		if (s == "MAR") { incompleteText = IncompleteText::VAL_MAR; return true; }
+		return false;
+
+		case IncompleteText::MON_CLD:
+		if (s == "SCT") return addDescription(Description::MOUNTAINS_IN_SCATTERED_CLOUDS);
+		if (s == "CIME") return addDescription(Description::MOUNTAINS_SUMMITS_IN_CLOUDS);
+		return false;
+
+		case IncompleteText::MON_VERS:
+		if (s == "INC") return addDescription(Description::MOUNTAINS_SLOPES_IN_CLOUDS);
+		return false;
+
+		case IncompleteText::MON_CNS:
+		if (s == "POST") return addDescription(Description::MOUNTAINS_OBSERVED_SIDE_VISIBILE);
+		return false;
+
+		case IncompleteText::MON_GEN:
+		if (s == "INC") return addDescription(Description::MOUNTAINS_MOSTLY_IN_CLOUDS);
+		return false;
+
+		case IncompleteText::VAL_FOSCHIA:
+		if (s == "SKC") { incompleteText = IncompleteText::VAL_FOSCHIA_SKC; return true; }
+		addDescription(Description::VALLEYS_IN_MIST);
+		return false;
+
+		case IncompleteText::VAL_FOSCHIA_SKC: 
+		if (s == "SUP") return addDescription(Description::VALLEYS_IN_LOW_MIST);
+		return false;
+
+		case IncompleteText::VAL_NEBBIA:
+		if (s == "SCT") return addDescription(Description::VALLEYS_IN_SCATTERED_FOG);
+		addDescription(Description::VALLEYS_IN_FOG);
+		return false;
+
+		case IncompleteText::VAL_CLD:
+		if (s == "SCT") { incompleteText = IncompleteText::VAL_CLD_SCT; return true; }
+		return false;
+
+		case IncompleteText::VAL_CLD_SCT:
+		if (s == "NEBBIA") { incompleteText = IncompleteText::VAL_CLD_SCT_NEBBIA; return true; }
+		addDescription(Description::VALLEYS_IN_SCATTERED_CLOUDS);
+		return false;
+
+		case IncompleteText::VAL_CLD_SCT_NEBBIA:
+		if (s == "INF") return addDescription(Description::VALLEYS_IN_SCATTERED_CLOUDS_FOG_BELOW);
+		return false;
+
+		case IncompleteText::VAL_MAR:
+		if (s == "CLD") return addDescription(Description::VALLEYS_IN_CLOUD_LAYER);
+		return false;
+	}
+
 	return false;
 }
 
