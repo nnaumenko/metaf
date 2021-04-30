@@ -872,15 +872,16 @@ public:
 	bool isTrendIncreasing() const { return trIncreasing; }
 	bool isTrendSlowly() const { return trSlowly; }
 	bool isTrendRapidly() const { return trRadpidly; }
-	bool isValid() const;
+	inline bool isValid() const;
 
-	TerrainVisibility(std::string s);
+	TerrainVisibility() = default;
 	inline bool addString(const std::string & s);
 
 private:
 	enum class IncompleteText {
 		EMPTY,
 		NONE,
+		COMPLETED,
 		MON,
 		VAL,
 		MT,
@@ -920,6 +921,7 @@ private:
 	bool addDescription(Description d) {
 		if (desc != Description::NOT_SPECIFIED) return false;
 		desc = d;
+		incompleteText = IncompleteText::NONE;
 		return true;
 	}
 };
@@ -4405,10 +4407,18 @@ bool TerrainVisibility::addString(const std::string & s) {
 		return false;
 
 		case IncompleteText::NONE:
+		// TODO: add trend strings
+		return false;
+
+		case IncompleteText::COMPLETED:
 		return false;
 
 		case IncompleteText::MT:
-		if (s == "OBSC") return addDescription(Description::MOUNTAINS_OBSCURED);
+		if (s == "OBSC") {
+			if (!addDescription(Description::MOUNTAINS_OBSCURED)) return false;
+			incompleteText = IncompleteText::COMPLETED;
+			return true;
+		}
 		return false;
 
 		case IncompleteText::MON:
@@ -4480,6 +4490,16 @@ bool TerrainVisibility::addString(const std::string & s) {
 	}
 
 	return false;
+}
+
+bool TerrainVisibility::isValid() const {
+	if (incompleteText != IncompleteText::NONE && 
+	    incompleteText != IncompleteText::COMPLETED) return false;
+	if (isTrendNoChanges() && isTrendChanging()) return false;
+	if (isTrendRising() && isTrendLowering()) return false;
+	if (isTrendDiminising() && isTrendIncreasing()) return false;
+	if (isTrendSlowly() && isTrendRapidly()) return false;
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
