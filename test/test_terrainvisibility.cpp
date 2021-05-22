@@ -35,6 +35,9 @@ TEST(TerrainVisibility, constructor) {
 ///////////////////////////////////////////////////////////////////////////////
 // Parse MT OBSC
 // Purpose: to confirm that MT OBSC sequence is parsed correctly
+// Note: MT OBSC is an isolated case as other groups have format either MON ...
+// or VAL ... , and tested here completely, independent of MON ... and VAL ...
+// group parsing tests
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(TerrainVisibility, mtObsc) {
@@ -55,6 +58,33 @@ TEST(TerrainVisibility, mtObsc) {
     EXPECT_FALSE(tv.isTrendSlowly());
     EXPECT_FALSE(tv.isTrendRapidly());
     EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, mtAddString) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MT"));
+    EXPECT_FALSE(tv.addString("MON"));
+    EXPECT_FALSE(tv.addString("VAL"));
+    EXPECT_FALSE(tv.addString("GEN"));
+    EXPECT_FALSE(tv.addString("CLD"));
+    EXPECT_FALSE(tv.addString("CNS"));
+    EXPECT_FALSE(tv.addString("VERS"));
+    EXPECT_FALSE(tv.addString("INC"));
+    EXPECT_FALSE(tv.addString("FOSCHIA"));
+    EXPECT_FALSE(tv.addString("MAR"));
+    EXPECT_FALSE(tv.addString("NC"));
+    EXPECT_FALSE(tv.addString("CUF"));
+    EXPECT_FALSE(tv.addString("NEBBBIA"));
+    EXPECT_FALSE(tv.addString("INTER"));
+    EXPECT_FALSE(tv.addString("VAR"));
+    EXPECT_FALSE(tv.addString("STF"));
+    EXPECT_FALSE(tv.addString("ELEV"));
+    EXPECT_FALSE(tv.addString("ABB"));
+    EXPECT_FALSE(tv.addString("DIM"));
+    EXPECT_FALSE(tv.addString("AUM"));
+    EXPECT_FALSE(tv.addString("SLF"));
+    EXPECT_FALSE(tv.addString("RAPID"));
+    EXPECT_FALSE(tv.addString(""));
 }
 
 TEST(TerrainVisibility, mtObscAddString) {
@@ -485,7 +515,416 @@ TEST(TerrainVisibility, monGenInvalid) {
 // VAL CLD SCT NEBBIA INF, VAL MAR CLD, VAL INVIS 
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+TEST(TerrainVisibility, valNil) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("NIL"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valFoschia) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("FOSCHIA"));
+    EXPECT_FALSE(tv.isValid());
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valFoschiaSkcSup) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("FOSCHIA"));
+    EXPECT_TRUE(tv.addString("SKC"));
+    EXPECT_TRUE(tv.addString("SUP"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_LOW_MIST);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valNebbia) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("NEBBIA"));
+    EXPECT_FALSE(tv.isValid());
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valNebbiaSct) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("NEBBIA"));
+    EXPECT_TRUE(tv.addString("SCT"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_FOG);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valCldSct) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("CLD"));
+    EXPECT_TRUE(tv.addString("SCT"));
+    EXPECT_FALSE(tv.isValid());
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valCldSctNebbiaInf) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("CLD"));
+    EXPECT_TRUE(tv.addString("SCT"));
+    EXPECT_TRUE(tv.addString("NEBBIA"));
+    EXPECT_TRUE(tv.addString("INF"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS_FOG_BELOW);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valMarCld) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("MAR"));
+    EXPECT_TRUE(tv.addString("CLD"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_CLOUD_LAYER);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valInvis) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("INVIS"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_INVISIBLE);
+    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Parse invalid VAL sequences
+// Purpose: to confirm that invalid VAL sequences cannot be parsed (such as
+// // VAL SKC, VAL SUP, VAL SCT, VAL INF, VAL CLD SCT FOSCHIA, etc)
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(TerrainVisibility, valInvalid) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("TEST"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("VAL"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("SKC"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("SUP"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("SCT"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("INV"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_TRUE(tv.addString("NIL"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_NOT_OBSCURED);
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valFoschiaInvalid) {
+	auto tv1 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv1.addString("VAL"));
+    EXPECT_TRUE(tv1.addString("FOSCHIA"));
+    EXPECT_EQ(tv1.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv1.isValid());
+    EXPECT_FALSE(tv1.addString("MON"));
+    EXPECT_EQ(tv1.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv1.isValid());
+
+	auto tv2 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv2.addString("VAL"));
+    EXPECT_TRUE(tv2.addString("FOSCHIA"));
+    EXPECT_EQ(tv2.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv2.isValid());
+    EXPECT_FALSE(tv2.addString("TEST"));
+    EXPECT_EQ(tv2.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv2.isValid());
+
+	auto tv3 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv3.addString("VAL"));
+    EXPECT_TRUE(tv3.addString("FOSCHIA"));
+    EXPECT_EQ(tv3.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv3.isValid());
+    EXPECT_FALSE(tv3.addString("VAL"));
+    EXPECT_EQ(tv3.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv3.isValid());
+
+	auto tv4 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv4.addString("VAL"));
+    EXPECT_TRUE(tv4.addString("FOSCHIA"));
+    EXPECT_EQ(tv4.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv4.isValid());
+    EXPECT_FALSE(tv4.addString("GEN"));
+    EXPECT_EQ(tv4.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv4.isValid());
+
+	auto tv5 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv5.addString("VAL"));
+    EXPECT_TRUE(tv5.addString("FOSCHIA"));
+    EXPECT_EQ(tv5.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv5.isValid());
+    EXPECT_FALSE(tv5.addString("SUP"));
+    EXPECT_EQ(tv5.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv5.isValid());
+
+	auto tv6 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv6.addString("VAL"));
+    EXPECT_TRUE(tv6.addString("FOSCHIA"));
+    EXPECT_EQ(tv6.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv6.isValid());
+    EXPECT_FALSE(tv6.addString("SCT"));
+    EXPECT_EQ(tv6.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv6.isValid());
+
+	auto tv7 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv7.addString("VAL"));
+    EXPECT_TRUE(tv7.addString("FOSCHIA"));
+    EXPECT_EQ(tv7.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv7.isValid());
+    EXPECT_FALSE(tv7.addString("INV"));
+    EXPECT_EQ(tv7.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv7.isValid());
+}
+
+TEST(TerrainVisibility, valCldInvalid) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("VAL"));
+    EXPECT_TRUE(tv.addString("CLD"));
+
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("TEST"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("VAL"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("MAR"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv.isValid());
+
+    EXPECT_TRUE(tv.addString("SCT"));
+
+    EXPECT_FALSE(tv.addString("SUP"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("CLD"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("FOSCHIA"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString("NEBBIA"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.isValid());
+
+    EXPECT_FALSE(tv.addString(""));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, valNebbiaInvalid) {
+	auto tv1 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv1.addString("VAL"));
+    EXPECT_TRUE(tv1.addString("NEBBIA"));
+    EXPECT_EQ(tv1.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv1.isValid());
+    EXPECT_FALSE(tv1.addString("MON"));
+    EXPECT_EQ(tv1.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv1.isValid());
+
+	auto tv2 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv2.addString("VAL"));
+    EXPECT_TRUE(tv2.addString("NEBBIA"));
+    EXPECT_EQ(tv2.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv2.isValid());
+    EXPECT_FALSE(tv2.addString("TEST"));
+    EXPECT_EQ(tv2.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv2.isValid());
+
+	auto tv3 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv3.addString("VAL"));
+    EXPECT_TRUE(tv3.addString("NEBBIA"));
+    EXPECT_EQ(tv3.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv3.isValid());
+    EXPECT_FALSE(tv3.addString("VAL"));
+    EXPECT_EQ(tv3.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv3.isValid());
+
+	auto tv4 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv4.addString("VAL"));
+    EXPECT_TRUE(tv4.addString("NEBBIA"));
+    EXPECT_EQ(tv4.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv4.isValid());
+    EXPECT_FALSE(tv4.addString("GEN"));
+    EXPECT_EQ(tv4.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv4.isValid());
+
+	auto tv5 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv5.addString("VAL"));
+    EXPECT_TRUE(tv5.addString("NEBBIA"));
+    EXPECT_EQ(tv5.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv5.isValid());
+    EXPECT_FALSE(tv5.addString("SUP"));
+    EXPECT_EQ(tv5.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv5.isValid());
+
+	auto tv6 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv6.addString("VAL"));
+    EXPECT_TRUE(tv6.addString("NEBBIA"));
+    EXPECT_EQ(tv6.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv6.isValid());
+    EXPECT_FALSE(tv6.addString("INV"));
+    EXPECT_EQ(tv6.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv6.isValid());
+
+	auto tv7 = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv7.addString("VAL"));
+    EXPECT_TRUE(tv7.addString("NEBBIA"));
+    EXPECT_EQ(tv7.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
+    EXPECT_FALSE(tv7.isValid());
+    EXPECT_FALSE(tv7.addString(""));
+    EXPECT_EQ(tv7.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
+    EXPECT_TRUE(tv7.isValid());
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Parse trends

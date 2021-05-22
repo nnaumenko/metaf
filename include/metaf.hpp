@@ -4495,6 +4495,7 @@ bool TerrainVisibility::addString(const std::string & s) {
 bool TerrainVisibility::isValid() const {
 	if (incompleteText != IncompleteText::NONE && 
 	    incompleteText != IncompleteText::COMPLETED) return false;
+	if (description() == Description::NOT_SPECIFIED) return false;
 	if (isTrendNoChanges() && isTrendChanging()) return false;
 	if (isTrendRising() && isTrendLowering()) return false;
 	if (isTrendDiminising() && isTrendIncreasing()) return false;
