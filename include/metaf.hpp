@@ -913,7 +913,13 @@ private:
 	bool trSlowly = false; // SLW
 	bool trRadpidly = false; // RAPID
 
-	bool addIntFog() { if (trIntermittentFog) return false; trIntermittentFog = true; return true; }
+	bool addIntFog() { 
+		if (trIntermittentFog) return false; 
+		trIntermittentFog = true; 
+		incompleteText = IncompleteText::NONE;
+		return true;
+	}
+
 	bool addDirection(Direction::Cardinal d) {
 		if (dir != Direction::Cardinal::ALQDS) return false;
 		dir = d;
@@ -4425,11 +4431,8 @@ bool TerrainVisibility::addString(const std::string & s) {
 		return false;
 
 		case IncompleteText::TREND_NEBBIA:
-		if (s == "INTER") {
-			incompleteText = IncompleteText::NONE;
-			trIntermittentFog = true;
-			return true;
-		}
+		if (s == "INTER") return addIntFog();
+		return false;
 
 		case IncompleteText::MT:
 		if (s == "OBSC") {

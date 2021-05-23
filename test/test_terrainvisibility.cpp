@@ -1163,10 +1163,40 @@ TEST(TerrainVisibility, trendNebbiaInter) {
     EXPECT_FALSE(tv.isTrendSlowly());
     EXPECT_FALSE(tv.isTrendRapidly());
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 // Invalid trends
 // Purpose: to confirm that contradicting trends result in Terrain Visibility 
 // recognised as invalid: NC and VAR, DIM and AUM, ELEV and ABB, SLW and RAPID
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+TEST(TerrainVisibility, noTrendAfterMtObs) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MT"));
+    EXPECT_TRUE(tv.addString("OBSC"));
+    EXPECT_FALSE(tv.addString("CUF"));
+    EXPECT_FALSE(tv.addString("NEBBIA"));
+    EXPECT_FALSE(tv.addString("INTER"));
+    EXPECT_FALSE(tv.addString("VAR"));
+    EXPECT_FALSE(tv.addString("STF"));
+    EXPECT_FALSE(tv.addString("ELEV"));
+    EXPECT_FALSE(tv.addString("ABB"));
+    EXPECT_FALSE(tv.addString("DIM"));
+    EXPECT_FALSE(tv.addString("AUM"));
+    EXPECT_FALSE(tv.addString("SLW"));
+    EXPECT_FALSE(tv.addString("RAPID"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_OBSCURED);
+    EXPECT_TRUE(tv.isValid());
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+}
+
