@@ -931,6 +931,8 @@ private:
 		incompleteText = IncompleteText::NONE;
 		return true;
 	}
+
+	inline bool addTrend(const std::string & s);
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -4405,6 +4407,21 @@ bool WeatherPhenomena::isValid() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
+bool TerrainVisibility::addTrend(const std::string & s) {
+	if (s == "NC") { trNoChanges = true; return true; }
+	if (s == "CUF")	{ trCumulusFormation = true; return true; }
+	if (s == "VAR")	{ trChanging = true; return true; }
+	if (s == "STF")	{ trStratification = true; return true; }
+	if (s == "ELEV") { trRising = true; return true; }
+	if (s == "ABB")	{ trLowering = true; return true; }
+	if (s == "DIM")	{ trDiminishing = true; return true; }
+	if (s == "AUM")	{ trIncreasing = true; return true; }
+	if (s == "SLW")	{ trSlowly = true; return true; }
+	if (s == "RAPID") { trRadpidly = true; return true; }
+	if (s == "NEBBIA") { incompleteText = IncompleteText::TREND_NEBBIA; return true; }
+	return false;
+}
+
 bool TerrainVisibility::addString(const std::string & s) {
 	switch (incompleteText) {
 		case IncompleteText::EMPTY:
@@ -4414,17 +4431,7 @@ bool TerrainVisibility::addString(const std::string & s) {
 		return false;
 
 		case IncompleteText::NONE:
-		if (s == "NC") { trNoChanges = true; return true; }
-		if (s == "CUF")	{ trCumulusFormation = true; return true; }
-		if (s == "VAR")	{ trChanging = true; return true; }
-		if (s == "STF")	{ trStratification = true; return true; }
-		if (s == "ELEV") { trRising = true; return true; }
-		if (s == "ABB")	{ trLowering = true; return true; }
-		if (s == "DIM")	{ trDiminishing = true; return true; }
-		if (s == "AUM")	{ trIncreasing = true; return true; }
-		if (s == "SLW")	{ trSlowly = true; return true; }
-		if (s == "RAPID") { trRadpidly = true; return true; }
-		if (s == "NEBBIA") { incompleteText = IncompleteText::TREND_NEBBIA; return true; }
+		if (addTrend(s)) return true;
 		return false;
 
 		case IncompleteText::COMPLETED:
@@ -4481,6 +4488,7 @@ bool TerrainVisibility::addString(const std::string & s) {
 		case IncompleteText::VAL_FOSCHIA:
 		if (s == "SKC") { incompleteText = IncompleteText::VAL_FOSCHIA_SKC; return true; }
 		addDescription(Description::VALLEYS_IN_MIST);
+		if (addTrend(s)) return true;
 		return false;
 
 		case IncompleteText::VAL_FOSCHIA_SKC: 
@@ -4490,6 +4498,7 @@ bool TerrainVisibility::addString(const std::string & s) {
 		case IncompleteText::VAL_NEBBIA:
 		if (s == "SCT") return addDescription(Description::VALLEYS_IN_SCATTERED_FOG);
 		addDescription(Description::VALLEYS_IN_FOG);
+		if (addTrend(s)) return true;
 		return false;
 
 		case IncompleteText::VAL_CLD:
@@ -4499,6 +4508,7 @@ bool TerrainVisibility::addString(const std::string & s) {
 		case IncompleteText::VAL_CLD_SCT:
 		if (s == "NEBBIA") { incompleteText = IncompleteText::VAL_CLD_SCT_NEBBIA; return true; }
 		addDescription(Description::VALLEYS_IN_SCATTERED_CLOUDS);
+		if (addTrend(s)) return true;
 		return false;
 
 		case IncompleteText::VAL_CLD_SCT_NEBBIA:
