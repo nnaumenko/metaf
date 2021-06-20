@@ -83,8 +83,16 @@ TEST(TerrainVisibility, mtAddString) {
     EXPECT_FALSE(tv.addString("ABB"));
     EXPECT_FALSE(tv.addString("DIM"));
     EXPECT_FALSE(tv.addString("AUM"));
-    EXPECT_FALSE(tv.addString("SLF"));
+    EXPECT_FALSE(tv.addString("SLW"));
     EXPECT_FALSE(tv.addString("RAPID"));
+    EXPECT_FALSE(tv.addString("N"));
+    EXPECT_FALSE(tv.addString("NE"));
+    EXPECT_FALSE(tv.addString("E"));
+    EXPECT_FALSE(tv.addString("SE"));
+    EXPECT_FALSE(tv.addString("S"));
+    EXPECT_FALSE(tv.addString("SW"));
+    EXPECT_FALSE(tv.addString("W"));
+    EXPECT_FALSE(tv.addString("NW"));
     EXPECT_FALSE(tv.addString(""));
 }
 
@@ -104,8 +112,16 @@ TEST(TerrainVisibility, mtObscAddString) {
     EXPECT_FALSE(tv.addString("ABB"));
     EXPECT_FALSE(tv.addString("DIM"));
     EXPECT_FALSE(tv.addString("AUM"));
-    EXPECT_FALSE(tv.addString("SLF"));
+    EXPECT_FALSE(tv.addString("SLW"));
     EXPECT_FALSE(tv.addString("RAPID"));
+    EXPECT_FALSE(tv.addString("N"));
+    EXPECT_FALSE(tv.addString("NE"));
+    EXPECT_FALSE(tv.addString("E"));
+    EXPECT_FALSE(tv.addString("SE"));
+    EXPECT_FALSE(tv.addString("S"));
+    EXPECT_FALSE(tv.addString("SW"));
+    EXPECT_FALSE(tv.addString("W"));
+    EXPECT_FALSE(tv.addString("NW"));
     EXPECT_FALSE(tv.addString(""));
 }
 
@@ -1334,4 +1350,101 @@ TEST(TerrainVisibility, noTrendAfterMtObs) {
 // a cardinal direction is parsed correctly
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+TEST(TerrainVisibility, monDirLib) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MON"));
+    EXPECT_TRUE(tv.addString("W"));
+    EXPECT_TRUE(tv.addString("LIB"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().size(), 1u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::W);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, monDirDirLib) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MON"));
+    EXPECT_TRUE(tv.addString("W"));
+    EXPECT_TRUE(tv.addString("NW"));
+    EXPECT_TRUE(tv.addString("LIB"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().size(), 2u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::W);
+    EXPECT_EQ(tv.direction().at(1).cardinal(), metaf::Direction::Cardinal::NW);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, monDirDirDirLib) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MON"));
+    EXPECT_TRUE(tv.addString("SW"));
+    EXPECT_TRUE(tv.addString("W"));
+    EXPECT_TRUE(tv.addString("NW"));
+    EXPECT_TRUE(tv.addString("LIB"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().size(), 3u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::SW);
+    EXPECT_EQ(tv.direction().at(1).cardinal(), metaf::Direction::Cardinal::W);
+    EXPECT_EQ(tv.direction().at(2).cardinal(), metaf::Direction::Cardinal::NW);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainVisibility, monLibTooManyDirections) {
+	auto tv = metaf::TerrainVisibility();
+    EXPECT_TRUE(tv.addString("MON"));
+    EXPECT_TRUE(tv.addString("SW"));
+    EXPECT_TRUE(tv.addString("W"));
+    EXPECT_TRUE(tv.addString("NW"));
+    EXPECT_FALSE(tv.addString("N"));
+    EXPECT_TRUE(tv.addString("LIB"));
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().size(), 3u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::SW);
+    EXPECT_EQ(tv.direction().at(1).cardinal(), metaf::Direction::Cardinal::W);
+    EXPECT_EQ(tv.direction().at(2).cardinal(), metaf::Direction::Cardinal::NW);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}

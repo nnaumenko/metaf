@@ -919,6 +919,8 @@ private:
 	bool trSlowly = false; // SLW
 	bool trRadpidly = false; // RAPID
 
+	TerrainVisibility(IncompleteText it) : incompleteText(it) {};
+
 	bool addIntFog() { 
 		if (trIntermittentFog) return false; 
 		trIntermittentFog = true; 
@@ -4464,6 +4466,8 @@ bool TerrainVisibility::addString(const std::string & s) {
 		if (s == "VERS") { incompleteText = IncompleteText::MON_VERS; return true; }
 		if (s == "GEN") { incompleteText = IncompleteText::MON_GEN; return true; }
 		if (s == "CNS") { incompleteText = IncompleteText::MON_CNS; return true; }
+		if (const auto d = Direction::fromCardinalString(s); d.has_value())
+			return addDirection(d->cardinal());
 		return false;
 
 		case IncompleteText::VAL:
