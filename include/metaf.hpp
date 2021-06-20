@@ -859,7 +859,11 @@ public:
 		VALLEYS_IN_CLOUD_LAYER, // VAL MAR CLD
 		VALLEYS_INVISIBLE // VAL INVIS
 	};
-	Direction direction() const { return Direction(dir); }
+	std::vector<Direction> direction() const { 
+		std::vector<Direction> result;
+		for (auto i = 0u; i < numDir; i++) { result.push_back(Direction(dir[i])); }
+		return result; 
+	}
 	Description description() const { return desc; };
 	bool isTrendNoChanges() const { return trNoChanges; }
 	bool isTrendCumulusFormation() const { return trCumulusFormation; }
@@ -899,7 +903,9 @@ private:
 		TREND_NEBBIA,
 	};
 	IncompleteText incompleteText = IncompleteText::EMPTY;
-	Direction::Cardinal dir = Direction::Cardinal::ALQDS;
+	static const size_t maxDir = 3;
+	size_t numDir = 0;
+	Direction::Cardinal dir[maxDir];
 	Description desc = Description::NOT_SPECIFIED;
 	bool trNoChanges = false; // NC
 	bool trCumulusFormation = false; // CUF
@@ -921,10 +927,11 @@ private:
 	}
 
 	bool addDirection(Direction::Cardinal d) {
-		if (dir != Direction::Cardinal::ALQDS) return false;
-		dir = d;
+		if (numDir >= maxDir) return false;
+		dir[numDir++] = d;
 		return true;
 	}
+
 	bool addDescription(Description d) {
 		if (desc != Description::NOT_SPECIFIED) return false;
 		desc = d;

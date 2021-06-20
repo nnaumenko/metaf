@@ -17,7 +17,8 @@
 TEST(TerrainVisibility, constructor) {
 	const auto tv = metaf::TerrainVisibility();
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::NOT_SPECIFIED);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
+
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -45,7 +46,7 @@ TEST(TerrainVisibility, mtObsc) {
     EXPECT_TRUE(tv.addString("MT"));
     EXPECT_TRUE(tv.addString("OBSC"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_OBSCURED);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -120,7 +121,7 @@ TEST(TerrainVisibility, monLib) {
     EXPECT_TRUE(tv.addString("MON"));
     EXPECT_TRUE(tv.addString("LIB"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -141,7 +142,7 @@ TEST(TerrainVisibility, monCldSct) {
     EXPECT_TRUE(tv.addString("CLD"));
     EXPECT_TRUE(tv.addString("SCT"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_IN_SCATTERED_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -162,7 +163,7 @@ TEST(TerrainVisibility, monCldCime) {
     EXPECT_TRUE(tv.addString("CLD"));
     EXPECT_TRUE(tv.addString("CIME"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_SUMMITS_IN_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -183,7 +184,7 @@ TEST(TerrainVisibility, monVersInc) {
     EXPECT_TRUE(tv.addString("VERS"));
     EXPECT_TRUE(tv.addString("INC"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_SLOPES_IN_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -204,7 +205,7 @@ TEST(TerrainVisibility, monCnsPost) {
     EXPECT_TRUE(tv.addString("CNS"));
     EXPECT_TRUE(tv.addString("POST"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_OBSERVED_SIDE_VISIBILE);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -225,7 +226,7 @@ TEST(TerrainVisibility, monGenInc) {
     EXPECT_TRUE(tv.addString("GEN"));
     EXPECT_TRUE(tv.addString("INC"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_MOSTLY_IN_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -245,7 +246,7 @@ TEST(TerrainVisibility, monInc) {
     EXPECT_TRUE(tv.addString("MON"));
     EXPECT_TRUE(tv.addString("INC"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_IN_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -265,7 +266,7 @@ TEST(TerrainVisibility, monInvis) {
     EXPECT_TRUE(tv.addString("MON"));
     EXPECT_TRUE(tv.addString("INVIS"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_INVISIBLE);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -520,7 +521,7 @@ TEST(TerrainVisibility, valNil) {
     EXPECT_TRUE(tv.addString("VAL"));
     EXPECT_TRUE(tv.addString("NIL"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_NOT_OBSCURED);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -542,7 +543,7 @@ TEST(TerrainVisibility, valFoschia) {
     EXPECT_FALSE(tv.isValid());
     EXPECT_FALSE(tv.addString(""));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -564,7 +565,7 @@ TEST(TerrainVisibility, valFoschiaSkcSup) {
     EXPECT_TRUE(tv.addString("SKC"));
     EXPECT_TRUE(tv.addString("SUP"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_LOW_MIST);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -586,7 +587,7 @@ TEST(TerrainVisibility, valNebbia) {
     EXPECT_FALSE(tv.isValid());
     EXPECT_FALSE(tv.addString(""));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_FOG);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -607,7 +608,7 @@ TEST(TerrainVisibility, valNebbiaSct) {
     EXPECT_TRUE(tv.addString("NEBBIA"));
     EXPECT_TRUE(tv.addString("SCT"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_FOG);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -630,7 +631,7 @@ TEST(TerrainVisibility, valCldSct) {
     EXPECT_FALSE(tv.isValid());
     EXPECT_FALSE(tv.addString(""));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -653,7 +654,7 @@ TEST(TerrainVisibility, valCldSctNebbiaInf) {
     EXPECT_TRUE(tv.addString("NEBBIA"));
     EXPECT_TRUE(tv.addString("INF"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_SCATTERED_CLOUDS_FOG_BELOW);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -674,7 +675,7 @@ TEST(TerrainVisibility, valMarCld) {
     EXPECT_TRUE(tv.addString("MAR"));
     EXPECT_TRUE(tv.addString("CLD"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_CLOUD_LAYER);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -694,7 +695,7 @@ TEST(TerrainVisibility, valInvis) {
     EXPECT_TRUE(tv.addString("VAL"));
     EXPECT_TRUE(tv.addString("INVIS"));
     EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_INVISIBLE);
-    EXPECT_EQ(tv.direction().cardinal(), metaf::Direction::Cardinal::ALQDS);
+    EXPECT_TRUE(tv.direction().empty());
     EXPECT_FALSE(tv.isTrendNoChanges());
     EXPECT_FALSE(tv.isTrendCumulusFormation());
     EXPECT_FALSE(tv.isTrendIntermittentFog());
@@ -1327,3 +1328,10 @@ TEST(TerrainVisibility, noTrendAfterMtObs) {
     EXPECT_FALSE(tv.isTrendRapidly());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// Direction
+// Purpose: to confirm that terrain visibility information which contains 
+// a cardinal direction is parsed correctly
+///////////////////////////////////////////////////////////////////////////////
+
+// TODO

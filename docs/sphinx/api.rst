@@ -74,6 +74,7 @@ Data values are returned by getter methods of the classes which represent groups
    api_precipitation
    api_pressure
    api_runway
+   api_terrainvisibility
    api_speed
    api_surfacefriction
    api_temperature

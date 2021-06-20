@@ -98,9 +98,9 @@ TerrainVisibility class
         Acquiring the data
         ^^^^^^^^^^^^^^^^^^
 
-            .. cpp:function:: Direction direction() const
+            .. cpp:function:: std::vector<Direction> direction() const
 
-                :returns: Direction towards which the terrain feature visibility is specified. If no direction was specified, reports :cpp:enumerator:`metaf::Direction::Cardinal::ALQDS`.
+                :returns: Direction(s) towards which the terrain feature visibility is specified. If no cardinal direction was specified in the terrain visibility information, returns an empty vector.
 
             .. cpp:function:: Description description() const
 
