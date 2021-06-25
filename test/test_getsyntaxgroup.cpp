@@ -346,6 +346,13 @@ TEST(getSyntaxGroup, OTHER_VicinityGroup) {
 	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
 }
 
+TEST(getSyntaxGroup, OTHER_TerrainGroup) {
+	auto g = metaf::TerrainGroup::parse("MT", metaf::ReportPart::RMK);
+	ASSERT_TRUE(g.has_value());
+	ASSERT_EQ(g->append("OBSC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(metaf::getSyntaxGroup(g.value()), metaf::SyntaxGroup::OTHER);
+}
+
 TEST(getSyntaxGroup, OTHER_MiscGroup) {
 	const auto g1 = metaf::MiscGroup::parse("98062", metaf::ReportPart::RMK);
 	ASSERT_TRUE(g1.has_value());

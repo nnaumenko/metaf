@@ -2180,8 +2180,17 @@ public:
 		TERRAIN_VISIBILITY
 	};
 	Type type() const { return tp; }
-	inline std::vector<TerrainVisibility> terrainVisibility() const;
-	inline bool isValid() const;
+	inline std::vector<TerrainVisibility> terrainVisibility() const {
+		std::vector<TerrainVisibility> result;
+		for (auto i = 0u; i < numTerVis; i++) 
+			result.push_back(terVis[i]);
+		return result;
+	}
+	inline bool isValid() const {
+		for (auto i = 0u; i < numTerVis; i++) 
+			if (!terVis[i].isValid()) return false;
+		return true;
+	}
 
 	TerrainGroup() = default;
 	static inline std::optional<TerrainGroup> parse(const std::string & group,
@@ -2193,7 +2202,30 @@ public:
 
 private:
 	Type tp = Type::TERRAIN_VISIBILITY;
-	// TODO
+	static const size_t maxTerVis = 4;
+	size_t numTerVis = 0;
+	TerrainVisibility terVis[maxTerVis];
+
+	enum class StartText {
+		NONE,
+		MON,
+		VAL,
+		MT
+	};
+
+	StartText startText = StartText::NONE;
+	bool isStart = true;
+
+	bool addTerrainVisibility(const TerrainVisibility & tv) {
+		if (numTerVis >= maxTerVis) return false;
+		terVis[numTerVis++] = tv;
+		return true;
+	}
+
+	TerrainVisibility * lastTerrainVisibility () {
+		if (!numTerVis) return nullptr;
+		return &terVis[numTerVis - 1];
+	}
 };
 
 class MiscGroup {
@@ -7366,30 +7398,52 @@ std::vector<Direction> VicinityGroup::directions() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::vector<TerrainVisibility> TerrainGroup::terrainVisibility() const {
-	// TODO
-	return std::vector<TerrainVisibility>();
-}
-
-bool TerrainGroup::isValid() const {
-	// TODO
-	return true;
-}
-
 std::optional<TerrainGroup> TerrainGroup::parse(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata) {
-	//TODO
-	(void) group; (void)reportPart; (void)reportMetadata;
-	return std::optional<TerrainGroup>();
+	(void)reportMetadata;
+	static const std::optional<TerrainGroup> notRecognised;
+	if (reportPart != ReportPart::RMK) return notRecognised;
+	TerrainGroup result;
+	if (group == "MON") result.startText = StartText::MON;
+	if (group == "VAL") result.startText = StartText::VAL;
+	if (group == "MT") result.startText = StartText::MT;
+	if (result.startText == StartText::NONE) return notRecognised;
+	return result;
 }
 
 AppendResult TerrainGroup::append(const std::string & group,
 	ReportPart reportPart,
 	const ReportMetadata & reportMetadata) {
-	//TODO
-	(void) group; (void)reportPart; (void)reportMetadata;
-	return AppendResult::NOT_APPENDED;
+	(void)reportPart; (void)reportMetadata;
+
+	auto addFirstGroup = [&] () {
+		TerrainVisibility tv;
+		bool result = false;
+		switch (startText) {
+			case StartText::NONE:	break;
+			case StartText::MON: 	result = tv.addString("MON"); break;
+			case StartText::VAL:	result = tv.addString("VAL"); break;
+			case StartText::MT:		result = tv.addString("MT"); break;
+		}
+		if (result) addTerrainVisibility(tv);
+		return result;
+	};
+
+	auto addMoreGroup = [&] (const std::string & s) {
+		const auto lastTv = lastTerrainVisibility();
+		if (!lastTv) return false;
+		return lastTv->addString(s);
+	};
+
+	if (isStart) {
+		isStart = false;
+		if (!addFirstGroup()) return AppendResult::GROUP_INVALIDATED;
+		if (!addMoreGroup(group)) return AppendResult::GROUP_INVALIDATED;
+		return AppendResult::APPENDED;
+	}
+	if (!addMoreGroup(group)) return AppendResult::NOT_APPENDED;
+	return AppendResult::APPENDED;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

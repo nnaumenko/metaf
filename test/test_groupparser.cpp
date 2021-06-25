@@ -94,6 +94,10 @@ TEST(GroupParser, parse) {
 		metaf::GroupParser::parse("CBMAM", metaf::ReportPart::RMK, metaf::missingMetadata);
 	EXPECT_TRUE(std::holds_alternative<metaf::VicinityGroup>(vicinityGroup));
 
+	const metaf::Group terrainGroup = 
+		metaf::GroupParser::parse("MT", metaf::ReportPart::RMK, metaf::missingMetadata);
+	EXPECT_TRUE(std::holds_alternative<metaf::TerrainGroup>(terrainGroup));
+
 	const metaf::Group miscGroup = 
 		metaf::GroupParser::parse("YLO2", metaf::ReportPart::METAR, metaf::missingMetadata);
 	EXPECT_TRUE(std::holds_alternative<metaf::MiscGroup>(miscGroup));
