@@ -218,3 +218,138 @@ TEST(TerrainGroup, parseValFoschiaSkcSup) {
     EXPECT_FALSE(tv.isTrendRapidly());
     EXPECT_TRUE(tv.isValid());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// MON and VAL groups with trends and directions
+// Purpose: to confirm that MON and VAL groups with trend and cardinal 
+// directions specified
+///////////////////////////////////////////////////////////////////////////////
+
+TEST(TerrainGroup, parseMonTrends) {
+	auto tg = metaf::TerrainGroup::parse("MON", metaf::ReportPart::RMK);
+	ASSERT_TRUE(tg.has_value());
+
+	EXPECT_EQ(tg->append("CLD", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("SCT", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("ELEV", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+    EXPECT_EQ(tg->type(), metaf::TerrainGroup::Type::TERRAIN_VISIBILITY);
+
+    EXPECT_EQ(tg->terrainVisibility().size(), 1u);
+
+    const auto tv = tg->terrainVisibility().at(0);
+
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_IN_SCATTERED_CLOUDS);
+    EXPECT_TRUE(tv.direction().empty());
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_TRUE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainGroup, parseValTrends) {
+	auto tg = metaf::TerrainGroup::parse("VAL", metaf::ReportPart::RMK);
+	ASSERT_TRUE(tg.has_value());
+
+	EXPECT_EQ(tg->append("FOSCHIA", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("NC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+    EXPECT_EQ(tg->type(), metaf::TerrainGroup::Type::TERRAIN_VISIBILITY);
+
+    EXPECT_EQ(tg->terrainVisibility().size(), 1u);
+
+    const auto tv = tg->terrainVisibility().at(0);
+
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_MIST);
+    EXPECT_TRUE(tv.direction().empty());
+    EXPECT_TRUE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainGroup, parseMonDirection) {
+	auto tg = metaf::TerrainGroup::parse("MON", metaf::ReportPart::RMK);
+	ASSERT_TRUE(tg.has_value());
+
+	EXPECT_EQ(tg->append("W", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("NW", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("LIB", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+    EXPECT_EQ(tg->type(), metaf::TerrainGroup::Type::TERRAIN_VISIBILITY);
+
+    EXPECT_EQ(tg->terrainVisibility().size(), 1u);
+
+    const auto tv = tg->terrainVisibility().at(0);
+
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::MOUNTAINS_NOT_OBSCURED);
+    EXPECT_EQ(tv.direction().size(), 2u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::W);
+    EXPECT_EQ(tv.direction().at(1).cardinal(), metaf::Direction::Cardinal::NW);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
+TEST(TerrainGroup, parseValDirection) {
+	auto tg = metaf::TerrainGroup::parse("VAL", metaf::ReportPart::RMK);
+	ASSERT_TRUE(tg.has_value());
+
+	EXPECT_EQ(tg->append("S", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+
+	EXPECT_EQ(tg->append("FOSCHIA", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("SKC", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("SUP", metaf::ReportPart::RMK), metaf::AppendResult::APPENDED);
+	EXPECT_EQ(tg->append("", metaf::ReportPart::RMK), metaf::AppendResult::NOT_APPENDED);
+
+    EXPECT_EQ(tg->type(), metaf::TerrainGroup::Type::TERRAIN_VISIBILITY);
+
+    EXPECT_EQ(tg->terrainVisibility().size(), 1u);
+
+    const auto tv = tg->terrainVisibility().at(0);
+
+    EXPECT_EQ(tv.description(), metaf::TerrainVisibility::Description::VALLEYS_IN_LOW_MIST);
+    EXPECT_EQ(tv.direction().size(), 1u);
+    EXPECT_EQ(tv.direction().at(0).cardinal(), metaf::Direction::Cardinal::S);
+    EXPECT_FALSE(tv.isTrendNoChanges());
+    EXPECT_FALSE(tv.isTrendCumulusFormation());
+    EXPECT_FALSE(tv.isTrendIntermittentFog());
+    EXPECT_FALSE(tv.isTrendChanging());
+    EXPECT_FALSE(tv.isTrendStratification());
+    EXPECT_FALSE(tv.isTrendRising());
+    EXPECT_FALSE(tv.isTrendLowering());
+    EXPECT_FALSE(tv.isTrendDiminising());
+    EXPECT_FALSE(tv.isTrendIncreasing());
+    EXPECT_FALSE(tv.isTrendSlowly());
+    EXPECT_FALSE(tv.isTrendRapidly());
+    EXPECT_TRUE(tv.isValid());
+}
+
